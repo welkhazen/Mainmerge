@@ -6,7 +6,7 @@ interface FinalCTAProps {
 
 export function FinalCTA({ onSignupClick }: FinalCTAProps) {
   return (
-    <section className="relative py-32 px-6 bg-gradient-to-b from-transparent to-[rgba(255,255,255,0.01)]">
+    <section className="relative py-32 px-6">
       {/* Subtle glow */}
       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[500px] h-[300px] rounded-full bg-raw-gold/[0.04] blur-[100px]" />
 
@@ -28,7 +28,7 @@ export function FinalCTA({ onSignupClick }: FinalCTAProps) {
         <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
           <button
             onClick={onSignupClick}
-            className="rounded-full bg-raw-gold px-8 py-3.5 text-sm font-bold text-raw-black transition-all hover:bg-raw-gold/90 hover:shadow-lg hover:shadow-raw-gold/20"
+            className="rounded-full bg-raw-gold px-8 py-3.5 text-sm font-bold text-raw-ink transition-all hover:bg-raw-gold/90 hover:shadow-lg hover:shadow-raw-gold/20"
           >
             Create your anonymous account
           </button>
