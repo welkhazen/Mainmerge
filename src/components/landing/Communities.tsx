@@ -1,4 +1,5 @@
 import { GlareCard } from "@/components/ui/glare-card";
+import { WorldMap } from "@/components/ui/world-map";
 
 const communities = [
   {
@@ -21,6 +22,14 @@ const communities = [
   },
 ];
 
+const communityConnections = [
+  { start: { lat: 40.7128, lng: -74.006 }, end: { lat: 51.5074, lng: -0.1278 } },
+  { start: { lat: 51.5074, lng: -0.1278 }, end: { lat: 28.6139, lng: 77.209 } },
+  { start: { lat: 28.6139, lng: 77.209 }, end: { lat: 35.6762, lng: 139.6503 } },
+  { start: { lat: 35.6762, lng: 139.6503 }, end: { lat: -33.8688, lng: 151.2093 } },
+  { start: { lat: 40.7128, lng: -74.006 }, end: { lat: -22.9068, lng: -43.1729 } },
+  { start: { lat: 51.5074, lng: -0.1278 }, end: { lat: 1.3521, lng: 103.8198 } },
+];
 
 interface CommunitiesProps {
   onSignupClick: () => void;
@@ -28,7 +37,7 @@ interface CommunitiesProps {
 
 export function Communities({ onSignupClick }: CommunitiesProps) {
   return (
-    <section id="communities" className="relative py-28 px-6 bg-gradient-to-b from-transparent to-[rgba(255,255,255,0.01)]">
+    <section id="communities" className="relative py-28 px-6">
       <div className="mx-auto max-w-5xl">
         <div className="mb-14 text-center">
           <h2 className="font-display text-3xl tracking-wide text-raw-text sm:text-4xl">
@@ -58,36 +67,18 @@ export function Communities({ onSignupClick }: CommunitiesProps) {
         <div className="mt-10 text-center">
           <button
             onClick={onSignupClick}
-            className="rounded-full bg-raw-gold px-8 py-3.5 text-sm font-bold text-raw-black transition-all hover:bg-raw-gold/90 hover:shadow-lg hover:shadow-raw-gold/20"
+            className="rounded-full bg-raw-gold px-8 py-3.5 text-sm font-bold text-raw-ink transition-all hover:bg-raw-gold/90 hover:shadow-lg hover:shadow-raw-gold/20"
           >
             Join the Founding Community
           </button>
         </div>
 
-        {/* Communities worldwide */}
-        <div className="mt-16 flex flex-col items-center gap-8 md:flex-row md:items-center md:gap-12">
-          <div className="flex-1 text-center md:text-left">
-            <p className="font-display text-[10px] tracking-[0.3em] uppercase text-raw-silver/40">
-              Communities worldwide
-            </p>
-            <h3 className="mt-3 font-display text-2xl tracking-wide text-raw-text sm:text-3xl">
-              Where mind meets heart.
-            </h3>
-            <p className="mt-3 max-w-md text-sm leading-relaxed text-raw-silver/50">
-              Real connection starts when intellect and emotion align. raW communities
-              are built for people who think deeply and feel deeply — worldwide, 24/7.
-            </p>
-          </div>
-          <div className="flex-shrink-0">
-            <video
-              src="/brain-heart.mp4"
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="h-[280px] w-auto object-contain sm:h-[340px] md:h-[400px]"
-            />
-          </div>
+        {/* World Map showing community connections */}
+        <div className="mt-16">
+          <p className="mb-4 text-center font-display text-[10px] tracking-[0.3em] uppercase text-raw-silver/40">
+            Communities worldwide
+          </p>
+          <WorldMap dots={communityConnections} lineColor="#F1C42D" />
         </div>
       </div>
     </section>

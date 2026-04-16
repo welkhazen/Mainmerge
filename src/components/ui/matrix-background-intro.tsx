@@ -53,7 +53,7 @@ const MatrixBackgroundIntro = memo(function MatrixBackgroundIntro({
       context.fillStyle = "rgba(0, 0, 0, 0.05)";
       context.fillRect(0, 0, canvas.width, canvas.height);
 
-      context.fillStyle = "#F1C42D";
+      context.fillStyle = "#22c55e";
 
       for (let i = 0; i < drops.length; i += 1) {
         const glyph = CHAR_ARRAY[Math.floor(Math.random() * CHAR_ARRAY.length)];

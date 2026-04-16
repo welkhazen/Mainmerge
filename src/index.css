@@ -4,8 +4,20 @@
 
 @layer base {
   :root {
+    --raw-black: 8 8 8;
+    --raw-surface: 18 18 18;
+    --raw-silver: 217 217 217;
+    --raw-text: 235 235 235;
+    --raw-border: 26 26 26;
+    --raw-accent: 241 196 45;
+    --raw-ink: 12 12 12;
+    --raw-accent-shadow: 241 196 45;
     --background: 0 0% 3.1%;
     --foreground: 0 0% 92.2%;
+    --scrollbar-size: 10px;
+    --scrollbar-track: rgba(255, 255, 255, 0.04);
+    --scrollbar-thumb: linear-gradient(180deg, rgb(var(--raw-accent) / 0.88) 0%, rgb(var(--raw-accent-shadow) / 0.96) 100%);
+    --scrollbar-thumb-hover: linear-gradient(180deg, rgb(var(--raw-accent) / 0.98) 0%, rgb(var(--raw-accent-shadow) / 1) 100%);
 
     --card: 0 0% 7.1%;
     --card-foreground: 0 0% 92.2%;
@@ -43,6 +55,42 @@
     --sidebar-border: 0 0% 14%;
     --sidebar-ring: 47 88% 56%;
   }
+
+  html.theme-light {
+    --raw-black: 221 226 233;
+    --raw-surface: 236 240 245;
+    --raw-silver: 78 87 102;
+    --raw-text: 28 36 49;
+    --raw-border: 170 179 192;
+    --raw-ink: 26 34 46;
+    --background: 216 18% 92%;
+    --foreground: 221 24% 17%;
+    --card: 220 18% 95%;
+    --card-foreground: 221 24% 17%;
+    --popover: 220 18% 95%;
+    --popover-foreground: 221 24% 17%;
+    --primary-foreground: 224 30% 12%;
+    --secondary: 217 16% 90%;
+    --secondary-foreground: 221 18% 27%;
+    --muted: 217 14% 89%;
+    --muted-foreground: 219 12% 40%;
+    --accent-foreground: 224 30% 12%;
+    --border: 218 15% 78%;
+    --input: 218 15% 78%;
+    --sidebar-background: 218 16% 91%;
+    --sidebar-foreground: 221 24% 17%;
+    --sidebar-accent: 218 14% 87%;
+    --sidebar-accent-foreground: 221 24% 17%;
+    --sidebar-border: 218 15% 76%;
+    --scrollbar-track: rgba(20, 26, 38, 0.12);
+  }
+
+  html.theme-light .text-metallic {
+    background: linear-gradient(135deg, #0f172a 0%, #334155 45%, #64748b 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
 }
 
 @layer base {
@@ -52,63 +100,42 @@
 
   html {
     scroll-behavior: smooth;
+    scrollbar-gutter: stable;
   }
 
   body {
     @apply bg-background text-foreground antialiased;
     font-family: 'Inter', sans-serif;
-    background-color: hsl(0 0% 8%);
-    background-image:
-      radial-gradient(ellipse 80% 80% at 0% 0%, hsl(0 0% 85% / 0.15) 0%, transparent 50%),
-      radial-gradient(ellipse 60% 70% at 100% 0%, hsl(0 0% 80% / 0.12) 0%, transparent 45%),
-      radial-gradient(ellipse 100% 50% at 50% 120%, hsl(0 0% 70% / 0.08) 0%, transparent 50%),
-      radial-gradient(ellipse 80% 80% at 50% 50%, transparent 20%, hsl(0 0% 3% / 0.4) 80%),
-      radial-gradient(circle at center, hsl(0 0% 5%) 2.5px, transparent 2.5px),
-      linear-gradient(
-        160deg,
-        hsl(220 5% 18%) 0%,
-        hsl(220 8% 10%) 30%,
-        hsl(220 10% 6%) 60%,
-        hsl(220 8% 8%) 100%
-      );
-    background-size:
-      100% 100%,
-      100% 100%,
-      100% 100%,
-      100% 100%,
-      12px 12px,
-      100% 100%;
-    background-attachment: fixed;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: rgb(var(--raw-accent) / 0.72) var(--scrollbar-track);
+    transition: background-color 200ms ease, color 200ms ease;
   }
 }
 
-@layer components {
-  .section-shell {
-    @apply relative;
-  }
+*::-webkit-scrollbar {
+  width: var(--scrollbar-size);
+  height: var(--scrollbar-size);
+}
 
-  .section-shell::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 50%;
-    width: min(1100px, calc(100% - 3rem));
-    transform: translateX(-50%);
-    border-top: 1px solid hsl(0 0% 100% / 0.08);
-    pointer-events: none;
-  }
+*::-webkit-scrollbar-track {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.035) 0%, rgba(255, 255, 255, 0.015) 100%);
+  border-radius: 999px;
+}
 
-  .section-shell::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 50%;
-    width: min(1100px, calc(100% - 3rem));
-    height: 1px;
-    transform: translateX(-50%);
-    background: linear-gradient(90deg, transparent, hsl(47 88% 56% / 0.35), transparent);
-    pointer-events: none;
-  }
+*::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border: 2px solid rgb(var(--raw-black) / 0.82);
+  border-radius: 999px;
+  box-shadow: 0 0 0 1px rgb(var(--raw-accent) / 0.14), 0 8px 22px rgb(var(--raw-accent) / 0.18);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+
+*::-webkit-scrollbar-corner {
+  background: transparent;
 }
 
 /* Michroma heading utility */
@@ -118,11 +145,11 @@
 
 /* Gold glow effect */
 .glow-gold {
-  box-shadow: 0 0 20px rgba(241, 196, 45, 0.15), 0 0 60px rgba(241, 196, 45, 0.05);
+  box-shadow: 0 0 20px rgb(var(--raw-accent) / 0.15), 0 0 60px rgb(var(--raw-accent) / 0.05);
 }
 
 .glow-gold-sm {
-  box-shadow: 0 0 10px rgba(241, 196, 45, 0.1), 0 0 30px rgba(241, 196, 45, 0.03);
+  box-shadow: 0 0 10px rgb(var(--raw-accent) / 0.1), 0 0 30px rgb(var(--raw-accent) / 0.03);
 }
 
 /* Metallic gradient text */
