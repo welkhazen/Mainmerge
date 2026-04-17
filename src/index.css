@@ -4,8 +4,20 @@
 
 @layer base {
   :root {
+    --raw-black: 8 8 8;
+    --raw-surface: 18 18 18;
+    --raw-silver: 217 217 217;
+    --raw-text: 235 235 235;
+    --raw-border: 26 26 26;
+    --raw-accent: 241 196 45;
+    --raw-ink: 12 12 12;
+    --raw-accent-shadow: 241 196 45;
     --background: 0 0% 3.1%;
     --foreground: 0 0% 92.2%;
+    --scrollbar-size: 10px;
+    --scrollbar-track: rgba(255, 255, 255, 0.04);
+    --scrollbar-thumb: linear-gradient(180deg, rgb(var(--raw-accent) / 0.88) 0%, rgb(var(--raw-accent-shadow) / 0.96) 100%);
+    --scrollbar-thumb-hover: linear-gradient(180deg, rgb(var(--raw-accent) / 0.98) 0%, rgb(var(--raw-accent-shadow) / 1) 100%);
 
     --card: 0 0% 7.1%;
     --card-foreground: 0 0% 92.2%;
@@ -43,6 +55,42 @@
     --sidebar-border: 0 0% 14%;
     --sidebar-ring: 47 88% 56%;
   }
+
+  html.theme-light {
+    --raw-black: 191 199 212;
+    --raw-surface: 207 214 226;
+    --raw-silver: 66 76 92;
+    --raw-text: 22 30 43;
+    --raw-border: 142 153 170;
+    --raw-ink: 22 30 43;
+    --background: 216 14% 84%;
+    --foreground: 221 24% 17%;
+    --card: 216 16% 88%;
+    --card-foreground: 221 24% 17%;
+    --popover: 216 16% 88%;
+    --popover-foreground: 221 24% 17%;
+    --primary-foreground: 224 30% 12%;
+    --secondary: 215 14% 84%;
+    --secondary-foreground: 221 18% 27%;
+    --muted: 214 13% 82%;
+    --muted-foreground: 219 12% 40%;
+    --accent-foreground: 224 30% 12%;
+    --border: 215 13% 70%;
+    --input: 215 13% 70%;
+    --sidebar-background: 214 14% 83%;
+    --sidebar-foreground: 221 24% 17%;
+    --sidebar-accent: 214 12% 79%;
+    --sidebar-accent-foreground: 221 24% 17%;
+    --sidebar-border: 214 12% 68%;
+    --scrollbar-track: rgba(20, 26, 38, 0.12);
+  }
+
+  html.theme-light .text-metallic {
+    background: linear-gradient(135deg, #0f172a 0%, #334155 45%, #64748b 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
 }
 
 @layer base {
@@ -52,63 +100,42 @@
 
   html {
     scroll-behavior: smooth;
+    scrollbar-gutter: stable;
   }
 
   body {
     @apply bg-background text-foreground antialiased;
     font-family: 'Inter', sans-serif;
-    background-color: hsl(0 0% 8%);
-    background-image:
-      radial-gradient(ellipse 80% 80% at 0% 0%, hsl(0 0% 85% / 0.15) 0%, transparent 50%),
-      radial-gradient(ellipse 60% 70% at 100% 0%, hsl(0 0% 80% / 0.12) 0%, transparent 45%),
-      radial-gradient(ellipse 100% 50% at 50% 120%, hsl(0 0% 70% / 0.08) 0%, transparent 50%),
-      radial-gradient(ellipse 80% 80% at 50% 50%, transparent 20%, hsl(0 0% 3% / 0.4) 80%),
-      radial-gradient(circle at center, hsl(0 0% 5%) 2.5px, transparent 2.5px),
-      linear-gradient(
-        160deg,
-        hsl(220 5% 18%) 0%,
-        hsl(220 8% 10%) 30%,
-        hsl(220 10% 6%) 60%,
-        hsl(220 8% 8%) 100%
-      );
-    background-size:
-      100% 100%,
-      100% 100%,
-      100% 100%,
-      100% 100%,
-      12px 12px,
-      100% 100%;
-    background-attachment: fixed;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: rgb(var(--raw-accent) / 0.72) var(--scrollbar-track);
+    transition: background-color 200ms ease, color 200ms ease;
   }
 }
 
-@layer components {
-  .section-shell {
-    @apply relative;
-  }
+*::-webkit-scrollbar {
+  width: var(--scrollbar-size);
+  height: var(--scrollbar-size);
+}
 
-  .section-shell::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 50%;
-    width: min(1100px, calc(100% - 3rem));
-    transform: translateX(-50%);
-    border-top: 1px solid hsl(0 0% 100% / 0.08);
-    pointer-events: none;
-  }
+*::-webkit-scrollbar-track {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.035) 0%, rgba(255, 255, 255, 0.015) 100%);
+  border-radius: 999px;
+}
 
-  .section-shell::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 50%;
-    width: min(1100px, calc(100% - 3rem));
-    height: 1px;
-    transform: translateX(-50%);
-    background: linear-gradient(90deg, transparent, hsl(47 88% 56% / 0.35), transparent);
-    pointer-events: none;
-  }
+*::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border: 2px solid rgb(var(--raw-black) / 0.82);
+  border-radius: 999px;
+  box-shadow: 0 0 0 1px rgb(var(--raw-accent) / 0.14), 0 8px 22px rgb(var(--raw-accent) / 0.18);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+
+*::-webkit-scrollbar-corner {
+  background: transparent;
 }
 
 /* Michroma heading utility */
@@ -118,11 +145,11 @@
 
 /* Gold glow effect */
 .glow-gold {
-  box-shadow: 0 0 20px rgba(241, 196, 45, 0.15), 0 0 60px rgba(241, 196, 45, 0.05);
+  box-shadow: 0 0 20px rgb(var(--raw-accent) / 0.15), 0 0 60px rgb(var(--raw-accent) / 0.05);
 }
 
 .glow-gold-sm {
-  box-shadow: 0 0 10px rgba(241, 196, 45, 0.1), 0 0 30px rgba(241, 196, 45, 0.03);
+  box-shadow: 0 0 10px rgb(var(--raw-accent) / 0.1), 0 0 30px rgb(var(--raw-accent) / 0.03);
 }
 
 /* Metallic gradient text */
@@ -206,4 +233,107 @@
     0px 2px 3px -1px rgba(0, 0, 0, 0.1),
     0px 1px 0px 0px rgba(25, 28, 33, 0.02),
     0px 0px 0px 1px rgba(25, 28, 33, 0.08);
+}
+
+/* Enhanced perforated dashboard background (inspired by vibe-weaver) */
+@keyframes dashboard-dot-drift {
+  0%,
+  100% {
+    background-position: 0% 0%, 0px 0px, 0px 0px, 0% 0%;
+  }
+  25% {
+    background-position: 0% 0%, 2px 1px, -1px 2px, 0% 0%;
+  }
+  50% {
+    background-position: 0% 0%, 0px 2px, 2px 0px, 0% 0%;
+  }
+  75% {
+    background-position: 0% 0%, -1px 1px, 1px -1px, 0% 0%;
+  }
+}
+
+@keyframes dashboard-dot-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+
+.dashboard-enhanced-bg {
+  position: relative;
+  isolation: isolate;
+  --dashboard-hover-x: 50%;
+  --dashboard-hover-y: 32%;
+}
+
+.dashboard-enhanced-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 80% 80% at 50% 50%, transparent 30%, hsl(220 10% 6% / 0.4) 90%),
+    radial-gradient(circle at center, rgb(var(--raw-accent) / 0.2) 1px, transparent 1px),
+    radial-gradient(circle at center, hsl(220 8% 14%) 2.5px, transparent 2.5px),
+    linear-gradient(145deg, hsl(220 10% 10%) 0%, hsl(220 10% 7%) 50%, hsl(220 10% 9%) 100%);
+  background-size: 100% 100%, 8px 8px, 12px 12px, 100% 100%;
+  background-attachment: fixed;
+  animation: dashboard-dot-drift 20s ease-in-out infinite, dashboard-dot-pulse 8s ease-in-out infinite;
+}
+
+.dashboard-enhanced-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 220ms ease;
+  background:
+    radial-gradient(260px 260px at var(--dashboard-hover-x) var(--dashboard-hover-y), rgb(var(--raw-accent) / 0.28), transparent 65%),
+    radial-gradient(100px 100px at var(--dashboard-hover-x) var(--dashboard-hover-y), rgb(var(--raw-accent) / 0.22), transparent 70%);
+}
+
+@media (hover: hover) {
+  .dashboard-enhanced-bg:hover::after {
+    opacity: 1;
+  }
+}
+
+html.theme-light .dashboard-enhanced-bg::before {
+  background:
+    radial-gradient(ellipse 60% 45% at 18% 15%, rgb(var(--raw-accent) / 0.18) 0%, transparent 68%),
+    radial-gradient(ellipse 50% 40% at 76% 70%, rgb(var(--raw-accent) / 0.12) 0%, transparent 65%),
+    radial-gradient(ellipse 80% 80% at 50% 50%, transparent 28%, hsl(214 25% 82% / 0.34) 90%),
+    radial-gradient(circle at center, rgb(var(--raw-accent) / 0.25) 1px, transparent 1px),
+    radial-gradient(circle at center, hsl(214 14% 76%) 2.5px, transparent 2.5px),
+    linear-gradient(145deg, hsl(212 28% 90%) 0%, hsl(214 22% 87%) 50%, hsl(212 24% 89%) 100%);
+  background-size: 100% 100%, 100% 100%, 100% 100%, 8px 8px, 12px 12px, 100% 100%;
+}
+
+html.theme-light .dashboard-enhanced-bg .dashboard-content-shell {
+  border-radius: 1.6rem;
+  background: linear-gradient(145deg, rgb(255 255 255 / 0.32) 0%, rgb(242 247 255 / 0.18) 100%);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.45), 0 24px 48px rgb(35 44 60 / 0.14);
+}
+
+html.theme-light .dashboard-enhanced-bg [class*="bg-raw-surface/"] {
+  background-color: rgb(var(--raw-surface) / 0.8) !important;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.35), 0 10px 24px rgb(38 49 66 / 0.12);
+}
+
+html.theme-light .dashboard-enhanced-bg [class*="bg-raw-black/"] {
+  background-color: rgb(var(--raw-black) / 0.62) !important;
+}
+
+html.theme-light .dashboard-enhanced-bg [class*="border-raw-border/"] {
+  border-color: rgb(var(--raw-border) / 0.68) !important;
+}
+
+html.theme-light .dashboard-enhanced-bg [class*="text-raw-silver/"] {
+  color: rgb(var(--raw-silver) / 0.9) !important;
 }
