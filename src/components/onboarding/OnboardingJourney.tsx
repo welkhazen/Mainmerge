@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
-import { AvatarFigure, getAvatarTheme } from "@/components/ui/avatar-figure";
+import { AvatarFigure } from "@/components/ui/avatar-figure";
+import { AvatarPhoneHomeScreen } from "@/components/ui/avatar-phone-home-screen";
 import { PhoneMockup } from "@/components/ui/phone-mockup";
 import { SwipeablePollCard } from "./SwipeablePollCard";
 import type { OnboardingStep, Poll, User } from "@/store/useRawStore";
@@ -193,8 +194,6 @@ export function OnboardingJourney({
   };
 
   const currentStepIndex = STEP_ORDER.indexOf(onboardingStep);
-  const avatarTheme = getAvatarTheme(avatarLevel);
-
   return (
     <div className="min-h-screen bg-raw-black">
       <div className="mx-auto flex min-h-screen w-full max-w-5xl flex-col px-6 py-8 sm:py-10">
@@ -308,89 +307,7 @@ export function OnboardingJourney({
                 {/* Right: Phone Mockup */}
                 <div className="flex flex-col items-center justify-center">
                   <PhoneMockup>
-                    <div className="bg-gradient-to-b from-slate-50 to-slate-100 px-3 py-2 flex flex-col h-full overflow-hidden">
-                      {/* App Grid - 5 column iOS layout */}
-                      <div className="grid grid-cols-5 gap-3 px-2 py-3 flex-1 overflow-y-auto auto-rows-max">
-                        {/* FaceTime */}
-                        <div className="flex flex-col items-center gap-1.5">
-                          <div className="w-full aspect-square rounded-[22px] bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center text-4xl shadow-md">📹</div>
-                          <span className="text-[7px] text-slate-600 font-medium text-center line-clamp-1">FaceTime</span>
-                        </div>
-
-                        {/* Calendar */}
-                        <div className="flex flex-col items-center gap-1.5">
-                          <div className="w-full aspect-square rounded-[22px] bg-white border border-slate-200 flex items-center justify-center font-bold text-2xl shadow-md">23</div>
-                          <span className="text-[7px] text-slate-600 font-medium text-center line-clamp-1">Calendar</span>
-                        </div>
-
-                        {/* Camera */}
-                        <div className="flex flex-col items-center gap-1.5">
-                          <div className="w-full aspect-square rounded-[22px] bg-gradient-to-br from-amber-300 to-orange-500 flex items-center justify-center text-4xl shadow-md">📷</div>
-                          <span className="text-[7px] text-slate-600 font-medium text-center line-clamp-1">Camera</span>
-                        </div>
-
-                        {/* Clock */}
-                        <div className="flex flex-col items-center gap-1.5">
-                          <div className="w-full aspect-square rounded-[22px] bg-slate-800 flex items-center justify-center text-4xl shadow-md">🕐</div>
-                          <span className="text-[7px] text-slate-600 font-medium text-center line-clamp-1">Clock</span>
-                        </div>
-
-                        {/* Weather */}
-                        <div className="flex flex-col items-center gap-1.5">
-                          <div className="w-full aspect-square rounded-[22px] bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center text-3xl shadow-md">☁️</div>
-                          <span className="text-[7px] text-slate-600 font-medium text-center line-clamp-1">Weather</span>
-                        </div>
-
-                        {/* Notes */}
-                        <div className="flex flex-col items-center gap-1.5">
-                          <div className="w-full aspect-square rounded-[22px] bg-yellow-400 flex items-center justify-center text-4xl shadow-md">📝</div>
-                          <span className="text-[7px] text-slate-600 font-medium text-center line-clamp-1">Notes</span>
-                        </div>
-
-                        {/* Reminders */}
-                        <div className="flex flex-col items-center gap-1.5">
-                          <div className="w-full aspect-square rounded-[22px] bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center text-4xl shadow-md">✓</div>
-                          <span className="text-[7px] text-slate-600 font-medium text-center line-clamp-1">Reminders</span>
-                        </div>
-
-                        {/* Stocks */}
-                        <div className="flex flex-col items-center gap-1.5">
-                          <div className="w-full aspect-square rounded-[22px] bg-slate-900 flex items-center justify-center text-3xl shadow-md">📈</div>
-                          <span className="text-[7px] text-slate-600 font-medium text-center line-clamp-1">Stocks</span>
-                        </div>
-
-                        {/* Maps */}
-                        <div className="flex flex-col items-center gap-1.5">
-                          <div className="w-full aspect-square rounded-[22px] bg-gradient-to-br from-teal-400 to-green-500 flex items-center justify-center text-4xl shadow-md">🗺️</div>
-                          <span className="text-[7px] text-slate-600 font-medium text-center line-clamp-1">Maps</span>
-                        </div>
-
-                        {/* Your raW Avatar - 2x2 Featured App */}
-                        <div className="col-span-2 row-span-2 flex flex-col items-center justify-center gap-2">
-                          <div
-                            className="w-full aspect-square rounded-[28px] flex items-center justify-center shadow-xl border-2 border-white relative overflow-hidden"
-                            style={{ background: avatarTheme.bg }}
-                          >
-                            <div
-                              className="absolute inset-0 opacity-50 blur-2xl"
-                              style={{ background: avatarTheme.glow !== "none" ? avatarTheme.glow : avatarTheme.ring }}
-                            />
-                            <div className="relative z-10 scale-100">
-                              <AvatarFigure level={avatarLevel} size="xl" />
-                            </div>
-                          </div>
-                          <span className="text-[9px] text-slate-600 font-bold text-center">raW</span>
-                        </div>
-                      </div>
-
-                      {/* Dock */}
-                      <div className="mt-1 mx-1 bg-white/60 backdrop-blur rounded-2xl py-1 px-1 flex gap-1 justify-center shadow-lg border border-white/40">
-                        <div className="w-9 h-9 rounded-lg bg-green-500 flex items-center justify-center text-lg shadow">📞</div>
-                        <div className="w-9 h-9 rounded-lg bg-blue-500 flex items-center justify-center text-lg shadow">🧭</div>
-                        <div className="w-9 h-9 rounded-lg bg-green-600 flex items-center justify-center text-lg shadow">💬</div>
-                        <div className="w-9 h-9 rounded-lg bg-red-500 flex items-center justify-center text-lg shadow">🎵</div>
-                      </div>
-                    </div>
+                    <AvatarPhoneHomeScreen displayLevel={avatarLevel} />
                   </PhoneMockup>
                 </div>
               </div>
@@ -436,43 +353,76 @@ export function OnboardingJourney({
                           <p className="text-xs text-raw-silver/50 mb-4 font-medium uppercase tracking-[0.12em]">
                             Question {currentPollIndex + 1} of {onboardingPolls.length}
                           </p>
-                          <SwipeablePollCard
-                            id={poll.id}
-                            question={poll.question}
-                            options={poll.options}
-                            selectedOption={selectedOption}
-                            isAnswered={isAnswered}
-                            totalResponses={Object.values(pollStatData).reduce((a, b) => a + b, 0)}
-                            responseStats={pollStatData}
-                            comments={pollComments[poll.id] || []}
-                            onSwipe={(option) => {
-                              setPollSelections((prev) => ({ ...prev, [poll.id]: option }));
-                              onMarkPollAnswered(poll.id);
-                            }}
-                            onAddComment={(content) => {
-                              const newComment: Comment = {
-                                id: `${poll.id}-${Date.now()}`,
-                                author: user.username,
-                                avatar: avatarLevel,
-                                content,
-                                timestamp: new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }),
-                                likes: 0,
-                                replies: [],
-                                isAnonymous: Math.random() > 0.7,
-                              };
-                              setPollComments((prev) => ({
-                                ...prev,
-                                [poll.id]: [...(prev[poll.id] || []), newComment],
-                              }));
-                            }}
-                          />
+                          <div className="relative lg:px-12">
+                            <button
+                              onClick={() => setCurrentPollIndex(Math.max(0, currentPollIndex - 1))}
+                              disabled={currentPollIndex === 0}
+                              className="absolute left-0 top-1/2 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-raw-border/35 bg-raw-black/45 text-lg text-raw-silver/70 transition-all hover:border-raw-gold/35 hover:text-raw-gold/75 disabled:cursor-not-allowed disabled:opacity-35 lg:flex"
+                              aria-label="Previous poll"
+                            >
+                              ←
+                            </button>
+
+                            <button
+                              onClick={() => {
+                                if (currentPollIndex < onboardingPolls.length - 1) {
+                                  setCurrentPollIndex(Math.min(onboardingPolls.length - 1, currentPollIndex + 1));
+                                  return;
+                                }
+
+                                goToNextStep();
+                              }}
+                              disabled={currentPollIndex === onboardingPolls.length - 1 && !canContinueFromPolls}
+                              className={`absolute right-0 top-1/2 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border text-lg transition-all disabled:cursor-not-allowed disabled:opacity-35 lg:flex ${
+                                currentPollIndex < onboardingPolls.length - 1
+                                  ? "border-raw-border/35 bg-raw-black/45 text-raw-silver/70 hover:border-raw-gold/35 hover:text-raw-gold/75"
+                                  : "border-raw-gold/40 bg-raw-gold/15 text-raw-gold hover:bg-raw-gold/25"
+                              }`}
+                              aria-label={currentPollIndex < onboardingPolls.length - 1 ? "Next poll" : "Complete polls"}
+                            >
+                              →
+                            </button>
+
+                            <div>
+                              <SwipeablePollCard
+                                id={poll.id}
+                                question={poll.question}
+                                options={poll.options}
+                                selectedOption={selectedOption}
+                                isAnswered={isAnswered}
+                                totalResponses={Object.values(pollStatData).reduce((a, b) => a + b, 0)}
+                                responseStats={pollStatData}
+                                comments={pollComments[poll.id] || []}
+                                onSwipe={(option) => {
+                                  setPollSelections((prev) => ({ ...prev, [poll.id]: option }));
+                                  onMarkPollAnswered(poll.id);
+                                }}
+                                onAddComment={(content) => {
+                                  const newComment: Comment = {
+                                    id: `${poll.id}-${Date.now()}`,
+                                    author: user.username,
+                                    avatar: avatarLevel,
+                                    content,
+                                    timestamp: new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }),
+                                    likes: 0,
+                                    replies: [],
+                                    isAnonymous: Math.random() > 0.7,
+                                  };
+                                  setPollComments((prev) => ({
+                                    ...prev,
+                                    [poll.id]: [...(prev[poll.id] || []), newComment],
+                                  }));
+                                }}
+                              />
+                            </div>
+                          </div>
 
                           {/* Navigation Buttons */}
                           <div className="mt-6 flex gap-3">
                             <button
                               onClick={() => setCurrentPollIndex(Math.max(0, currentPollIndex - 1))}
                               disabled={currentPollIndex === 0}
-                              className="flex-1 rounded-lg border border-raw-border/30 bg-raw-black/20 px-4 py-2.5 text-xs font-medium text-raw-silver/70 hover:border-raw-gold/35 hover:text-raw-gold/75 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                              className="flex-1 rounded-lg border border-raw-border/30 bg-raw-black/20 px-4 py-2.5 text-xs font-medium text-raw-silver/70 transition-all hover:border-raw-gold/35 hover:text-raw-gold/75 disabled:cursor-not-allowed disabled:opacity-40 lg:hidden"
                             >
                               ← Previous
                             </button>
@@ -480,7 +430,7 @@ export function OnboardingJourney({
                             {currentPollIndex < onboardingPolls.length - 1 ? (
                               <button
                                 onClick={() => setCurrentPollIndex(Math.min(onboardingPolls.length - 1, currentPollIndex + 1))}
-                                className="flex-1 rounded-lg border border-raw-border/30 bg-raw-black/20 px-4 py-2.5 text-xs font-medium text-raw-silver/70 hover:border-raw-gold/35 hover:text-raw-gold/75 transition-all"
+                                className="flex-1 rounded-lg border border-raw-border/30 bg-raw-black/20 px-4 py-2.5 text-xs font-medium text-raw-silver/70 transition-all hover:border-raw-gold/35 hover:text-raw-gold/75 lg:hidden"
                               >
                                 Next →
                               </button>
@@ -488,7 +438,7 @@ export function OnboardingJourney({
                               <button
                                 onClick={goToNextStep}
                                 disabled={!canContinueFromPolls}
-                                className="flex-1 rounded-lg bg-raw-gold px-4 py-2.5 text-xs font-semibold text-raw-ink transition-opacity disabled:cursor-not-allowed disabled:opacity-40"
+                                className="flex-1 rounded-lg bg-raw-gold px-4 py-2.5 text-xs font-semibold text-raw-ink transition-opacity disabled:cursor-not-allowed disabled:opacity-40 lg:hidden"
                               >
                                 Complete →
                               </button>
