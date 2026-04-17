@@ -5,17 +5,33 @@ import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/providers/ThemeProvider";
 
-export function ThemeCustomizer() {
+interface ThemeCustomizerProps {
+  placement?: "floating" | "inline";
+  className?: string;
+}
+
+export function ThemeCustomizer({ placement = "floating", className }: ThemeCustomizerProps) {
   const { mode, accent, accentPresets, setMode, setAccent } = useTheme();
   const isLightMode = mode === "light";
+  const isFloating = placement === "floating";
 
   return (
-    <div className="pointer-events-none fixed bottom-5 right-5 z-[90]">
+    <div
+      className={cn(
+        isFloating ? "pointer-events-none fixed bottom-5 right-5 z-[90]" : "pointer-events-auto",
+        className,
+      )}
+    >
       <Popover>
         <PopoverTrigger asChild>
           <Button
             size="icon"
-            className="pointer-events-auto h-12 w-12 rounded-2xl border border-raw-border/40 bg-raw-surface/90 text-raw-gold shadow-[0_18px_45px_rgb(var(--raw-black)/0.22)] backdrop-blur-xl hover:bg-raw-surface"
+            className={cn(
+              "rounded-2xl border border-raw-border/40 bg-raw-surface/90 text-raw-gold backdrop-blur-xl hover:bg-raw-surface",
+              isFloating
+                ? "pointer-events-auto h-12 w-12 shadow-[0_18px_45px_rgb(var(--raw-black)/0.22)]"
+                : "h-10 w-10 shadow-[0_10px_24px_rgb(var(--raw-black)/0.2)]",
+            )}
           >
             <MonitorCog className="h-5 w-5" />
           </Button>

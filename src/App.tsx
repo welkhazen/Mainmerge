@@ -10,7 +10,6 @@ import Login from "./pages/Login";
 import Authenticate from "./pages/Authenticate";
 import Admin from "./pages/Admin";
 import { ThemeProvider } from "@/providers/ThemeProvider";
-import { ThemeCustomizer } from "@/components/theme/ThemeCustomizer";
 
 const queryClient = new QueryClient();
 
@@ -32,7 +31,6 @@ const App = () => (
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
-            <ThemeCustomizer />
           </BrowserRouter>
         </TooltipProvider>
       </QueryClientProvider>

@@ -1,4 +1,14 @@
-import { CheckCircle2, Flame, Lock, Trophy } from "lucide-react";
+import {
+  Calendar,
+  CheckCircle2,
+  Flame,
+  Lock,
+  MessageCircle,
+  Sparkles,
+  Star,
+  Trophy,
+  UserPlus,
+} from "lucide-react";
 
 interface DashboardChallengesProps {
   avatarLevel: number;
@@ -9,22 +19,68 @@ interface DashboardChallengesProps {
 
 const challengeDefinitions = [
   {
-    id: "truth-seeker",
-    title: "Truth Seeker",
-    description: "Answer 3 polls today",
-    target: 3,
+    id: "first-session",
+    title: "First Session",
+    description: "Book your first session with any instructor",
+    target: 1,
+    reward: 50,
+    accent: "from-sky-500/35 via-blue-500/20 to-transparent",
+    Icon: Calendar,
   },
   {
-    id: "pulse-rider",
-    title: "Pulse Rider",
-    description: "Answer 10 polls total",
-    target: 10,
+    id: "weekly-warrior",
+    title: "Weekly Warrior",
+    description: "Complete 3 sessions this week",
+    target: 3,
+    reward: 100,
+    accent: "from-amber-500/35 via-orange-500/20 to-transparent",
+    Icon: Trophy,
+    deadline: "5 days",
+  },
+  {
+    id: "voice-your-opinion",
+    title: "Voice Your Opinion",
+    description: "Answer 5 polls in The Cumulative Mind",
+    target: 5,
+    reward: 15,
+    accent: "from-violet-500/35 via-fuchsia-500/20 to-transparent",
+    Icon: MessageCircle,
+  },
+  {
+    id: "seven-day-streak",
+    title: "7-Day Streak",
+    description: "Open the app 7 days in a row",
+    target: 7,
+    reward: 50,
+    accent: "from-orange-500/35 via-rose-500/20 to-transparent",
+    Icon: Sparkles,
+  },
+  {
+    id: "review-master",
+    title: "Review Master",
+    description: "Leave a review after your session",
+    target: 1,
+    reward: 10,
+    accent: "from-indigo-500/35 via-violet-500/20 to-transparent",
+    Icon: Star,
+  },
+  {
+    id: "refer-a-friend",
+    title: "Refer a Friend",
+    description: "Invite a friend who books their first session",
+    target: 1,
+    reward: 75,
+    accent: "from-emerald-500/35 via-teal-500/20 to-transparent",
+    Icon: UserPlus,
   },
   {
     id: "signal-builder",
     title: "Signal Builder",
     description: "Reach avatar level 5",
     target: 5,
+    reward: 50,
+    accent: "from-cyan-500/35 via-sky-500/20 to-transparent",
+    Icon: Flame,
   },
 ];
 
@@ -35,73 +91,107 @@ export function DashboardChallenges({
   dailyPollLimit,
 }: DashboardChallengesProps) {
   const progressMap: Record<string, number> = {
-    "truth-seeker": dailyAnsweredCount,
-    "pulse-rider": pollsAnswered,
+    "first-session": pollsAnswered > 0 ? 1 : 0,
+    "weekly-warrior": Math.min(3, Math.floor(pollsAnswered / 3)),
+    "voice-your-opinion": dailyAnsweredCount,
+    "seven-day-streak": Math.min(7, Math.max(1, avatarLevel + 1)),
+    "review-master": pollsAnswered >= 8 ? 1 : 0,
+    "refer-a-friend": 0,
     "signal-builder": avatarLevel,
   };
 
+  const completedCount = challengeDefinitions.filter((challenge) => {
+    const current = progressMap[challenge.id] ?? 0;
+    return current >= challenge.target;
+  }).length;
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <header className="space-y-2">
         <h1 className="font-display text-2xl tracking-wide text-raw-text">Challenges</h1>
         <p className="text-sm text-raw-silver/45">
-          Complete short daily missions to grow faster and unlock identity rewards.
+          Complete high-impact missions to unlock rewards and level up your identity faster.
         </p>
       </header>
 
-      <section className="rounded-2xl border border-raw-border/35 bg-raw-black/35 p-5">
+      <section className="relative overflow-hidden rounded-2xl border border-raw-border/40 bg-raw-black/45 p-5">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_-30%,rgba(241,196,45,0.25),transparent_55%)]" />
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="text-xs uppercase tracking-[0.22em] text-raw-gold/65">Today</p>
+            <p className="text-xs uppercase tracking-[0.22em] text-raw-gold/65">Challenge Board</p>
             <p className="mt-1 text-sm text-raw-silver/70">
-              {dailyAnsweredCount}/{dailyPollLimit} daily polls answered
+              {completedCount}/{challengeDefinitions.length} completed today
             </p>
           </div>
-          <div className="inline-flex items-center gap-2 rounded-full border border-raw-gold/30 bg-raw-gold/[0.08] px-3 py-1.5 text-xs text-raw-gold/80">
-            <Flame className="h-3.5 w-3.5" /> 7 day streak
+          <div className="inline-flex items-center gap-2 rounded-full border border-raw-gold/30 bg-raw-gold/[0.08] px-3 py-1.5 text-xs text-raw-gold/85">
+            <Flame className="h-3.5 w-3.5" />
+            {dailyAnsweredCount}/{dailyPollLimit} daily polls answered
           </div>
         </div>
       </section>
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+      <div className="space-y-3">
         {challengeDefinitions.map((challenge) => {
           const current = progressMap[challenge.id] ?? 0;
           const done = current >= challenge.target;
-          const pct = Math.min(100, Math.round((current / challenge.target) * 100));
+          const pct = Math.min(100, Math.round((Math.min(current, challenge.target) / challenge.target) * 100));
+          const Icon = challenge.Icon;
 
           return (
             <article
               key={challenge.id}
-              className="rounded-2xl border border-raw-border/35 bg-gradient-to-br from-raw-surface/35 to-raw-black/40 p-5"
+              className="group relative overflow-hidden rounded-2xl border border-raw-border/45 bg-raw-black/45 p-4 sm:p-5"
             >
+              <div className={`pointer-events-none absolute inset-0 bg-gradient-to-r ${challenge.accent} opacity-60 transition-opacity duration-300 group-hover:opacity-90`} />
+              <div className="pointer-events-none absolute inset-0 opacity-35 [background-image:radial-gradient(rgba(255,255,255,0.15)_0.6px,transparent_0.6px)] [background-size:8px_8px]" />
+
               <div className="flex items-start justify-between gap-3">
-                <div>
-                  <p className="text-[10px] uppercase tracking-[0.18em] text-raw-silver/45">Challenge</p>
-                  <h2 className="mt-1 font-display text-lg text-raw-text">{challenge.title}</h2>
-                  <p className="mt-2 text-xs text-raw-silver/55">{challenge.description}</p>
+                <div className="relative flex items-start gap-3">
+                  <div className="rounded-xl border border-raw-border/45 bg-raw-black/55 p-2.5">
+                    <Icon className="h-4 w-4 text-raw-gold/80" />
+                  </div>
+                  <div>
+                    <h2 className="font-display text-sm text-raw-text sm:text-base">{challenge.title}</h2>
+                    <p className="mt-1 text-xs text-raw-silver/65 sm:text-sm">{challenge.description}</p>
+                  </div>
                 </div>
-                <div className="rounded-full border border-raw-border/40 bg-raw-black/35 p-2">
-                  {done ? (
-                    <CheckCircle2 className="h-4 w-4 text-emerald-300" />
-                  ) : (
-                    <Lock className="h-4 w-4 text-raw-silver/40" />
-                  )}
+
+                <div className="relative inline-flex items-center gap-1 rounded-full border border-raw-border/45 bg-raw-black/55 px-3 py-1 text-sm text-raw-text">
+                  <Flame className="h-3.5 w-3.5 text-raw-gold/80" />
+                  +{challenge.reward}
                 </div>
               </div>
 
-              <div className="mt-4 h-2 overflow-hidden rounded-full bg-raw-border/30">
+              <div className="relative mt-4 h-2 overflow-hidden rounded-full bg-raw-border/35">
                 <div
-                  className="h-full rounded-full bg-gradient-to-r from-raw-gold/65 to-raw-gold transition-all"
+                  className={`h-full rounded-full transition-all duration-500 ${done ? "bg-gradient-to-r from-emerald-400/90 to-emerald-300" : "bg-gradient-to-r from-raw-gold/70 to-raw-gold"}`}
                   style={{ width: `${Math.max(6, pct)}%` }}
                 />
               </div>
-              <p className="mt-2 text-[11px] text-raw-silver/50">
-                {Math.min(current, challenge.target)}/{challenge.target} complete
-              </p>
 
-              <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-raw-border/35 px-3 py-1 text-[11px] text-raw-silver/55">
-                <Trophy className="h-3.5 w-3.5 text-raw-gold/60" />
-                Reward: +{challenge.target * 10} XP
+              <div className="mt-2 flex items-center justify-between gap-3 text-[11px] text-raw-silver/60 sm:text-xs">
+                <p>
+                {Math.min(current, challenge.target)}/{challenge.target} complete
+                </p>
+                {challenge.deadline ? <p className="text-orange-300/85">{challenge.deadline}</p> : null}
+              </div>
+
+              <div className="relative mt-4 flex items-center justify-between gap-3">
+                <div className="inline-flex items-center gap-2 rounded-full border border-raw-border/40 bg-raw-black/45 px-3 py-1 text-[11px] text-raw-silver/70">
+                  {done ? <CheckCircle2 className="h-3.5 w-3.5 text-emerald-300" /> : <Lock className="h-3.5 w-3.5 text-raw-silver/55" />}
+                  {done ? "Completed" : "In Progress"}
+                </div>
+
+                {done ? (
+                  <button className="rounded-full border border-emerald-300/35 bg-emerald-400/20 px-4 py-1.5 text-xs font-medium text-emerald-100 transition hover:bg-emerald-400/30">
+                    Claim Reward
+                  </button>
+                ) : (
+                  <div className="inline-flex items-center gap-1 text-[11px] text-raw-silver/55">
+                    <Trophy className="h-3.5 w-3.5 text-raw-gold/65" />
+                    Reward pending
+                  </div>
+                )}
               </div>
             </article>
           );

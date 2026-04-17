@@ -53,6 +53,7 @@ export function DashboardSidebar({
   const location = useLocation();
   const [communities, setCommunities] = useState<PersistedCommunityRecord[]>(() => readCommunityChats());
   const [totalJoinedUnread, setTotalJoinedUnread] = useState(0);
+  const [hoveredNavItem, setHoveredNavItem] = useState<DashboardTab | "home" | null>(null);
 
   useEffect(() => {
     const reloadCommunities = () => {
@@ -141,12 +142,16 @@ export function DashboardSidebar({
             const isActive =
               (item.tab === "home" && isHome) ||
               (item.tab !== "home" && activeTab === item.tab && !isHome);
+            const isHovered = hoveredNavItem === item.tab;
+            const shouldShrink = hoveredNavItem !== null && !isHovered;
             const Icon = item.icon;
             return (
               <button
                 key={item.label}
                 title={item.label}
                 aria-label={item.label}
+                onMouseEnter={() => setHoveredNavItem(item.tab)}
+                onMouseLeave={() => setHoveredNavItem(null)}
                 onClick={() => {
                   if (item.tab === "home") {
                     onHomeClick();
@@ -154,10 +159,16 @@ export function DashboardSidebar({
                     onTabChange(item.tab as DashboardTab);
                   }
                 }}
-                className={`group relative flex h-10 w-10 items-center justify-center rounded-full border text-sm transition-all duration-200 ease-out backdrop-blur-md ${
+                className={`group relative flex h-10 w-10 items-center justify-center rounded-full border text-sm transition-all duration-200 ease-out backdrop-blur-md transform-gpu ${
                   isActive
                     ? "border-violet-300/35 bg-[radial-gradient(circle_at_35%_30%,rgba(255,255,255,0.2),rgba(130,145,255,0.12)_45%,rgba(20,26,42,0.68)_100%)] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.22),0_10px_24px_rgba(108,124,255,0.4),0_0_0_1px_rgba(153,166,255,0.18)]"
                     : "border-white/12 bg-white/[0.07] text-slate-400 shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_8px_18px_rgba(6,10,24,0.35)] hover:scale-105 hover:border-violet-300/25 hover:text-slate-100 hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_10px_24px_rgba(108,124,255,0.34),0_0_16px_rgba(126,141,255,0.32)]"
+                } ${
+                  isHovered
+                    ? "z-10 scale-[1.18]"
+                    : shouldShrink
+                      ? "scale-[0.86] opacity-70"
+                      : "scale-100"
                 }`}
               >
                 <Icon className="h-4 w-4 shrink-0" />

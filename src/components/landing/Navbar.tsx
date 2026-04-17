@@ -1,3 +1,5 @@
+import { ThemeCustomizer } from "@/components/theme/ThemeCustomizer";
+
 interface NavbarProps {
   isLoggedIn: boolean;
   username?: string;
@@ -32,12 +34,15 @@ export function Navbar({ isLoggedIn, username, onSignupClick }: NavbarProps) {
             <span className="text-sm text-raw-silver/80">{username}</span>
           </div>
         ) : (
-          <button
-            onClick={onSignupClick}
-            className="rounded-full bg-raw-gold px-5 py-2 text-sm font-semibold text-raw-ink transition-all hover:bg-raw-gold/90 hover:shadow-lg hover:shadow-raw-gold/20"
-          >
-            Join Free
-          </button>
+          <div className="flex items-center gap-3">
+            <ThemeCustomizer placement="inline" />
+            <button
+              onClick={onSignupClick}
+              className="rounded-full bg-raw-gold px-5 py-2 text-sm font-semibold text-raw-ink transition-all hover:bg-raw-gold/90 hover:shadow-lg hover:shadow-raw-gold/20"
+            >
+              Join Free
+            </button>
+          </div>
         )}
       </div>
     </nav>
