@@ -129,6 +129,17 @@ export function DashboardHome({
             icon={Zap}
             onNavigate={onNavigate}
           />
+        </div>
+
+        <div className="grid grid-cols-1 gap-3 lg:col-span-1">
+          <div className="dashboard-activity-card rounded-2xl border border-raw-border/40 bg-raw-surface/30 p-4 flex items-center justify-between gap-4">
+            <div>
+              <p className="text-sm font-medium text-raw-text">Consecutive Days</p>
+              <p className="mt-1 text-xs text-raw-silver/35">The flame of consistency burns bright.</p>
+            </div>
+            <p className="text-2xl font-bold text-raw-gold/80">{consecutiveDays}</p>
+          </div>
+
           <ActivityCard
             title="Community Check-in"
             desc="Say something real in your community"
@@ -137,14 +148,6 @@ export function DashboardHome({
             icon={MessageCircle}
             onNavigate={onNavigate}
           />
-        </div>
-
-        <div className="dashboard-activity-card rounded-2xl border border-raw-border/40 bg-raw-surface/30 p-4 lg:col-span-1 flex items-center justify-between gap-4">
-          <div>
-            <p className="text-sm font-medium text-raw-text">Consecutive Days</p>
-            <p className="mt-1 text-xs text-raw-silver/35">The flame of consistency burns bright.</p>
-          </div>
-          <p className="text-2xl font-bold text-raw-gold/80">{consecutiveDays}</p>
         </div>
       </div>
 

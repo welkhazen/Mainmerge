@@ -85,6 +85,14 @@ const INITIAL_COMMUNITY_SETTINGS_DRAFT: CommunitySettingsDraft = {
   logoUrl: "",
 };
 
+const FEATURED_DIRECTORY_COMMUNITY_IDS = ["lnt", "sic", "mw"] as const;
+
+const COMMUNITY_COVER_IMAGES: Record<string, string> = {
+  lnt: "https://images.unsplash.com/photo-1518895949257-7621c3c786d7?auto=format&fit=crop&w=1200&q=80",
+  sic: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=1200&q=80",
+  mw: "https://images.unsplash.com/photo-1493836512294-502baa1986e2?auto=format&fit=crop&w=1200&q=80",
+};
+
 export function DashboardCommunities({
   user,
   activeCommunityId = null,
@@ -168,6 +176,11 @@ export function DashboardCommunities({
 
       return groups;
     }, [filteredMessages]);
+
+    const directoryCommunities = useMemo(() => {
+      const featuredSet = new Set(FEATURED_DIRECTORY_COMMUNITY_IDS);
+      return communities.filter((community) => featuredSet.has(community.id as (typeof FEATURED_DIRECTORY_COMMUNITY_IDS)[number]));
+    }, [communities]);
 
     useEffect(() => {
       setSearchQuery("");
@@ -504,13 +517,27 @@ export function DashboardCommunities({
         )}
 
         <div className="grid gap-5 lg:grid-cols-2 xl:grid-cols-3">
-          {communities.map((community) => {
+          {directoryCommunities.map((community) => {
             const joined = community.members.some((member) => member.userId === user.id);
             const previewMessage = community.messages.at(-1);
             const communityUnreadCount = joined ? countUnreadMessages(community, user.id) : 0;
+            const coverImage = COMMUNITY_COVER_IMAGES[community.id] ?? community.logoUrl;
 
             return (
-              <div key={community.id} className="rounded-3xl border border-raw-border/30 bg-raw-surface/30 p-5">
+              <div key={community.id} className="overflow-hidden rounded-3xl border border-raw-border/30 bg-raw-surface/35 shadow-[0_16px_36px_rgba(0,0,0,0.28)]">
+                <div className="relative h-28 overflow-hidden border-b border-raw-border/25">
+                  {coverImage ? (
+                    <img src={coverImage} alt={`${community.title} cover`} className="h-full w-full object-cover" loading="lazy" />
+                  ) : (
+                    <div className="h-full w-full bg-gradient-to-br from-raw-gold/12 via-raw-surface/30 to-raw-black/70" />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-raw-black/85 via-raw-black/30 to-transparent" />
+                  <div className="absolute bottom-3 right-3 rounded-full border border-raw-border/40 bg-raw-black/60 px-2.5 py-1 text-[10px] text-raw-silver/70 backdrop-blur-sm">
+                    {joined ? "Joined" : "Not joined"}
+                  </div>
+                </div>
+
+                <div className="p-5">
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-3">
                     <CommunityBadge abbr={community.abbr} title={community.title} logoUrl={community.logoUrl} />
@@ -525,9 +552,6 @@ export function DashboardCommunities({
                       </div>
                       <p className="mt-1 text-[10px] uppercase tracking-[0.16em] text-raw-gold/65">{community.status}</p>
                     </div>
-                  </div>
-                  <div className="rounded-full border border-raw-border/30 px-2.5 py-1 text-[10px] text-raw-silver/45">
-                    {joined ? "Joined" : "Not joined"}
                   </div>
                 </div>
 
@@ -563,6 +587,7 @@ export function DashboardCommunities({
                       Fast Join
                     </Button>
                   )}
+                </div>
                 </div>
               </div>
             );

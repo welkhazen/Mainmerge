@@ -12,6 +12,7 @@ interface WheelOfFortuneProps {
   prizes: WheelPrize[];
   onSpinEnd: (prize: WheelPrize) => void;
   disabled?: boolean;
+  prizeWeights?: Partial<Record<string, number>>;
 }
 
 const SPIN_DURATION = 5000;
@@ -61,7 +62,7 @@ function getLabelLines(label: string): string[] {
   return [parts.slice(0, midpoint).join(" "), parts.slice(midpoint).join(" ")];
 }
 
-export function WheelOfFortune({ prizes, onSpinEnd, disabled = false }: WheelOfFortuneProps) {
+export function WheelOfFortune({ prizes, onSpinEnd, disabled = false, prizeWeights }: WheelOfFortuneProps) {
   const [rotation, setRotation] = useState(0);
   const [isSpinning, setIsSpinning] = useState(false);
   const currentPrizeRef = useRef<WheelPrize | null>(null);
@@ -77,7 +78,29 @@ export function WheelOfFortune({ prizes, onSpinEnd, disabled = false }: WheelOfF
 
     setIsSpinning(true);
 
-    const prizeIndex = Math.floor(Math.random() * total);
+    let prizeIndex = Math.floor(Math.random() * total);
+
+    if (prizeWeights) {
+      const weightedEntries = prizes
+        .map((prize, index) => ({ index, weight: Math.max(0, prizeWeights[prize.id] ?? 0) }))
+        .filter((entry) => entry.weight > 0);
+
+      if (weightedEntries.length > 0) {
+        const totalWeight = weightedEntries.reduce((sum, entry) => sum + entry.weight, 0);
+
+        if (totalWeight > 0) {
+          let cursor = Math.random() * totalWeight;
+          for (const entry of weightedEntries) {
+            cursor -= entry.weight;
+            if (cursor <= 0) {
+              prizeIndex = entry.index;
+              break;
+            }
+          }
+        }
+      }
+    }
+
     currentPrizeRef.current = prizes[prizeIndex];
 
     const segmentAngle = 360 / total;
@@ -86,7 +109,7 @@ export function WheelOfFortune({ prizes, onSpinEnd, disabled = false }: WheelOfF
     const finalRotation = rotation + fullRotations + targetOffset;
 
     setRotation(finalRotation);
-  }, [disabled, isSpinning, prizes, rotation, total]);
+  }, [disabled, isSpinning, prizeWeights, prizes, rotation, total]);
 
   useEffect(() => {
     if (!isSpinning) {

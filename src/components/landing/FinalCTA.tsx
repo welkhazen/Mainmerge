@@ -44,12 +44,12 @@ export function FinalCTA({ onSignupClick }: FinalCTAProps) {
   };
 
   return (
-    <section className="relative py-32 px-6">
+    <section className="relative px-4 py-24 sm:px-6 sm:py-28 md:py-32">
       {/* Subtle glow */}
       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[500px] h-[300px] rounded-full bg-raw-gold/[0.04] blur-[100px]" />
 
       <div className="relative mx-auto max-w-2xl text-center">
-        <h2 className="font-display text-3xl tracking-wide text-raw-text sm:text-4xl">
+        <h2 className="font-display text-2xl tracking-wide text-raw-text sm:text-3xl md:text-4xl">
           Join the Community Owner Early Access
         </h2>
         <div className="mt-4 flex items-center justify-center">
@@ -59,11 +59,11 @@ export function FinalCTA({ onSignupClick }: FinalCTAProps) {
             className="!text-3xl sm:!text-4xl"
           />
         </div>
-        <p className="mt-6 text-base text-raw-silver/50 max-w-lg mx-auto">
+        <p className="mx-auto mt-6 max-w-lg text-sm text-raw-silver/65 sm:text-base sm:text-raw-silver/50">
           Fill out this form to request early access as a community owner. We will follow up with next steps.
         </p>
 
-        <form onSubmit={handleEarlyAccessSubmit} className="mx-auto mt-10 max-w-xl rounded-2xl border border-raw-border/50 bg-raw-surface/70 p-5 text-left backdrop-blur-sm sm:p-6">
+        <form onSubmit={handleEarlyAccessSubmit} className="mx-auto mt-8 max-w-xl rounded-2xl border border-raw-border/50 bg-raw-surface/70 p-4 text-left backdrop-blur-sm sm:mt-10 sm:p-6">
           <div className="grid gap-4">
             <div>
               <label className="mb-1.5 block text-xs uppercase tracking-[0.2em] text-raw-silver/45">Your name</label>
@@ -122,7 +122,7 @@ export function FinalCTA({ onSignupClick }: FinalCTAProps) {
           </div>
         </form>
 
-        <div className="mt-6 flex flex-wrap items-center justify-center gap-4">
+        <div className="mt-6 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
           <button
             onClick={onSignupClick}
             className="rounded-full border border-raw-border px-8 py-3.5 text-sm font-medium text-raw-silver/80 transition-all hover:border-raw-silver/30 hover:text-raw-text"
@@ -131,37 +131,37 @@ export function FinalCTA({ onSignupClick }: FinalCTAProps) {
           </button>
           <a
             href="#communities"
-            className="rounded-full border border-raw-border px-8 py-3.5 text-sm font-medium text-raw-silver/80 transition-all hover:border-raw-silver/30 hover:text-raw-text"
+            className="rounded-full border border-raw-border px-8 py-3.5 text-center text-sm font-medium text-raw-silver/80 transition-all hover:border-raw-silver/30 hover:text-raw-text"
           >
             Explore communities
           </a>
         </div>
 
-        <p className="mt-5 text-xs text-raw-silver/40">We only use this info for early-access onboarding.</p>
+        <p className="mt-5 text-xs text-raw-silver/50">We only use this info for early-access onboarding.</p>
       </div>
 
       {/* Footer */}
-      <div className="mt-28 border-t border-raw-border/30 pt-8">
-        <div className="mx-auto max-w-6xl flex flex-col items-center justify-between gap-4 px-6 sm:flex-row">
-          <p className="font-display text-sm tracking-[0.2em] text-raw-silver/30">
+      <div className="mt-20 border-t border-raw-border/30 pt-8 sm:mt-24 md:mt-28">
+        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-5 px-1 sm:flex-row sm:px-6">
+          <p className="font-display text-sm tracking-[0.2em] text-raw-silver/45">
             ra<span className="text-raw-gold/50">W</span>
           </p>
-          <div className="flex flex-wrap items-center justify-center gap-5 text-xs text-raw-silver/35 sm:justify-end">
+          <div className="flex flex-col items-center justify-center gap-2 text-center text-sm text-raw-silver/65 sm:items-end sm:text-right">
             <a
               href={whatsAppHref}
               target="_blank"
               rel="noreferrer"
-              className="transition-colors hover:text-raw-silver"
+              className="transition-colors hover:text-raw-text"
             >
               WhatsApp: {supportWhatsAppNumber}
             </a>
             <a
               href={`mailto:${supportEmail}`}
-              className="transition-colors hover:text-raw-silver"
+              className="transition-colors hover:text-raw-text"
             >
               Email: {supportEmail}
             </a>
-            <span className="text-raw-silver/20">theartofraw.me</span>
+            <span className="text-xs text-raw-silver/35">theartofraw.me</span>
           </div>
         </div>
       </div>

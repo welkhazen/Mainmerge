@@ -62,6 +62,7 @@ interface UpdateCommunityPresentationInput {
 
 const COMMUNITY_CHATS_STORAGE_KEY = "raw.community-chats.v1";
 const ONLINE_WINDOW_MINUTES = 15;
+const RETIRED_COMMUNITY_IDS = new Set(["sg"]);
 
 function toTimestamp(value?: string): number {
   if (!value) {
@@ -255,25 +256,6 @@ function buildDefaultCommunities(): PersistedCommunityRecord[] {
         createSeedMessage("mw", "m3", "still_water", "Walked without headphones today. My nervous system needed the silence.", "2026-04-13T23:54:00.000Z"),
       ],
     },
-    {
-      id: "sg",
-      abbr: "SG",
-      title: "Signal Guild",
-      description: "Culture, tech, money, and current events discussed without noise, clout, or recycled takes.",
-      topic: "Which signal do you think people are missing right now?",
-      status: "Active",
-      createdAt: "2026-04-01T00:00:00.000Z",
-      members: [
-        createSeedMember("signal_hunter", "2026-04-13T22:58:00.000Z", true),
-        createSeedMember("market_echo", "2026-04-13T23:47:00.000Z", false),
-        createSeedMember("frictionless", "2026-04-13T23:56:00.000Z", true),
-      ],
-      messages: [
-        createSeedMessage("sg", "g1", "signal_hunter", "Everyone is watching headlines. Nobody is watching behavioral shift.", "2026-04-13T23:27:00.000Z", true),
-        createSeedMessage("sg", "g2", "market_echo", "Trust is becoming the rarest product online.", "2026-04-13T23:47:00.000Z"),
-        createSeedMessage("sg", "g3", "frictionless", "The next big products will feel smaller, quieter, and more intimate.", "2026-04-13T23:56:00.000Z"),
-      ],
-    },
   ];
 }
 
@@ -293,7 +275,9 @@ function readStoredCommunities(): PersistedCommunityRecord[] {
       return [];
     }
 
-    return parsed.map(normalizeCommunity).filter((community): community is PersistedCommunityRecord => community !== null);
+    return parsed
+      .map(normalizeCommunity)
+      .filter((community): community is PersistedCommunityRecord => community !== null && !RETIRED_COMMUNITY_IDS.has(community.id));
   } catch {
     return [];
   }
@@ -315,7 +299,8 @@ export function writeCommunityChats(communities: PersistedCommunityRecord[]): vo
 
 export function readCommunityChats(): PersistedCommunityRecord[] {
   const storedCommunities = readStoredCommunities();
-  const communities = storedCommunities.length > 0 ? mergeWithDefaults(storedCommunities) : buildDefaultCommunities();
+  const communities = (storedCommunities.length > 0 ? mergeWithDefaults(storedCommunities) : buildDefaultCommunities())
+    .filter((community) => !RETIRED_COMMUNITY_IDS.has(community.id));
 
   if (typeof window !== "undefined") {
     writeCommunityChats(communities);

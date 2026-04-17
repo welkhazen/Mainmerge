@@ -28,19 +28,34 @@ const PRIZES: WheelPrize[] = [
   { id: "xp-100b", label: "100 XP", shortLabel: "100 XP", color: "#0e0e0e", textColor: "#F1C42D" },
 ];
 
-const prizeMessages: Record<string, { title: string; desc: string; icon: typeof Gift }> = {
-  "xp-50": { title: "50 XP Earned!", desc: "Every bit counts on your journey.", icon: Zap },
-  "xp-50b": { title: "50 XP Earned!", desc: "Every bit counts on your journey.", icon: Zap },
-  "xp-100": { title: "100 XP Earned!", desc: "Solid spin! Your avatar grows stronger.", icon: Star },
-  "xp-100b": { title: "100 XP Earned!", desc: "Solid spin! Your avatar grows stronger.", icon: Star },
-  "xp-200": { title: "200 XP Earned!", desc: "Big win! You're leveling up fast.", icon: Sparkles },
-  "xp-500": { title: "500 XP Jackpot!", desc: "Incredible! The wheel favors the bold.", icon: Gift },
-  streak: { title: "Streak Shield!", desc: "Your streak is protected for one missed day.", icon: Sparkles },
-  theme: { title: "Avatar Theme Unlocked!", desc: "A new look awaits you in the Marketplace.", icon: Gift },
-  badge: { title: "Community Badge!", desc: "Show it off in your communities.", icon: Star },
-  "try-1": { title: "Not This Time", desc: "The wheel will turn again tomorrow.", icon: Clock },
-  "try-2": { title: "Not This Time", desc: "The wheel will turn again tomorrow.", icon: Clock },
-  "try-3": { title: "Not This Time", desc: "The wheel will turn again tomorrow.", icon: Clock },
+const PRIZE_WEIGHTS: Partial<Record<string, number>> = {
+  "xp-500": 0.01,
+  "try-1": 0.17,
+  "try-2": 0.17,
+  "try-3": 0.17,
+  "xp-50": 0.12,
+  "xp-50b": 0.12,
+  "xp-100": 0.08,
+  "xp-100b": 0.08,
+  "xp-200": 0.04,
+  streak: 0.02,
+  theme: 0.015,
+  badge: 0.015,
+};
+
+const prizeMessages: Record<string, { title: string; desc: string; icon: typeof Gift; poolLabel: string; rarity: string; poolColor: string }> = {
+  "xp-50": { title: "50 XP Earned!", desc: "Every bit counts on your journey.", icon: Zap, poolLabel: "50 XP", rarity: "Common", poolColor: "text-raw-silver/50" },
+  "xp-50b": { title: "50 XP Earned!", desc: "Every bit counts on your journey.", icon: Zap, poolLabel: "50 XP", rarity: "Common", poolColor: "text-raw-silver/50" },
+  "xp-100": { title: "100 XP Earned!", desc: "Solid spin! Your avatar grows stronger.", icon: Star, poolLabel: "100 XP", rarity: "Common", poolColor: "text-raw-gold/60" },
+  "xp-100b": { title: "100 XP Earned!", desc: "Solid spin! Your avatar grows stronger.", icon: Star, poolLabel: "100 XP", rarity: "Common", poolColor: "text-raw-gold/60" },
+  "xp-200": { title: "200 XP Earned!", desc: "Big win! You're leveling up fast.", icon: Sparkles, poolLabel: "200 XP", rarity: "Rare", poolColor: "text-raw-gold/80" },
+  "xp-500": { title: "500 XP Jackpot!", desc: "Incredible! The wheel favors the bold.", icon: Gift, poolLabel: "500 XP", rarity: "Jackpot", poolColor: "text-raw-gold" },
+  streak: { title: "Streak Shield!", desc: "Your streak is protected for one missed day.", icon: Sparkles, poolLabel: "Streak Shield", rarity: "Rare", poolColor: "text-raw-silver/70" },
+  theme: { title: "Avatar Theme Unlocked!", desc: "A new look awaits you in the Marketplace.", icon: Gift, poolLabel: "Avatar Theme", rarity: "Rare", poolColor: "text-raw-gold/80" },
+  badge: { title: "Community Badge!", desc: "Show it off in your communities.", icon: Star, poolLabel: "Badge", rarity: "Uncommon", poolColor: "text-raw-silver/60" },
+  "try-1": { title: "Not This Time", desc: "The wheel will turn again tomorrow.", icon: Clock, poolLabel: "Try Again", rarity: "Miss", poolColor: "text-raw-silver/45" },
+  "try-2": { title: "Not This Time", desc: "The wheel will turn again tomorrow.", icon: Clock, poolLabel: "Try Again", rarity: "Miss", poolColor: "text-raw-silver/45" },
+  "try-3": { title: "Not This Time", desc: "The wheel will turn again tomorrow.", icon: Clock, poolLabel: "Try Again", rarity: "Miss", poolColor: "text-raw-silver/45" },
 };
 
 function getTodayKey() {
@@ -103,6 +118,13 @@ export function DashboardDailySpin({ userId }: DashboardDailySpinProps) {
   const ModalIcon = modalMessage?.icon ?? Gift;
   const isWin = prizeModal ? !prizeModal.id.startsWith("try") : false;
 
+  const prizePoolItems = useMemo(() => {
+    const uniqueIds = Array.from(new Set(PRIZES.map((prize) => prize.id).filter((id) => !id.startsWith("try"))));
+    return uniqueIds
+      .map((id) => ({ id, ...prizeMessages[id] }))
+      .filter((item) => Boolean(item.poolLabel));
+  }, []);
+
   return (
     <div className="space-y-8">
       <div className="text-center">
@@ -117,7 +139,7 @@ export function DashboardDailySpin({ userId }: DashboardDailySpinProps) {
 
       <div className="rounded-[2rem] border border-raw-border/35 bg-[radial-gradient(circle_at_50%_10%,rgba(241,196,45,0.08),rgba(0,0,0,0.8)_48%)] p-6 sm:p-8">
         <div className="flex justify-center pt-2">
-          <WheelOfFortune prizes={PRIZES} onSpinEnd={handleSpinEnd} disabled={hasSpunToday} />
+          <WheelOfFortune prizes={PRIZES} onSpinEnd={handleSpinEnd} disabled={hasSpunToday} prizeWeights={PRIZE_WEIGHTS} />
         </div>
       </div>
 
@@ -132,17 +154,9 @@ export function DashboardDailySpin({ userId }: DashboardDailySpinProps) {
       <div className="mx-auto max-w-lg">
         <h2 className="mb-4 text-center font-display text-sm tracking-wide text-raw-text">Prize Pool</h2>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-          {[
-            { label: "50 XP", rarity: "Common", color: "text-raw-silver/50" },
-            { label: "100 XP", rarity: "Common", color: "text-raw-gold/60" },
-            { label: "200 XP", rarity: "Rare", color: "text-raw-gold/80" },
-            { label: "500 XP", rarity: "Jackpot", color: "text-raw-gold" },
-            { label: "Streak Shield", rarity: "Rare", color: "text-raw-silver/70" },
-            { label: "Avatar Theme", rarity: "Rare", color: "text-raw-gold/80" },
-            { label: "Badge", rarity: "Uncommon", color: "text-raw-silver/60" },
-          ].map((prize) => (
-            <div key={prize.label} className="rounded-xl border border-raw-border/30 bg-raw-surface/30 p-3 text-center">
-              <p className={`text-xs font-medium ${prize.color}`}>{prize.label}</p>
+          {prizePoolItems.map((prize) => (
+            <div key={prize.id} className="rounded-xl border border-raw-border/30 bg-raw-surface/30 p-3 text-center">
+              <p className={`text-xs font-medium ${prize.poolColor}`}>{prize.poolLabel}</p>
               <p className="mt-0.5 text-[9px] uppercase tracking-wider text-raw-silver/25">{prize.rarity}</p>
             </div>
           ))}

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { LogOut, Shield } from "lucide-react";
 import { matchPath, useLocation, useNavigate } from "react-router-dom";
 import { DashboardNav, type DashboardTab } from "@/components/dashboard/DashboardNav";
@@ -40,6 +40,7 @@ export default function Dashboard({
   const location = useLocation();
   const [activeTab, setActiveTab] = useState<DashboardTab>("polls");
   const [isHome, setIsHome] = useState(true);
+  const dashboardBgRef = useRef<HTMLDivElement | null>(null);
   const communityRouteMatch = matchPath("/dashboard/communities/:communityId", location.pathname);
   const activeCommunityId = communityRouteMatch?.params.communityId ?? null;
 
@@ -82,6 +83,19 @@ export default function Dashboard({
     setActiveTab("profile");
     setIsHome(false);
     navigate("/dashboard");
+  };
+
+  const handleDashboardMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
+    const node = dashboardBgRef.current;
+    if (!node) {
+      return;
+    }
+
+    const bounds = node.getBoundingClientRect();
+    const x = event.clientX - bounds.left;
+    const y = event.clientY - bounds.top;
+    node.style.setProperty("--dashboard-hover-x", `${x}px`);
+    node.style.setProperty("--dashboard-hover-y", `${y}px`);
   };
 
   const renderContent = () => {
@@ -147,7 +161,11 @@ export default function Dashboard({
   };
 
   return (
-    <div className="min-h-screen bg-raw-black">
+    <div
+      ref={dashboardBgRef}
+      className="dashboard-enhanced-bg relative min-h-screen overflow-hidden bg-raw-black"
+      onMouseMove={handleDashboardMouseMove}
+    >
       <DashboardNav
         username={user.username}
         avatarLevel={avatarLevel}
@@ -181,8 +199,8 @@ export default function Dashboard({
       </div>
 
       {/* Main content */}
-      <main className="pt-14 pb-20 lg:pl-[200px] lg:pb-8">
-        <div className="mx-auto max-w-4xl px-5 py-8">
+      <main className="relative z-10 pt-14 pb-20 lg:pl-[200px] lg:pb-8">
+        <div className="dashboard-content-shell mx-auto max-w-4xl px-5 py-8">
           {renderContent()}
         </div>
       </main>

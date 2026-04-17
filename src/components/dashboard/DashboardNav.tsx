@@ -1,5 +1,6 @@
 import { Bell, LogOut } from "lucide-react";
 import { AvatarFigure } from "@/components/ui/avatar-figure";
+import { ThemeCustomizer } from "@/components/theme/ThemeCustomizer";
 
 export type DashboardTab = "polls" | "challenges" | "daily-spin" | "communities" | "profile";
 
@@ -22,6 +23,7 @@ export function DashboardNav({ username, avatarLevel, showAdminLink = false, onP
 
         {/* Right: bell + avatar */}
         <div className="flex items-center gap-3 shrink-0">
+          <ThemeCustomizer placement="inline" />
           {showAdminLink && (
             <a
               href="/admin"
