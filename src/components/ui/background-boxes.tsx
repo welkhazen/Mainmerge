@@ -5,16 +5,17 @@ import { cn } from "@/lib/utils";
 export const BoxesCore = ({ className, ...rest }: { className?: string }) => {
   const rows = new Array(30).fill(1);
   const cols = new Array(20).fill(1);
+  const accent = getComputedStyle(document.documentElement).getPropertyValue("--raw-accent").trim() || "241 196 45";
   let colors = [
-    "#F1C42D",     // raW gold
-    "#D4A81A",     // deep gold
-    "#FFE066",     // light gold
-    "#D9D9D9",     // metallic silver
-    "#A0A0A0",     // muted silver
-    "#F1C42D80",   // gold 50% opacity
-    "#EBEBEB",     // primary text
-    "#2A2A2A",     // subtle dark
-    "#D9D9D980",   // silver 50% opacity
+    `rgb(${accent})`,
+    `rgb(${accent} / 0.75)`,
+    `rgb(${accent} / 0.55)`,
+    "#D9D9D9",
+    "#A0A0A0",
+    `rgb(${accent} / 0.45)`,
+    "#EBEBEB",
+    "#2A2A2A",
+    "#D9D9D980",
   ];
   const getRandomColor = () => {
     return colors[Math.floor(Math.random() * colors.length)];

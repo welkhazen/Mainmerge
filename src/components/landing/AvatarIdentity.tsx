@@ -53,7 +53,7 @@ export function AvatarIdentity({ avatarLevel, onLevelChange, onSignupClick }: Av
 
   return (
     <section id="avatar" className="relative px-6 py-28 bg-gradient-to-b from-transparent to-[rgba(255,255,255,0.01)]">
-      <div className="mx-auto max-w-6xl">
+      <div className="mx-auto w-full max-w-6xl">
         {/* Heading */}
         <div className="mb-14 text-center">
           <h2 className="font-display text-3xl tracking-wide text-raw-text sm:text-4xl">
@@ -64,7 +64,7 @@ export function AvatarIdentity({ avatarLevel, onLevelChange, onSignupClick }: Av
           </p>
         </div>
 
-        <div className="grid items-start gap-16 lg:grid-cols-2">
+        <div className="mx-auto grid max-w-5xl items-start gap-12 lg:grid-cols-2">
 
           {/* ── LEFT: Wheel + avatar rewards row ── */}
           <div className="flex flex-col items-center gap-8">
