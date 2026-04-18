@@ -47,7 +47,7 @@ const testimonials = [
 export function WhyAnonymity() {
   return (
     <section className="relative py-28 px-6 bg-gradient-to-b from-transparent to-[rgba(255,255,255,0.01)]">
-      <div className="mx-auto max-w-4xl">
+      <div className="w-full">
         <h2 className="mb-12 text-center font-display text-2xl tracking-wide text-raw-text sm:text-3xl">
           No real names. Better honesty. Better matching.
         </h2>

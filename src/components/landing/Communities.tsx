@@ -29,7 +29,7 @@ interface CommunitiesProps {
 export function Communities({ onSignupClick }: CommunitiesProps) {
   return (
     <section id="communities" className="relative py-28 px-6 bg-gradient-to-b from-transparent to-[rgba(255,255,255,0.01)]">
-      <div className="mx-auto max-w-5xl">
+      <div className="mx-auto w-full max-w-6xl">
         <div className="mb-14 text-center">
           <h2 className="font-display text-3xl tracking-wide text-raw-text sm:text-4xl">
             24/7 communities for real talk.
@@ -65,7 +65,7 @@ export function Communities({ onSignupClick }: CommunitiesProps) {
         </div>
 
         {/* Communities worldwide */}
-        <div className="mt-16 flex flex-col items-center gap-8 md:flex-row md:items-center md:gap-12">
+        <div className="mx-auto mt-16 flex max-w-5xl flex-col items-center gap-8 md:flex-row md:items-center md:gap-10">
           <div className="flex-1 text-center md:text-left">
             <p className="font-display text-[10px] tracking-[0.3em] uppercase text-raw-silver/40">
               Communities worldwide

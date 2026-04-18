@@ -27,6 +27,45 @@ const MatrixBackgroundIntro = memo(function MatrixBackgroundIntro({
     const context = canvas.getContext("2d", { alpha: true });
     if (!context) return;
 
+    const getAccentRgb = (): [number, number, number] => {
+      const accentTriplet = getComputedStyle(document.documentElement)
+        .getPropertyValue("--raw-accent")
+        .trim();
+      const parts = accentTriplet.split(/\s+/).map((part) => Number(part));
+
+      if (parts.length === 3 && parts.every((value) => Number.isFinite(value))) {
+        return [parts[0], parts[1], parts[2]];
+      }
+
+      return [241, 196, 45];
+    };
+
+    const toRgba = (rgb: [number, number, number], alpha: number) => {
+      const [r, g, b] = rgb;
+      return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    };
+
+    const darkenRgb = (rgb: [number, number, number], factor: number): [number, number, number] => {
+      const [r, g, b] = rgb;
+      const clamp = (value: number) => Math.max(0, Math.min(255, Math.round(value)));
+      return [clamp(r * factor), clamp(g * factor), clamp(b * factor)];
+    };
+
+    const getThemePalette = () => {
+      const isLightMode = document.documentElement.classList.contains("theme-light");
+      const accent = getAccentRgb();
+
+      return isLightMode
+        ? {
+            trail: "rgba(255, 255, 255, 0.12)",
+            glyph: toRgba(darkenRgb(accent, 0.42), 0.72),
+          }
+        : {
+            trail: "rgba(0, 0, 0, 0.05)",
+            glyph: toRgba(accent, 0.9),
+          };
+    };
+
     let rafId = 0;
     let ended = false;
     let columns = 0;
@@ -50,10 +89,11 @@ const MatrixBackgroundIntro = memo(function MatrixBackgroundIntro({
     window.addEventListener("resize", resizeCanvas);
 
     const drawFrame = () => {
-      context.fillStyle = "rgba(0, 0, 0, 0.05)";
+      const palette = getThemePalette();
+      context.fillStyle = palette.trail;
       context.fillRect(0, 0, canvas.width, canvas.height);
 
-      context.fillStyle = "#F1C42D";
+      context.fillStyle = palette.glyph;
 
       for (let i = 0; i < drops.length; i += 1) {
         const glyph = CHAR_ARRAY[Math.floor(Math.random() * CHAR_ARRAY.length)];
@@ -109,7 +149,7 @@ const MatrixBackgroundIntro = memo(function MatrixBackgroundIntro({
   return (
     <canvas
       ref={canvasRef}
-      className={`pointer-events-none fixed inset-0 z-[2] ${className}`}
+      className={`matrix-intro-canvas pointer-events-none fixed inset-0 z-[2] ${className}`}
       style={{ opacity: 0 }}
       aria-hidden="true"
     />

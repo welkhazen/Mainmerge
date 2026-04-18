@@ -19,13 +19,13 @@ export default {
       },
       colors: {
         raw: {
-          black: "#080808",
-          surface: "#121212",
-          silver: "#D9D9D9",
-          text: "#EBEBEB",
-          gold: "#F1C42D",
-          "gold-dim": "rgba(241, 196, 45, 0.15)",
-          border: "#1a1a1a",
+          black: "rgb(var(--raw-black) / <alpha-value>)",
+          surface: "rgb(var(--raw-surface) / <alpha-value>)",
+          silver: "rgb(var(--raw-silver) / <alpha-value>)",
+          text: "rgb(var(--raw-text) / <alpha-value>)",
+          gold: "rgb(var(--raw-accent) / <alpha-value>)",
+          "gold-dim": "rgb(var(--raw-accent) / 0.15)",
+          border: "rgb(var(--raw-border) / <alpha-value>)",
         },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -93,27 +93,27 @@ export default {
         heartbeat: {
           "0%": {
             transform: "scale(1)",
-            textShadow: "0 0 6px rgba(241,196,45,0.35), 0 0 14px rgba(241,196,45,0.15)",
+            textShadow: "0 0 6px rgb(var(--raw-accent) / 0.35), 0 0 14px rgb(var(--raw-accent) / 0.15)",
           },
           "14%": {
             transform: "scale(1.09)",
-            textShadow: "0 0 14px rgba(241,196,45,0.85), 0 0 28px rgba(241,196,45,0.55), 0 0 42px rgba(241,196,45,0.25)",
+            textShadow: "0 0 14px rgb(var(--raw-accent) / 0.85), 0 0 28px rgb(var(--raw-accent) / 0.55), 0 0 42px rgb(var(--raw-accent) / 0.25)",
           },
           "28%": {
             transform: "scale(1)",
-            textShadow: "0 0 6px rgba(241,196,45,0.35), 0 0 14px rgba(241,196,45,0.15)",
+            textShadow: "0 0 6px rgb(var(--raw-accent) / 0.35), 0 0 14px rgb(var(--raw-accent) / 0.15)",
           },
           "42%": {
             transform: "scale(1.06)",
-            textShadow: "0 0 12px rgba(241,196,45,0.7), 0 0 22px rgba(241,196,45,0.4)",
+            textShadow: "0 0 12px rgb(var(--raw-accent) / 0.7), 0 0 22px rgb(var(--raw-accent) / 0.4)",
           },
           "70%": {
             transform: "scale(1)",
-            textShadow: "0 0 6px rgba(241,196,45,0.3), 0 0 14px rgba(241,196,45,0.12)",
+            textShadow: "0 0 6px rgb(var(--raw-accent) / 0.3), 0 0 14px rgb(var(--raw-accent) / 0.12)",
           },
           "100%": {
             transform: "scale(1)",
-            textShadow: "0 0 6px rgba(241,196,45,0.35), 0 0 14px rgba(241,196,45,0.15)",
+            textShadow: "0 0 6px rgb(var(--raw-accent) / 0.35), 0 0 14px rgb(var(--raw-accent) / 0.15)",
           },
         },
       },

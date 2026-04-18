@@ -31,7 +31,7 @@ const howItWorksOutputs = {
 export function HowItWorks() {
   return (
     <section className="relative px-6 py-28 bg-gradient-to-b from-transparent to-[rgba(255,255,255,0.01)]">
-      <div className="mx-auto max-w-5xl">
+      <div className="w-full">
         <h2 className="mb-4 text-center font-display text-2xl tracking-wide text-raw-text sm:text-3xl">
           How it works
         </h2>

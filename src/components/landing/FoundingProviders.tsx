@@ -1,7 +1,7 @@
 export function FoundingProviders() {
   return (
     <section className="relative py-28 px-6 bg-gradient-to-b from-transparent to-[rgba(255,255,255,0.01)]">
-      <div className="mx-auto max-w-3xl text-center">
+      <div className="w-full text-center">
         <p className="mb-3 font-display text-[10px] tracking-[0.3em] uppercase text-raw-silver/30">
           The Next Layer
         </p>

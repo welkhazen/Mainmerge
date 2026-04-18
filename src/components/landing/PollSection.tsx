@@ -136,7 +136,7 @@ function PollPhoneContent({
                   <button
                     type="button"
                     onClick={() => onVote(yesOption.id)}
-                    className="flex-1 rounded-2xl bg-[#F1C42D] py-3.5 text-base font-bold text-black transition-all hover:bg-[#F1C42D]/90 active:scale-95"
+                    className="flex-1 rounded-2xl bg-raw-gold py-3.5 text-base font-bold text-raw-black transition-all hover:bg-raw-gold/90 active:scale-95"
                   >
                     Yes
                   </button>
@@ -155,10 +155,10 @@ function PollPhoneContent({
           ) : (
             <div className="mt-5 space-y-3">
               <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-black/60">
-                <div className="absolute inset-y-0 left-0 bg-[#F1C42D]/15 transition-all duration-700" style={{ width: `${yesPct}%` }} />
+                <div className="absolute inset-y-0 left-0 bg-raw-gold/15 transition-all duration-700" style={{ width: `${yesPct}%` }} />
                 <div className="relative flex items-center justify-between px-5 py-3.5">
                   <span className="text-sm font-semibold text-white">Yes</span>
-                  <span className="text-sm font-bold text-[#F1C42D]">{yesPct}%</span>
+                  <span className="text-sm font-bold text-raw-gold">{yesPct}%</span>
                 </div>
               </div>
               <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-black/60">
@@ -261,7 +261,7 @@ export function PollSection({ polls, votedPolls, isLoggedIn, freeVotesUsed, onVo
 
   return (
     <section id="polls" className="relative py-28 px-6 bg-gradient-to-b from-transparent to-[rgba(255,255,255,0.01)]">
-      <div className="mx-auto max-w-5xl">
+      <div className="w-full">
         <div className="mb-14 text-center">
           <h2 className="font-display text-3xl tracking-wide text-raw-text sm:text-4xl">Start with a question.</h2>
           <p className="mt-4 text-base text-raw-silver/50 max-w-xl mx-auto">
@@ -276,18 +276,18 @@ export function PollSection({ polls, votedPolls, isLoggedIn, freeVotesUsed, onVo
               <PhoneMockup>
                 <div className="h-[480px] bg-black px-5 py-6 flex flex-col items-center justify-center">
                   <div className="text-center">
-                    <div className="mx-auto mb-4 h-12 w-12 rounded-full bg-[#F1C42D]/10 flex items-center justify-center">
+                    <div className="mx-auto mb-4 h-12 w-12 rounded-full bg-raw-gold/10 flex items-center justify-center">
                       <span className="text-2xl">🔒</span>
                     </div>
                     <p className="font-display text-lg tracking-wide text-white mb-2">You've answered 3 polls!</p>
                     <p className="text-sm text-white/40 mb-2 max-w-[200px] mx-auto leading-relaxed">
                       Sign up to earn your reward and keep answering.
                     </p>
-                    <p className="text-xs text-[#F1C42D]/60 mb-6">+3 coins per poll answered</p>
+                    <p className="text-xs text-raw-gold/60 mb-6">+3 coins per poll answered</p>
                     <button
                       type="button"
                       onClick={onSignupClick}
-                      className="rounded-full bg-[#F1C42D] px-8 py-3 text-sm font-bold text-black hover:bg-[#F1C42D]/90 transition-all active:scale-95"
+                      className="rounded-full bg-raw-gold px-8 py-3 text-sm font-bold text-raw-black hover:bg-raw-gold/90 transition-all active:scale-95"
                     >
                       Sign Up & Earn Rewards
                     </button>
