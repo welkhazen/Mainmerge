@@ -1,5 +1,6 @@
 import { FormEvent, useState } from "react";
 import { ContainerTextFlip } from "@/components/ui/container-text-flip";
+import { MinimalFooter } from "@/components/ui/minimal-footer";
 
 interface FinalCTAProps {
   onSignupClick: () => void;
@@ -140,30 +141,26 @@ export function FinalCTA({ onSignupClick }: FinalCTAProps) {
         <p className="mt-5 text-xs text-raw-silver/50">We only use this info for early-access onboarding.</p>
       </div>
 
-      {/* Footer */}
-      <div className="mt-20 border-t border-raw-border/30 pt-8 sm:mt-24 md:mt-28">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-5 px-1 sm:flex-row sm:px-6">
-          <p className="font-display text-sm tracking-[0.2em] text-raw-silver/45">
-            ra<span className="text-raw-gold/50">W</span>
-          </p>
-          <div className="flex flex-col items-center justify-center gap-2 text-center text-sm text-raw-silver/65 sm:items-end sm:text-right">
-            <a
-              href={whatsAppHref}
-              target="_blank"
-              rel="noreferrer"
-              className="transition-colors hover:text-raw-text"
-            >
-              WhatsApp: {supportWhatsAppNumber}
-            </a>
-            <a
-              href={`mailto:${supportEmail}`}
-              className="transition-colors hover:text-raw-text"
-            >
-              Email: {supportEmail}
-            </a>
-            <span className="text-xs text-raw-silver/35">theartofraw.me</span>
-          </div>
+      <div className="mt-20 sm:mt-24 md:mt-28">
+        <div className="mx-auto mb-8 flex max-w-6xl flex-col items-center justify-center gap-2 text-center text-sm text-raw-silver/65">
+          <a
+            href={whatsAppHref}
+            target="_blank"
+            rel="noreferrer"
+            className="transition-colors hover:text-raw-text"
+          >
+            WhatsApp: {supportWhatsAppNumber}
+          </a>
+          <a
+            href={`mailto:${supportEmail}`}
+            className="transition-colors hover:text-raw-text"
+          >
+            Email: {supportEmail}
+          </a>
+          <span className="text-xs text-raw-silver/35">theartofraw.me</span>
         </div>
+
+        <MinimalFooter />
       </div>
     </section>
   );
