@@ -397,6 +397,14 @@ export function OnboardingJourney({
                                   setPollSelections((prev) => ({ ...prev, [poll.id]: option }));
                                   onMarkPollAnswered(poll.id);
                                 }}
+                                onNavigate={(direction) => {
+                                  if (direction === "left") {
+                                    setCurrentPollIndex((prev) => Math.max(0, prev - 1));
+                                    return;
+                                  }
+
+                                  setCurrentPollIndex((prev) => Math.min(onboardingPolls.length - 1, prev + 1));
+                                }}
                                 onAddComment={(content) => {
                                   const newComment: Comment = {
                                     id: `${poll.id}-${Date.now()}`,
