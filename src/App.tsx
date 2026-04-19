@@ -10,34 +10,31 @@ import Login from "./pages/Login";
 import Authenticate from "./pages/Authenticate";
 import Admin from "./pages/Admin";
 import { ThemeProvider } from "@/providers/ThemeProvider";
-import { PostHogProvider } from "@/providers/PostHogProvider";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <ThemeProvider>
-    <PostHogProvider>
-      <StytchProvider>
-        <QueryClientProvider client={queryClient}>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/authenticate" element={<Authenticate />} />
-                <Route path="/dashboard" element={<Index />} />
-                <Route path="/dashboard/communities/:communityId" element={<Index />} />
-                <Route path="/admin" element={<Admin />} />
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </BrowserRouter>
-          </TooltipProvider>
-        </QueryClientProvider>
-      </StytchProvider>
-    </PostHogProvider>
+    <StytchProvider>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/authenticate" element={<Authenticate />} />
+              <Route path="/dashboard" element={<Index />} />
+              <Route path="/dashboard/communities/:communityId" element={<Index />} />
+              <Route path="/admin" element={<Admin />} />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
+      </QueryClientProvider>
+    </StytchProvider>
   </ThemeProvider>
 );
 
