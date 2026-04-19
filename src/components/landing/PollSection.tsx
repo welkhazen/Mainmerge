@@ -130,7 +130,6 @@ function PollPhoneContent({
 
           {!hasVoted ? (
             <>
-              <p className="text-[10px] text-white/30 text-center mt-4 mb-5">Swipe right for Yes, left for No</p>
               <div className="flex gap-3">
                 {yesOption && (
                   <button

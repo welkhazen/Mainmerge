@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { useTheme } from "@/providers/ThemeProvider";
 
 export interface WheelPrize {
   id: string;
@@ -13,6 +14,7 @@ interface WheelOfFortuneProps {
   onSpinEnd: (prize: WheelPrize) => void;
   disabled?: boolean;
   prizeWeights?: Partial<Record<string, number>>;
+  forcedPrizeId?: string | null;
 }
 
 const SPIN_DURATION = 5000;
@@ -62,7 +64,9 @@ function getLabelLines(label: string): string[] {
   return [parts.slice(0, midpoint).join(" "), parts.slice(midpoint).join(" ")];
 }
 
-export function WheelOfFortune({ prizes, onSpinEnd, disabled = false, prizeWeights }: WheelOfFortuneProps) {
+export function WheelOfFortune({ prizes, onSpinEnd, disabled = false, prizeWeights, forcedPrizeId = null }: WheelOfFortuneProps) {
+  const { mode } = useTheme();
+  const pointerId = useId().replace(/:/g, "");
   const [rotation, setRotation] = useState(0);
   const [isSpinning, setIsSpinning] = useState(false);
   const currentPrizeRef = useRef<WheelPrize | null>(null);
@@ -70,8 +74,11 @@ export function WheelOfFortune({ prizes, onSpinEnd, disabled = false, prizeWeigh
   const radius = 200;
   const size = radius * 2;
   const total = prizes.length;
+  const isLight = mode === "light";
   const accentColor = "rgb(var(--raw-accent))";
   const accentSoft = "rgb(var(--raw-accent) / 0.3)";
+  const pointerGradientId = `pointerGrad-${pointerId}`;
+  const pointerShadowId = `pointerShadow-${pointerId}`;
 
   const handleSpin = useCallback(() => {
     if (isSpinning || disabled || total === 0) {
@@ -82,7 +89,14 @@ export function WheelOfFortune({ prizes, onSpinEnd, disabled = false, prizeWeigh
 
     let prizeIndex = Math.floor(Math.random() * total);
 
-    if (prizeWeights) {
+    if (forcedPrizeId) {
+      const forcedIndex = prizes.findIndex((prize) => prize.id === forcedPrizeId);
+      if (forcedIndex >= 0) {
+        prizeIndex = forcedIndex;
+      }
+    }
+
+    if (!forcedPrizeId && prizeWeights) {
       const weightedEntries = prizes
         .map((prize, index) => ({ index, weight: Math.max(0, prizeWeights[prize.id] ?? 0) }))
         .filter((entry) => entry.weight > 0);
@@ -107,11 +121,14 @@ export function WheelOfFortune({ prizes, onSpinEnd, disabled = false, prizeWeigh
 
     const segmentAngle = 360 / total;
     const targetOffset = 360 - (prizeIndex * segmentAngle + segmentAngle / 2);
-    const fullRotations = (MIN_ROTATIONS + Math.random() * (MAX_ROTATIONS - MIN_ROTATIONS)) * 360;
-    const finalRotation = rotation + fullRotations + targetOffset;
+    const currentRotationNormalized = ((rotation % 360) + 360) % 360;
+    const deltaToTarget = ((targetOffset - currentRotationNormalized) + 360) % 360;
+    const fullRotationCount = MIN_ROTATIONS + Math.floor(Math.random() * (MAX_ROTATIONS - MIN_ROTATIONS + 1));
+    const fullRotations = fullRotationCount * 360;
+    const finalRotation = rotation + fullRotations + deltaToTarget;
 
     setRotation(finalRotation);
-  }, [disabled, isSpinning, prizeWeights, prizes, rotation, total]);
+  }, [disabled, forcedPrizeId, isSpinning, prizeWeights, prizes, rotation, total]);
 
   useEffect(() => {
     if (!isSpinning) {
@@ -133,19 +150,25 @@ export function WheelOfFortune({ prizes, onSpinEnd, disabled = false, prizeWeigh
       <div className="absolute -top-1 left-1/2 z-20 -translate-x-1/2">
         <svg width="32" height="40" viewBox="0 0 32 40">
           <defs>
-            <linearGradient id="pointerGrad" x1="0" y1="0" x2="0" y2="1">
+            <linearGradient id={pointerGradientId} x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor={accentColor} />
               <stop offset="100%" stopColor={accentColor} />
             </linearGradient>
-            <filter id="pointerShadow">
+            <filter id={pointerShadowId}>
               <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor={accentColor} floodOpacity="0.4" />
             </filter>
           </defs>
-          <polygon points="16,4 28,4 16,30 4,4" fill="url(#pointerGrad)" filter="url(#pointerShadow)" />
+          <polygon points="16,4 28,4 16,30 4,4" fill={`url(#${pointerGradientId})`} filter={`url(#${pointerShadowId})`} />
         </svg>
       </div>
 
-      <div className="relative h-[400px] w-[400px] rounded-full border border-raw-gold/30 bg-black/30 p-1.5 shadow-[0_0_45px_rgb(var(--raw-accent)/0.18)]">
+      <div
+        className={`relative h-[400px] w-[400px] rounded-full p-1.5 shadow-[0_0_45px_rgb(var(--raw-accent)/0.18)] ${
+          isLight
+            ? "border border-raw-border/70 bg-[linear-gradient(160deg,rgb(246_249_255),rgb(221_229_241))]"
+            : "border border-raw-gold/30 bg-black/30"
+        }`}
+      >
         <svg
           viewBox={`0 0 ${size} ${size}`}
           className="block h-full w-full"
@@ -160,7 +183,7 @@ export function WheelOfFortune({ prizes, onSpinEnd, disabled = false, prizeWeigh
             const fontSize = prize.shortLabel.length > 7 ? 12 : 14;
             return (
               <g key={prize.id}>
-                <path d={getSegmentPath(index, total, radius)} fill={prize.color} stroke="#1f1f1f" strokeWidth="1" />
+                <path d={getSegmentPath(index, total, radius)} fill={prize.color} stroke={isLight ? "#9ca9bb" : "#1f1f1f"} strokeWidth="1" />
                 <text
                   x={textPosition.x}
                   y={textPosition.y}
@@ -186,8 +209,8 @@ export function WheelOfFortune({ prizes, onSpinEnd, disabled = false, prizeWeigh
             );
           })}
 
-          <circle cx={radius} cy={radius} r={radius * 0.15} fill="#080808" stroke={accentColor} strokeWidth="2" />
-          <circle cx={radius} cy={radius} r={radius * 0.12} fill="#0c0c0c" stroke={accentColor} strokeWidth="0.5" />
+          <circle cx={radius} cy={radius} r={radius * 0.15} fill={isLight ? "#edf2fa" : "#080808"} stroke={accentColor} strokeWidth="2" />
+          <circle cx={radius} cy={radius} r={radius * 0.12} fill={isLight ? "#d9e2f0" : "#0c0c0c"} stroke={accentColor} strokeWidth="0.5" />
 
           {prizes.map((_, index) => {
             const angle = (index * 360) / total - 90;
@@ -196,7 +219,7 @@ export function WheelOfFortune({ prizes, onSpinEnd, disabled = false, prizeWeigh
             const cx = radius + dotRadius * Math.cos(rad);
             const cy = radius + dotRadius * Math.sin(rad);
 
-            return <circle key={`dot-${index}`} cx={cx} cy={cy} r="3" fill={accentSoft} opacity="0.8" />;
+            return <circle key={`dot-${index}`} cx={cx} cy={cy} r="3" fill={accentSoft} opacity={isLight ? "0.65" : "0.8"} />;
           })}
         </svg>
       </div>

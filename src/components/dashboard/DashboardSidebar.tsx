@@ -158,7 +158,7 @@ export function DashboardSidebar({
       </div>
 
       {/* Nav items */}
-      <nav className="flex-1 px-3 py-2 space-y-0.5">
+      <nav className="flex-1 px-3 py-2">
         <FloatingDock
           items={dockItems}
           orientation="vertical"
@@ -166,7 +166,7 @@ export function DashboardSidebar({
           mobileClassName="hidden"
         />
 
-        <div className="mt-8 rounded-2xl border border-raw-border/20 bg-raw-surface/20 p-3">
+        <div className="mt-16 rounded-2xl border border-raw-border/20 bg-raw-surface/20 p-3">
           <div className="flex items-center justify-between gap-2 px-1 pb-2">
             <div className="flex items-center gap-1.5">
               <p className="text-[10px] uppercase tracking-[0.18em] text-raw-silver/35">Your Communities</p>

@@ -22,13 +22,6 @@ export interface AuthResult {
   error?: string;
 }
 
-export interface StytchSession {
-  authenticated: boolean;
-  userId?: string;
-  email?: string;
-  sessionToken?: string;
-}
-
 export interface PollOption {
   id: string;
   text: string;
@@ -214,7 +207,6 @@ function readInitialUser(): User | null {
 
 export function useRawStore() {
   const [user, setUser] = useState<User | null>(() => readInitialUser());
-  const [stytchSession, setStytchSession] = useState<StytchSession | null>(null);
   const [polls, setPolls] = useState<Poll[]>(INITIAL_POLLS);
   const [votedPolls, setVotedPolls] = useState<Set<string>>(new Set());
   const [showSignup, setShowSignup] = useState(false);
@@ -228,7 +220,7 @@ export function useRawStore() {
   const [dailyAnsweredPollIds, setDailyAnsweredPollIds] = useState<Set<string>>(new Set());
   const [dailyPollDate, setDailyPollDate] = useState<string>(getTodayKey());
 
-  const isLoggedIn = user !== null || (stytchSession?.authenticated ?? false);
+  const isLoggedIn = user !== null;
 
   const refreshPersistedUser = useCallback(() => {
     const sessionUserId = readAuthSession();
@@ -390,7 +382,6 @@ export function useRawStore() {
   const logout = useCallback(() => {
     clearAuthSession();
     setUser(null);
-    setStytchSession(null);
   }, []);
 
   const markOnboardingPollAnswered = useCallback((pollId: string) => {
@@ -413,23 +404,10 @@ export function useRawStore() {
     setOnboardingStep("ready");
   }, []);
 
-  const setSyncStytchSession = useCallback((session: StytchSession | null) => {
-    setStytchSession(session);
-
-    if (session?.authenticated && session?.email) {
-      const username = session.email.split("@")[0];
-      const registeredUser = registerOrUpdateUser(username);
-      persistAuthSession(registeredUser.id);
-      setUser(toUser(registeredUser));
-    }
-  }, []);
-
   return {
     user,
     isLoggedIn,
     isAdmin: user?.role === "admin",
-    stytchSession,
-    setStytchSession: setSyncStytchSession,
     polls,
     votedPolls,
     freeVotesUsed,
