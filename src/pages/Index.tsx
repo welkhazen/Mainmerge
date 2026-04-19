@@ -6,8 +6,7 @@ import { PollSection } from "@/components/landing/PollSection";
 import { Communities } from "@/components/landing/Communities";
 import { AvatarIdentity } from "@/components/landing/AvatarIdentity";
 import { WhyAnonymity } from "@/components/landing/WhyAnonymity";
-import { FoundingProviders } from "@/components/landing/FoundingProviders";
-import { FinalCTA } from "@/components/landing/FinalCTA";
+import { LandingFooter } from "@/components/landing/LandingFooter";
 import { SignupModal } from "@/components/landing/SignupModal";
 import { OnboardingJourney } from "@/components/onboarding/OnboardingJourney";
 import MatrixBackgroundIntro from "@/components/ui/matrix-background-intro";
@@ -185,10 +184,13 @@ const Index = () => {
       />
       <HowItWorks />
       <Communities onSignupClick={() => setShowSignup(true)} />
-      <AvatarIdentity avatarLevel={avatarLevel} onLevelChange={setAvatarLevel} />
+      <AvatarIdentity
+        avatarLevel={avatarLevel}
+        onLevelChange={setAvatarLevel}
+        onSignupClick={() => setShowSignup(true)}
+      />
       <WhyAnonymity />
-      <FoundingProviders />
-      <FinalCTA onSignupClick={() => setShowSignup(true)} />
+      <LandingFooter />
 
       <SignupModal
         open={showSignup}
