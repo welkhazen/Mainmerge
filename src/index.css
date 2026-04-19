@@ -265,8 +265,6 @@
 .dashboard-enhanced-bg {
   position: relative;
   isolation: isolate;
-  --dashboard-hover-x: 50%;
-  --dashboard-hover-y: 32%;
 }
 
 .dashboard-enhanced-bg::before {
@@ -276,32 +274,13 @@
   pointer-events: none;
   z-index: 0;
   background:
-    radial-gradient(ellipse 80% 80% at 50% 50%, transparent 30%, hsl(220 10% 6% / 0.4) 90%),
-    radial-gradient(circle at center, rgb(var(--raw-accent) / 0.2) 1px, transparent 1px),
+    radial-gradient(ellipse 80% 80% at 50% 50%, transparent 32%, hsl(220 10% 6% / 0.4) 90%),
+    radial-gradient(circle at center, hsl(220 8% 16%) 1px, transparent 1px),
     radial-gradient(circle at center, hsl(220 8% 14%) 2.5px, transparent 2.5px),
     linear-gradient(145deg, hsl(220 10% 10%) 0%, hsl(220 10% 7%) 50%, hsl(220 10% 9%) 100%);
   background-size: 100% 100%, 8px 8px, 12px 12px, 100% 100%;
   background-attachment: fixed;
   animation: dashboard-dot-drift 20s ease-in-out infinite, dashboard-dot-pulse 8s ease-in-out infinite;
-}
-
-.dashboard-enhanced-bg::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 1;
-  opacity: 0;
-  transition: opacity 220ms ease;
-  background:
-    radial-gradient(260px 260px at var(--dashboard-hover-x) var(--dashboard-hover-y), rgb(var(--raw-accent) / 0.28), transparent 65%),
-    radial-gradient(100px 100px at var(--dashboard-hover-x) var(--dashboard-hover-y), rgb(var(--raw-accent) / 0.22), transparent 70%);
-}
-
-@media (hover: hover) {
-  .dashboard-enhanced-bg:hover::after {
-    opacity: 1;
-  }
 }
 
 html.theme-light .dashboard-enhanced-bg::before {

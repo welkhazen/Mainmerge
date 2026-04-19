@@ -1,14 +1,28 @@
+import { ReactNode } from "react";
 import {
   FacebookIcon,
   GithubIcon,
-  Grid2X2Plus,
   InstagramIcon,
   LinkedinIcon,
   TwitterIcon,
   YoutubeIcon,
 } from "lucide-react";
 
-export function MinimalFooter() {
+interface MinimalFooterProps {
+  topContent?: ReactNode;
+  maxWidthClassName?: string;
+  resourceLinks?: Array<{ title: string; href: string }>;
+  leftLinks?: Array<{ title: string; href: string }>;
+  edgeToScreen?: boolean;
+}
+
+export function MinimalFooter({
+  topContent,
+  maxWidthClassName = "max-w-7xl",
+  resourceLinks = [],
+  leftLinks = [],
+  edgeToScreen = false,
+}: MinimalFooterProps) {
   const year = new Date().getFullYear();
 
   const company = [
@@ -36,18 +50,6 @@ export function MinimalFooter() {
 
   const resources = [
     {
-      title: "Blog",
-      href: "#",
-    },
-    {
-      title: "Help Center",
-      href: "#",
-    },
-    {
-      title: "Contact Support",
-      href: "#",
-    },
-    {
       title: "Community",
       href: "#",
     },
@@ -56,6 +58,7 @@ export function MinimalFooter() {
       href: "#",
     },
   ];
+  const allResources = [...resources, ...resourceLinks];
 
   const socialLinks = [
     {
@@ -91,23 +94,39 @@ export function MinimalFooter() {
   ];
 
   return (
-    <footer className="relative px-4 pb-10 sm:px-6">
-      <div className="mx-auto max-w-6xl rounded-2xl border border-raw-border/40 bg-[radial-gradient(35%_80%_at_30%_0%,rgba(255,255,255,0.06),transparent)] bg-raw-surface/30">
-        <div className="grid grid-cols-6 gap-6 p-5 sm:p-6">
+    <footer className={`relative ${edgeToScreen ? "px-0 pb-0" : "px-2 pb-12 sm:px-4 sm:pb-14"}`}>
+      <div
+        className={`${edgeToScreen ? "w-full rounded-none border-x-0" : `mx-auto ${maxWidthClassName} rounded-[1.65rem]`} relative overflow-hidden border border-raw-gold/15 bg-[linear-gradient(155deg,rgba(18,18,18,0.96)_0%,rgba(10,10,10,0.98)_52%,rgba(6,6,6,1)_100%)] shadow-[0_24px_60px_rgba(0,0,0,0.55),inset_0_1px_0_rgba(255,255,255,0.05)]`}
+      >
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(460px_220px_at_18%_-5%,rgba(241,196,45,0.14),transparent_70%)]" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(520px_220px_at_88%_118%,rgba(241,196,45,0.08),transparent_72%)]" />
+        <div className="pointer-events-none absolute inset-0 opacity-[0.2] [background-image:radial-gradient(circle,rgba(241,196,45,0.22)_1px,transparent_1px)] [background-size:10px_10px]" />
+
+        {topContent ? (
+          <div className="relative border-b border-raw-gold/15 bg-raw-gold/[0.035] px-4 py-6 text-center sm:px-6">
+            {topContent}
+          </div>
+        ) : null}
+
+        <div className="relative grid grid-cols-6 gap-8 p-5 sm:p-7">
           <div className="col-span-6 flex flex-col gap-5 md:col-span-4">
-            <a href="#" className="w-max text-raw-silver/35 transition-colors hover:text-raw-silver/60" aria-label="Brand home">
-              <Grid2X2Plus className="size-8" />
+            <a
+              href="/"
+              className="w-max rounded-xl border border-transparent px-2 py-1 font-display text-2xl tracking-[0.22em] text-raw-text/85 transition-all hover:border-raw-gold/20 hover:bg-raw-gold/[0.06] hover:text-raw-text"
+              aria-label="raW home"
+            >
+              ra<span className="text-raw-gold">W</span>
             </a>
 
-            <p className="max-w-sm text-sm text-raw-silver/65">
+            <p className="max-w-sm text-sm leading-relaxed text-raw-silver/70">
               A comprehensive financial technology platform.
             </p>
 
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2.5">
               {socialLinks.map((item) => (
                 <a
                   key={item.label}
-                  className="rounded-md border border-raw-border/60 p-1.5 text-raw-silver/65 transition-colors hover:bg-raw-surface/70 hover:text-raw-text"
+                  className="group rounded-lg border border-raw-border/55 bg-raw-black/35 p-1.5 text-raw-silver/65 transition-all duration-200 hover:-translate-y-0.5 hover:border-raw-gold/30 hover:bg-raw-gold/[0.08] hover:text-raw-gold"
                   target="_blank"
                   rel="noreferrer"
                   href={item.link}
@@ -117,13 +136,27 @@ export function MinimalFooter() {
                 </a>
               ))}
             </div>
+
+            {leftLinks.length > 0 ? (
+              <div className="mt-1 flex flex-col gap-1.5 text-sm text-raw-silver/72">
+                {leftLinks.map(({ href, title }) => (
+                  <a
+                    key={title}
+                    className="w-max transition-colors hover:text-raw-gold hover:underline"
+                    href={href}
+                  >
+                    {title}
+                  </a>
+                ))}
+              </div>
+            ) : null}
           </div>
 
           <div className="col-span-3 w-full md:col-span-1">
-            <span className="mb-1 block text-xs uppercase tracking-[0.16em] text-raw-silver/45">Resources</span>
-            <div className="flex flex-col gap-1">
-              {resources.map(({ href, title }) => (
-                <a key={title} className="w-max py-1 text-sm text-raw-silver/70 transition-colors hover:text-raw-text hover:underline" href={href}>
+            <span className="mb-2 block text-[11px] uppercase tracking-[0.18em] text-raw-gold/60">Resources</span>
+            <div className="flex flex-col gap-1.5">
+              {allResources.map(({ href, title }) => (
+                <a key={title} className="w-max py-0.5 text-sm text-raw-silver/72 transition-colors hover:text-raw-gold hover:underline" href={href}>
                   {title}
                 </a>
               ))}
@@ -131,10 +164,10 @@ export function MinimalFooter() {
           </div>
 
           <div className="col-span-3 w-full md:col-span-1">
-            <span className="mb-1 block text-xs uppercase tracking-[0.16em] text-raw-silver/45">Company</span>
-            <div className="flex flex-col gap-1">
+            <span className="mb-2 block text-[11px] uppercase tracking-[0.18em] text-raw-gold/60">Company</span>
+            <div className="flex flex-col gap-1.5">
               {company.map(({ href, title }) => (
-                <a key={title} className="w-max py-1 text-sm text-raw-silver/70 transition-colors hover:text-raw-text hover:underline" href={href}>
+                <a key={title} className="w-max py-0.5 text-sm text-raw-silver/72 transition-colors hover:text-raw-gold hover:underline" href={href}>
                   {title}
                 </a>
               ))}
@@ -142,9 +175,9 @@ export function MinimalFooter() {
           </div>
         </div>
 
-        <div className="border-t border-raw-border/50 px-4 py-5 sm:px-6">
-          <p className="text-center text-sm text-raw-silver/55">
-            © <a className="text-raw-gold/85 hover:text-raw-gold" href="https://x.com/sshahaider" target="_blank" rel="noreferrer">sshahaider</a>. All rights reserved {year}
+        <div className="relative border-t border-raw-gold/12 bg-raw-black/35 px-4 py-5 sm:px-6">
+          <p className="text-center text-sm text-raw-silver/58">
+            © <a className="text-raw-gold/85 transition-colors hover:text-raw-gold" href="https://x.com/sshahaider" target="_blank" rel="noreferrer">sshahaider</a>. All rights reserved {year}
           </p>
         </div>
       </div>
