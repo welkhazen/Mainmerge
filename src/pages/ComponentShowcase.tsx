@@ -17,6 +17,7 @@ import { FloatingDock } from "@/components/ui/floating-dock";
 import { Input } from "@/components/ui/aceternity-input";
 import { Label } from "@/components/ui/aceternity-label";
 import { AvatarFigure } from "@/components/ui/avatar-figure";
+import { LEVEL_THEMES } from "@/lib/avatar-theme";
 
 const Globe3DLazy = lazy(() =>
   import("@/components/ui/3d-globe").then((m) => ({ default: m.Globe3D }))
@@ -378,10 +379,10 @@ export default function ComponentShowcase() {
           <Section
             id="avatar-figure"
             title="Avatar Figure"
-            description="10-level avatar progression system with SVG design. For user identity / gamification."
+            description="8-level avatar progression system with SVG design. For user identity / gamification."
           >
             <div className="flex flex-wrap items-end justify-center gap-4 py-6">
-              {Array.from({ length: 10 }, (_, i) => (
+              {Array.from({ length: LEVEL_THEMES.length }, (_, i) => (
                 <div key={i} className="flex flex-col items-center gap-2">
                   <AvatarFigure level={i + 1} size="md" />
                   <span className="text-xs text-raw-silver/50">Lv.{i + 1}</span>
