@@ -248,12 +248,6 @@ export function SwipeablePollCard({
             {question}
           </h2>
 
-          {!isAnswered && options.length >= 2 && (
-            <p className="mt-3 text-center text-[11px] uppercase tracking-[0.14em] text-white/40">
-              Swipe right for {rightOption}, left for {leftOption}
-            </p>
-          )}
-
           <div className="mt-6 space-y-3">
             {isAnswered && options.length === 2 ? (
               <div className="space-y-2.5">

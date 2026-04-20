@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Gift, Sparkles, Star, Zap, Clock } from "lucide-react";
 import { WheelOfFortune, type WheelPrize } from "@/components/wheel/WheelOfFortune";
+import { useTheme } from "@/providers/ThemeProvider";
 import {
   Dialog,
   DialogContent,
@@ -11,22 +12,38 @@ import {
 
 interface DashboardDailySpinProps {
   userId: string;
+  isAdmin?: boolean;
 }
 
-const PRIZES: WheelPrize[] = [
-  { id: "xp-50", label: "50 XP", shortLabel: "50 XP", color: "#121212", textColor: "#D9D9D9" },
-  { id: "try-1", label: "Try Again", shortLabel: "TRY AGAIN", color: "#0e0e0e", textColor: "#666" },
-  { id: "xp-100", label: "100 XP", shortLabel: "100 XP", color: "#121212", textColor: "#F1C42D" },
-  { id: "streak", label: "Streak Shield", shortLabel: "SHIELD", color: "#0e0e0e", textColor: "#D9D9D9" },
-  { id: "xp-200", label: "200 XP", shortLabel: "200 XP", color: "#121212", textColor: "#F1C42D" },
-  { id: "try-2", label: "Try Again", shortLabel: "TRY AGAIN", color: "#0e0e0e", textColor: "#666" },
-  { id: "theme", label: "Avatar Theme", shortLabel: "THEME", color: "#1a1508", textColor: "#F1C42D" },
-  { id: "xp-50b", label: "50 XP", shortLabel: "50 XP", color: "#0e0e0e", textColor: "#D9D9D9" },
-  { id: "try-3", label: "Try Again", shortLabel: "TRY AGAIN", color: "#121212", textColor: "#666" },
-  { id: "xp-500", label: "500 XP Jackpot!", shortLabel: "500 XP", color: "#1a1508", textColor: "#F1C42D" },
-  { id: "badge", label: "Community Badge", shortLabel: "BADGE", color: "#121212", textColor: "#D9D9D9" },
-  { id: "xp-100b", label: "100 XP", shortLabel: "100 XP", color: "#0e0e0e", textColor: "#F1C42D" },
-];
+function toRgba(rgbSpaceSeparated: string, alpha: number): string {
+  const [r, g, b] = rgbSpaceSeparated.split(" ").map((value) => Number(value));
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+function buildSpinPrizes(mode: "light" | "dark", accentRgb: string): WheelPrize[] {
+  const isLight = mode === "light";
+  const neutralA = isLight ? "#c9d7ea" : "#1d2533";
+  const neutralB = isLight ? "#b8c7dc" : "#131b29";
+  const neutralText = isLight ? "#223247" : "#d7e1f2";
+  const missText = isLight ? "#4e5f78" : "#6f7d93";
+  const accentSoft = toRgba(accentRgb, isLight ? 0.28 : 0.24);
+  const accentStrong = toRgba(accentRgb, isLight ? 0.38 : 0.32);
+
+  return [
+    { id: "xp-50", label: "50 XP", shortLabel: "50 XP", color: neutralA, textColor: neutralText },
+    { id: "try-1", label: "Try Again", shortLabel: "TRY AGAIN", color: neutralB, textColor: missText },
+    { id: "xp-100", label: "100 XP", shortLabel: "100 XP", color: accentSoft, textColor: neutralText },
+    { id: "streak", label: "Streak Shield", shortLabel: "SHIELD", color: neutralA, textColor: neutralText },
+    { id: "xp-200", label: "200 XP", shortLabel: "200 XP", color: accentStrong, textColor: neutralText },
+    { id: "try-2", label: "Try Again", shortLabel: "TRY AGAIN", color: neutralB, textColor: missText },
+    { id: "theme", label: "Avatar Theme", shortLabel: "THEME", color: accentStrong, textColor: neutralText },
+    { id: "xp-50b", label: "50 XP", shortLabel: "50 XP", color: neutralA, textColor: neutralText },
+    { id: "try-3", label: "Try Again", shortLabel: "TRY AGAIN", color: neutralB, textColor: missText },
+    { id: "xp-500", label: "500 XP Jackpot!", shortLabel: "500 XP", color: isLight ? "#efd98f" : "#1a1508", textColor: isLight ? "#6f4e00" : "#F1C42D" },
+    { id: "badge", label: "Community Badge", shortLabel: "BADGE", color: neutralA, textColor: neutralText },
+    { id: "xp-100b", label: "100 XP", shortLabel: "100 XP", color: accentSoft, textColor: neutralText },
+  ];
+}
 
 const PRIZE_WEIGHTS: Partial<Record<string, number>> = {
   "xp-500": 0.01,
@@ -63,12 +80,33 @@ function getTodayKey() {
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
 }
 
-export function DashboardDailySpin({ userId }: DashboardDailySpinProps) {
+export function DashboardDailySpin({ userId, isAdmin = false }: DashboardDailySpinProps) {
+  const { mode, accent, accentPresets } = useTheme();
   const storageKey = useMemo(() => `raw.daily-spin.${userId}`, [userId]);
+  const accentRgb = useMemo(
+    () => accentPresets.find((preset) => preset.id === accent)?.rgb ?? "241 196 45",
+    [accent, accentPresets],
+  );
+  const prizes = useMemo(() => buildSpinPrizes(mode, accentRgb), [accentRgb, mode]);
+  const adminRewardOptions = useMemo(
+    () => [
+      { id: "random", label: "Random (weighted)" },
+      { id: "xp-50", label: "50 XP" },
+      { id: "xp-100", label: "100 XP" },
+      { id: "xp-200", label: "200 XP" },
+      { id: "xp-500", label: "500 XP Jackpot" },
+      { id: "streak", label: "Streak Shield" },
+      { id: "theme", label: "Avatar Theme" },
+      { id: "badge", label: "Community Badge" },
+      { id: "try-1", label: "Try Again" },
+    ],
+    [],
+  );
   const [todayKey, setTodayKey] = useState(() => getTodayKey());
   const [selectedRewardId, setSelectedRewardId] = useState<string | null>(null);
   const [hasSpunToday, setHasSpunToday] = useState(false);
   const [prizeModal, setPrizeModal] = useState<WheelPrize | null>(null);
+  const [adminSelectedRewardId, setAdminSelectedRewardId] = useState<string>("random");
 
   useEffect(() => {
     const timer = window.setInterval(() => {
@@ -104,7 +142,7 @@ export function DashboardDailySpin({ userId }: DashboardDailySpinProps) {
     }
   }, [storageKey, todayKey]);
 
-  const selectedPrize = PRIZES.find((prize) => prize.id === selectedRewardId) ?? null;
+  const selectedPrize = prizes.find((prize) => prize.id === selectedRewardId) ?? null;
 
   const handleSpinEnd = (prize: WheelPrize) => {
     setSelectedRewardId(prize.id);
@@ -115,15 +153,22 @@ export function DashboardDailySpin({ userId }: DashboardDailySpinProps) {
 
   const selectedMessage = selectedPrize ? prizeMessages[selectedPrize.id] : null;
   const modalMessage = prizeModal ? prizeMessages[prizeModal.id] : null;
+  const jackpotCoins = useMemo(
+    () =>
+      Array.from({ length: 24 }, (_, index) => ({
+        id: index,
+        left: (index * 37) % 100,
+        delay: (index % 8) * 0.2,
+        duration: 3 + (index % 5) * 0.35,
+        size: 9 + (index % 4) * 4,
+      })),
+    [],
+  );
   const ModalIcon = modalMessage?.icon ?? Gift;
   const isWin = prizeModal ? !prizeModal.id.startsWith("try") : false;
-
-  const prizePoolItems = useMemo(() => {
-    const uniqueIds = Array.from(new Set(PRIZES.map((prize) => prize.id).filter((id) => !id.startsWith("try"))));
-    return uniqueIds
-      .map((id) => ({ id, ...prizeMessages[id] }))
-      .filter((item) => Boolean(item.poolLabel));
-  }, []);
+  const isJackpot = prizeModal?.id === "xp-500";
+  const isSpinDisabled = !isAdmin && hasSpunToday;
+  const forcedPrizeId = isAdmin && adminSelectedRewardId !== "random" ? adminSelectedRewardId : null;
 
   return (
     <div className="space-y-8">
@@ -137,9 +182,40 @@ export function DashboardDailySpin({ userId }: DashboardDailySpinProps) {
         </p>
       </div>
 
-      <div className="rounded-[2rem] border border-raw-border/35 bg-[radial-gradient(circle_at_50%_10%,rgba(241,196,45,0.08),rgba(0,0,0,0.8)_48%)] p-6 sm:p-8">
+      {isAdmin && (
+        <div className="mx-auto flex w-full max-w-md flex-col gap-2 rounded-2xl border border-raw-border/45 bg-raw-surface/35 p-3">
+          <p className="text-center text-[10px] font-display uppercase tracking-[0.18em] text-raw-gold/70">Admin Test Controls</p>
+          <label className="text-xs text-raw-silver/60" htmlFor="admin-spin-reward-select">Force next reward</label>
+          <select
+            id="admin-spin-reward-select"
+            value={adminSelectedRewardId}
+            onChange={(event) => setAdminSelectedRewardId(event.target.value)}
+            className="w-full rounded-lg border border-raw-border/55 bg-raw-black/55 px-3 py-2 text-sm text-raw-text outline-none transition-colors focus:border-raw-gold/60"
+          >
+            {adminRewardOptions.map((option) => (
+              <option key={option.id} value={option.id}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+
+      <div
+        className={`rounded-[2rem] border p-6 sm:p-8 ${
+          mode === "light"
+            ? "border-raw-border/70 bg-[radial-gradient(circle_at_50%_10%,rgba(241,196,45,0.2),rgba(224,231,242,0.96)_58%)]"
+            : "border-raw-border/35 bg-[radial-gradient(circle_at_50%_10%,rgba(241,196,45,0.08),rgba(0,0,0,0.8)_48%)]"
+        }`}
+      >
         <div className="flex justify-center pt-2">
-          <WheelOfFortune prizes={PRIZES} onSpinEnd={handleSpinEnd} disabled={hasSpunToday} prizeWeights={PRIZE_WEIGHTS} />
+          <WheelOfFortune
+            prizes={prizes}
+            onSpinEnd={handleSpinEnd}
+            disabled={isSpinDisabled}
+            prizeWeights={PRIZE_WEIGHTS}
+            forcedPrizeId={forcedPrizeId}
+          />
         </div>
       </div>
 
@@ -147,24 +223,32 @@ export function DashboardDailySpin({ userId }: DashboardDailySpinProps) {
         <div className="mx-auto max-w-sm rounded-2xl border border-raw-border/40 bg-raw-surface/40 p-5 text-center">
           <p className="mb-1 text-xs text-raw-silver/40">Today&apos;s Result</p>
           <p className="font-display text-sm tracking-wide text-raw-gold">{selectedMessage.title}</p>
-          <p className="mt-2 text-xs text-raw-silver/30">Come back tomorrow for another spin!</p>
+          <p className="mt-2 text-xs text-raw-silver/30">
+            {isAdmin ? "Admin test mode: spin infinitely and force rewards one by one." : "Come back tomorrow for another spin!"}
+          </p>
         </div>
       )}
 
-      <div className="mx-auto max-w-lg">
-        <h2 className="mb-4 text-center font-display text-sm tracking-wide text-raw-text">Prize Pool</h2>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-          {prizePoolItems.map((prize) => (
-            <div key={prize.id} className="rounded-xl border border-raw-border/30 bg-raw-surface/30 p-3 text-center">
-              <p className={`text-xs font-medium ${prize.poolColor}`}>{prize.poolLabel}</p>
-              <p className="mt-0.5 text-[9px] uppercase tracking-wider text-raw-silver/25">{prize.rarity}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-
       <Dialog open={!!prizeModal} onOpenChange={() => setPrizeModal(null)}>
-        <DialogContent className="border-raw-border/40 bg-raw-black/95 backdrop-blur-xl sm:max-w-sm">
+        {isJackpot && <div className="jackpot-screen-flash pointer-events-none fixed inset-0 z-[45]" />}
+        {isJackpot && (
+          <div className="pointer-events-none fixed inset-0 z-[49] overflow-hidden">
+            {jackpotCoins.map((coin) => (
+              <span
+                key={coin.id}
+                className="jackpot-coin"
+                style={{
+                  left: `${coin.left}%`,
+                  animationDelay: `${coin.delay}s`,
+                  animationDuration: `${coin.duration}s`,
+                  width: `${coin.size}px`,
+                  height: `${coin.size}px`,
+                }}
+              />
+            ))}
+          </div>
+        )}
+        <DialogContent className="z-[60] border-raw-border/40 bg-raw-black/95 backdrop-blur-xl sm:max-w-sm">
           <DialogHeader className="items-center text-center">
             <div
               className={`mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl ${
@@ -186,7 +270,7 @@ export function DashboardDailySpin({ userId }: DashboardDailySpinProps) {
               isWin
                 ? "bg-raw-gold text-raw-black hover:bg-raw-gold/90"
                 : "border border-raw-border/40 text-raw-silver/50 hover:bg-raw-surface/50"
-            }`}
+            } ${isJackpot ? "jackpot-claim-button" : ""}`}
           >
             {isWin ? "Claim" : "Close"}
           </button>
