@@ -1,20 +1,44 @@
 import { TypewriterEffect } from "@/components/ui/typewriter-effect";
 import { Boxes } from "@/components/ui/background-boxes";
 import { Logo3D } from "@/components/ui/logo-3d";
+import { track } from "@/lib/analytics";
+import { useTrackSectionView } from "@/lib/analytics/useTrackSectionView";
 
 interface HeroProps {
   onSignupClick: () => void;
 }
 
 export function Hero({ onSignupClick }: HeroProps) {
+  const sectionRef = useTrackSectionView("hero");
+
   const words = [
     { text: "Find", className: "text-raw-text" },
     { text: "your", className: "text-raw-text" },
     { text: "people.", className: "text-raw-gold" },
   ];
 
+  const handleJoinClick = () => {
+    track("landing_cta_clicked", {
+      cta_id: "hero_join_free",
+      cta_text: "Join Free",
+      source_section: "hero",
+    });
+    onSignupClick();
+  };
+
+  const handleExploreClick = () => {
+    track("landing_cta_clicked", {
+      cta_id: "hero_explore_communities",
+      cta_text: "Explore the 3 Founding Communities",
+      source_section: "hero",
+    });
+  };
+
   return (
-    <section className="hero-landing relative flex min-h-screen items-center overflow-hidden px-6 pb-16 pt-24 sm:pt-28 bg-raw-black">
+    <section
+      ref={sectionRef as React.RefObject<HTMLElement>}
+      className="hero-landing relative flex min-h-screen items-center overflow-hidden px-6 pb-16 pt-24 sm:pt-28 bg-raw-black"
+    >
       <div className="absolute inset-0 z-0 overflow-hidden">
         <div className="hero-landing-overlay absolute inset-0 z-[1] bg-gradient-to-b from-raw-black via-raw-black to-raw-surface" />
         <Boxes className="opacity-30" />
@@ -46,7 +70,7 @@ export function Hero({ onSignupClick }: HeroProps) {
         <div className="mt-9 flex w-full max-w-xl flex-col items-center gap-3 sm:flex-row sm:justify-center sm:gap-4">
           <button
             type="button"
-            onClick={onSignupClick}
+            onClick={handleJoinClick}
             className="w-full rounded-full bg-raw-gold px-8 py-3.5 text-sm font-bold text-raw-black transition-all hover:bg-raw-gold/90 hover:shadow-lg hover:shadow-raw-gold/20 sm:w-auto"
           >
             Join Free
@@ -54,6 +78,7 @@ export function Hero({ onSignupClick }: HeroProps) {
 
           <a
             href="#communities"
+            onClick={handleExploreClick}
             className="w-full rounded-full border border-raw-border px-8 py-3.5 text-center text-sm font-medium text-raw-silver/80 transition-all hover:border-raw-silver/30 hover:text-raw-text sm:w-auto"
           >
             Explore the 3 Founding Communities

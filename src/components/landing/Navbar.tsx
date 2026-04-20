@@ -1,4 +1,5 @@
 import { ThemeCustomizer } from "@/components/theme/ThemeCustomizer";
+import { track } from "@/lib/analytics";
 
 interface NavbarProps {
   isLoggedIn: boolean;
@@ -7,6 +8,14 @@ interface NavbarProps {
 }
 
 export function Navbar({ isLoggedIn, username, onSignupClick }: NavbarProps) {
+  const handleSignupClick = () => {
+    track("landing_cta_clicked", {
+      cta_id: "navbar_join_free",
+      cta_text: "Join Free",
+      source_section: "navbar",
+    });
+    onSignupClick();
+  };
   return (
     <nav className="landing-navbar fixed top-0 left-0 right-0 z-50 border-b border-raw-border/50 bg-raw-black/80 backdrop-blur-xl">
       <div className="flex h-16 w-full items-center justify-between px-4 sm:px-6 lg:px-10">
@@ -37,7 +46,7 @@ export function Navbar({ isLoggedIn, username, onSignupClick }: NavbarProps) {
           <div className="flex items-center gap-2 sm:gap-3">
             <ThemeCustomizer placement="inline" className="shrink-0" />
             <button
-              onClick={onSignupClick}
+              onClick={handleSignupClick}
               className="rounded-full bg-raw-gold px-5 py-2 text-sm font-semibold text-raw-black transition-all hover:bg-raw-gold/90 hover:shadow-lg hover:shadow-raw-gold/20"
             >
               Join Free

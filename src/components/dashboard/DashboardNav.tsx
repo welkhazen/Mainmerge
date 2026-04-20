@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { track } from "@/lib/analytics";
 import {
   Bell,
   Check,
@@ -258,7 +259,10 @@ export function DashboardNav({ username, avatarLevel, showAdminLink = false, onP
               <DropdownMenuSeparator className={cn("my-2", isEffectiveLight ? "bg-slate-200" : "bg-raw-border/30")} />
 
               <DropdownMenuItem
-                onClick={onLogout}
+                onClick={() => {
+                  track("logout_clicked", {});
+                  onLogout();
+                }}
                 className={cn("rounded-lg px-3 py-2.5 text-sm focus:bg-red-500/15 focus:text-red-200", isEffectiveLight ? "text-slate-700" : "text-raw-silver/80")}
               >
                 <LogOut className="mr-3 h-4 w-4" />
