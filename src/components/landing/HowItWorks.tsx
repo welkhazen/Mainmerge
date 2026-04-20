@@ -1,4 +1,5 @@
 import { Terminal } from "@/components/ui/terminal";
+import { useTrackSectionView } from "@/lib/analytics/useTrackSectionView";
 
 const howItWorksSteps = [
   "01 Sign up anonymously and enter your raW app",
@@ -29,8 +30,13 @@ const howItWorksOutputs = {
 } satisfies Record<number, string[]>;
 
 export function HowItWorks() {
+  const sectionRef = useTrackSectionView("how_it_works");
+
   return (
-    <section className="relative px-6 py-28 bg-gradient-to-b from-transparent to-[rgba(255,255,255,0.01)]">
+    <section
+      ref={sectionRef as React.RefObject<HTMLElement>}
+      className="relative px-6 py-28 bg-gradient-to-b from-transparent to-[rgba(255,255,255,0.01)]"
+    >
       <div className="w-full">
         <h2 className="mb-4 text-center font-display text-2xl tracking-wide text-raw-text sm:text-3xl">
           How it works

@@ -4,6 +4,7 @@ import { ArrowLeft, Ban, BellRing, CheckCircle2, Flag, Shield, Users, XCircle } 
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 import { useRawStore } from "@/store/useRawStore";
+import { track } from "@/lib/analytics";
 import {
   formatAdminTimestamp,
   readChatReports,
@@ -106,6 +107,9 @@ export default function Admin() {
     writeCommunityRequests(nextRequests);
     if (status === "approved" && approvedRequest) {
       createCommunityFromApprovedRequest(approvedRequest);
+      track("admin_action_performed", { action: "approve_community", resource_id: requestId });
+    } else if (status === "rejected") {
+      track("admin_action_performed", { action: "reject_community", resource_id: requestId });
     }
     toast({
       title: status === "approved" ? "Community approved" : "Community rejected",
@@ -123,10 +127,16 @@ export default function Admin() {
 
     if (action === "warned") {
       updateUserModerationStatus(targetReport.reportedUserId, "warned", user.username, 1);
+      track("admin_action_performed", { action: "warn", target_user_id: targetReport.reportedUserId, resource_id: reportId });
     }
 
     if (action === "banned") {
       updateUserModerationStatus(targetReport.reportedUserId, "banned", user.username);
+      track("admin_action_performed", { action: "ban", target_user_id: targetReport.reportedUserId, resource_id: reportId });
+    }
+
+    if (action === "dismissed") {
+      track("admin_action_performed", { action: "dismiss_report", resource_id: reportId });
     }
 
     const nextReports = chatReports.map((report) =>

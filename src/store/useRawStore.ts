@@ -8,6 +8,7 @@ import {
   type ModerationStatus,
   type UserRole,
 } from "@/lib/adminData";
+import { identify, reset, track } from "@/lib/analytics";
 
 export interface User {
   id: string;
@@ -334,6 +335,8 @@ export function useRawStore() {
 
     if (!isLoggedIn) {
       setFreeVotesUsed((previous) => previous + 1);
+    } else {
+      track("poll_answered", { poll_id: pollId, option_id: optionId, surface: "app" });
     }
 
     setVotedPolls((previous) => new Set([...previous, pollId]));
@@ -360,6 +363,8 @@ export function useRawStore() {
     persistAuthSession(registeredUser.id);
     setUser(toUser(registeredUser));
     setShowSignup(false);
+    identify(registeredUser.id, { username: registeredUser.username });
+    track("signup_completed", { time_since_first_visit_ms: 0, source: "modal" });
     return { ok: true };
   }, []);
 
@@ -376,12 +381,25 @@ export function useRawStore() {
     persistAuthSession(registeredUser.id);
     setUser(toUser(registeredUser));
     setShowSignup(false);
+    identify(registeredUser.id, { username: registeredUser.username });
+    track("login_completed", { method: "username_password" });
     return { ok: true };
   }, []);
 
   const logout = useCallback(() => {
     clearAuthSession();
     setUser(null);
+    setStytchSession(null);
+    reset();
+  }, []);
+
+  const changeAvatarLevel = useCallback((toLevel: number) => {
+    setAvatarLevel((prev) => {
+      if (prev !== toLevel) {
+        track("avatar_level_up", { from_level: prev, to_level: toLevel, trigger: "manual" });
+      }
+      return toLevel;
+    });
   }, []);
 
   const markOnboardingPollAnswered = useCallback((pollId: string) => {
@@ -415,6 +433,7 @@ export function useRawStore() {
     setShowSignup,
     avatarLevel,
     setAvatarLevel,
+    changeAvatarLevel,
     onboardingStep,
     setOnboardingStep,
     onboardingAnsweredPollIds,

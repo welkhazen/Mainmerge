@@ -5,6 +5,8 @@ import { AvatarPhoneHomeScreen } from "@/components/ui/avatar-phone-home-screen"
 import { getAvatarTheme, LEVEL_THEMES } from "@/lib/avatar-theme";
 import { WheelOfFortune, type WheelPrize } from "@/components/wheel/WheelOfFortune";
 import { Lock, Sparkles } from "lucide-react";
+import { track } from "@/lib/analytics";
+import { useTrackSectionView } from "@/lib/analytics/useTrackSectionView";
 
 interface AvatarIdentityProps {
   avatarLevel: number;
@@ -25,6 +27,7 @@ const RANK_PRIZES: WheelPrize[] = LEVEL_THEMES.map((theme, i) => {
 });
 
 export function AvatarIdentity({ avatarLevel, onLevelChange, onSignupClick }: AvatarIdentityProps) {
+  const sectionRef = useTrackSectionView("avatar");
   const [hoveredLevel, setHoveredLevel] = useState<number | null>(null);
   const [landedLevel, setLandedLevel] = useState<number | null>(null);
   const [hasSpun, setHasSpun] = useState(false);
@@ -53,7 +56,7 @@ export function AvatarIdentity({ avatarLevel, onLevelChange, onSignupClick }: Av
   }, []);
 
   return (
-    <section id="avatar" className="relative px-6 py-28 bg-gradient-to-b from-transparent to-[rgba(255,255,255,0.01)]">
+    <section ref={sectionRef as React.RefObject<HTMLElement>} id="avatar" className="relative px-6 py-28 bg-gradient-to-b from-transparent to-[rgba(255,255,255,0.01)]">
       <div className="mx-auto w-full max-w-6xl">
         {/* Heading */}
         <div className="mb-14 text-center">
@@ -145,7 +148,14 @@ export function AvatarIdentity({ avatarLevel, onLevelChange, onSignupClick }: Av
                   </p>
                   <button
                     type="button"
-                    onClick={onSignupClick}
+                    onClick={() => {
+                      track("landing_cta_clicked", {
+                        cta_id: "avatar_claim",
+                        cta_text: "Claim My Avatar",
+                        source_section: "avatar",
+                      });
+                      onSignupClick();
+                    }}
                     className="mt-4 w-full rounded-full bg-raw-gold px-6 py-3 text-sm font-bold text-raw-black transition-all hover:bg-raw-gold/90 hover:shadow-lg hover:shadow-raw-gold/20"
                   >
                     Claim My Avatar

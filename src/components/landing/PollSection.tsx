@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import type { Poll } from "@/store/useRawStore";
 import { PhoneMockup } from "@/components/ui/phone-mockup";
 import { ChevronLeft, ChevronRight, Send, ThumbsUp, MessageCircle, X } from "lucide-react";
+import { track } from "@/lib/analytics";
+import { useTrackSectionView } from "@/lib/analytics/useTrackSectionView";
 
 interface PollSectionProps {
   polls: Poll[];
@@ -244,6 +246,8 @@ function PollPhoneContent({
 
 export function PollSection({ polls, votedPolls, isLoggedIn, freeVotesUsed, onVote, onSignupClick }: PollSectionProps) {
   const [currentPoll, setCurrentPoll] = useState(0);
+  const sectionRef = useTrackSectionView("polls");
+  const gateFiredRef = useRef(false);
 
   if (polls.length === 0) return null;
 
@@ -255,11 +259,39 @@ export function PollSection({ polls, votedPolls, isLoggedIn, freeVotesUsed, onVo
 
   const handleVote = (optionId: string) => {
     const pollId = polls[currentPoll].id;
+    const nextVotesUsed = !isLoggedIn ? freeVotesUsed + 1 : freeVotesUsed;
+    const gateReached = !isLoggedIn && nextVotesUsed >= 3;
+    track("landing_poll_sampled", {
+      poll_id: pollId,
+      option_id: optionId,
+      votes_used: nextVotesUsed,
+      gate_reached: gateReached,
+    });
+    if (gateReached && !gateFiredRef.current) {
+      gateFiredRef.current = true;
+      track("signup_gate_triggered", {
+        trigger: "poll_gate",
+        votes_used: nextVotesUsed,
+      });
+    }
     onVote(pollId, optionId);
   };
 
+  const handleGateSignupClick = () => {
+    track("landing_cta_clicked", {
+      cta_id: "poll_gate_signup",
+      cta_text: "Sign Up & Earn Rewards",
+      source_section: "polls",
+    });
+    onSignupClick();
+  };
+
   return (
-    <section id="polls" className="relative py-28 px-6 bg-gradient-to-b from-transparent to-[rgba(255,255,255,0.01)]">
+    <section
+      ref={sectionRef as React.RefObject<HTMLElement>}
+      id="polls"
+      className="relative py-28 px-6 bg-gradient-to-b from-transparent to-[rgba(255,255,255,0.01)]"
+    >
       <div className="w-full">
         <div className="mb-14 text-center">
           <h2 className="font-display text-3xl tracking-wide text-raw-text sm:text-4xl">Start with a question.</h2>
@@ -285,7 +317,7 @@ export function PollSection({ polls, votedPolls, isLoggedIn, freeVotesUsed, onVo
                     <p className="text-xs text-raw-gold/60 mb-6">+3 coins per poll answered</p>
                     <button
                       type="button"
-                      onClick={onSignupClick}
+                      onClick={handleGateSignupClick}
                       className="rounded-full bg-raw-gold px-8 py-3 text-sm font-bold text-raw-black hover:bg-raw-gold/90 transition-all active:scale-95"
                     >
                       Sign Up & Earn Rewards
