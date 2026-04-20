@@ -1,4 +1,4 @@
-VITE_STYTCH_PUBLIC_TOKEN=your-public-token-here# Welcome to your Lovable project
+# Welcome to your Lovable project
 
 ## Project info
 

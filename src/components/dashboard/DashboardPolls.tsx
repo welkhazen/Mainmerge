@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Poll } from "@/store/useRawStore";
+import { useTheme } from "@/providers/ThemeProvider";
 import {
   ArrowLeft,
   ArrowRight,
@@ -51,6 +52,8 @@ export function DashboardPolls({
   isDailyPollLimitReached,
   onVote,
 }: DashboardPollsProps) {
+  const { mode } = useTheme();
+  const isLightMode = mode === "light";
   const answersStorageKey = `raw.poll-history.answers.${userId}`;
   const commentsStorageKey = `raw.poll-history.comments.${userId}`;
   const swipeGuideStorageKey = `raw.polls.swipe-guide-seen.${userId}`;
@@ -60,6 +63,7 @@ export function DashboardPolls({
   const [replyDrafts, setReplyDrafts] = useState<Record<string, string>>({});
   const [currentPollIndex, setCurrentPollIndex] = useState(0);
   const pointerStartXRef = useRef<number | null>(null);
+  const swipeGuideButtonRef = useRef<HTMLButtonElement | null>(null);
   const [swipeOffsetX, setSwipeOffsetX] = useState(0);
   const [hasSeenSwipeGuide, setHasSeenSwipeGuide] = useState(false);
 
@@ -120,6 +124,14 @@ export function DashboardPolls({
   const noOption = currentPoll?.options.find((option) => option.text.trim().toLowerCase() === "no");
   const showSwipeGuide =
     currentPollIndex === 0 && !hasVotedCurrent && !hasSeenSwipeGuide;
+
+  useEffect(() => {
+    if (!showSwipeGuide) {
+      return;
+    }
+
+    swipeGuideButtonRef.current?.focus();
+  }, [showSwipeGuide]);
 
   const totalResponses = useMemo(
     () => polls.reduce((sum, poll) => sum + poll.options.reduce((acc, option) => acc + option.votes, 0), 0),
@@ -231,14 +243,15 @@ export function DashboardPolls({
   };
 
   const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (showSwipeGuide) {
+      return;
+    }
+
     if (isInteractiveTarget(event.target)) {
       return;
     }
 
     pointerStartXRef.current = event.clientX;
-    if (showSwipeGuide) {
-      setHasSeenSwipeGuide(true);
-    }
     event.currentTarget.setPointerCapture(event.pointerId);
   };
 
@@ -418,7 +431,11 @@ export function DashboardPolls({
         <button
           onClick={() => setCurrentPollIndex((previous) => Math.max(0, previous - 1))}
           disabled={currentPollIndex === 0}
-          className="absolute left-0 top-1/2 z-10 hidden -translate-x-1/2 -translate-y-1/2 rounded-full border border-raw-border/45 bg-raw-black/70 p-2.5 text-raw-silver/70 transition hover:border-raw-gold/45 hover:text-raw-gold disabled:cursor-not-allowed disabled:opacity-35 md:inline-flex"
+          className={`absolute left-0 top-1/2 z-10 hidden -translate-x-1/2 -translate-y-1/2 rounded-full border p-3 transition disabled:cursor-not-allowed disabled:opacity-35 md:inline-flex ${
+            isLightMode
+              ? "border-slate-300 bg-white/95 text-slate-700 shadow-[0_10px_25px_rgba(15,23,42,0.2)] hover:border-amber-400 hover:text-amber-700"
+              : "border-raw-border/55 bg-raw-black/85 text-raw-silver/85 shadow-[0_10px_24px_rgba(0,0,0,0.4)] hover:border-raw-gold/45 hover:text-raw-gold"
+          }`}
           aria-label="Previous poll"
         >
           <ChevronLeft className="h-4 w-4" />
@@ -427,7 +444,11 @@ export function DashboardPolls({
         <button
           onClick={() => setCurrentPollIndex((previous) => Math.min(polls.length - 1, previous + 1))}
           disabled={currentPollIndex === polls.length - 1}
-          className="absolute right-0 top-1/2 z-10 hidden translate-x-1/2 -translate-y-1/2 rounded-full border border-raw-border/45 bg-raw-black/70 p-2.5 text-raw-silver/70 transition hover:border-raw-gold/45 hover:text-raw-gold disabled:cursor-not-allowed disabled:opacity-35 md:inline-flex"
+          className={`absolute right-0 top-1/2 z-10 hidden translate-x-1/2 -translate-y-1/2 rounded-full border p-3 transition disabled:cursor-not-allowed disabled:opacity-35 md:inline-flex ${
+            isLightMode
+              ? "border-slate-300 bg-white/95 text-slate-700 shadow-[0_10px_25px_rgba(15,23,42,0.2)] hover:border-amber-400 hover:text-amber-700"
+              : "border-raw-border/55 bg-raw-black/85 text-raw-silver/85 shadow-[0_10px_24px_rgba(0,0,0,0.4)] hover:border-raw-gold/45 hover:text-raw-gold"
+          }`}
           aria-label="Next poll"
         >
           <ChevronRight className="h-4 w-4" />
@@ -464,32 +485,34 @@ export function DashboardPolls({
           >
             {showSwipeGuide && (
               <>
-                <div className="pointer-events-none absolute left-3 top-8 z-20 flex items-center gap-2 text-[10px] uppercase tracking-[0.14em] text-rose-200/90 animate-pulse">
-                  <ArrowLeft className="h-3.5 w-3.5" />
-                  <span className="h-px w-12 border-t border-dashed border-rose-200/80" />
-                  <span>Swipe Left = No</span>
-                </div>
-                <div className="pointer-events-none absolute right-3 top-8 z-20 flex items-center gap-2 text-[10px] uppercase tracking-[0.14em] text-emerald-200/90 animate-pulse">
-                  <span>Swipe Right = Yes</span>
-                  <span className="h-px w-12 border-t border-dashed border-emerald-200/80" />
-                  <ArrowRight className="h-3.5 w-3.5" />
-                </div>
-                <div className="absolute inset-x-4 top-14 z-30 rounded-2xl border border-raw-gold/40 bg-raw-black/85 p-4 shadow-[0_0_30px_rgba(255,102,102,0.22)] backdrop-blur-sm sm:inset-x-10">
+                <div className="absolute inset-0 z-20 rounded-[1.3rem] bg-raw-black/45 backdrop-blur-[2px]" />
+                <div
+                  className={`absolute left-1/2 top-1/2 z-30 w-[calc(100%-2rem)] max-w-[32rem] -translate-x-1/2 -translate-y-1/2 rounded-2xl border p-4 sm:p-5 ${
+                    isLightMode
+                      ? "border-amber-400/55 bg-white/98 shadow-[0_14px_35px_rgba(15,23,42,0.2)]"
+                      : "border-raw-gold/40 bg-raw-black/88 shadow-[0_0_30px_rgba(255,102,102,0.22)] backdrop-blur-sm"
+                  }`}
+                >
                   <div className="flex items-center justify-between gap-3">
-                    <p className="flex items-center gap-2 text-xs font-medium uppercase tracking-[0.12em] text-raw-gold/85">
+                    <p className={`flex items-center gap-2 text-xs font-medium uppercase tracking-[0.12em] ${isLightMode ? "text-amber-700" : "text-raw-gold/85"}`}>
                       <Sparkles className="h-3.5 w-3.5" />
                       Quick Swipe Guide
                     </p>
                     <button
+                      ref={swipeGuideButtonRef}
                       type="button"
                       onClick={() => setHasSeenSwipeGuide(true)}
-                      className="rounded-full border border-raw-gold/35 px-3 py-1 text-[10px] uppercase tracking-[0.1em] text-raw-gold/80 hover:bg-raw-gold/10"
+                      className={`rounded-full border px-3 py-1 text-[10px] uppercase tracking-[0.1em] ${
+                        isLightMode
+                          ? "border-amber-400/70 text-amber-700 hover:bg-amber-50"
+                          : "border-raw-gold/35 text-raw-gold/80 hover:bg-raw-gold/10"
+                      }`}
                     >
                       Got it
                     </button>
                   </div>
-                  <p className="mt-2 text-sm text-raw-silver/85">
-                    Swipe like Tinder. Right means <span className="text-emerald-300 font-semibold">Yes</span>, left means <span className="text-rose-300 font-semibold">No</span>.
+                  <p className={`mt-2 text-sm ${isLightMode ? "text-slate-800" : "text-raw-silver/85"}`}>
+                    Swipe to vote. Right means <span className={isLightMode ? "text-emerald-600 font-semibold" : "text-emerald-300 font-semibold"}>Yes</span>, left means <span className={isLightMode ? "text-rose-600 font-semibold" : "text-rose-300 font-semibold"}>No</span>.
                   </p>
                 </div>
               </>
@@ -600,88 +623,109 @@ export function DashboardPolls({
 
             <div className="mt-5">
               <div className="mb-2 flex items-center justify-between">
-                <p className="text-[11px] uppercase tracking-[0.12em] text-raw-silver/55">Comments</p>
+                <p className={`text-[11px] uppercase tracking-[0.12em] ${isLightMode ? "text-slate-600" : "text-raw-silver/55"}`}>Comments</p>
               </div>
+              {!hasVotedCurrent ? (
+                <div className={`rounded-xl border px-3 py-2.5 text-center text-xs ${isLightMode ? "border-slate-300 bg-white/90 text-slate-600" : "border-raw-border/35 bg-raw-black/35 text-raw-silver/50"}`}>
+                  Answer this poll first to unlock comments.
+                </div>
+              ) : (
+                <>
+                  <form
+                    onSubmit={(event) => {
+                      event.preventDefault();
+                      handleCommentAdd();
+                    }}
+                    className={`flex items-center gap-2 rounded-full border px-3 py-2 ${
+                      isLightMode
+                        ? "border-slate-300 bg-white/95"
+                        : "border-raw-border/35 bg-raw-black/35"
+                    }`}
+                  >
+                    <input
+                      value={commentDraft}
+                      onChange={(event) => setCommentDraft(event.target.value)}
+                      onKeyDown={handleCommentKeyDown}
+                      placeholder="Add a comment..."
+                      className={`flex-1 bg-transparent text-sm focus:outline-none ${
+                        isLightMode
+                          ? "text-slate-800 placeholder:text-slate-400"
+                          : "text-raw-text placeholder:text-raw-silver/35"
+                      }`}
+                    />
+                    <button
+                      type="submit"
+                      disabled={!commentDraft.trim()}
+                      className={`rounded-full border p-2 transition disabled:cursor-not-allowed disabled:opacity-40 ${
+                        isLightMode
+                          ? "border-slate-300 bg-slate-50 text-slate-700 hover:bg-slate-100"
+                          : "border-raw-border/40 bg-raw-surface/40 text-raw-silver/80 hover:bg-raw-surface/55"
+                      }`}
+                      aria-label="Add comment"
+                    >
+                      <SendHorizontal className="h-3.5 w-3.5" />
+                    </button>
+                  </form>
 
-              <form
-                onSubmit={(event) => {
-                  event.preventDefault();
-                  handleCommentAdd();
-                }}
-                className="flex items-center gap-2 rounded-full border border-raw-border/35 bg-raw-black/35 px-3 py-2"
-              >
-                <input
-                  value={commentDraft}
-                  onChange={(event) => setCommentDraft(event.target.value)}
-                  onKeyDown={handleCommentKeyDown}
-                  placeholder="Add a comment..."
-                  className="flex-1 bg-transparent text-sm text-raw-text placeholder:text-raw-silver/35 focus:outline-none"
-                />
-                <button
-                  type="submit"
-                  disabled={!commentDraft.trim()}
-                  className="rounded-full border border-raw-border/40 bg-raw-surface/40 p-2 text-raw-silver/80 transition hover:bg-raw-surface/55 disabled:cursor-not-allowed disabled:opacity-40"
-                  aria-label="Add comment"
-                >
-                  <SendHorizontal className="h-3.5 w-3.5" />
-                </button>
-              </form>
-
-              <div className="mt-4 space-y-2.5">
-                {currentComments.length === 0 ? (
-                  <p className="text-center text-xs text-raw-silver/45">No comments yet for this poll.</p>
-                ) : (
-                  currentComments.slice(0, 3).map((comment) => (
-                    <article key={comment.id} className="rounded-2xl border border-raw-border/35 bg-raw-black/50 px-3.5 py-2.5">
-                      <div className="flex items-center justify-between text-[11px] text-raw-silver/50">
-                        <span>@{comment.author}</span>
-                        <span>{comment.createdAt}</span>
-                      </div>
-                      <p className="mt-1 text-sm text-raw-silver/85">{comment.content}</p>
-
-                      <div className="mt-2 space-y-1.5">
-                        {(comment.replies ?? []).slice(-2).map((reply) => (
-                          <div key={reply.id} className="rounded-xl border border-raw-border/35 bg-raw-black/30 px-3 py-2">
-                            <div className="flex items-center justify-between text-[10px] text-raw-silver/45">
-                              <span>@{reply.author}</span>
-                              <span>{reply.createdAt}</span>
-                            </div>
-                            <p className="mt-0.5 text-xs text-raw-silver/80">{reply.content}</p>
+                  <div className="mt-4 space-y-2.5">
+                    {currentComments.length === 0 ? (
+                      <p className={`text-center text-xs ${isLightMode ? "text-slate-500" : "text-raw-silver/45"}`}>
+                        No comments yet for this poll. Be the first to comment.
+                      </p>
+                    ) : (
+                      currentComments.slice(0, 3).map((comment) => (
+                        <article key={comment.id} className="rounded-2xl border border-raw-border/35 bg-raw-black/50 px-3.5 py-2.5">
+                          <div className="flex items-center justify-between text-[11px] text-raw-silver/50">
+                            <span>@{comment.author}</span>
+                            <span>{comment.createdAt}</span>
                           </div>
-                        ))}
-                      </div>
+                          <p className="mt-1 text-sm text-raw-silver/85">{comment.content}</p>
 
-                      <form
-                        onSubmit={(event) => {
-                          event.preventDefault();
-                          handleReplyAdd(comment.id);
-                        }}
-                        className="mt-2 flex items-center gap-2 rounded-full border border-raw-border/35 bg-raw-black/30 px-3 py-1.5"
-                      >
-                        <input
-                          value={replyDrafts[comment.id] ?? ""}
-                          onChange={(event) =>
-                            setReplyDrafts((previous) => ({
-                              ...previous,
-                              [comment.id]: event.target.value,
-                            }))
-                          }
-                          onKeyDown={(event) => handleReplyKeyDown(event, comment.id)}
-                          placeholder="Reply..."
-                          className="flex-1 bg-transparent text-xs text-raw-text placeholder:text-raw-silver/35 focus:outline-none"
-                        />
-                        <button
-                          type="submit"
-                          disabled={!(replyDrafts[comment.id] ?? "").trim()}
-                          className="rounded-full border border-raw-border/40 px-2 py-0.5 text-[10px] text-raw-silver/80 hover:bg-raw-surface/40 disabled:cursor-not-allowed disabled:opacity-40"
-                        >
-                          Reply
-                        </button>
-                      </form>
-                    </article>
-                  ))
-                )}
-              </div>
+                          <div className="mt-2 space-y-1.5">
+                            {(comment.replies ?? []).slice(-2).map((reply) => (
+                              <div key={reply.id} className="rounded-xl border border-raw-border/35 bg-raw-black/30 px-3 py-2">
+                                <div className="flex items-center justify-between text-[10px] text-raw-silver/45">
+                                  <span>@{reply.author}</span>
+                                  <span>{reply.createdAt}</span>
+                                </div>
+                                <p className="mt-0.5 text-xs text-raw-silver/80">{reply.content}</p>
+                              </div>
+                            ))}
+                          </div>
+
+                          <form
+                            onSubmit={(event) => {
+                              event.preventDefault();
+                              handleReplyAdd(comment.id);
+                            }}
+                            className="mt-2 flex items-center gap-2 rounded-full border border-raw-border/35 bg-raw-black/30 px-3 py-1.5"
+                          >
+                            <input
+                              value={replyDrafts[comment.id] ?? ""}
+                              onChange={(event) =>
+                                setReplyDrafts((previous) => ({
+                                  ...previous,
+                                  [comment.id]: event.target.value,
+                                }))
+                              }
+                              onKeyDown={(event) => handleReplyKeyDown(event, comment.id)}
+                              placeholder="Reply..."
+                              className="flex-1 bg-transparent text-xs text-raw-text placeholder:text-raw-silver/35 focus:outline-none"
+                            />
+                            <button
+                              type="submit"
+                              disabled={!(replyDrafts[comment.id] ?? "").trim()}
+                              className="rounded-full border border-raw-border/40 px-2 py-0.5 text-[10px] text-raw-silver/80 hover:bg-raw-surface/40 disabled:cursor-not-allowed disabled:opacity-40"
+                            >
+                              Reply
+                            </button>
+                          </form>
+                        </article>
+                      ))
+                    )}
+                  </div>
+                </>
+              )}
             </div>
           </div>
 

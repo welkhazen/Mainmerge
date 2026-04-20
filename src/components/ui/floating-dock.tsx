@@ -19,14 +19,22 @@ export const FloatingDock = ({
   items,
   desktopClassName,
   mobileClassName,
+  orientation = "horizontal",
 }: {
-  items: { title: string; icon: React.ReactNode; href: string }[];
+  items: {
+    title: string;
+    icon: React.ReactNode;
+    href: string;
+    onClick?: () => void;
+    active?: boolean;
+  }[];
   desktopClassName?: string;
   mobileClassName?: string;
+  orientation?: "horizontal" | "vertical";
 }) => {
   return (
     <>
-      <FloatingDockDesktop items={items} className={desktopClassName} />
+      <FloatingDockDesktop items={items} className={desktopClassName} orientation={orientation} />
       <FloatingDockMobile items={items} className={mobileClassName} />
     </>
   );
@@ -35,7 +43,13 @@ const FloatingDockMobile = ({
   items,
   className,
 }: {
-  items: { title: string; icon: React.ReactNode; href: string }[];
+  items: {
+    title: string;
+    icon: React.ReactNode;
+    href: string;
+    onClick?: () => void;
+    active?: boolean;
+  }[];
   className?: string;
 }) => {
   const [open, setOpen] = useState(false);
@@ -67,7 +81,17 @@ const FloatingDockMobile = ({
                 <a
                   href={item.href}
                   key={item.title}
-                  className="flex h-10 w-10 items-center justify-center rounded-full bg-raw-surface"
+                  onClick={(event) => {
+                    if (item.onClick) {
+                      event.preventDefault();
+                      item.onClick();
+                    }
+                    setOpen(false);
+                  }}
+                  className={cn(
+                    "flex h-10 w-10 items-center justify-center rounded-full border border-raw-border/40 bg-raw-surface text-raw-silver/70",
+                    item.active ? "border-raw-gold/45 bg-raw-gold/15 text-raw-gold" : null,
+                  )}
                 >
                   <div className="h-4 w-4">{item.icon}</div>
                 </a>
@@ -88,79 +112,111 @@ const FloatingDockMobile = ({
 const FloatingDockDesktop = ({
   items,
   className,
+  orientation,
 }: {
-  items: { title: string; icon: React.ReactNode; href: string }[];
+  items: {
+    title: string;
+    icon: React.ReactNode;
+    href: string;
+    onClick?: () => void;
+    active?: boolean;
+  }[];
   className?: string;
+  orientation: "horizontal" | "vertical";
 }) => {
-  let mouseX = useMotionValue(Infinity);
+  const pointer = useMotionValue(Infinity);
   return (
     <motion.div
-      onMouseMove={(e) => mouseX.set(e.pageX)}
-      onMouseLeave={() => mouseX.set(Infinity)}
+      onMouseMove={(event) => pointer.set(orientation === "vertical" ? event.pageY : event.pageX)}
+      onMouseLeave={() => pointer.set(Infinity)}
       className={cn(
-        "mx-auto hidden h-16 items-end gap-4 rounded-2xl bg-raw-surface border border-raw-border px-4 pb-3 md:flex",
+        orientation === "vertical"
+          ? "mx-auto hidden w-16 flex-col items-center gap-4 rounded-3xl border border-raw-border/35 bg-raw-surface/60 px-2 py-3 md:flex"
+          : "mx-auto hidden h-16 items-end gap-4 rounded-2xl border border-raw-border/35 bg-raw-surface/60 px-4 pb-3 md:flex",
         className,
       )}
     >
       {items.map((item) => (
-        <IconContainer mouseX={mouseX} key={item.title} {...item} />
+        <IconContainer pointer={pointer} axis={orientation} key={item.title} {...item} />
       ))}
     </motion.div>
   );
 };
 function IconContainer({
-  mouseX,
+  pointer,
   title,
   icon,
   href,
+  onClick,
+  active = false,
+  axis,
 }: {
-  mouseX: MotionValue;
+  pointer: MotionValue;
   title: string;
   icon: React.ReactNode;
   href: string;
+  onClick?: () => void;
+  active?: boolean;
+  axis: "horizontal" | "vertical";
 }) {
-  let ref = useRef<HTMLDivElement>(null);
-  let distance = useTransform(mouseX, (val) => {
-    let bounds = ref.current?.getBoundingClientRect() ?? { x: 0, width: 0 };
-    return val - bounds.x - bounds.width / 2;
+  const ref = useRef<HTMLDivElement>(null);
+  const distance = useTransform(pointer, (value) => {
+    const bounds = ref.current?.getBoundingClientRect() ?? { x: 0, y: 0, width: 0, height: 0 };
+    return axis === "vertical"
+      ? value - bounds.y - bounds.height / 2
+      : value - bounds.x - bounds.width / 2;
   });
-  let widthTransform = useTransform(distance, [-150, 0, 150], [40, 80, 40]);
-  let heightTransform = useTransform(distance, [-150, 0, 150], [40, 80, 40]);
-  let widthTransformIcon = useTransform(distance, [-150, 0, 150], [20, 40, 20]);
-  let heightTransformIcon = useTransform(
+  const widthTransform = useTransform(distance, [-150, 0, 150], [40, 74, 40]);
+  const heightTransform = useTransform(distance, [-150, 0, 150], [40, 74, 40]);
+  const widthTransformIcon = useTransform(distance, [-150, 0, 150], [18, 32, 18]);
+  const heightTransformIcon = useTransform(
     distance,
     [-150, 0, 150],
-    [20, 40, 20],
+    [18, 32, 18],
   );
-  let width = useSpring(widthTransform, {
-    mass: 0.1,
-    stiffness: 150,
-    damping: 12,
+  const width = useSpring(widthTransform, {
+    mass: 0.12,
+    stiffness: 170,
+    damping: 14,
   });
-  let height = useSpring(heightTransform, {
-    mass: 0.1,
-    stiffness: 150,
-    damping: 12,
+  const height = useSpring(heightTransform, {
+    mass: 0.12,
+    stiffness: 170,
+    damping: 14,
   });
-  let widthIcon = useSpring(widthTransformIcon, {
-    mass: 0.1,
-    stiffness: 150,
-    damping: 12,
+  const widthIcon = useSpring(widthTransformIcon, {
+    mass: 0.12,
+    stiffness: 170,
+    damping: 14,
   });
-  let heightIcon = useSpring(heightTransformIcon, {
-    mass: 0.1,
-    stiffness: 150,
-    damping: 12,
+  const heightIcon = useSpring(heightTransformIcon, {
+    mass: 0.12,
+    stiffness: 170,
+    damping: 14,
   });
   const [hovered, setHovered] = useState(false);
+
   return (
-    <a href={href}>
+    <a
+      href={href}
+      onClick={(event) => {
+        if (onClick) {
+          event.preventDefault();
+          onClick();
+        }
+      }}
+    >
       <motion.div
         ref={ref}
         style={{ width, height }}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
-        className="relative flex aspect-square items-center justify-center rounded-full bg-raw-black border border-raw-border"
+        className={cn(
+          "relative flex aspect-square items-center justify-center rounded-full border text-raw-silver/70 shadow-[0_8px_18px_rgba(6,10,24,0.2)] transition-colors",
+          active
+            ? "border-raw-gold/45 bg-raw-gold/15 text-raw-gold"
+            : "border-raw-border/40 bg-raw-black/25 hover:border-raw-border/60 hover:text-raw-text",
+        )}
       >
         <AnimatePresence>
           {hovered && (

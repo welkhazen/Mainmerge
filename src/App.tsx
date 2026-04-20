@@ -10,32 +10,38 @@ import Login from "./pages/Login";
 import Authenticate from "./pages/Authenticate";
 import Admin from "./pages/Admin";
 import { ThemeProvider } from "@/providers/ThemeProvider";
+import { AnalyticsProvider } from "@/components/analytics/AnalyticsProvider";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 const queryClient = new QueryClient();
 
 const App = () => (
-  <ThemeProvider>
-    <StytchProvider>
-      <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/authenticate" element={<Authenticate />} />
-              <Route path="/dashboard" element={<Index />} />
-              <Route path="/dashboard/communities/:communityId" element={<Index />} />
-              <Route path="/admin" element={<Admin />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-        </TooltipProvider>
-      </QueryClientProvider>
-    </StytchProvider>
-  </ThemeProvider>
+  <ErrorBoundary>
+    <ThemeProvider>
+      <StytchProvider>
+        <QueryClientProvider client={queryClient}>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+              <AnalyticsProvider>
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/authenticate" element={<Authenticate />} />
+                  <Route path="/dashboard" element={<Index />} />
+                  <Route path="/dashboard/communities/:communityId" element={<Index />} />
+                  <Route path="/admin" element={<Admin />} />
+                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </AnalyticsProvider>
+            </BrowserRouter>
+          </TooltipProvider>
+        </QueryClientProvider>
+      </StytchProvider>
+    </ThemeProvider>
+  </ErrorBoundary>
 );
 
 export default App;

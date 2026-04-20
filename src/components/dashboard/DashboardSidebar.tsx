@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { AvatarFigure } from "@/components/ui/avatar-figure";
+import { FloatingDock } from "@/components/ui/floating-dock";
 import { CommunityBadge } from "@/components/dashboard/CommunityBadge";
 import { countUnreadMessages, readCommunityChats, type PersistedCommunityRecord } from "@/lib/communityChat";
 import type { DashboardTab } from "./DashboardNav";
@@ -53,7 +54,6 @@ export function DashboardSidebar({
   const location = useLocation();
   const [communities, setCommunities] = useState<PersistedCommunityRecord[]>(() => readCommunityChats());
   const [totalJoinedUnread, setTotalJoinedUnread] = useState(0);
-  const [hoveredNavItem, setHoveredNavItem] = useState<DashboardTab | "home" | null>(null);
 
   useEffect(() => {
     const reloadCommunities = () => {
@@ -107,6 +107,28 @@ export function DashboardSidebar({
     return sorted.filter((community) => community.members.some((member) => member.userId === userId)).slice(0, 4);
   }, [communities, userId]);
 
+  const dockItems = navItems.map((item) => {
+    const isActive =
+      (item.tab === "home" && isHome) ||
+      (item.tab !== "home" && activeTab === item.tab && !isHome);
+    const Icon = item.icon;
+
+    return {
+      title: item.label,
+      href: "#",
+      active: isActive,
+      onClick: () => {
+        if (item.tab === "home") {
+          onHomeClick();
+          return;
+        }
+
+        onTabChange(item.tab as DashboardTab);
+      },
+      icon: <Icon className="h-full w-full" />,
+    };
+  });
+
   useEffect(() => {
     const unread = communities.reduce((sum, community) => {
       const isJoined = community.members.some((member) => member.userId === userId);
@@ -137,47 +159,14 @@ export function DashboardSidebar({
 
       {/* Nav items */}
       <nav className="flex-1 px-3 py-2 space-y-0.5">
-        <div className="flex flex-col items-center gap-3 py-2">
-          {navItems.map((item) => {
-            const isActive =
-              (item.tab === "home" && isHome) ||
-              (item.tab !== "home" && activeTab === item.tab && !isHome);
-            const isHovered = hoveredNavItem === item.tab;
-            const shouldShrink = hoveredNavItem !== null && !isHovered;
-            const Icon = item.icon;
-            return (
-              <button
-                key={item.label}
-                title={item.label}
-                aria-label={item.label}
-                onMouseEnter={() => setHoveredNavItem(item.tab)}
-                onMouseLeave={() => setHoveredNavItem(null)}
-                onClick={() => {
-                  if (item.tab === "home") {
-                    onHomeClick();
-                  } else {
-                    onTabChange(item.tab as DashboardTab);
-                  }
-                }}
-                className={`group relative flex h-10 w-10 items-center justify-center rounded-full border text-sm transition-all duration-200 ease-out backdrop-blur-md transform-gpu ${
-                  isActive
-                    ? "border-violet-300/35 bg-[radial-gradient(circle_at_35%_30%,rgba(255,255,255,0.2),rgba(130,145,255,0.12)_45%,rgba(20,26,42,0.68)_100%)] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.22),0_10px_24px_rgba(108,124,255,0.4),0_0_0_1px_rgba(153,166,255,0.18)]"
-                    : "border-white/12 bg-white/[0.07] text-slate-400 shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_8px_18px_rgba(6,10,24,0.35)] hover:scale-105 hover:border-violet-300/25 hover:text-slate-100 hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_10px_24px_rgba(108,124,255,0.34),0_0_16px_rgba(126,141,255,0.32)]"
-                } ${
-                  isHovered
-                    ? "z-10 scale-[1.18]"
-                    : shouldShrink
-                      ? "scale-[0.86] opacity-70"
-                      : "scale-100"
-                }`}
-              >
-                <Icon className="h-4 w-4 shrink-0" />
-              </button>
-            );
-          })}
-        </div>
+        <FloatingDock
+          items={dockItems}
+          orientation="vertical"
+          desktopClassName="w-14 gap-3 rounded-3xl bg-transparent border-none px-0 py-1 shadow-none"
+          mobileClassName="hidden"
+        />
 
-        <div className="mt-5 rounded-2xl border border-raw-border/20 bg-raw-surface/20 p-3">
+        <div className="mt-8 rounded-2xl border border-raw-border/20 bg-raw-surface/20 p-3">
           <div className="flex items-center justify-between gap-2 px-1 pb-2">
             <div className="flex items-center gap-1.5">
               <p className="text-[10px] uppercase tracking-[0.18em] text-raw-silver/35">Your Communities</p>

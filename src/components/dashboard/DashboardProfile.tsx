@@ -58,7 +58,7 @@ export function DashboardProfile({
       </div>
 
       <div className="grid gap-6 lg:grid-cols-5">
-        {/* Avatar column */}
+        {/* Avatar + Phone mockup column */}
         <div className="lg:col-span-2 space-y-6">
           {/* Avatar card */}
           <div className="rounded-2xl border border-raw-border/40 bg-raw-surface/40 p-6 flex flex-col items-center text-center">
@@ -96,6 +96,7 @@ export function DashboardProfile({
               ))}
             </div>
           </div>
+
         </div>
 
         {/* Stats + Badges column */}

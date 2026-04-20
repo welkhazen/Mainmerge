@@ -21,6 +21,27 @@ export default tseslint.config(
       ...reactHooks.configs.recommended.rules,
       "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
       "@typescript-eslint/no-unused-vars": "off",
+      "no-restricted-syntax": [
+        "error",
+        {
+          selector:
+            "CallExpression[callee.object.name='posthog'][callee.property.name='capture']",
+          message:
+            "Do not call posthog.capture directly. Import `track` from '@/lib/analytics' instead.",
+        },
+        {
+          selector:
+            "CallExpression[callee.property.name='capture'][callee.object.type='Identifier'][callee.object.name=/^ph|posthog$/]",
+          message:
+            "Do not call posthog.capture directly. Import `track` from '@/lib/analytics' instead.",
+        },
+      ],
+    },
+  },
+  {
+    files: ["src/lib/analytics/**/*.{ts,tsx}", "src/components/analytics/**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-syntax": "off",
     },
   },
 );

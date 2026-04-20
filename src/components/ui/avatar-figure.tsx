@@ -1,23 +1,12 @@
+import { useState } from "react";
+import { LEVEL_THEMES, getAvatarTheme } from "@/lib/avatar-theme";
+
 interface AvatarFigureProps {
   level: number;
   size?: "sm" | "md" | "lg" | "xl";
   selected?: boolean;
   className?: string;
 }
-
-// Level progression: grey → blue → purple → gold
-const LEVEL_THEMES = [
-  { bg: "#1a1a1e", figure: "#4a4a52", ring: "#333338", glow: "none", name: "Shadow Form" },
-  { bg: "#1a1a1e", figure: "#5a5a62", ring: "#3a3a40", glow: "none", name: "Dim Echo" },
-  { bg: "#1a1c22", figure: "#4466aa", ring: "#334488", glow: "none", name: "Steel Pulse" },
-  { bg: "#1a1c24", figure: "#5577bb", ring: "#3355aa", glow: "none", name: "Deep Current" },
-  { bg: "#1c1a24", figure: "#7766cc", ring: "#5544aa", glow: "none", name: "Violet Drift" },
-  { bg: "#1a1c26", figure: "#4488dd", ring: "#2266cc", glow: "#2266cc40", name: "Neon Nebula" },
-  { bg: "#1e1a18", figure: "#8B7355", ring: "#6B5335", glow: "none", name: "Bronze Ember" },
-  { bg: "#1e1c18", figure: "#C4A76C", ring: "#9B8545", glow: "#C4A76C30", name: "Gold Whisper" },
-  { bg: "#1e1c16", figure: "#D4B77C", ring: "#B8941A", glow: "#D4B77C40", name: "Aureate Mind" },
-  { bg: "#1e1c14", figure: "#F1C42D", ring: "#D4A81A", glow: "#F1C42D50", name: "Pure Radiance" },
-];
 
 const sizes = {
   sm: { outer: 48, inner: 36, face: 0.55 },
@@ -28,7 +17,41 @@ const sizes = {
 
 export function AvatarFigure({ level, size = "md", selected = false, className = "" }: AvatarFigureProps) {
   const theme = LEVEL_THEMES[level - 1] || LEVEL_THEMES[0];
+  const [imageFailed, setImageFailed] = useState(false);
+  const useImage = !!theme.imageSrc && !imageFailed;
   const s = sizes[size];
+
+  if (useImage) {
+    const glow = theme.glow !== "none" ? theme.glow : "rgba(241,196,45,0.25)";
+    return (
+      <div
+        className={`relative inline-flex items-center justify-center ${className}`}
+        style={{ width: s.outer, height: s.outer }}
+      >
+        <div
+          className="relative h-full w-full overflow-hidden rounded-full"
+          style={{
+            background: `radial-gradient(circle at 50% 40%, ${theme.bg} 0%, #050505 70%)`,
+            boxShadow: selected
+              ? `0 0 0 2px ${theme.ring}, 0 0 18px ${glow}`
+              : theme.glow !== "none"
+                ? `0 0 14px ${glow}`
+                : "inset 0 0 10px rgba(0,0,0,0.4)",
+          }}
+        >
+          <img
+            src={theme.imageSrc}
+            alt={theme.name}
+            onError={() => setImageFailed(true)}
+            draggable={false}
+            className="h-full w-full object-cover"
+            style={{ objectPosition: "center 35%" }}
+          />
+        </div>
+      </div>
+    );
+  }
+
   const cx = s.outer / 2;
   const cy = s.outer / 2;
   const r = s.inner / 2;
@@ -169,8 +192,4 @@ export function AvatarFigure({ level, size = "md", selected = false, className =
   );
 }
 
-export function getAvatarTheme(level: number) {
-  return LEVEL_THEMES[level - 1] || LEVEL_THEMES[0];
-}
-
-export { LEVEL_THEMES };
+export { LEVEL_THEMES, getAvatarTheme };

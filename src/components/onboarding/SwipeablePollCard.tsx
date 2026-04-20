@@ -12,6 +12,7 @@ interface SwipeablePollCardProps {
   responseStats: Record<string, number>;
   comments?: Comment[];
   onSwipe: (option: string) => void;
+  onNavigate?: (direction: "left" | "right") => void;
   onAddComment?: (content: string) => void;
 }
 
@@ -25,6 +26,7 @@ export function SwipeablePollCard({
   responseStats,
   comments = [],
   onSwipe,
+  onNavigate,
   onAddComment,
 }: SwipeablePollCardProps) {
   const [swipeOffsetX, setSwipeOffsetX] = useState(0);
@@ -98,7 +100,7 @@ export function SwipeablePollCard({
   };
 
   const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (pointerStartXRef.current === null || isAnswered) {
+    if (pointerStartXRef.current === null) {
       return;
     }
 
@@ -121,7 +123,13 @@ export function SwipeablePollCard({
       return;
     }
 
-    voteFromSwipeDirection(deltaX > 0 ? "right" : "left");
+    const direction = deltaX > 0 ? "right" : "left";
+    if (isAnswered) {
+      onNavigate?.(direction);
+      return;
+    }
+
+    voteFromSwipeDirection(direction);
   };
 
   const handleCommentAdd = () => {

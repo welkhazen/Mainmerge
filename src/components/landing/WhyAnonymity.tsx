@@ -1,5 +1,6 @@
 import { GlareCard } from "@/components/ui/glare-card";
 import { InfiniteMovingCards } from "@/components/ui/infinite-moving-cards";
+import { useTrackSectionView } from "@/lib/analytics/useTrackSectionView";
 
 const cards = [
   {
@@ -45,18 +46,25 @@ const testimonials = [
 ];
 
 export function WhyAnonymity() {
+  const sectionRef = useTrackSectionView("why_anonymity");
+
   return (
-    <section className="relative py-28 px-6">
-      <div className="mx-auto max-w-4xl">
+    <section ref={sectionRef as React.RefObject<HTMLElement>} className="relative py-28 px-6 bg-gradient-to-b from-transparent to-[rgba(255,255,255,0.01)]">
+      <div className="w-full">
         <h2 className="mb-12 text-center font-display text-2xl tracking-wide text-raw-text sm:text-3xl">
           No real names. Better honesty. Better matching.
         </h2>
 
         <div className="grid gap-6 md:grid-cols-3">
-          {cards.map((card) => (
+          {cards.map((card, i) => (
             <GlareCard key={card.title}>
               <div className="rounded-2xl border border-raw-border/40 bg-raw-surface/30 p-7 text-center">
-                <h3 className="font-display text-sm tracking-wide text-raw-text">{card.title}</h3>
+                <h3
+                  className="inline-block font-display text-sm tracking-wide text-raw-gold animate-heartbeat will-change-transform"
+                  style={{ animationDelay: `${i * 0.18}s` }}
+                >
+                  {card.title}
+                </h3>
                 <p className="mt-3 text-sm leading-relaxed text-raw-silver/45">{card.description}</p>
               </div>
             </GlareCard>

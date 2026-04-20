@@ -24,7 +24,6 @@ export default {
           silver: "rgb(var(--raw-silver) / <alpha-value>)",
           text: "rgb(var(--raw-text) / <alpha-value>)",
           gold: "rgb(var(--raw-accent) / <alpha-value>)",
-          ink: "rgb(var(--raw-ink) / <alpha-value>)",
           "gold-dim": "rgb(var(--raw-accent) / 0.15)",
           border: "rgb(var(--raw-border) / <alpha-value>)",
         },
@@ -86,10 +85,42 @@ export default {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        iconPop: {
+          "0%": { transform: "scale(0.92)", opacity: "0.6" },
+          "60%": { transform: "scale(1.04)", opacity: "1" },
+          "100%": { transform: "scale(1)", opacity: "1" },
+        },
+        heartbeat: {
+          "0%": {
+            transform: "scale(1)",
+            textShadow: "0 0 6px rgb(var(--raw-accent) / 0.35), 0 0 14px rgb(var(--raw-accent) / 0.15)",
+          },
+          "14%": {
+            transform: "scale(1.09)",
+            textShadow: "0 0 14px rgb(var(--raw-accent) / 0.85), 0 0 28px rgb(var(--raw-accent) / 0.55), 0 0 42px rgb(var(--raw-accent) / 0.25)",
+          },
+          "28%": {
+            transform: "scale(1)",
+            textShadow: "0 0 6px rgb(var(--raw-accent) / 0.35), 0 0 14px rgb(var(--raw-accent) / 0.15)",
+          },
+          "42%": {
+            transform: "scale(1.06)",
+            textShadow: "0 0 12px rgb(var(--raw-accent) / 0.7), 0 0 22px rgb(var(--raw-accent) / 0.4)",
+          },
+          "70%": {
+            transform: "scale(1)",
+            textShadow: "0 0 6px rgb(var(--raw-accent) / 0.3), 0 0 14px rgb(var(--raw-accent) / 0.12)",
+          },
+          "100%": {
+            transform: "scale(1)",
+            textShadow: "0 0 6px rgb(var(--raw-accent) / 0.35), 0 0 14px rgb(var(--raw-accent) / 0.15)",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        heartbeat: "heartbeat 1.3s ease-in-out infinite",
       },
     },
   },

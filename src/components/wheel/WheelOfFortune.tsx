@@ -70,6 +70,8 @@ export function WheelOfFortune({ prizes, onSpinEnd, disabled = false, prizeWeigh
   const radius = 200;
   const size = radius * 2;
   const total = prizes.length;
+  const accentColor = "rgb(var(--raw-accent))";
+  const accentSoft = "rgb(var(--raw-accent) / 0.3)";
 
   const handleSpin = useCallback(() => {
     if (isSpinning || disabled || total === 0) {
@@ -132,18 +134,18 @@ export function WheelOfFortune({ prizes, onSpinEnd, disabled = false, prizeWeigh
         <svg width="32" height="40" viewBox="0 0 32 40">
           <defs>
             <linearGradient id="pointerGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#F1C42D" />
-              <stop offset="100%" stopColor="#B8941E" />
+              <stop offset="0%" stopColor={accentColor} />
+              <stop offset="100%" stopColor={accentColor} />
             </linearGradient>
             <filter id="pointerShadow">
-              <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="#F1C42D" floodOpacity="0.4" />
+              <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor={accentColor} floodOpacity="0.4" />
             </filter>
           </defs>
           <polygon points="16,4 28,4 16,30 4,4" fill="url(#pointerGrad)" filter="url(#pointerShadow)" />
         </svg>
       </div>
 
-      <div className="relative h-[400px] w-[400px] rounded-full border border-[#f1c42d4d] bg-black/30 p-1.5 shadow-[0_0_45px_rgba(241,196,45,0.18)]">
+      <div className="relative h-[400px] w-[400px] rounded-full border border-raw-gold/30 bg-black/30 p-1.5 shadow-[0_0_45px_rgb(var(--raw-accent)/0.18)]">
         <svg
           viewBox={`0 0 ${size} ${size}`}
           className="block h-full w-full"
@@ -184,8 +186,8 @@ export function WheelOfFortune({ prizes, onSpinEnd, disabled = false, prizeWeigh
             );
           })}
 
-          <circle cx={radius} cy={radius} r={radius * 0.15} fill="#080808" stroke="#F1C42D" strokeWidth="2" />
-          <circle cx={radius} cy={radius} r={radius * 0.12} fill="#0c0c0c" stroke="#F1C42D" strokeWidth="0.5" />
+          <circle cx={radius} cy={radius} r={radius * 0.15} fill="#080808" stroke={accentColor} strokeWidth="2" />
+          <circle cx={radius} cy={radius} r={radius * 0.12} fill="#0c0c0c" stroke={accentColor} strokeWidth="0.5" />
 
           {prizes.map((_, index) => {
             const angle = (index * 360) / total - 90;
@@ -194,7 +196,7 @@ export function WheelOfFortune({ prizes, onSpinEnd, disabled = false, prizeWeigh
             const cx = radius + dotRadius * Math.cos(rad);
             const cy = radius + dotRadius * Math.sin(rad);
 
-            return <circle key={`dot-${index}`} cx={cx} cy={cy} r="3" fill="#F1C42D" opacity="0.5" />;
+            return <circle key={`dot-${index}`} cx={cx} cy={cy} r="3" fill={accentSoft} opacity="0.8" />;
           })}
         </svg>
       </div>
@@ -205,7 +207,7 @@ export function WheelOfFortune({ prizes, onSpinEnd, disabled = false, prizeWeigh
         className={`mt-8 relative overflow-hidden rounded-full px-10 py-3.5 font-display text-sm uppercase tracking-[0.2em] transition-all ${
           isSpinning || disabled
             ? "cursor-not-allowed border border-raw-border/30 bg-raw-surface text-raw-silver/30"
-            : "bg-gradient-to-r from-raw-gold to-yellow-500 text-raw-black hover:scale-105 hover:shadow-[0_0_30px_rgba(241,196,45,0.3)] active:scale-95"
+            : "bg-raw-gold text-raw-black hover:scale-105 hover:shadow-[0_0_30px_rgb(var(--raw-accent)/0.3)] active:scale-95"
         }`}
       >
         {isSpinning ? "Spinning..." : disabled ? "Come Back Tomorrow" : "Spin"}

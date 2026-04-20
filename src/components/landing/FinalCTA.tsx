@@ -1,11 +1,25 @@
 import { FormEvent, useState } from "react";
 import { ContainerTextFlip } from "@/components/ui/container-text-flip";
+import { MinimalFooter } from "@/components/ui/minimal-footer";
+import { track } from "@/lib/analytics";
+import { useTrackSectionView } from "@/lib/analytics/useTrackSectionView";
+import { apiFetch } from "@/lib/http";
 
 interface FinalCTAProps {
   onSignupClick: () => void;
 }
 
+function getUtmParams() {
+  const params = new URLSearchParams(window.location.search);
+  return {
+    utm_source: params.get("utm_source") ?? undefined,
+    utm_medium: params.get("utm_medium") ?? undefined,
+    utm_campaign: params.get("utm_campaign") ?? undefined,
+  };
+}
+
 export function FinalCTA({ onSignupClick }: FinalCTAProps) {
+  const sectionRef = useTrackSectionView("final_cta");
   const supportWhatsAppNumber = import.meta.env.VITE_SUPPORT_WHATSAPP_NUMBER ?? "+201000000000";
   const supportEmail = import.meta.env.VITE_SUPPORT_EMAIL ?? "support@theartofraw.me";
   const whatsAppHref = `https://wa.me/${supportWhatsAppNumber.replace(/\D/g, "")}`;
@@ -15,8 +29,9 @@ export function FinalCTA({ onSignupClick }: FinalCTAProps) {
   const [contactEmail, setContactEmail] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleEarlyAccessSubmit = (event: FormEvent) => {
+  const handleEarlyAccessSubmit = async (event: FormEvent) => {
     event.preventDefault();
 
     const trimmedOwnerName = ownerName.trim();
@@ -37,14 +52,62 @@ export function FinalCTA({ onSignupClick }: FinalCTAProps) {
     }
 
     setErrorMessage("");
-    setSuccessMessage("You're in. We'll contact you with early access details soon.");
-    setOwnerName("");
-    setCommunityName("");
-    setContactEmail("");
+    setIsSubmitting(true);
+
+    const utmParams = getUtmParams();
+
+    try {
+      const response = await apiFetch("/api/waitlist", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          email: trimmedContactEmail,
+          role: "owner",
+          owner_name: trimmedOwnerName,
+          community_name: trimmedCommunityName,
+          source: "final_cta",
+          ...utmParams,
+        }),
+      });
+
+      if (response.ok) {
+        track("waitlist_submitted", {
+          role: "owner",
+          source: "final_cta",
+        });
+        setSuccessMessage("You're in. We'll contact you with early access details soon.");
+        setOwnerName("");
+        setCommunityName("");
+        setContactEmail("");
+      } else {
+        setErrorMessage("Something went wrong. Please try again.");
+      }
+    } catch {
+      setErrorMessage("Network error. Please check your connection and try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleAnonAccountClick = () => {
+    track("landing_cta_clicked", {
+      cta_id: "final_cta_anon_account",
+      cta_text: "Or create an anonymous account",
+      source_section: "final_cta",
+    });
+    onSignupClick();
+  };
+
+  const handleExploreCommunitiesClick = () => {
+    track("landing_cta_clicked", {
+      cta_id: "final_cta_explore_communities",
+      cta_text: "Explore communities",
+      source_section: "final_cta",
+    });
   };
 
   return (
-    <section className="relative px-4 py-24 sm:px-6 sm:py-28 md:py-32">
+    <section ref={sectionRef as React.RefObject<HTMLElement>} className="relative px-4 py-24 sm:px-6 sm:py-28 md:py-32">
       {/* Subtle glow */}
       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[500px] h-[300px] rounded-full bg-raw-gold/[0.04] blur-[100px]" />
 
@@ -115,22 +178,24 @@ export function FinalCTA({ onSignupClick }: FinalCTAProps) {
 
             <button
               type="submit"
-              className="mt-1 rounded-full bg-raw-gold px-8 py-3.5 text-sm font-bold text-raw-ink transition-all hover:bg-raw-gold/90 hover:shadow-lg hover:shadow-raw-gold/20"
+              disabled={isSubmitting}
+              className="mt-1 rounded-full bg-raw-gold px-8 py-3.5 text-sm font-bold text-raw-ink transition-all hover:bg-raw-gold/90 hover:shadow-lg hover:shadow-raw-gold/20 disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              Request early access
+              {isSubmitting ? "Submitting…" : "Request early access"}
             </button>
           </div>
         </form>
 
         <div className="mt-6 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
           <button
-            onClick={onSignupClick}
+            onClick={handleAnonAccountClick}
             className="rounded-full border border-raw-border px-8 py-3.5 text-sm font-medium text-raw-silver/80 transition-all hover:border-raw-silver/30 hover:text-raw-text"
           >
             Or create an anonymous account
           </button>
           <a
             href="#communities"
+            onClick={handleExploreCommunitiesClick}
             className="rounded-full border border-raw-border px-8 py-3.5 text-center text-sm font-medium text-raw-silver/80 transition-all hover:border-raw-silver/30 hover:text-raw-text"
           >
             Explore communities
@@ -140,30 +205,26 @@ export function FinalCTA({ onSignupClick }: FinalCTAProps) {
         <p className="mt-5 text-xs text-raw-silver/50">We only use this info for early-access onboarding.</p>
       </div>
 
-      {/* Footer */}
-      <div className="mt-20 border-t border-raw-border/30 pt-8 sm:mt-24 md:mt-28">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-5 px-1 sm:flex-row sm:px-6">
-          <p className="font-display text-sm tracking-[0.2em] text-raw-silver/45">
-            ra<span className="text-raw-gold/50">W</span>
-          </p>
-          <div className="flex flex-col items-center justify-center gap-2 text-center text-sm text-raw-silver/65 sm:items-end sm:text-right">
-            <a
-              href={whatsAppHref}
-              target="_blank"
-              rel="noreferrer"
-              className="transition-colors hover:text-raw-text"
-            >
-              WhatsApp: {supportWhatsAppNumber}
-            </a>
-            <a
-              href={`mailto:${supportEmail}`}
-              className="transition-colors hover:text-raw-text"
-            >
-              Email: {supportEmail}
-            </a>
-            <span className="text-xs text-raw-silver/35">theartofraw.me</span>
-          </div>
+      <div className="mt-20 sm:mt-24 md:mt-28">
+        <div className="mx-auto mb-8 flex max-w-6xl flex-col items-center justify-center gap-2 text-center text-sm text-raw-silver/65">
+          <a
+            href={whatsAppHref}
+            target="_blank"
+            rel="noreferrer"
+            className="transition-colors hover:text-raw-text"
+          >
+            WhatsApp: {supportWhatsAppNumber}
+          </a>
+          <a
+            href={`mailto:${supportEmail}`}
+            className="transition-colors hover:text-raw-text"
+          >
+            Email: {supportEmail}
+          </a>
+          <span className="text-xs text-raw-silver/35">theartofraw.me</span>
         </div>
+
+        <MinimalFooter />
       </div>
     </section>
   );
