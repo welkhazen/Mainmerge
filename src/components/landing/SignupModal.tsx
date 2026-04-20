@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Eye, EyeOff, X } from "lucide-react";
 import {
   isValidUsername,
@@ -8,6 +8,7 @@ import {
 } from "@/lib/inputSecurity";
 import { StytchAuthOptions } from "@/components/auth/StytchAuthOptions";
 import type { AuthResult } from "@/store/useRawStore";
+import { track } from "@/lib/analytics";
 
 interface SignupModalProps {
   open: boolean;
@@ -15,6 +16,7 @@ interface SignupModalProps {
   onRequestSignupOtp: (username: string, password: string, phone: string) => Promise<AuthResult>;
   onVerifySignupOtp: (code: string) => Promise<AuthResult>;
   onLogin: (username: string, password: string) => Promise<AuthResult>;
+  source?: string;
 }
 
 type AuthMode = "signup" | "login";
@@ -63,7 +65,7 @@ function getPasswordStrength(password: string) {
   return { label: "Strong", tone: "text-emerald-300", checks };
 }
 
-export function SignupModal({ open, onClose, onRequestSignupOtp, onVerifySignupOtp, onLogin }: SignupModalProps) {
+export function SignupModal({ open, onClose, onRequestSignupOtp, onVerifySignupOtp, onLogin, source }: SignupModalProps) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -77,9 +79,15 @@ export function SignupModal({ open, onClose, onRequestSignupOtp, onVerifySignupO
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const openedFiredRef = useRef(false);
 
   useEffect(() => {
+    if (open && !openedFiredRef.current) {
+      openedFiredRef.current = true;
+      track("signup_modal_opened", { source: source ?? "unknown" });
+    }
     if (!open) {
+      openedFiredRef.current = false;
       setPassword("");
       setConfirmPassword("");
       setPhone("");
@@ -92,7 +100,7 @@ export function SignupModal({ open, onClose, onRequestSignupOtp, onVerifySignupO
       setShowPassword(false);
       setShowConfirmPassword(false);
     }
-  }, [open]);
+  }, [open, source]);
 
   useEffect(() => {
     if (cooldown <= 0) {
@@ -133,10 +141,15 @@ export function SignupModal({ open, onClose, onRequestSignupOtp, onVerifySignupO
     setIsSubmitting(true);
     setError("");
 
+    track("signup_started", { method: "username_password" });
+
     const result = await onRequestSignupOtp(normalizedUsername, normalizedPassword, "");
     if (!result.ok) {
+      track("signup_failed", { reason: result.error ?? "unknown", step: "details" });
       setError(result.error ?? "Unable to create account.");
       setIsSubmitting(false);
+    } else {
+      track("signup_otp_sent", { channel: "sms", attempt: 1 });
     }
   };
 
@@ -154,7 +167,10 @@ export function SignupModal({ open, onClose, onRequestSignupOtp, onVerifySignupO
 
     const result = await onVerifySignupOtp(verificationCode);
     if (!result.ok) {
+      track("signup_failed", { reason: result.error ?? "otp_invalid", step: "otp" });
       setError(result.error ?? "Verification failed.");
+    } else {
+      track("signup_otp_verified", { attempts_used: 1, time_to_verify_ms: 0 });
     }
 
     setIsSubmitting(false);
@@ -173,10 +189,15 @@ export function SignupModal({ open, onClose, onRequestSignupOtp, onVerifySignupO
     setIsSubmitting(true);
     setError("");
 
+    track("login_started", { method: "username_password" });
+
     const result = await onLogin(normalizedUsername, normalizedPassword);
 
     if (!result.ok) {
+      track("login_failed", { method: "username_password", reason: result.error ?? "unknown" });
       setError(result.error ?? "Sign in failed.");
+    } else {
+      track("login_completed", { method: "username_password" });
     }
 
     setIsSubmitting(false);

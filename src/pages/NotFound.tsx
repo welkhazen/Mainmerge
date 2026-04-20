@@ -1,14 +1,11 @@
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
-import { usePostHog } from "@posthog/react";
 
 const NotFound = () => {
   const location = useLocation();
-  const posthog = usePostHog();
 
   useEffect(() => {
     console.error("404 Error: User attempted to access non-existent route:", location.pathname);
-    posthog.capture("my_custom_event", { property: "value" });
   }, [location.pathname]);
 
   return (

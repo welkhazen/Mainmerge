@@ -1,10 +1,11 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { AvatarFigure } from "@/components/ui/avatar-figure";
 import { AvatarPhoneHomeScreen } from "@/components/ui/avatar-phone-home-screen";
 import { PhoneMockup } from "@/components/ui/phone-mockup";
 import { SwipeablePollCard } from "./SwipeablePollCard";
 import type { OnboardingStep, Poll, User } from "@/store/useRawStore";
 import type { Comment } from "./PollComments";
+import { track } from "@/lib/analytics";
 
 type OnboardingPoll = {
   id: string;
@@ -172,6 +173,21 @@ export function OnboardingJourney({
   const [pollStats, setPollStats] = useState<Record<string, Record<string, number>>>({});
   const [currentPollIndex, setCurrentPollIndex] = useState(0);
   const answeredCount = onboardingPolls.filter((poll) => onboardingAnsweredPollIds.has(poll.id)).length;
+  const startedFiredRef = useRef(false);
+  const stepStartTimeRef = useRef(Date.now());
+
+  useEffect(() => {
+    if (!startedFiredRef.current) {
+      startedFiredRef.current = true;
+      track("onboarding_started", {});
+    }
+  }, []);
+
+  useEffect(() => {
+    const stepIndex = STEP_ORDER.indexOf(onboardingStep);
+    track("onboarding_step_viewed", { step: onboardingStep as "avatar" | "polls" | "communities" | "ready", step_index: stepIndex });
+    stepStartTimeRef.current = Date.now();
+  }, [onboardingStep]);
 
   const canContinueFromAvatar = avatarLevel >= 1;
   const canContinueFromPolls = answeredCount >= onboardingPolls.length;
@@ -190,6 +206,10 @@ export function OnboardingJourney({
   }, [onboardingPolls]);
 
   const goToNextStep = () => {
+    track("onboarding_step_completed", {
+      step: onboardingStep as "avatar" | "polls" | "communities" | "ready",
+      duration_ms: Date.now() - stepStartTimeRef.current,
+    });
     onSetOnboardingStep(getNextStep(onboardingStep));
   };
 
@@ -244,7 +264,7 @@ export function OnboardingJourney({
                       {Array.from({ length: 3 }, (_, i) => i + 1).map((lvl) => (
                         <button
                           key={lvl}
-                          onClick={() => onAvatarLevelChange(lvl)}
+                          onClick={() => { track("onboarding_avatar_selected", { avatar_level: lvl, attempts: 1 }); onAvatarLevelChange(lvl); }}
                           className="flex flex-col items-center gap-2 group transition-transform hover:scale-105"
                         >
                           <div
@@ -265,7 +285,7 @@ export function OnboardingJourney({
                       {Array.from({ length: 3 }, (_, i) => i + 4).map((lvl) => (
                         <button
                           key={lvl}
-                          onClick={() => onAvatarLevelChange(lvl)}
+                          onClick={() => { track("onboarding_avatar_selected", { avatar_level: lvl, attempts: 1 }); onAvatarLevelChange(lvl); }}
                           className="flex flex-col items-center gap-2 group transition-transform hover:scale-105"
                         >
                           <div
@@ -286,7 +306,7 @@ export function OnboardingJourney({
                       {Array.from({ length: 3 }, (_, i) => i + 7).map((lvl) => (
                         <button
                           key={lvl}
-                          onClick={() => onAvatarLevelChange(lvl)}
+                          onClick={() => { track("onboarding_avatar_selected", { avatar_level: lvl, attempts: 1 }); onAvatarLevelChange(lvl); }}
                           className="flex flex-col items-center gap-2 group transition-transform hover:scale-105"
                         >
                           <div
@@ -394,6 +414,7 @@ export function OnboardingJourney({
                                 responseStats={pollStatData}
                                 comments={pollComments[poll.id] || []}
                                 onSwipe={(option) => {
+                                  track("onboarding_poll_answered", { poll_id: poll.id, option_id: option, step_index: currentPollIndex });
                                   setPollSelections((prev) => ({ ...prev, [poll.id]: option }));
                                   onMarkPollAnswered(poll.id);
                                 }}
@@ -480,7 +501,16 @@ export function OnboardingJourney({
                   return (
                     <button
                       key={community.id}
-                      onClick={() => onToggleCommunity(community.id)}
+                      onClick={() => {
+                        const willBeSelected = !selectedCommunityIds.includes(community.id);
+                        if (willBeSelected) {
+                          track("onboarding_community_selected", {
+                            community_id: community.id,
+                            selected_count: selectedCommunityIds.length + 1,
+                          });
+                        }
+                        onToggleCommunity(community.id);
+                      }}
                       disabled={isSelectionDisabled}
                       className={`group overflow-hidden rounded-[26px] border text-left transition-all duration-300 ${
                         isSelected
@@ -550,7 +580,14 @@ export function OnboardingJourney({
               </p>
 
               <button
-                onClick={onCompleteOnboarding}
+                onClick={() => {
+                  track("onboarding_completed", {
+                    total_duration_ms: Date.now() - stepStartTimeRef.current,
+                    polls_answered: answeredCount,
+                    communities_selected: selectedCommunityIds.length,
+                  });
+                  onCompleteOnboarding();
+                }}
                 className="mt-8 rounded-2xl bg-raw-gold px-7 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-raw-ink"
               >
                 Click If You Are Ready To Be raW
