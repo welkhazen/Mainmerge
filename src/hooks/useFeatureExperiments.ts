@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef } from "react";
 import { usePostHog } from "posthog-js/react";
+import { track } from "@/lib/analytics";
 
 export type HeroCopyVariant = "control" | "identity-first";
 export type SignupCtaVariant = "join-free" | "start-anonymous";
@@ -20,19 +21,19 @@ export function useFeatureExperiments() {
   const heroCopy = normalizeVariant<HeroCopyVariant>(
     posthog?.getFeatureFlag("exp_hero_copy"),
     ["control", "identity-first"],
-    "control"
+    "control",
   );
 
   const signupCta = normalizeVariant<SignupCtaVariant>(
     posthog?.getFeatureFlag("exp_signup_cta"),
     ["join-free", "start-anonymous"],
-    "join-free"
+    "join-free",
   );
 
   const gatePosition = normalizeVariant<GatePositionVariant>(
     posthog?.getFeatureFlag("exp_gate_position"),
     ["inline", "below"],
-    "inline"
+    "inline",
   );
 
   useEffect(() => {
@@ -53,13 +54,16 @@ export function useFeatureExperiments() {
       }
 
       exposureRef.current.add(key);
-      posthog.capture("experiment_exposure", { flag, variant });
+      track("experiment_exposure", { flag, variant });
     });
   }, [gatePosition, heroCopy, posthog, signupCta]);
 
-  return useMemo(() => ({
-    heroCopy,
-    signupCta,
-    gatePosition,
-  }), [gatePosition, heroCopy, signupCta]);
+  return useMemo(
+    () => ({
+      heroCopy,
+      signupCta,
+      gatePosition,
+    }),
+    [gatePosition, heroCopy, signupCta],
+  );
 }
