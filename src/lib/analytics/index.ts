@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { usePostHog } from "posthog-js/react";
+import { usePostHog } from "@posthog/react";
 import type { EventName, EventPropsFor } from "./events";
 import { getClient } from "./client";
 
@@ -13,6 +13,24 @@ const isDevMode = import.meta.env.DEV === true;
 export function track<E extends EventName>(
   name: E,
   properties: EventPropsFor<E>,
+): void {
+  captureWithGuards(name, properties as Record<string, unknown>);
+}
+
+/**
+ * Escape hatch for one-off diagnostics/prototyping events that are not yet in
+ * `events.ts`. Prefer `track()` for production analytics.
+ */
+export function trackCustom(
+  name: string,
+  properties: Record<string, unknown> = {},
+): void {
+  captureWithGuards(name, properties);
+}
+
+function captureWithGuards(
+  name: string,
+  properties: Record<string, unknown>,
 ): void {
   if (isTestMode) {
     return;
@@ -28,7 +46,7 @@ export function track<E extends EventName>(
     return;
   }
 
-  client.capture(name, properties as Record<string, unknown>);
+  client.capture(name, properties);
 }
 
 /**

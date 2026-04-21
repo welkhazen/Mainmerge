@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { usePostHog } from "posthog-js/react";
+import { track } from "@/lib/analytics";
 
 declare global {
   interface Window {
@@ -11,8 +11,6 @@ declare global {
 }
 
 export function useWebPush(isLoggedIn: boolean) {
-  const posthog = usePostHog();
-
   useEffect(() => {
     if (!isLoggedIn) {
       return;
@@ -20,17 +18,19 @@ export function useWebPush(isLoggedIn: boolean) {
 
     const oneSignalAppId = import.meta.env.VITE_ONESIGNAL_APP_ID as string | undefined;
     if (oneSignalAppId && window.OneSignal) {
-      void window.OneSignal.init({
-        appId: oneSignalAppId,
-        notifyButton: { enable: true },
-        allowLocalhostAsSecureOrigin: true,
-      }).then(() => {
-        window.OneSignal?.showSlidedownPrompt();
-        posthog?.capture("push_prompt_shown", { provider: "onesignal" });
-      });
+      void window.OneSignal
+        .init({
+          appId: oneSignalAppId,
+          notifyButton: { enable: true },
+          allowLocalhostAsSecureOrigin: true,
+        })
+        .then(() => {
+          window.OneSignal?.showSlidedownPrompt();
+          track("push_prompt_shown", { provider: "onesignal" });
+        });
       return;
     }
 
-    posthog?.capture("push_prompt_shown", { provider: "posthog" });
-  }, [isLoggedIn, posthog]);
+    track("push_prompt_shown", { provider: "posthog" });
+  }, [isLoggedIn]);
 }

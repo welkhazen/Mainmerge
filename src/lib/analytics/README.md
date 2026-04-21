@@ -18,12 +18,13 @@ Single entry point for all product analytics.
 ## Public API
 
 ```ts
-import { track, identify, reset, group, registerSuperProps, useTrack } from "@/lib/analytics";
+import { track, trackCustom, identify, reset, group, registerSuperProps, useTrack } from "@/lib/analytics";
 import { useTrackPageView } from "@/lib/analytics/useTrackPageView";
 import { useTrackSectionView } from "@/lib/analytics/useTrackSectionView";
 ```
 
 `track(name, properties)` — fire an event.
+`trackCustom(name, properties?)` — temporary/diagnostic custom event (avoid for long-term product metrics).
 `identify(userId, traits)` — attach a user id; also aliases the anon id.
 `reset()` — clear identity on logout.
 `group(type, key, traits)` — attach the user to a group (e.g. community).
@@ -32,6 +33,14 @@ import { useTrackSectionView } from "@/lib/analytics/useTrackSectionView";
 `useTrackPageView()` — mount once near the router; fires `page_viewed`.
 `useTrackSectionView(sectionId)` — returns a ref; fires `landing_section_viewed`
 once per session when 50% visible.
+
+Example (instead of direct `posthog.capture(...)` in feature code):
+
+```ts
+import { trackCustom } from "@/lib/analytics";
+
+trackCustom("my_custom_event", { property: "value" });
+```
 
 ## Firing sites (authoritative map)
 
