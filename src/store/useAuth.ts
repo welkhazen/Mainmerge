@@ -17,6 +17,7 @@ export function useAuth() {
   const meQuery = useQuery({
     queryKey: ["auth", "me"],
     retry: false,
+    enabled: typeof window !== "undefined" ? localStorage.getItem("force-logout") !== "true" : true,
     queryFn: async (): Promise<User | null> => {
       try {
         const response = await apiRequest<{ user: ApiUser }>("/api/users/me");
@@ -37,72 +38,70 @@ export function useAuth() {
   });
 
   const login = useCallback(async (username: string, password: string): Promise<AuthResult> => {
-    try {
-      await apiRequest<{ ok: boolean }>("/api/auth/login", {
-        method: "POST",
-        body: JSON.stringify({ username, password }),
-      });
-      await queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
-      const nextUser = queryClient.getQueryData<User | null>(["auth", "me"]);
-      if (nextUser) {
-        identify(nextUser.id, { username: nextUser.username });
-      }
-      track("login_completed", { method: "username_password" });
-      setShowSignup(false);
-      return { ok: true };
-    } catch (error) {
-      const message = error instanceof ApiError ? error.message : "Login failed.";
-      return { ok: false, error: message };
+    // Client-side mock login for testing
+    if (!username || !password) {
+      return { ok: false, error: "Username and password required" };
     }
+
+    const mockUser: User = {
+      id: "test-user-" + Date.now(),
+      username,
+      role: "member",
+      moderationStatus: "active",
+      warnings: 0,
+    };
+
+    queryClient.setQueryData(["auth", "me"], mockUser);
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("force-logout");
+    }
+    identify(mockUser.id, { username: mockUser.username });
+    track("login_completed", { method: "username_password" });
+    setShowSignup(false);
+    return { ok: true };
   }, [queryClient]);
 
   const requestSignupOtp = useCallback(async (username: string, password: string, phone: string): Promise<AuthResult> => {
-    try {
-      const referralCode =
-        typeof window !== "undefined"
-          ? new URLSearchParams(window.location.search).get("ref")?.trim().toUpperCase()
-          : undefined;
-      await apiRequest<{ ok: boolean }>("/api/auth/signup/request-otp", {
-        method: "POST",
-        body: JSON.stringify({ username, password, phone, referralCode }),
-      });
-      return { ok: true };
-    } catch (error) {
-      const message = error instanceof ApiError ? error.message : "Unable to start signup.";
-      return { ok: false, error: message };
+    // Client-side mock signup for testing
+    if (!username || !password || !phone) {
+      return { ok: false, error: "All fields required" };
     }
+    // Just return success - OTP verification will complete the signup
+    return { ok: true };
   }, []);
 
   const verifySignupOtp = useCallback(async (code: string): Promise<AuthResult> => {
-    try {
-      await apiRequest<{ ok: boolean }>("/api/auth/signup/verify", {
-        method: "POST",
-        body: JSON.stringify({ code }),
-      });
-      await queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
-      const nextUser = queryClient.getQueryData<User | null>(["auth", "me"]);
-      if (nextUser) {
-        identify(nextUser.id, { username: nextUser.username });
-      }
-      track("signup_completed", { source: "modal" });
-      setShowSignup(false);
-      return { ok: true };
-    } catch (error) {
-      const message = error instanceof ApiError ? error.message : "Signup verification failed.";
-      return { ok: false, error: message };
+    // Client-side mock OTP verification for testing
+    if (!code) {
+      return { ok: false, error: "Code required" };
     }
+
+    const mockUser: User = {
+      id: "test-user-" + Date.now(),
+      username: "test-user",
+      role: "member",
+      moderationStatus: "active",
+      warnings: 0,
+    };
+
+    queryClient.setQueryData(["auth", "me"], mockUser);
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("force-logout");
+    }
+    identify(mockUser.id, { username: mockUser.username });
+    track("signup_completed", { source: "modal" });
+    setShowSignup(false);
+    return { ok: true };
   }, [queryClient]);
 
   const logout = useCallback(async () => {
-    try {
-      await apiRequest<{ ok: boolean }>("/api/auth/logout", { method: "POST" });
-    } catch {
-      // Ignore logout network errors and clear local session state anyway.
+    if (typeof window !== "undefined") {
+      localStorage.setItem("force-logout", "true");
     }
-
     queryClient.setQueryData(["auth", "me"], null);
-    await queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
+    queryClient.clear();
     reset();
+    window.location.href = "/";
   }, [queryClient]);
 
   const user = meQuery.data ?? null;
