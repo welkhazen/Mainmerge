@@ -11,6 +11,8 @@ import { WhyAnonymity } from "@/components/landing/WhyAnonymity";
 import { LandingFooter } from "@/components/landing/LandingFooter";
 import { OnboardingJourney } from "@/components/onboarding/OnboardingJourney";
 import MatrixBackgroundIntro from "@/components/ui/matrix-background-intro";
+import PerforatedBackground from "@/components/ui/perforated-background";
+import MatrixBackground from "@/components/ui/matrix-background";
 import { useHostMode } from "@/hooks/use-host-mode";
 import Dashboard from "@/pages/Dashboard";
 import { useRawStore } from "@/store/useRawStore";
@@ -170,6 +172,8 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-raw-black">
+      <PerforatedBackground />
+      <MatrixBackground />
       {showMatrixIntro ? <MatrixBackgroundIntro onComplete={() => setShowMatrixIntro(false)} /> : null}
 
       <Navbar
