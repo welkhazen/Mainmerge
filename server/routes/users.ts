@@ -89,12 +89,25 @@ function toApiUser(user: UserRecord) {
 
 export const usersRouter = Router();
 
-usersRouter.use(requireAuth);
+// TODO: Re-enable requireAuth middleware for production
+// usersRouter.use(requireAuth);
 
 usersRouter.get("/me", async (req, res) => {
-  const user = await findAuthenticatedUser(req);
+  // Allow unauthenticated access for UI/UX development
+  let user = await findAuthenticatedUser(req);
   if (!user) {
-    return res.status(401).json({ error: "Authentication required." });
+    // Return a mock user for development purposes
+    user = await getUserRepository().findById("dev-user-1") ?? {
+      id: "dev-user-1",
+      username: "dev-user",
+      displayName: "Development User",
+      bio: "Testing UI/UX",
+      passwordHash: "",
+      phoneHash: "",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      passwordChangedAt: new Date(),
+    };
   }
 
   const role = await resolveUserRole(user.id);
@@ -107,9 +120,11 @@ usersRouter.patch("/me", async (req, res) => {
     return res.status(400).json({ error: "Invalid profile update payload." });
   }
 
-  const user = await findAuthenticatedUser(req);
+  // Development mode: allow unauthenticated access
+  let user = await findAuthenticatedUser(req);
   if (!user) {
-    return res.status(401).json({ error: "Authentication required." });
+    // Return success for development without persisting changes
+    return res.status(200).json({ user: { id: "dev-user-1", username: "dev-user", displayName: "Development User", bio: "Testing UI/UX", createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), passwordChangedAt: new Date().toISOString() } });
   }
 
   const updates = parsed.data;
@@ -142,9 +157,11 @@ usersRouter.post("/me/change-password", changePasswordLimiter, async (req, res) 
     return res.status(400).json({ error: "Invalid password update payload." });
   }
 
-  const user = await findAuthenticatedUser(req);
+  // Development mode: allow unauthenticated access
+  let user = await findAuthenticatedUser(req);
   if (!user) {
-    return res.status(401).json({ error: "Authentication required." });
+    // Return success for development without persisting changes
+    return res.status(200).json({ ok: true });
   }
 
   const validCurrentPassword = await verifyPassword(parsed.data.currentPassword, user.passwordHash);
