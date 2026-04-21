@@ -1,5 +1,6 @@
 import { env } from "../config/env";
 import type { UserRecord } from "../types";
+import { supabase } from "./supabase";
 import {
   createUser,
   findUserByReferralCode,
@@ -15,7 +16,8 @@ import {
 type CreateUserInput = {
   username: string;
   passwordHash: string;
-  phoneHash: string;
+  email?: string;
+  phoneHash?: string;
   referralCode?: string;
 };
 
@@ -93,12 +95,12 @@ class MemoryUserRepository implements UserRepository {
     return usernameExists(username);
   }
 
-  async phoneHashExists(userPhoneHash: string): Promise<boolean> {
-    return phoneHashExists(userPhoneHash);
+  async phoneHashExists(phoneHash: string): Promise<boolean> {
+    return phoneHashExists(phoneHash);
   }
 
   async create(input: CreateUserInput): Promise<UserRecord> {
-    return createUser(input.username, input.passwordHash, input.phoneHash, input.referralCode);
+    return createUser(input.username, input.passwordHash, input.email || input.phoneHash || "", input.referralCode);
   }
 
   async findOrCreateByStytchIdentity(input: StytchIdentityInput): Promise<UserRecord> {
@@ -138,25 +140,15 @@ type SupabaseUserRow = {
   id: string;
   username: string;
   password_hash: string;
-  phone_hash: string;
-  display_name: string | null;
-  bio: string | null;
+  email: string | null;
+  phone: string | null;
+  avatar_level: number;
+  role: string;
+  status: string;
   referral_code: string | null;
+  stytch_user_id: string | null;
   created_at: string;
   updated_at: string;
-  password_changed_at: string;
-};
-
-type StytchMappingRow = {
-  user_id: string;
-  stytch_user_id: string;
-  email: string;
-};
-
-type ReferralRow = {
-  referrer_user_id: string;
-  referred_user_id: string;
-  status: string;
 };
 
 type RuntimeUserState = {
@@ -164,61 +156,125 @@ type RuntimeUserState = {
 };
 
 class SupabaseUserRepository implements UserRepository {
-  private readonly baseUrl: string;
-  private readonly serviceRoleKey: string;
-  private readonly table: string;
-  private readonly schema: string;
   private readonly runtimeStateByUserId = new Map<string, RuntimeUserState>();
 
-  constructor() {
-    this.baseUrl = env.SUPABASE_URL as string;
-    this.serviceRoleKey = env.SUPABASE_SERVICE_ROLE_KEY as string;
-    this.table = env.SUPABASE_USERS_TABLE;
-    this.schema = env.SUPABASE_SCHEMA;
-  }
-
   async findById(userId: string): Promise<UserRecord | null> {
-    const rows = await this.selectRows(`id=eq.${encodeURIComponent(userId)}&limit=1`);
-    return rows.length > 0 ? this.toUserRecord(rows[0]) : null;
+    if (!supabase) {
+      return findUserById(userId);
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from("users")
+        .select("*")
+        .eq("id", userId)
+        .single();
+
+      if (error || !data) return null;
+      return this.toUserRecord(data as SupabaseUserRow);
+    } catch {
+      return null;
+    }
   }
 
   async findByUsername(username: string): Promise<UserRecord | null> {
-    const rows = await this.selectRows(`username=eq.${encodeURIComponent(username)}&limit=1`);
-    return rows.length > 0 ? this.toUserRecord(rows[0]) : null;
+    if (!supabase) {
+      return findUserByUsername(username);
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from("users")
+        .select("*")
+        .eq("username", username)
+        .single();
+
+      if (error || !data) return null;
+      return this.toUserRecord(data as SupabaseUserRow);
+    } catch {
+      return null;
+    }
   }
 
   async findByEmail(email: string): Promise<UserRecord | null> {
-    const mappingRows = await this.query<StytchMappingRow[]>(
-      "GET",
-      `email=eq.${encodeURIComponent(email)}&select=user_id,email,stytch_user_id&limit=1`,
-      undefined,
-      "app_stytch_users"
-    );
-
-    if (!mappingRows.length) {
+    if (!supabase) {
       return null;
     }
 
-    return this.findById(mappingRows[0].user_id);
+    try {
+      const { data, error } = await supabase
+        .from("users")
+        .select("*")
+        .eq("email", email)
+        .single();
+
+      if (error || !data) return null;
+      return this.toUserRecord(data as SupabaseUserRow);
+    } catch {
+      return null;
+    }
   }
 
   async findByReferralCode(referralCode: string): Promise<UserRecord | null> {
-    const rows = await this.selectRows(`referral_code=eq.${encodeURIComponent(referralCode.toUpperCase())}&limit=1`);
-    return rows.length > 0 ? this.toUserRecord(rows[0]) : null;
+    if (!supabase) {
+      return findUserByReferralCode(referralCode);
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from("users")
+        .select("*")
+        .eq("referral_code", referralCode.toUpperCase())
+        .single();
+
+      if (error || !data) return null;
+      return this.toUserRecord(data as SupabaseUserRow);
+    } catch {
+      return null;
+    }
   }
 
   async usernameExists(username: string): Promise<boolean> {
-    const rows = await this.selectRows(`username=eq.${encodeURIComponent(username)}&select=id&limit=1`);
-    return rows.length > 0;
+    if (!supabase) {
+      return usernameExists(username);
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from("users")
+        .select("id")
+        .eq("username", username)
+        .single();
+
+      return !error && !!data;
+    } catch {
+      return false;
+    }
   }
 
   async phoneHashExists(phoneHash: string): Promise<boolean> {
-    const rows = await this.selectRows(`phone_hash=eq.${encodeURIComponent(phoneHash)}&select=id&limit=1`);
-    return rows.length > 0;
+    if (!supabase) {
+      return phoneHashExists(phoneHash);
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from("users")
+        .select("id")
+        .eq("phone", phoneHash)
+        .single();
+
+      return !error && !!data;
+    } catch {
+      return false;
+    }
   }
 
   async create(input: CreateUserInput): Promise<UserRecord> {
-    const nowIso = new Date().toISOString();
+    if (!supabase) {
+      return createUser(input.username, input.passwordHash, input.phoneHash || input.email || "", input.referralCode);
+    }
+
     const randomSuffix = Math.floor(Math.random() * 9000 + 1000).toString();
     const baseReferralCode = (input.referralCode ?? `${input.username}`)
       .toUpperCase()
@@ -226,106 +282,133 @@ class SupabaseUserRepository implements UserRepository {
       .slice(0, 6)
       .padEnd(6, "X");
     const referralCode = `${baseReferralCode}${randomSuffix}`;
-    const rows = await this.query<SupabaseUserRow[]>("POST", "", {
-      username: input.username,
-      password_hash: input.passwordHash,
-      phone_hash: input.phoneHash,
-      display_name: null,
-      bio: null,
-      referral_code: referralCode,
-      created_at: nowIso,
-      updated_at: nowIso,
-      password_changed_at: nowIso,
-    });
 
-    if (!Array.isArray(rows) || rows.length === 0) {
-      throw new Error("Supabase create user failed.");
+    try {
+      const { data, error } = await supabase
+        .from("users")
+        .insert([
+          {
+            username: input.username,
+            password_hash: input.passwordHash,
+            email: input.email || null,
+            phone: input.phoneHash || null,
+            referral_code: referralCode,
+            avatar_level: 1,
+            role: "user",
+            status: "active",
+          },
+        ])
+        .select()
+        .single();
+
+      if (error || !data) {
+        throw new Error(`Supabase create user failed: ${error?.message}`);
+      }
+
+      const user = this.toUserRecord(data as SupabaseUserRow);
+
+      // Create onboarding state
+      await supabase.from("onboarding_state").insert({
+        user_id: user.id,
+        step: "avatar",
+        answered_poll_ids: [],
+        selected_community_ids: [],
+      });
+
+      return user;
+    } catch (e) {
+      throw e instanceof Error ? e : new Error("Supabase create user failed");
     }
-
-    return this.toUserRecord(rows[0]);
   }
 
   async registerReferralActivation(referralCode: string, referredUserId: string): Promise<void> {
-    const referrer = await this.findByReferralCode(referralCode);
-    if (!referrer || referrer.id === referredUserId) {
+    if (!supabase) {
       return;
     }
 
-    const existing = await this.query<ReferralRow[]>(
-      "GET",
-      `referrer_user_id=eq.${encodeURIComponent(referrer.id)}&referred_user_id=eq.${encodeURIComponent(referredUserId)}&select=referrer_user_id,referred_user_id,status&limit=1`,
-      undefined,
-      "referrals"
-    );
+    try {
+      const referrer = await this.findByReferralCode(referralCode);
+      if (!referrer || referrer.id === referredUserId) {
+        return;
+      }
 
-    if (existing.length > 0) {
-      return;
-    }
+      const { data: existing } = await supabase
+        .from("referrals")
+        .select("id")
+        .eq("referrer_id", referrer.id)
+        .eq("referred_user_id", referredUserId)
+        .single();
 
-    await this.query(
-      "POST",
-      "",
-      {
-        referrer_user_id: referrer.id,
+      if (existing) {
+        return;
+      }
+
+      await supabase.from("referrals").insert({
+        referrer_id: referrer.id,
         referred_user_id: referredUserId,
-        referral_code: referralCode.toUpperCase(),
-        status: "activated",
         activated_at: new Date().toISOString(),
-        reward_points: 30,
-      },
-      "referrals"
-    );
+      });
+
+      // Update users table - set referred_by
+      await supabase
+        .from("users")
+        .update({ referred_by: referrer.id })
+        .eq("id", referredUserId);
+    } catch {
+      return;
+    }
   }
 
   async findOrCreateByStytchIdentity(input: StytchIdentityInput): Promise<UserRecord> {
-    const mappingRows = await this.query<StytchMappingRow[]>(
-      "GET",
-      `stytch_user_id=eq.${encodeURIComponent(input.stytchUserId)}&select=user_id,stytch_user_id,email&limit=1`,
-      undefined,
-      "app_stytch_users"
-    );
-
-    if (mappingRows.length > 0) {
-      const existing = await this.findById(mappingRows[0].user_id);
-      if (existing) {
-        return existing;
-      }
+    if (!supabase) {
+      return findUserByUsername(normalizeStytchUsername(input.email)) ||
+        createUser(
+          normalizeStytchUsername(input.email),
+          `stytch:${input.stytchUserId}`,
+          input.email,
+          undefined
+        );
     }
 
-    const preferredUsername = normalizeStytchUsername(input.email);
-    const username = await reserveAvailableUsername(preferredUsername, (candidate) => this.usernameExists(candidate));
-    const phoneHash = `stytch:${input.stytchUserId}`;
-
-    let user: UserRecord;
     try {
-      user = await this.create({
+      const { data: existing } = await supabase
+        .from("users")
+        .select("*")
+        .eq("stytch_user_id", input.stytchUserId)
+        .single();
+
+      if (existing) {
+        return this.toUserRecord(existing as SupabaseUserRow);
+      }
+
+      const preferredUsername = normalizeStytchUsername(input.email);
+      const username = await reserveAvailableUsername(preferredUsername, (candidate) =>
+        this.usernameExists(candidate)
+      );
+
+      const user = await this.create({
         username,
         passwordHash: `stytch:${input.stytchUserId}`,
-        phoneHash,
-      });
-    } catch {
-      const rows = await this.selectRows(`phone_hash=eq.${encodeURIComponent(phoneHash)}&limit=1`);
-      if (!rows.length) {
-        throw new Error("Unable to create or locate Stytch user.");
-      }
-      user = this.toUserRecord(rows[0]);
-    }
-
-    await this.query(
-      "POST",
-      "on_conflict=stytch_user_id",
-      {
-        user_id: user.id,
-        stytch_user_id: input.stytchUserId,
         email: input.email,
-      },
-      "app_stytch_users"
-    );
+      });
 
-    return user;
+      // Link Stytch ID
+      await supabase
+        .from("users")
+        .update({ stytch_user_id: input.stytchUserId })
+        .eq("id", user.id);
+
+      return { ...user, stytchUserId: input.stytchUserId };
+    } catch {
+      throw new Error("Unable to create or locate Stytch user");
+    }
   }
 
   async updateProfile(userId: string, updates: UpdateUserProfileInput): Promise<UpdateProfileResult> {
+    if (!supabase) {
+      return updateUserProfile(userId, updates);
+    }
+
     const existing = await this.findById(userId);
     if (!existing) {
       return { status: "not_found" };
@@ -345,68 +428,40 @@ class SupabaseUserRepository implements UserRepository {
     if (Object.prototype.hasOwnProperty.call(updates, "username")) {
       payload.username = updates.username;
     }
-    if (Object.prototype.hasOwnProperty.call(updates, "displayName")) {
-      payload.display_name = updates.displayName ?? null;
-    }
-    if (Object.prototype.hasOwnProperty.call(updates, "bio")) {
-      payload.bio = updates.bio ?? null;
-    }
 
-    const rows = await this.query<SupabaseUserRow[]>("PATCH", `id=eq.${encodeURIComponent(userId)}`, payload);
+    try {
+      const { data, error } = await supabase
+        .from("users")
+        .update(payload)
+        .eq("id", userId)
+        .select()
+        .single();
 
-    if (!Array.isArray(rows) || rows.length === 0) {
+      if (error || !data) {
+        return { status: "not_found" };
+      }
+
+      return { status: "ok", user: this.toUserRecord(data as SupabaseUserRow) };
+    } catch {
       return { status: "not_found" };
     }
-
-    return { status: "ok", user: this.toUserRecord(rows[0]) };
   }
 
   async updatePasswordHash(userId: string, passwordHash: string): Promise<boolean> {
-    const nowIso = new Date().toISOString();
-    const rows = await this.query<SupabaseUserRow[]>("PATCH", `id=eq.${encodeURIComponent(userId)}`, {
-      password_hash: passwordHash,
-      password_changed_at: nowIso,
-      updated_at: nowIso,
-    });
-
-    return Array.isArray(rows) && rows.length > 0;
-  }
-
-  private async selectRows(filters: string): Promise<SupabaseUserRow[]> {
-    const hasSelect = filters.includes("select=");
-    const query = hasSelect ? filters : `${filters}&select=*`;
-    const rows = await this.query<SupabaseUserRow[]>("GET", query);
-    return Array.isArray(rows) ? rows : [];
-  }
-
-  private async query<T>(
-    method: "GET" | "POST" | "PATCH",
-    queryString: string,
-    body?: Record<string, unknown>,
-    tableOverride?: string
-  ): Promise<T> {
-    const queryPrefix = queryString.length > 0 ? `?${queryString}` : "";
-    const tableName = tableOverride ?? this.table;
-    const url = `${this.baseUrl}/rest/v1/${tableName}${queryPrefix}`;
-    const response = await fetch(url, {
-      method,
-      headers: {
-        apikey: this.serviceRoleKey,
-        Authorization: `Bearer ${this.serviceRoleKey}`,
-        "Content-Type": "application/json",
-        Prefer: "return=representation",
-        "Accept-Profile": this.schema,
-        "Content-Profile": this.schema,
-      },
-      body: body ? JSON.stringify(body) : undefined,
-    });
-
-    if (!response.ok) {
-      const reason = await response.text();
-      throw new Error(`Supabase query failed (${response.status}): ${reason}`);
+    if (!supabase) {
+      return updateUserPasswordHash(userId, passwordHash);
     }
 
-    return (await response.json()) as T;
+    try {
+      const { error } = await supabase
+        .from("users")
+        .update({ password_hash: passwordHash, updated_at: new Date().toISOString() })
+        .eq("id", userId);
+
+      return !error;
+    } catch {
+      return false;
+    }
   }
 
   private toUserRecord(row: SupabaseUserRow): UserRecord {
@@ -415,15 +470,19 @@ class SupabaseUserRepository implements UserRepository {
     return {
       id: row.id,
       username: row.username,
-      displayName: row.display_name,
-      bio: row.bio,
-      referralCode: row.referral_code,
+      displayName: null,
+      bio: null,
+      referralCode: row.referral_code || "",
       createdAt: Date.parse(row.created_at),
       updatedAt: Date.parse(row.updated_at),
-      passwordChangedAt: Date.parse(row.password_changed_at),
+      passwordChangedAt: Date.parse(row.updated_at),
       passwordHash: row.password_hash,
-      phoneHash: row.phone_hash,
+      phoneHash: row.phone || "",
       votedPollIds: state.votedPollIds,
+      avatarLevel: row.avatar_level,
+      role: row.role,
+      status: row.status,
+      email: row.email || undefined,
     };
   }
 

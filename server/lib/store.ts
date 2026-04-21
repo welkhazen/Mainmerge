@@ -73,7 +73,7 @@ function buildReferralCode(username: string): string {
   return candidate;
 }
 
-export function createUser(username: string, passwordHash: string, phoneHash: string, referralCode?: string): UserRecord {
+export function createUser(username: string, passwordHash: string, email: string, referralCode?: string): UserRecord {
   const id = crypto.randomUUID();
   const now = Date.now();
   const normalizedReferralCode = (referralCode ?? buildReferralCode(username)).toUpperCase();
@@ -87,13 +87,14 @@ export function createUser(username: string, passwordHash: string, phoneHash: st
     updatedAt: now,
     passwordChangedAt: now,
     passwordHash,
-    phoneHash,
+    phoneHash: email,
     votedPollIds: new Set<string>(),
+    email,
   };
 
   usersById.set(id, user);
   userIdByUsername.set(normalizeUsername(username), id);
-  userIdByPhoneHash.set(phoneHash, id);
+  userIdByPhoneHash.set(email, id);
   userIdByReferralCode.set(normalizedReferralCode, id);
   return user;
 }

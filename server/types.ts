@@ -14,6 +14,11 @@ export interface UserRecord extends User {
   phoneHash: string;
   votedPollIds: Set<string>;
   createdAt: number;
+  avatarLevel?: number;
+  role?: string;
+  status?: string;
+  email?: string;
+  stytchUserId?: string;
 }
 
 export interface PendingSignupData {
