@@ -180,6 +180,7 @@ const Index = () => {
 
       <Hero onSignupClick={() => setShowSignup(true)} />
       <ProblemSection />
+      <HowItWorks />
       <PollSection
         polls={polls}
         votedPolls={votedPolls}
@@ -188,7 +189,6 @@ const Index = () => {
         onVote={vote}
         onSignupClick={() => setShowSignup(true)}
       />
-      <HowItWorks />
       <Communities onSignupClick={() => setShowSignup(true)} />
       <AvatarIdentity
         avatarLevel={avatarLevel}
