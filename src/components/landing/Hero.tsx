@@ -20,14 +20,14 @@ export function Hero({ onSignupClick }: HeroProps) {
   const words = [
     ...(heroCopy === "identity-first"
       ? [
-          { text: "Build", className: "text-raw-text" },
-          { text: "your", className: "text-raw-text" },
-          { text: "identity.", className: "text-raw-gold" },
+          { text: "Be", className: "text-raw-text" },
+          { text: "authentically", className: "text-raw-text" },
+          { text: "you.", className: "text-raw-gold" },
         ]
       : [
-          { text: "Find", className: "text-raw-text" },
-          { text: "your", className: "text-raw-text" },
-          { text: "people.", className: "text-raw-gold" },
+          { text: "Be", className: "text-raw-text" },
+          { text: "authentically", className: "text-raw-text" },
+          { text: "you.", className: "text-raw-gold" },
         ]),
   ];
 
@@ -83,9 +83,7 @@ export function Hero({ onSignupClick }: HeroProps) {
         <p className="mt-4 font-display text-lg tracking-wide text-metallic sm:text-2xl">Grow behind your avatar.</p>
 
         <p className="mt-5 max-w-2xl text-base leading-relaxed text-raw-silver/60 sm:text-lg">
-          {heroCopy === "identity-first"
-            ? "Shape your avatar through honest answers, unlock deep identity insights, and connect in communities that match your signal."
-            : "Answer a few honest questions, join the right 24/7 communities, and build an identity that feels like yours — without using your real name."}
+          Anonymous poll voting. Real conversations. Communities that match who you actually are. No algorithms. No reputation damage.
         </p>
 
         <div className="mt-9 flex w-full max-w-xl flex-col items-center gap-3 sm:flex-row sm:justify-center sm:gap-4">

@@ -1,5 +1,6 @@
 import { Suspense, lazy, useEffect, useState } from "react";
 import { Navbar } from "@/components/landing/Navbar";
+import { ProblemSection } from "@/components/landing/ProblemSection";
 import { Hero } from "@/components/landing/Hero";
 import { HowItWorks } from "@/components/landing/HowItWorks";
 import { PollSection } from "@/components/landing/PollSection";
@@ -176,6 +177,7 @@ const Index = () => {
         onSignupClick={() => setShowSignup(true)}
       />
 
+      <ProblemSection />
       <Hero onSignupClick={() => setShowSignup(true)} />
       <PollSection
         polls={polls}
