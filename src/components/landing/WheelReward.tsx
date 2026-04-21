@@ -45,7 +45,7 @@ export function WheelReward({ onLevelChange, onSignupClick }: WheelRewardProps) 
     <section
       ref={sectionRef as React.RefObject<HTMLElement>}
       id="wheel"
-      className="relative px-6 py-24 bg-gradient-to-b from-[rgba(255,255,255,0.01)] to-transparent"
+      className="relative px-6 py-24 bg-black/40"
     >
       <div className="mx-auto w-full max-w-3xl">
         <div className="mb-10 text-center">

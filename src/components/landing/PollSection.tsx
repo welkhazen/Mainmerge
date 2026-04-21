@@ -290,7 +290,7 @@ export function PollSection({ polls, votedPolls, isLoggedIn, freeVotesUsed, onVo
     <section
       ref={sectionRef as React.RefObject<HTMLElement>}
       id="polls"
-      className="relative py-28 px-6 bg-gradient-to-b from-transparent to-[rgba(255,255,255,0.01)]"
+      className="relative py-28 px-6 bg-black/60"
     >
       <div className="w-full">
         <div className="mb-14 text-center">
