@@ -312,6 +312,19 @@ export type AppEvent =
         trigger: string;
       };
     }
+  | {
+      name: "experiment_exposure";
+      properties: {
+        flag: "exp_hero_copy" | "exp_signup_cta" | "exp_gate_position";
+        variant: string;
+      };
+    }
+  | {
+      name: "push_prompt_shown";
+      properties: {
+        provider: "onesignal" | "posthog";
+      };
+    }
 
   // admin / moderation
   | {
@@ -350,7 +363,7 @@ export type AppEvent =
   | {
       name: "diagnostics_probe_fired";
       properties: {
-        source: "hidden_button";
+        source: "hidden_button" | "query_param";
         mode: string;
       };
     };
