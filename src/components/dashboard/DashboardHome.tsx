@@ -1,4 +1,4 @@
-import { ContainerTextFlip } from "@/components/ui/container-text-flip";
+import { lazy, Suspense } from "react";
 import { GlareCard } from "@/components/ui/glare-card";
 import {
   MessageCircle,
@@ -10,6 +10,10 @@ import {
 import type { LucideIcon } from "lucide-react";
 import type { Poll } from "@/store/useRawStore";
 import type { DashboardTab } from "./DashboardNav";
+
+const ContainerTextFlipLazy = lazy(() =>
+  import("@/components/ui/container-text-flip").then((module) => ({ default: module.ContainerTextFlip }))
+);
 
 interface DashboardHomeProps {
   username: string;
@@ -77,11 +81,13 @@ export function DashboardHome({
           <h1 className="font-display text-3xl tracking-wide text-raw-text sm:text-4xl">
             Stay
           </h1>
-          <ContainerTextFlip
-            words={["anonymous", "connected", "growing", "raW"]}
-            interval={2800}
-            className="!text-2xl sm:!text-3xl"
-          />
+          <Suspense fallback={null}>
+            <ContainerTextFlipLazy
+              words={["anonymous", "connected", "growing", "raW"]}
+              interval={2800}
+              className="!text-2xl sm:!text-3xl"
+            />
+          </Suspense>
         </div>
       </div>
 
