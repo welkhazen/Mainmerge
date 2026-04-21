@@ -6,6 +6,7 @@ import { HowItWorks } from "@/components/landing/HowItWorks";
 import { PollSection } from "@/components/landing/PollSection";
 import { Communities } from "@/components/landing/Communities";
 import { AvatarIdentity } from "@/components/landing/AvatarIdentity";
+import { WheelReward } from "@/components/landing/WheelReward";
 import { WhyAnonymity } from "@/components/landing/WhyAnonymity";
 import { LandingFooter } from "@/components/landing/LandingFooter";
 import { OnboardingJourney } from "@/components/onboarding/OnboardingJourney";
@@ -191,6 +192,9 @@ const Index = () => {
       <Communities onSignupClick={() => setShowSignup(true)} />
       <AvatarIdentity
         avatarLevel={avatarLevel}
+        onLevelChange={setAvatarLevel}
+      />
+      <WheelReward
         onLevelChange={setAvatarLevel}
         onSignupClick={() => setShowSignup(true)}
       />
