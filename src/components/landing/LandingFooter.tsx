@@ -9,6 +9,10 @@ export function LandingFooter() {
     <section className="pt-16 sm:pt-20">
       <MinimalFooter
         edgeToScreen
+        resourceLinks={[
+          { title: "Ask AI", href: "/ask" },
+          { title: "FAQ", href: "/faq" },
+        ]}
         leftLinks={[
           { title: "WhatsApp", href: whatsAppHref },
           { title: "Email", href: `mailto:${supportEmail}` },

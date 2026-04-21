@@ -1,0 +1,137 @@
+import { useCallback, useMemo, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { ApiError, apiRequest } from "@/lib/api/client";
+import { track } from "@/lib/analytics";
+import type { Poll } from "@/store/types";
+
+const DAILY_POLL_LIMIT = 7;
+
+const INITIAL_POLLS: Poll[] = [
+  {
+    id: "poll-1",
+    question: "Do you believe your thoughts shape your reality?",
+    options: [
+      { id: "p1-yes", text: "Yes", votes: 482 },
+      { id: "p1-no", text: "No", votes: 187 },
+    ],
+    locked: false,
+  },
+  {
+    id: "poll-2",
+    question: "Do you think social media does more harm than good?",
+    options: [
+      { id: "p2-yes", text: "Yes", votes: 391 },
+      { id: "p2-no", text: "No", votes: 274 },
+    ],
+    locked: false,
+  },
+  {
+    id: "poll-3",
+    question: "Would you sacrifice comfort for personal growth?",
+    options: [
+      { id: "p3-yes", text: "Yes", votes: 523 },
+      { id: "p3-no", text: "No", votes: 146 },
+    ],
+    locked: false,
+  },
+];
+
+function getTodayKey(): string {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+export function usePolls(isLoggedIn: boolean) {
+  const queryClient = useQueryClient();
+  const [freeVotesUsed, setFreeVotesUsed] = useState(0);
+  const [guestVotedPolls, setGuestVotedPolls] = useState<Set<string>>(new Set());
+  const [dailyPollDate, setDailyPollDate] = useState(getTodayKey());
+  const [dailyAnsweredPollIds, setDailyAnsweredPollIds] = useState<Set<string>>(new Set());
+  const [sessionVotedPolls, setSessionVotedPolls] = useState<Set<string>>(new Set());
+
+  const pollsQuery = useQuery({
+    queryKey: ["polls", "randomized"],
+    enabled: isLoggedIn,
+    retry: false,
+    queryFn: async (): Promise<Poll[]> => {
+      const response = await apiRequest<{ polls: Poll[] }>("/api/v2/polls/random?limit=10");
+      return response.polls;
+    },
+  });
+
+  const voteMutation = useMutation({
+    mutationFn: async ({ pollId, optionId }: { pollId: string; optionId: string }) => {
+      await apiRequest<{ ok: boolean }>(`/api/v2/polls/${pollId}/vote`, {
+        method: "POST",
+        body: JSON.stringify({ optionId }),
+      });
+      return { pollId, optionId };
+    },
+    onSuccess: ({ pollId, optionId }) => {
+      setSessionVotedPolls((previous) => new Set(previous).add(pollId));
+      queryClient.setQueryData<Poll[] | undefined>(["polls", "randomized"], (previous) => {
+        if (!previous) {
+          return previous;
+        }
+
+        return previous.map((poll) =>
+          poll.id === pollId
+            ? {
+                ...poll,
+                options: poll.options.map((option) =>
+                  option.id === optionId ? { ...option, votes: option.votes + 1 } : option
+                ),
+              }
+            : poll
+        );
+      });
+    },
+  });
+
+  const vote = useCallback((pollId: string, optionId: string) => {
+    const todayKey = getTodayKey();
+    if (dailyPollDate !== todayKey) {
+      setDailyPollDate(todayKey);
+      setDailyAnsweredPollIds(new Set());
+    }
+
+    const currentDailySet = dailyPollDate === todayKey ? dailyAnsweredPollIds : new Set<string>();
+    if (!currentDailySet.has(pollId) && currentDailySet.size >= DAILY_POLL_LIMIT) {
+      return;
+    }
+
+    setDailyAnsweredPollIds((previous) => new Set(previous).add(pollId));
+
+    if (isLoggedIn) {
+      if (sessionVotedPolls.has(pollId)) {
+        return;
+      }
+      voteMutation.mutate({ pollId, optionId });
+      track("poll_answered", { poll_id: pollId, option_id: optionId, surface: "app" });
+      return;
+    }
+
+    if (guestVotedPolls.has(pollId)) {
+      return;
+    }
+
+    setGuestVotedPolls((previous) => new Set(previous).add(pollId));
+    setFreeVotesUsed((previous) => previous + 1);
+  }, [dailyAnsweredPollIds, dailyPollDate, guestVotedPolls, isLoggedIn, sessionVotedPolls, voteMutation]);
+
+  const polls = isLoggedIn ? pollsQuery.data ?? [] : INITIAL_POLLS;
+  const votedPolls = isLoggedIn ? sessionVotedPolls : guestVotedPolls;
+
+  return useMemo(() => ({
+    polls,
+    votedPolls,
+    freeVotesUsed,
+    vote,
+    dailyAnsweredCount: dailyAnsweredPollIds.size,
+    dailyPollLimit: DAILY_POLL_LIMIT,
+    isDailyPollLimitReached: dailyAnsweredPollIds.size >= DAILY_POLL_LIMIT,
+  }), [dailyAnsweredPollIds.size, freeVotesUsed, polls, vote, votedPolls]);
+}

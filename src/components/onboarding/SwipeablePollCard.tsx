@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { ArrowLeft, ArrowRight, Check, SendHorizontal, Sparkles } from "lucide-react";
+import { SendHorizontal, Sparkles } from "lucide-react";
 import type { Comment } from "./PollComments";
 
 interface SwipeablePollCardProps {
@@ -53,8 +53,11 @@ export function SwipeablePollCard({
     }
   }, [guideStorageKey, hasSeenSwipeGuide]);
 
-  const rightOption = options[0];
-  const leftOption = options[1] ?? options[0];
+  const yesOption = options.find((option) => option.trim().toLowerCase() === "yes");
+  const noOption = options.find((option) => option.trim().toLowerCase() === "no");
+  const orderedOptions = options.length === 2 && yesOption && noOption ? [noOption, yesOption] : options;
+  const leftOption = orderedOptions[0];
+  const rightOption = orderedOptions[1] ?? orderedOptions[0];
   const showSwipeGuide = !isAnswered && options.length >= 2 && !hasSeenSwipeGuide;
 
   const getOptionPercentage = (option: string): number => {
@@ -64,9 +67,6 @@ export function SwipeablePollCard({
 
     return Math.round(((responseStats[option] ?? 0) / totalResponses) * 100);
   };
-
-  const rightPct = rightOption ? getOptionPercentage(rightOption) : 0;
-  const leftPct = leftOption ? getOptionPercentage(leftOption) : 0;
 
   const voteFromSwipeDirection = (direction: "left" | "right") => {
     if (isAnswered || options.length === 0) {
@@ -206,16 +206,6 @@ export function SwipeablePollCard({
         >
           {showSwipeGuide && options.length >= 2 && (
             <>
-              <div className="pointer-events-none absolute left-3 top-8 z-20 flex items-center gap-2 text-[10px] uppercase tracking-[0.14em] text-rose-200/90 animate-pulse">
-                <ArrowLeft className="h-3.5 w-3.5" />
-                <span className="h-px w-12 border-t border-dashed border-rose-200/80" />
-                <span>Swipe Left = {leftOption}</span>
-              </div>
-              <div className="pointer-events-none absolute right-3 top-8 z-20 flex items-center gap-2 text-[10px] uppercase tracking-[0.14em] text-emerald-200/90 animate-pulse">
-                <span>Swipe Right = {rightOption}</span>
-                <span className="h-px w-12 border-t border-dashed border-emerald-200/80" />
-                <ArrowRight className="h-3.5 w-3.5" />
-              </div>
               <div className="absolute inset-x-4 top-14 z-30 rounded-2xl border border-raw-gold/40 bg-black/85 p-4 shadow-[0_0_30px_rgba(255,102,102,0.22)] backdrop-blur-sm sm:inset-x-10">
                 <div className="flex items-center justify-between gap-3">
                   <p className="flex items-center gap-2 text-xs font-medium uppercase tracking-[0.12em] text-raw-gold/85">
@@ -231,7 +221,7 @@ export function SwipeablePollCard({
                   </button>
                 </div>
                 <p className="mt-2 text-sm text-white/80">
-                  Swipe like dashboard polls. Right means <span className="font-semibold text-emerald-300">{rightOption}</span>, left means <span className="font-semibold text-rose-300">{leftOption}</span>.
+                  Swipe to vote. Right means <span className="font-semibold text-emerald-300">{rightOption}</span>, left means <span className="font-semibold text-rose-300">{leftOption}</span>.
                 </p>
               </div>
             </>
@@ -248,90 +238,47 @@ export function SwipeablePollCard({
             {question}
           </h2>
 
-          {!isAnswered && options.length >= 2 && (
-            <p className="mt-3 text-center text-[11px] uppercase tracking-[0.14em] text-white/40">
-              Swipe right for {rightOption}, left for {leftOption}
-            </p>
-          )}
-
           <div className="mt-6 space-y-3">
-            {isAnswered && options.length === 2 ? (
-              <div className="space-y-2.5">
-                <div className="overflow-hidden rounded-2xl border border-white/15 bg-white/[0.04]">
-                  <div className="flex w-full">
-                    <div
-                      className={`relative flex items-center justify-between px-4 py-3 transition ${
-                        selectedOption === leftOption
-                          ? "bg-raw-gold/55 ring-1 ring-inset ring-raw-gold text-black shadow-[0_0_18px_rgba(255,204,77,0.35)]"
-                          : "bg-white/[0.05]"
-                      }`}
-                      style={{ width: `${leftPct}%` }}
-                    >
-                      <span className={`text-sm font-medium ${selectedOption === leftOption ? "text-black" : "text-white"}`}>{leftOption}</span>
-                      <span className={`text-sm font-semibold ${selectedOption === leftOption ? "text-black" : "text-white"}`}>{leftPct}%</span>
-                      {selectedOption === leftOption && (
-                        <span className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full border border-black/35 bg-black/90 p-0.5 text-raw-gold">
-                          <Check className="h-3 w-3" />
-                        </span>
-                      )}
-                    </div>
-                    <div
-                      className={`relative flex items-center justify-between px-4 py-3 transition ${
-                        selectedOption === rightOption
-                          ? "bg-raw-gold/55 ring-1 ring-inset ring-raw-gold text-black shadow-[0_0_18px_rgba(255,204,77,0.35)]"
-                          : "bg-white/[0.05]"
-                      }`}
-                      style={{ width: `${rightPct}%` }}
-                    >
-                      {selectedOption === rightOption && (
-                        <span className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full border border-black/35 bg-black/90 p-0.5 text-raw-gold">
-                          <Check className="h-3 w-3" />
-                        </span>
-                      )}
-                      <span className={`ml-4 text-sm font-medium ${selectedOption === rightOption ? "text-black" : "text-white"}`}>{rightOption}</span>
-                      <span className={`text-sm font-semibold ${selectedOption === rightOption ? "text-black" : "text-white"}`}>{rightPct}%</span>
-                    </div>
-                  </div>
-                </div>
-                <p className="text-center text-xs text-white/50">
-                  You picked <span className="font-semibold text-white">{selectedOption}</span>
-                </p>
-              </div>
-            ) : (
-              <>
-                {options.length >= 2 && (
-                  <div className="flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-[11px] uppercase tracking-[0.12em] text-white/55">
-                    <span className="flex items-center gap-1.5 text-rose-200/85">
-                      <ArrowLeft className="h-3.5 w-3.5" />
-                      Swipe left = {leftOption}
-                    </span>
-                    <span className="flex items-center gap-1.5 text-emerald-200/85">
-                      Swipe right = {rightOption}
-                      <ArrowRight className="h-3.5 w-3.5" />
-                    </span>
-                  </div>
-                )}
+            <div className={`grid gap-3 ${orderedOptions.length === 2 ? "grid-cols-2" : "grid-cols-1"}`}>
+              {orderedOptions.map((option, index) => {
+                const isSelected = isAnswered && selectedOption === option;
+                const isRightSide = orderedOptions.length === 2 && index === 1;
+                const percent =
+                  isAnswered && orderedOptions.length === 2
+                    ? getOptionPercentage(option)
+                    : null;
 
-                <div className={`grid gap-3 ${options.length === 2 ? "grid-cols-2" : "grid-cols-1"}`}>
-                  {options.map((option) => (
+                return (
                   <button
                     key={option}
-                      onClick={() => {
-                        setHasSeenSwipeGuide(true);
-                        onSwipe(option);
-                        setSwipeOffsetX(0);
-                      }}
-                      disabled={isAnswered}
-                      className="rounded-2xl border border-raw-gold/30 bg-raw-gold/18 px-4 py-3 text-left text-base font-medium text-white transition hover:bg-raw-gold/28 disabled:cursor-not-allowed disabled:opacity-55"
+                    onClick={() => {
+                      setHasSeenSwipeGuide(true);
+                      onSwipe(option);
+                      setSwipeOffsetX(0);
+                    }}
+                    disabled={isAnswered}
+                    className={`rounded-2xl border px-4 py-3 text-base font-medium transition disabled:cursor-not-allowed ${
+                      isRightSide ? "text-right" : "text-left"
+                    } ${
+                      isSelected
+                        ? "border-raw-gold/70 bg-raw-gold/55 text-black"
+                        : "border-raw-gold/30 bg-raw-gold/18 text-white hover:bg-raw-gold/28 disabled:opacity-55"
+                    }`}
                   >
+                    {percent !== null && isRightSide ? (
+                      <span className={`mr-2 text-sm ${isSelected ? "text-black/85" : "text-white/70"}`}>{percent}%</span>
+                    ) : null}
                     {option}
+                    {percent !== null && !isRightSide ? (
+                      <span className={`ml-2 text-sm ${isSelected ? "text-black/85" : "text-white/70"}`}>{percent}%</span>
+                    ) : null}
                   </button>
-                  ))}
-                </div>
-              </>
-            )}
+                );
+              })}
+            </div>
           </div>
 
+          {isAnswered && (
           <div className="mt-5">
             <div className="mb-2 flex items-center justify-between">
               <p className="text-[11px] uppercase tracking-[0.12em] text-white/55">Comments</p>
@@ -414,6 +361,7 @@ export function SwipeablePollCard({
               )}
             </div>
           </div>
+          )}
         </div>
       </div>
     </div>

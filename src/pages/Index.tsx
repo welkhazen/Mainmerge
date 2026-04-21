@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Suspense, lazy, useEffect, useState } from "react";
 import { Navbar } from "@/components/landing/Navbar";
 import { Hero } from "@/components/landing/Hero";
 import { HowItWorks } from "@/components/landing/HowItWorks";
@@ -7,13 +7,17 @@ import { Communities } from "@/components/landing/Communities";
 import { AvatarIdentity } from "@/components/landing/AvatarIdentity";
 import { WhyAnonymity } from "@/components/landing/WhyAnonymity";
 import { LandingFooter } from "@/components/landing/LandingFooter";
-import { SignupModal } from "@/components/landing/SignupModal";
 import { OnboardingJourney } from "@/components/onboarding/OnboardingJourney";
 import MatrixBackgroundIntro from "@/components/ui/matrix-background-intro";
 import { useHostMode } from "@/hooks/use-host-mode";
 import { useSyncStytchAuth } from "@/hooks/useSyncStytchAuth";
+import { useWebPush } from "@/hooks/useWebPush";
 import Dashboard from "@/pages/Dashboard";
 import { useRawStore } from "@/store/useRawStore";
+
+const SignupModalLazy = lazy(() =>
+  import("@/components/landing/SignupModal").then((module) => ({ default: module.SignupModal }))
+);
 
 const Index = () => {
   const [showMatrixIntro, setShowMatrixIntro] = useState(true);
@@ -49,6 +53,7 @@ const Index = () => {
   
   // Sync Stytch authentication with the store
   useSyncStytchAuth();
+  useWebPush(isLoggedIn);
 
   useEffect(() => {
     if (!isLoggedIn || !user || !isTheRawMe || typeof window === "undefined") {
@@ -152,13 +157,17 @@ const Index = () => {
           <p className="mt-6 text-xs text-raw-silver/35">Want the full public landing experience? Visit theraw.me.</p>
         </div>
 
-        <SignupModal
-          open={showSignup}
-          onClose={() => setShowSignup(false)}
-          onRequestSignupOtp={requestSignupOtp}
-          onVerifySignupOtp={verifySignupOtp}
-          onLogin={login}
-        />
+        <Suspense fallback={null}>
+          {showSignup ? (
+            <SignupModalLazy
+              open={showSignup}
+              onClose={() => setShowSignup(false)}
+              onRequestSignupOtp={requestSignupOtp}
+              onVerifySignupOtp={verifySignupOtp}
+              onLogin={login}
+            />
+          ) : null}
+        </Suspense>
       </div>
     );
   }
@@ -192,13 +201,17 @@ const Index = () => {
       <WhyAnonymity />
       <LandingFooter />
 
-      <SignupModal
-        open={showSignup}
-        onClose={() => setShowSignup(false)}
-        onRequestSignupOtp={requestSignupOtp}
-        onVerifySignupOtp={verifySignupOtp}
-        onLogin={login}
-      />
+      <Suspense fallback={null}>
+        {showSignup ? (
+          <SignupModalLazy
+            open={showSignup}
+            onClose={() => setShowSignup(false)}
+            onRequestSignupOtp={requestSignupOtp}
+            onVerifySignupOtp={verifySignupOtp}
+            onLogin={login}
+          />
+        ) : null}
+      </Suspense>
     </div>
   );
 };

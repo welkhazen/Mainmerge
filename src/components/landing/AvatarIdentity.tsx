@@ -31,7 +31,6 @@ export function AvatarIdentity({ avatarLevel, onLevelChange, onSignupClick }: Av
   const [hoveredLevel, setHoveredLevel] = useState<number | null>(null);
   const [landedLevel, setLandedLevel] = useState<number | null>(null);
   const [hasSpun, setHasSpun] = useState(false);
-  const [isSpinning, setIsSpinning] = useState(false);
 
   // Priority: hovered (phone preview) > landed (wheel result) > current avatar level
   const displayLevel = hoveredLevel ?? landedLevel ?? avatarLevel;
@@ -48,12 +47,7 @@ export function AvatarIdentity({ avatarLevel, onLevelChange, onSignupClick }: Av
       onLevelChange(level);
     }
     setHasSpun(true);
-    setIsSpinning(false);
   }, [onLevelChange]);
-
-  const handleSpinStart = useCallback(() => {
-    setIsSpinning(true);
-  }, []);
 
   return (
     <section ref={sectionRef as React.RefObject<HTMLElement>} id="avatar" className="relative px-6 py-28 bg-gradient-to-b from-transparent to-[rgba(255,255,255,0.01)]">
@@ -83,7 +77,6 @@ export function AvatarIdentity({ avatarLevel, onLevelChange, onSignupClick }: Av
             <WheelOfFortune
               prizes={RANK_PRIZES}
               onSpinEnd={handleSpinEnd}
-              onSpinStart={handleSpinStart}
               disabled={hasSpun}
             />
 
@@ -135,7 +128,7 @@ export function AvatarIdentity({ avatarLevel, onLevelChange, onSignupClick }: Av
               </div>
 
               {/* Landed result callout */}
-              {landedLevel && !isSpinning && (
+              {landedLevel && (
                 <div className="mt-6 rounded-2xl border border-raw-gold/30 bg-gradient-to-b from-raw-gold/[0.08] to-raw-gold/[0.02] p-5 text-center transition-all duration-500">
                   <div className="flex items-center justify-center gap-2 mb-2">
                     <Sparkles className="h-4 w-4 text-raw-gold" />

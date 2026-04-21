@@ -2,7 +2,18 @@ import twilio from "twilio";
 import { env } from "../config/env";
 import { audit } from "./audit";
 
-const client = twilio(env.TWILIO_ACCOUNT_SID, env.TWILIO_AUTH_TOKEN);
+const isTwilioConfigured = Boolean(
+  env.TWILIO_ACCOUNT_SID && env.TWILIO_AUTH_TOKEN && env.TWILIO_VERIFY_SERVICE_SID
+);
+
+function getVerifyService() {
+  if (!isTwilioConfigured) {
+    return null;
+  }
+
+  const client = twilio(env.TWILIO_ACCOUNT_SID!, env.TWILIO_AUTH_TOKEN!);
+  return client.verify.v2.services(env.TWILIO_VERIFY_SERVICE_SID!);
+}
 
 export type OtpChannel = "sms" | "whatsapp";
 
@@ -44,7 +55,11 @@ function getOtpFailureMessage(errors: Array<{ code?: number; message: string }>)
  * WhatsApp delivery requires the Twilio sandbox opt-in (dev) or Meta approval (prod).
  */
 export async function sendOtp(phone: string): Promise<OtpSendResult> {
-  const service = client.verify.v2.services(env.TWILIO_VERIFY_SERVICE_SID);
+  const service = getVerifyService();
+  if (!service) {
+    return { ok: false, error: "OTP provider is not configured yet." };
+  }
+
   const channels: OtpChannel[] = [];
   const failures: Array<{ code?: number; message: string }> = [];
 
@@ -105,10 +120,13 @@ export async function sendOtp(phone: string): Promise<OtpSendResult> {
  * Returns true only when Twilio confirms status === "approved".
  */
 export async function verifyOtp(phone: string, code: string): Promise<boolean> {
+  const service = getVerifyService();
+  if (!service) {
+    return false;
+  }
+
   try {
-    const check = await client.verify.v2
-      .services(env.TWILIO_VERIFY_SERVICE_SID)
-      .verificationChecks.create({ to: phone, code });
+    const check = await service.verificationChecks.create({ to: phone, code });
 
     return check.status === "approved";
   } catch {

@@ -22,12 +22,6 @@ interface SignupModalProps {
 type AuthMode = "signup" | "login";
 type SignupStep = "details" | "verify";
 
-function sanitizePhoneInput(value: string): string {
-  const trimmed = value.trim().replace(/\s+/g, "");
-  const normalized = trimmed.replace(/(?!^)\+/g, "");
-  return normalized.replace(/[^\d+]/g, "");
-}
-
 function maskPhone(phone: string): string {
   if (phone.length <= 7) {
     return phone;

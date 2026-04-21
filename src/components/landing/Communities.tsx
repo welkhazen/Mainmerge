@@ -33,15 +33,6 @@ export function Communities({ onSignupClick }: CommunitiesProps) {
   const sectionRef = useTrackSectionView("communities");
   const videoPlayFiredRef = useRef(false);
 
-  const handleJoinClick = () => {
-    track("landing_cta_clicked", {
-      cta_id: "communities_join_founding",
-      cta_text: "Join the Founding Community",
-      source_section: "communities",
-    });
-    onSignupClick();
-  };
-
   const handleVideoPlay = () => {
     if (videoPlayFiredRef.current) return;
     videoPlayFiredRef.current = true;
@@ -81,15 +72,6 @@ export function Communities({ onSignupClick }: CommunitiesProps) {
               </div>
             </GlareCard>
           ))}
-        </div>
-
-        <div className="mt-10 text-center">
-          <button
-            onClick={handleJoinClick}
-            className="rounded-full bg-raw-gold px-8 py-3.5 text-sm font-bold text-raw-black transition-all hover:bg-raw-gold/90 hover:shadow-lg hover:shadow-raw-gold/20"
-          >
-            Join the Founding Community
-          </button>
         </div>
 
         {/* Communities worldwide */}

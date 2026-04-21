@@ -1,8 +1,9 @@
 import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useStytchSession } from '@stytch/react';
+import { isStytchEnabled } from '@/providers/StytchProvider';
 
-export default function Authenticate() {
+function AuthenticateWithStytch() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { session, isInitialized } = useStytchSession();
@@ -43,4 +44,20 @@ export default function Authenticate() {
       </div>
     </div>
   );
+}
+
+export default function Authenticate() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isStytchEnabled) {
+      navigate('/login', { replace: true });
+    }
+  }, [navigate]);
+
+  if (!isStytchEnabled) {
+    return null;
+  }
+
+  return <AuthenticateWithStytch />;
 }

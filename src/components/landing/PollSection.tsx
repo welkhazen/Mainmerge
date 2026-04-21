@@ -4,6 +4,7 @@ import { PhoneMockup } from "@/components/ui/phone-mockup";
 import { ChevronLeft, ChevronRight, Send, ThumbsUp, MessageCircle, X } from "lucide-react";
 import { track } from "@/lib/analytics";
 import { useTrackSectionView } from "@/lib/analytics/useTrackSectionView";
+import { useFeatureExperiments } from "@/hooks/useFeatureExperiments";
 
 interface PollSectionProps {
   polls: Poll[];
@@ -71,7 +72,13 @@ function PollPhoneContent({
   totalPolls: number;
 }) {
   const [commentsOpen, setCommentsOpen] = useState(false);
+  const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
+  const [swipeOffsetX, setSwipeOffsetX] = useState(0);
+  const [hasSeenSwipeGuide, setHasSeenSwipeGuide] = useState(false);
   const commentsPopupRef = useRef<HTMLDivElement | null>(null);
+  const pointerStartXRef = useRef<number | null>(null);
+  const guideStorageKey = `raw.landing.poll-swipe-guide-seen.${poll.id}`;
+  const selectionStorageKey = `raw.landing.poll-selection.${poll.id}`;
 
   const totalVotes = poll.options.reduce((sum, o) => sum + o.votes, 0);
   const comments = mockComments[poll.id] || [];
@@ -79,10 +86,36 @@ function PollPhoneContent({
   const noOption = poll.options.find((o) => o.text === "No");
   const yesPct = yesOption && totalVotes > 0 ? Math.round((yesOption.votes / totalVotes) * 100) : 0;
   const noPct = noOption && totalVotes > 0 ? Math.round((noOption.votes / totalVotes) * 100) : 0;
+  const selectedYes = hasVoted && yesOption ? selectedOptionId === yesOption.id : false;
+  const selectedNo = hasVoted && noOption ? selectedOptionId === noOption.id : false;
 
   useEffect(() => {
     setCommentsOpen(false);
   }, [poll.id, hasVoted]);
+
+  useEffect(() => {
+    const savedSelection = window.localStorage.getItem(selectionStorageKey);
+    setSelectedOptionId(savedSelection);
+  }, [poll.id, selectionStorageKey]);
+
+  useEffect(() => {
+    if (!selectedOptionId) {
+      return;
+    }
+
+    window.localStorage.setItem(selectionStorageKey, selectedOptionId);
+  }, [selectedOptionId, selectionStorageKey]);
+
+  useEffect(() => {
+    const saved = window.localStorage.getItem(guideStorageKey);
+    setHasSeenSwipeGuide(saved === "1");
+  }, [guideStorageKey]);
+
+  useEffect(() => {
+    if (hasSeenSwipeGuide) {
+      window.localStorage.setItem(guideStorageKey, "1");
+    }
+  }, [guideStorageKey, hasSeenSwipeGuide]);
 
   useEffect(() => {
     if (!commentsOpen) return;
@@ -98,6 +131,74 @@ function PollPhoneContent({
       document.removeEventListener("mousedown", handleOutsideClick);
     };
   }, [commentsOpen]);
+
+  const isInteractiveTarget = (target: EventTarget | null) => {
+    if (!(target instanceof HTMLElement)) {
+      return false;
+    }
+
+    return Boolean(target.closest("button, input, textarea, form, a"));
+  };
+
+  const voteFromSwipeDirection = (direction: "left" | "right") => {
+    if (hasVoted) {
+      if (direction === "left" && canGoPrev) {
+        onPrev();
+      }
+      if (direction === "right" && canGoNext) {
+        onNext();
+      }
+      return;
+    }
+
+    const selected = direction === "right"
+      ? (yesOption ?? poll.options[0])
+      : (noOption ?? poll.options[1] ?? poll.options[0]);
+
+    if (!selected) {
+      return;
+    }
+
+    setSelectedOptionId(selected.id);
+    window.localStorage.setItem(selectionStorageKey, selected.id);
+    setHasSeenSwipeGuide(true);
+    onVote(selected.id);
+  };
+
+  const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (isInteractiveTarget(event.target)) {
+      return;
+    }
+
+    pointerStartXRef.current = event.clientX;
+    event.currentTarget.setPointerCapture(event.pointerId);
+  };
+
+  const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (pointerStartXRef.current === null) {
+      return;
+    }
+
+    const deltaX = event.clientX - pointerStartXRef.current;
+    const limitedDelta = Math.max(-120, Math.min(120, deltaX));
+    setSwipeOffsetX(limitedDelta);
+  };
+
+  const handlePointerUp = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (pointerStartXRef.current === null) {
+      return;
+    }
+
+    const deltaX = event.clientX - pointerStartXRef.current;
+    pointerStartXRef.current = null;
+    setSwipeOffsetX(0);
+
+    if (Math.abs(deltaX) < 60) {
+      return;
+    }
+
+    voteFromSwipeDirection(deltaX > 0 ? "right" : "left");
+  };
 
   return (
     <div className="relative h-[480px] bg-black px-5 py-4 pointer-events-auto overflow-hidden">
@@ -127,52 +228,88 @@ function PollPhoneContent({
           ))}
         </div>
 
-        <div className="rounded-3xl bg-[#111] border border-white/10 p-6 flex-1 flex flex-col justify-center">
-          <p className="font-display text-[17px] tracking-wide text-white text-center leading-relaxed font-medium">{poll.question}</p>
-
-          {!hasVoted ? (
-            <>
-              <p className="text-[10px] text-white/30 text-center mt-4 mb-5">Swipe right for Yes, left for No</p>
-              <div className="flex gap-3">
-                {yesOption && (
-                  <button
-                    type="button"
-                    onClick={() => onVote(yesOption.id)}
-                    className="flex-1 rounded-2xl bg-raw-gold py-3.5 text-base font-bold text-raw-black transition-all hover:bg-raw-gold/90 active:scale-95"
-                  >
-                    Yes
-                  </button>
-                )}
-                {noOption && (
-                  <button
-                    type="button"
-                    onClick={() => onVote(noOption.id)}
-                    className="flex-1 rounded-2xl bg-white py-3.5 text-base font-bold text-black transition-all hover:bg-white/90 active:scale-95"
-                  >
-                    No
-                  </button>
-                )}
+        <div
+          className="relative rounded-3xl bg-[#111] border border-white/10 p-5 flex-1 flex flex-col justify-center"
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          onPointerCancel={handlePointerUp}
+          style={{ transform: `translateX(${swipeOffsetX}px) rotate(${swipeOffsetX * 0.04}deg)` }}
+        >
+          {!hasVoted && !hasSeenSwipeGuide && (
+            <div className="absolute inset-x-3 top-3 z-20 rounded-xl border border-raw-gold/35 bg-black/80 px-3 py-2 text-[9px] text-white/80 backdrop-blur-sm">
+              <div className="flex items-center justify-between gap-2">
+                <span>Swipe: left = No, right = Yes</span>
+                <button
+                  type="button"
+                  onClick={() => setHasSeenSwipeGuide(true)}
+                  className="rounded-full border border-raw-gold/35 px-2 py-0.5 text-[8px] uppercase tracking-[0.08em] text-raw-gold/85"
+                >
+                  Got it
+                </button>
               </div>
-            </>
-          ) : (
-            <div className="mt-5 space-y-3">
-              <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-black/60">
-                <div className="absolute inset-y-0 left-0 bg-raw-gold/15 transition-all duration-700" style={{ width: `${yesPct}%` }} />
-                <div className="relative flex items-center justify-between px-5 py-3.5">
-                  <span className="text-sm font-semibold text-white">Yes</span>
-                  <span className="text-sm font-bold text-raw-gold">{yesPct}%</span>
-                </div>
-              </div>
-              <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-black/60">
-                <div className="absolute inset-y-0 left-0 bg-white/10 transition-all duration-700" style={{ width: `${noPct}%` }} />
-                <div className="relative flex items-center justify-between px-5 py-3.5">
-                  <span className="text-sm font-semibold text-white">No</span>
-                  <span className="text-sm font-bold text-white/70">{noPct}%</span>
-                </div>
-              </div>
-              <p className="text-[9px] text-white/20 text-center pt-1">{totalVotes.toLocaleString()} anonymous responses</p>
             </div>
           )}
+
+          {!hasVoted && (
+            <div className="mb-3 flex items-center justify-between text-[10px] uppercase tracking-[0.14em]">
+              <span className={`transition ${swipeOffsetX < -20 ? "text-rose-300" : "text-white/35"}`}>No</span>
+              <span className={`transition ${swipeOffsetX > 20 ? "text-emerald-300" : "text-white/35"}`}>Yes</span>
+            </div>
+          )}
+
+          <p className="font-display text-[17px] tracking-wide text-white text-center leading-relaxed font-medium">{poll.question}</p>
+
+          <div className="mt-5 space-y-3">
+            <div className="flex gap-3">
+              {noOption && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedOptionId(noOption.id);
+                    window.localStorage.setItem(selectionStorageKey, noOption.id);
+                    setHasSeenSwipeGuide(true);
+                    onVote(noOption.id);
+                  }}
+                  disabled={hasVoted}
+                  className={`flex-1 rounded-2xl border px-3 py-2.5 text-left text-sm font-semibold transition disabled:cursor-not-allowed ${
+                    selectedNo
+                      ? "border-raw-gold/70 bg-raw-gold/55 text-black"
+                      : "border-raw-gold/30 bg-raw-gold/18 text-white hover:bg-raw-gold/28 disabled:opacity-55"
+                  }`}
+                >
+                  No
+                  {hasVoted ? (
+                    <span className={`ml-2 text-sm ${selectedNo ? "text-black/85" : "text-white/70"}`}>{noPct}%</span>
+                  ) : null}
+                </button>
+              )}
+              {yesOption && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedOptionId(yesOption.id);
+                    window.localStorage.setItem(selectionStorageKey, yesOption.id);
+                    setHasSeenSwipeGuide(true);
+                    onVote(yesOption.id);
+                  }}
+                  disabled={hasVoted}
+                  className={`flex-1 rounded-2xl border px-3 py-2.5 text-right text-sm font-semibold transition disabled:cursor-not-allowed ${
+                    selectedYes
+                      ? "border-raw-gold/70 bg-raw-gold/55 text-black"
+                      : "border-raw-gold/30 bg-raw-gold/18 text-white hover:bg-raw-gold/28 disabled:opacity-55"
+                  }`}
+                >
+                  {hasVoted ? (
+                    <span className={`mr-2 text-sm ${selectedYes ? "text-black/85" : "text-white/70"}`}>{yesPct}%</span>
+                  ) : null}
+                  Yes
+                </button>
+              )}
+            </div>
+
+            {hasVoted ? <p className="text-[9px] text-white/20 text-center pt-1">{totalVotes.toLocaleString()} anonymous responses</p> : null}
+          </div>
         </div>
 
         {hasVoted && (
@@ -249,6 +386,7 @@ export function PollSection({ polls, votedPolls, isLoggedIn, freeVotesUsed, onVo
   const [currentPoll, setCurrentPoll] = useState(0);
   const sectionRef = useTrackSectionView("polls");
   const gateFiredRef = useRef(false);
+  const { gatePosition, signupCta } = useFeatureExperiments();
 
   if (polls.length === 0) return null;
 
@@ -257,6 +395,7 @@ export function PollSection({ polls, votedPolls, isLoggedIn, freeVotesUsed, onVo
 
   const currentHasVoted = votedPolls.has(polls[currentPoll].id);
   const showSignupGate = !isLoggedIn && freeVotesUsed >= 3;
+  const signupLabel = signupCta === "start-anonymous" ? "Start Anonymous" : "Sign Up & Earn Rewards";
 
   const handleVote = (optionId: string) => {
     const pollId = polls[currentPoll].id;
@@ -281,7 +420,7 @@ export function PollSection({ polls, votedPolls, isLoggedIn, freeVotesUsed, onVo
   const handleGateSignupClick = () => {
     track("landing_cta_clicked", {
       cta_id: "poll_gate_signup",
-      cta_text: "Sign Up & Earn Rewards",
+      cta_text: signupLabel,
       source_section: "polls",
     });
     onSignupClick();
@@ -304,7 +443,7 @@ export function PollSection({ polls, votedPolls, isLoggedIn, freeVotesUsed, onVo
 
         <div className="flex items-center justify-center">
           <div className="relative">
-            {showSignupGate ? (
+            {showSignupGate && gatePosition === "inline" ? (
               <PhoneMockup>
                 <div className="h-[480px] bg-black px-5 py-6 flex flex-col items-center justify-center">
                   <div className="text-center">
@@ -321,7 +460,7 @@ export function PollSection({ polls, votedPolls, isLoggedIn, freeVotesUsed, onVo
                       onClick={handleGateSignupClick}
                       className="rounded-full bg-raw-gold px-8 py-3 text-sm font-bold text-raw-black hover:bg-raw-gold/90 transition-all active:scale-95"
                     >
-                      Sign Up & Earn Rewards
+                      {signupLabel}
                     </button>
                   </div>
                 </div>
@@ -343,6 +482,20 @@ export function PollSection({ polls, votedPolls, isLoggedIn, freeVotesUsed, onVo
             )}
           </div>
         </div>
+
+        {showSignupGate && gatePosition === "below" && (
+          <div className="mx-auto mt-5 max-w-md rounded-2xl border border-raw-gold/30 bg-raw-gold/10 p-4 text-center">
+            <p className="text-sm font-semibold text-raw-text">You've reached your free poll limit.</p>
+            <p className="mt-1 text-xs text-raw-silver/55">Create your account to keep voting, earn rewards, and save your progress.</p>
+            <button
+              type="button"
+              onClick={handleGateSignupClick}
+              className="mt-3 rounded-full bg-raw-gold px-5 py-2 text-xs font-bold text-raw-black hover:bg-raw-gold/90"
+            >
+              {signupLabel}
+            </button>
+          </div>
+        )}
 
         {!isLoggedIn && !showSignupGate && (
           <p className="text-center text-xs text-raw-silver/30 mt-6">{freeVotesUsed} of 3 free polls answered</p>

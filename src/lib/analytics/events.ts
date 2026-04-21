@@ -346,6 +346,13 @@ export type AppEvent =
         metric: "CLS" | "LCP" | "INP" | "FCP" | "TTFB";
         value: number;
       };
+    }
+  | {
+      name: "diagnostics_probe_fired";
+      properties: {
+        source: "hidden_button";
+        mode: string;
+      };
     };
 
 // ---------------- helpers ----------------

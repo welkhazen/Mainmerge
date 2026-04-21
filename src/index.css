@@ -474,3 +474,61 @@ html.theme-light .landing-page-shell [class*="bg-raw-surface/"] {
   background-color: rgb(232 237 246 / 0.84) !important;
   border-color: rgb(120 132 151 / 0.38) !important;
 }
+
+html.theme-light .minimal-footer-shell {
+  border-color: rgb(var(--raw-border) / 0.48) !important;
+  background: linear-gradient(155deg, rgb(255 255 255 / 0.97) 0%, rgb(246 250 255 / 0.96) 52%, rgb(240 246 255 / 0.98) 100%) !important;
+  box-shadow: 0 24px 48px rgb(17 24 39 / 0.12), inset 0 1px 0 rgb(255 255 255 / 0.8) !important;
+}
+
+html.theme-light .minimal-footer-glow-a {
+  background: radial-gradient(460px 220px at 18% -5%, rgb(var(--raw-accent) / 0.16), transparent 72%) !important;
+}
+
+html.theme-light .minimal-footer-glow-b {
+  background: radial-gradient(520px 220px at 88% 118%, rgb(37 99 235 / 0.08), transparent 72%) !important;
+}
+
+html.theme-light .minimal-footer-grain {
+  opacity: 0.11 !important;
+}
+
+html.theme-light .minimal-footer-top {
+  border-color: rgb(var(--raw-border) / 0.36) !important;
+  background: rgb(var(--raw-accent) / 0.08) !important;
+}
+
+html.theme-light .minimal-footer-brand {
+  color: rgb(var(--raw-text) / 0.9) !important;
+}
+
+html.theme-light .minimal-footer-tagline,
+html.theme-light .minimal-footer-link,
+html.theme-light .minimal-footer-copy {
+  color: rgb(var(--raw-silver) / 0.9) !important;
+}
+
+html.theme-light .minimal-footer-heading {
+  color: rgb(var(--raw-accent) / 0.9) !important;
+}
+
+html.theme-light .minimal-footer-social {
+  border-color: rgb(var(--raw-border) / 0.46) !important;
+  background: rgb(255 255 255 / 0.72) !important;
+  color: rgb(var(--raw-silver) / 0.78) !important;
+}
+
+html.theme-light .minimal-footer-social:hover {
+  background: rgb(var(--raw-accent) / 0.16) !important;
+  border-color: rgb(var(--raw-accent) / 0.42) !important;
+  color: rgb(133 77 14) !important;
+}
+
+html.theme-light .minimal-footer-bottom {
+  border-color: rgb(var(--raw-border) / 0.36) !important;
+  background: rgb(236 242 252 / 0.82) !important;
+}
+
+html.theme-light .minimal-footer-credit {
+  color: rgb(161 98 7 / 0.95) !important;
+}

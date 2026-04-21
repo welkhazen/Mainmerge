@@ -1,5 +1,6 @@
-import { useStytchSession } from '@stytch/react';
+import { useStytchSession, useStytchUser } from '@stytch/react';
 import { Mail } from 'lucide-react';
+import { isStytchEnabled } from '@/providers/StytchProvider';
 
 interface StytchAuthOptionsProps {
   onAuthSuccess?: () => void;
@@ -10,11 +11,20 @@ interface StytchAuthOptionsProps {
  * Can be embedded in the signup modal for alternative login methods
  */
 export function StytchAuthOptions({ onAuthSuccess }: StytchAuthOptionsProps) {
+  if (!isStytchEnabled) {
+    return (
+      <p className="text-center text-raw-silver/40 text-[11px] tracking-wide">
+        Email magic-link login is temporarily unavailable.
+      </p>
+    );
+  }
+
   const { session } = useStytchSession();
+  const { user } = useStytchUser();
 
   // If already authenticated via Stytch, show login status
   if (session) {
-    const email = session.user.emails?.[0]?.email;
+    const email = user?.emails?.[0]?.email;
     return (
       <div className="text-center p-4 bg-emerald-900/20 border border-emerald-700/50 rounded-xl">
         <p className="text-emerald-300 text-sm font-medium">

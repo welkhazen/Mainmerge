@@ -114,7 +114,6 @@ export function DashboardMarketplace({ avatarLevel }: { avatarLevel: number }) {
       <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {items.map((item) => {
           const Icon = item.icon;
-          const canUnlock = avatarLevel >= item.levelRequired;
           return (
             <GlareCard key={item.id}>
               <div className={`rounded-2xl border bg-raw-surface/40 p-6 h-full relative ${

@@ -1,4 +1,5 @@
 import { Component, ErrorInfo, ReactNode } from "react";
+import * as Sentry from "@sentry/react";
 import { track } from "@/lib/analytics";
 
 interface ErrorBoundaryProps {
@@ -23,6 +24,11 @@ export class ErrorBoundary extends Component<
   componentDidCatch(error: Error, info: ErrorInfo): void {
     const route =
       typeof window !== "undefined" ? window.location.pathname : "unknown";
+
+    Sentry.captureException(error, {
+      tags: { route },
+      extra: { componentStack: info.componentStack },
+    });
 
     track("error_boundary_triggered", {
       message: error.message,

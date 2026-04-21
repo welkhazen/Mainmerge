@@ -2,6 +2,7 @@ import { env } from "../config/env";
 import type { UserRecord } from "../types";
 import {
   createUser,
+  findUserByReferralCode,
   findUserById,
   findUserByUsername,
   phoneHashExists,
@@ -15,6 +16,12 @@ type CreateUserInput = {
   username: string;
   passwordHash: string;
   phoneHash: string;
+  referralCode?: string;
+};
+
+type StytchIdentityInput = {
+  stytchUserId: string;
+  email: string;
 };
 
 type UpdateProfileResult =
@@ -24,11 +31,45 @@ type UpdateProfileResult =
 export interface UserRepository {
   findById(userId: string): Promise<UserRecord | null>;
   findByUsername(username: string): Promise<UserRecord | null>;
+  findByEmail(email: string): Promise<UserRecord | null>;
+  findByReferralCode(referralCode: string): Promise<UserRecord | null>;
   usernameExists(username: string): Promise<boolean>;
   phoneHashExists(phoneHash: string): Promise<boolean>;
   create(input: CreateUserInput): Promise<UserRecord>;
+  findOrCreateByStytchIdentity(input: StytchIdentityInput): Promise<UserRecord>;
+  registerReferralActivation(referralCode: string, referredUserId: string): Promise<void>;
   updateProfile(userId: string, updates: UpdateUserProfileInput): Promise<UpdateProfileResult>;
   updatePasswordHash(userId: string, passwordHash: string): Promise<boolean>;
+}
+
+function normalizeStytchUsername(email: string): string {
+  const localPart = email.split("@")[0] ?? "user";
+  const normalized = localPart.toLowerCase().replace(/[^a-z0-9._-]/g, "-").replace(/^-+|-+$/g, "");
+  const trimmed = normalized.slice(0, 24);
+  if (trimmed.length >= 3) {
+    return trimmed;
+  }
+  return `user${Math.floor(Math.random() * 9000 + 1000)}`;
+}
+
+async function reserveAvailableUsername(
+  baseUsername: string,
+  exists: (username: string) => Promise<boolean>
+): Promise<string> {
+  const sanitizedBase = baseUsername.slice(0, 24);
+  if (!(await exists(sanitizedBase))) {
+    return sanitizedBase;
+  }
+
+  for (let index = 1; index <= 9999; index += 1) {
+    const suffix = `-${index}`;
+    const candidate = `${sanitizedBase.slice(0, 24 - suffix.length)}${suffix}`;
+    if (!(await exists(candidate))) {
+      return candidate;
+    }
+  }
+
+  return `${sanitizedBase.slice(0, 20)}-${Date.now().toString().slice(-3)}`;
 }
 
 class MemoryUserRepository implements UserRepository {
@@ -40,6 +81,14 @@ class MemoryUserRepository implements UserRepository {
     return findUserByUsername(username);
   }
 
+  async findByEmail(_email: string): Promise<UserRecord | null> {
+    return null;
+  }
+
+  async findByReferralCode(referralCode: string): Promise<UserRecord | null> {
+    return findUserByReferralCode(referralCode);
+  }
+
   async usernameExists(username: string): Promise<boolean> {
     return usernameExists(username);
   }
@@ -49,7 +98,26 @@ class MemoryUserRepository implements UserRepository {
   }
 
   async create(input: CreateUserInput): Promise<UserRecord> {
-    return createUser(input.username, input.passwordHash, input.phoneHash);
+    return createUser(input.username, input.passwordHash, input.phoneHash, input.referralCode);
+  }
+
+  async findOrCreateByStytchIdentity(input: StytchIdentityInput): Promise<UserRecord> {
+    const preferredUsername = normalizeStytchUsername(input.email);
+    const existingByUsername = await this.findByUsername(preferredUsername);
+    if (existingByUsername) {
+      return existingByUsername;
+    }
+
+    const username = await reserveAvailableUsername(preferredUsername, (candidate) => this.usernameExists(candidate));
+    return this.create({
+      username,
+      passwordHash: `stytch:${input.stytchUserId}`,
+      phoneHash: `stytch:${input.stytchUserId}`,
+    });
+  }
+
+  async registerReferralActivation(_referralCode: string, _referredUserId: string): Promise<void> {
+    return;
   }
 
   async updateProfile(userId: string, updates: UpdateUserProfileInput): Promise<UpdateProfileResult> {
@@ -73,9 +141,22 @@ type SupabaseUserRow = {
   phone_hash: string;
   display_name: string | null;
   bio: string | null;
+  referral_code: string | null;
   created_at: string;
   updated_at: string;
   password_changed_at: string;
+};
+
+type StytchMappingRow = {
+  user_id: string;
+  stytch_user_id: string;
+  email: string;
+};
+
+type ReferralRow = {
+  referrer_user_id: string;
+  referred_user_id: string;
+  status: string;
 };
 
 type RuntimeUserState = {
@@ -106,6 +187,26 @@ class SupabaseUserRepository implements UserRepository {
     return rows.length > 0 ? this.toUserRecord(rows[0]) : null;
   }
 
+  async findByEmail(email: string): Promise<UserRecord | null> {
+    const mappingRows = await this.query<StytchMappingRow[]>(
+      "GET",
+      `email=eq.${encodeURIComponent(email)}&select=user_id,email,stytch_user_id&limit=1`,
+      undefined,
+      "app_stytch_users"
+    );
+
+    if (!mappingRows.length) {
+      return null;
+    }
+
+    return this.findById(mappingRows[0].user_id);
+  }
+
+  async findByReferralCode(referralCode: string): Promise<UserRecord | null> {
+    const rows = await this.selectRows(`referral_code=eq.${encodeURIComponent(referralCode.toUpperCase())}&limit=1`);
+    return rows.length > 0 ? this.toUserRecord(rows[0]) : null;
+  }
+
   async usernameExists(username: string): Promise<boolean> {
     const rows = await this.selectRows(`username=eq.${encodeURIComponent(username)}&select=id&limit=1`);
     return rows.length > 0;
@@ -118,12 +219,20 @@ class SupabaseUserRepository implements UserRepository {
 
   async create(input: CreateUserInput): Promise<UserRecord> {
     const nowIso = new Date().toISOString();
+    const randomSuffix = Math.floor(Math.random() * 9000 + 1000).toString();
+    const baseReferralCode = (input.referralCode ?? `${input.username}`)
+      .toUpperCase()
+      .replace(/[^A-Z0-9]/g, "")
+      .slice(0, 6)
+      .padEnd(6, "X");
+    const referralCode = `${baseReferralCode}${randomSuffix}`;
     const rows = await this.query<SupabaseUserRow[]>("POST", "", {
       username: input.username,
       password_hash: input.passwordHash,
       phone_hash: input.phoneHash,
       display_name: null,
       bio: null,
+      referral_code: referralCode,
       created_at: nowIso,
       updated_at: nowIso,
       password_changed_at: nowIso,
@@ -134,6 +243,86 @@ class SupabaseUserRepository implements UserRepository {
     }
 
     return this.toUserRecord(rows[0]);
+  }
+
+  async registerReferralActivation(referralCode: string, referredUserId: string): Promise<void> {
+    const referrer = await this.findByReferralCode(referralCode);
+    if (!referrer || referrer.id === referredUserId) {
+      return;
+    }
+
+    const existing = await this.query<ReferralRow[]>(
+      "GET",
+      `referrer_user_id=eq.${encodeURIComponent(referrer.id)}&referred_user_id=eq.${encodeURIComponent(referredUserId)}&select=referrer_user_id,referred_user_id,status&limit=1`,
+      undefined,
+      "referrals"
+    );
+
+    if (existing.length > 0) {
+      return;
+    }
+
+    await this.query(
+      "POST",
+      "",
+      {
+        referrer_user_id: referrer.id,
+        referred_user_id: referredUserId,
+        referral_code: referralCode.toUpperCase(),
+        status: "activated",
+        activated_at: new Date().toISOString(),
+        reward_points: 30,
+      },
+      "referrals"
+    );
+  }
+
+  async findOrCreateByStytchIdentity(input: StytchIdentityInput): Promise<UserRecord> {
+    const mappingRows = await this.query<StytchMappingRow[]>(
+      "GET",
+      `stytch_user_id=eq.${encodeURIComponent(input.stytchUserId)}&select=user_id,stytch_user_id,email&limit=1`,
+      undefined,
+      "app_stytch_users"
+    );
+
+    if (mappingRows.length > 0) {
+      const existing = await this.findById(mappingRows[0].user_id);
+      if (existing) {
+        return existing;
+      }
+    }
+
+    const preferredUsername = normalizeStytchUsername(input.email);
+    const username = await reserveAvailableUsername(preferredUsername, (candidate) => this.usernameExists(candidate));
+    const phoneHash = `stytch:${input.stytchUserId}`;
+
+    let user: UserRecord;
+    try {
+      user = await this.create({
+        username,
+        passwordHash: `stytch:${input.stytchUserId}`,
+        phoneHash,
+      });
+    } catch {
+      const rows = await this.selectRows(`phone_hash=eq.${encodeURIComponent(phoneHash)}&limit=1`);
+      if (!rows.length) {
+        throw new Error("Unable to create or locate Stytch user.");
+      }
+      user = this.toUserRecord(rows[0]);
+    }
+
+    await this.query(
+      "POST",
+      "on_conflict=stytch_user_id",
+      {
+        user_id: user.id,
+        stytch_user_id: input.stytchUserId,
+        email: input.email,
+      },
+      "app_stytch_users"
+    );
+
+    return user;
   }
 
   async updateProfile(userId: string, updates: UpdateUserProfileInput): Promise<UpdateProfileResult> {
@@ -190,9 +379,15 @@ class SupabaseUserRepository implements UserRepository {
     return Array.isArray(rows) ? rows : [];
   }
 
-  private async query<T>(method: "GET" | "POST" | "PATCH", queryString: string, body?: Record<string, unknown>): Promise<T> {
+  private async query<T>(
+    method: "GET" | "POST" | "PATCH",
+    queryString: string,
+    body?: Record<string, unknown>,
+    tableOverride?: string
+  ): Promise<T> {
     const queryPrefix = queryString.length > 0 ? `?${queryString}` : "";
-    const url = `${this.baseUrl}/rest/v1/${this.table}${queryPrefix}`;
+    const tableName = tableOverride ?? this.table;
+    const url = `${this.baseUrl}/rest/v1/${tableName}${queryPrefix}`;
     const response = await fetch(url, {
       method,
       headers: {
@@ -222,6 +417,7 @@ class SupabaseUserRepository implements UserRepository {
       username: row.username,
       displayName: row.display_name,
       bio: row.bio,
+      referralCode: row.referral_code,
       createdAt: Date.parse(row.created_at),
       updatedAt: Date.parse(row.updated_at),
       passwordChangedAt: Date.parse(row.password_changed_at),

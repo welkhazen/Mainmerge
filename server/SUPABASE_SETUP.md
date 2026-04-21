@@ -105,3 +105,72 @@ Password policy:
 - Length: 8-128
 - Must include uppercase, lowercase, number, symbol
 - Must differ from current password
+
+## MVC v2 API (communities, polls, XP, streak)
+
+New server-side MVC routes are available under `/api/v2`.
+
+- `GET /api/v2/dashboard` -> profile + communities + randomized polls
+- `GET /api/v2/polls/random?limit=10` -> randomized polls prioritizing unseen polls
+- `POST /api/v2/polls/:pollId/vote` -> submit poll vote and award XP/streak activity
+- `GET /api/v2/communities` -> list communities with membership status
+- `POST /api/v2/communities/:communityId/join` -> join community and award XP/streak activity
+- `GET /api/v2/profile` -> profile with XP and daily streak
+- `POST /api/v2/admin/polls` -> admin-only poll creation
+- `POST /api/auth/stytch/session-exchange` -> verifies Stytch session token and syncs/links user to Supabase-backed account
+- `POST /api/auth/magic-link/request` -> sends transactional magic-link email
+- `POST /api/auth/magic-link/verify` -> exchanges magic-link token for authenticated session
+- `POST /api/notifications/streak-at-risk` -> sends transactional streak reminder email (admin)
+- `POST /api/notifications/weekly-digest` -> sends weekly digest email (admin)
+- `POST /api/notifications/community-invite` -> sends community invite email (admin)
+- `POST /api/cron/streaks/reset` -> UTC cron-safe streak reset endpoint (Bearer CRON_SECRET)
+- `POST /api/cron/streaks/at-risk` -> UTC cron-safe at-risk reminder dispatch endpoint (Bearer CRON_SECRET)
+
+Admin access can be configured with either:
+
+- rows in `public.app_admin_users` where `role='admin'`
+
+Client-side role is display-only. Server-side authorization checks `public.app_admin_users`.
+
+### Additional env vars for Stytch session exchange
+
+```env
+STYTCH_PROJECT_ID=project-test-...
+STYTCH_SECRET=secret-test-...
+STYTCH_ENV=test
+
+# Transactional email
+EMAIL_PROVIDER=none # one of: none, resend, postmark
+EMAIL_FROM=
+RESEND_API_KEY=
+POSTMARK_SERVER_TOKEN=
+APP_BASE_URL=http://localhost:8080
+
+# Cron
+CRON_ENABLED=true
+CRON_SECRET=replace-with-long-random-value
+```
+
+### Required SQL for MVC v2
+
+Run the schema in [server/sql/mvc_v2_schema.sql](server/sql/mvc_v2_schema.sql) in your Supabase SQL editor.
+
+It creates and indexes these tables:
+
+- `app_profiles`
+- `app_polls`
+- `app_poll_options`
+- `app_poll_votes`
+- `app_communities`
+- `app_community_members`
+- `app_admin_users`
+- `app_stytch_users`
+- `referrals`
+
+It also enables row-level security policies that gate admin poll creation to `role='admin'` users.
+
+Referral loop behavior:
+
+- `app_users.referral_code` is generated for each user
+- New signups can include `referralCode` in `/api/auth/signup/request-otp`
+- On successful activation, a `referrals` row is written and rewards are applied

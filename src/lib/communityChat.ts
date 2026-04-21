@@ -60,9 +60,9 @@ interface UpdateCommunityPresentationInput {
   logoUrl?: string;
 }
 
-const COMMUNITY_CHATS_STORAGE_KEY = "raw.community-chats.v1";
 const ONLINE_WINDOW_MINUTES = 15;
 const RETIRED_COMMUNITY_IDS = new Set(["sg"]);
+let memoryCommunities: PersistedCommunityRecord[] | null = null;
 
 function toTimestamp(value?: string): number {
   if (!value) {
@@ -260,27 +260,13 @@ function buildDefaultCommunities(): PersistedCommunityRecord[] {
 }
 
 function readStoredCommunities(): PersistedCommunityRecord[] {
-  if (typeof window === "undefined") {
-    return buildDefaultCommunities();
-  }
-
-  try {
-    const rawValue = window.localStorage.getItem(COMMUNITY_CHATS_STORAGE_KEY);
-    if (!rawValue) {
-      return [];
-    }
-
-    const parsed = JSON.parse(rawValue) as unknown;
-    if (!Array.isArray(parsed)) {
-      return [];
-    }
-
-    return parsed
-      .map(normalizeCommunity)
-      .filter((community): community is PersistedCommunityRecord => community !== null && !RETIRED_COMMUNITY_IDS.has(community.id));
-  } catch {
+  if (!memoryCommunities) {
     return [];
   }
+
+  return memoryCommunities
+    .map(normalizeCommunity)
+    .filter((community): community is PersistedCommunityRecord => community !== null && !RETIRED_COMMUNITY_IDS.has(community.id));
 }
 
 function mergeWithDefaults(storedCommunities: PersistedCommunityRecord[]): PersistedCommunityRecord[] {
@@ -290,11 +276,11 @@ function mergeWithDefaults(storedCommunities: PersistedCommunityRecord[]): Persi
 }
 
 export function writeCommunityChats(communities: PersistedCommunityRecord[]): void {
-  if (typeof window === "undefined") {
-    return;
-  }
-
-  window.localStorage.setItem(COMMUNITY_CHATS_STORAGE_KEY, JSON.stringify(communities));
+  memoryCommunities = communities.map((community) => ({
+    ...community,
+    members: [...community.members],
+    messages: [...community.messages],
+  }));
 }
 
 export function readCommunityChats(): PersistedCommunityRecord[] {
@@ -302,9 +288,7 @@ export function readCommunityChats(): PersistedCommunityRecord[] {
   const communities = (storedCommunities.length > 0 ? mergeWithDefaults(storedCommunities) : buildDefaultCommunities())
     .filter((community) => !RETIRED_COMMUNITY_IDS.has(community.id));
 
-  if (typeof window !== "undefined") {
-    writeCommunityChats(communities);
-  }
+  writeCommunityChats(communities);
 
   return communities;
 }

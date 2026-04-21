@@ -6,6 +6,7 @@ import { requireAuth } from "../middleware/requireAuth";
 import { audit } from "../lib/audit";
 import { getUserRepository } from "../lib/userRepository";
 import { hashPassword, verifyPassword } from "../lib/password";
+import { ProfileRepository } from "../mvc/repositories/profileRepository";
 import type { AuthSessionData, UserRecord } from "../types";
 
 const usernameRegex = /^[a-zA-Z0-9._-]{3,24}$/;
@@ -86,6 +87,16 @@ function toApiUser(user: UserRecord) {
   };
 }
 
+async function resolveUserRole(userId: string): Promise<"admin" | "member"> {
+  try {
+    const profileRepository = new ProfileRepository();
+    const isAdmin = await profileRepository.isAdmin(userId);
+    return isAdmin ? "admin" : "member";
+  } catch {
+    return "member";
+  }
+}
+
 export const usersRouter = Router();
 
 usersRouter.use(requireAuth);
@@ -96,7 +107,8 @@ usersRouter.get("/me", async (req, res) => {
     return res.status(401).json({ error: "Authentication required." });
   }
 
-  return res.status(200).json({ user: toApiUser(user) });
+  const role = await resolveUserRole(user.id);
+  return res.status(200).json({ user: { ...toApiUser(user), role } });
 });
 
 usersRouter.patch("/me", async (req, res) => {

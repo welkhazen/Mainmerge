@@ -1,9 +1,12 @@
-import { FormEvent, useState } from "react";
-import { ContainerTextFlip } from "@/components/ui/container-text-flip";
+import { FormEvent, Suspense, lazy, useState } from "react";
 import { MinimalFooter } from "@/components/ui/minimal-footer";
 import { track } from "@/lib/analytics";
 import { useTrackSectionView } from "@/lib/analytics/useTrackSectionView";
 import { apiFetch } from "@/lib/http";
+
+const ContainerTextFlipLazy = lazy(() =>
+  import("@/components/ui/container-text-flip").then((module) => ({ default: module.ContainerTextFlip }))
+);
 
 interface FinalCTAProps {
   onSignupClick: () => void;
@@ -116,11 +119,13 @@ export function FinalCTA({ onSignupClick }: FinalCTAProps) {
           Join the Community Owner Early Access
         </h2>
         <div className="mt-4 flex items-center justify-center">
-          <ContainerTextFlip
-            words={["launch-ready", "trusted", "member-led", "raW"]}
-            interval={2500}
-            className="!text-3xl sm:!text-4xl"
-          />
+          <Suspense fallback={<span className="font-display text-3xl text-raw-gold sm:text-4xl">raW</span>}>
+            <ContainerTextFlipLazy
+              words={["launch-ready", "trusted", "member-led", "raW"]}
+              interval={2500}
+              className="!text-3xl sm:!text-4xl"
+            />
+          </Suspense>
         </div>
         <p className="mx-auto mt-6 max-w-lg text-sm text-raw-silver/65 sm:text-base sm:text-raw-silver/50">
           Fill out this form to request early access as a community owner. We will follow up with next steps.

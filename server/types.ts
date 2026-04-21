@@ -3,6 +3,7 @@ export interface User {
   username: string;
   displayName: string | null;
   bio: string | null;
+  referralCode?: string | null;
   createdAt: number;
   updatedAt: number;
   passwordChangedAt: number;
@@ -20,6 +21,7 @@ export interface PendingSignupData {
   passwordHash: string;
   phone: string;
   phoneHash: string;
+  referralCode?: string;
   sentAt: number;
   attempts: number;
 }

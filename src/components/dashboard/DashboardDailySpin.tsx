@@ -64,7 +64,6 @@ function getTodayKey() {
 }
 
 export function DashboardDailySpin({ userId }: DashboardDailySpinProps) {
-  const storageKey = useMemo(() => `raw.daily-spin.${userId}`, [userId]);
   const [todayKey, setTodayKey] = useState(() => getTodayKey());
   const [selectedRewardId, setSelectedRewardId] = useState<string | null>(null);
   const [hasSpunToday, setHasSpunToday] = useState(false);
@@ -80,29 +79,9 @@ export function DashboardDailySpin({ userId }: DashboardDailySpinProps) {
   }, []);
 
   useEffect(() => {
-    try {
-      const raw = window.localStorage.getItem(storageKey);
-      if (!raw) {
-        setHasSpunToday(false);
-        setSelectedRewardId(null);
-        return;
-      }
-
-      const parsed = JSON.parse(raw) as { date: string; rewardId: string };
-      if (parsed.date === todayKey) {
-        setSelectedRewardId(parsed.rewardId);
-        setHasSpunToday(true);
-        return;
-      }
-
-      setHasSpunToday(false);
-      setSelectedRewardId(null);
-      window.localStorage.removeItem(storageKey);
-    } catch {
-      setHasSpunToday(false);
-      setSelectedRewardId(null);
-    }
-  }, [storageKey, todayKey]);
+    setHasSpunToday(false);
+    setSelectedRewardId(null);
+  }, [todayKey, userId]);
 
   const selectedPrize = PRIZES.find((prize) => prize.id === selectedRewardId) ?? null;
 
@@ -110,7 +89,6 @@ export function DashboardDailySpin({ userId }: DashboardDailySpinProps) {
     setSelectedRewardId(prize.id);
     setHasSpunToday(true);
     setPrizeModal(prize);
-    window.localStorage.setItem(storageKey, JSON.stringify({ date: todayKey, rewardId: prize.id }));
   };
 
   const selectedMessage = selectedPrize ? prizeMessages[selectedPrize.id] : null;

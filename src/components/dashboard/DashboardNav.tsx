@@ -40,7 +40,6 @@ interface DashboardNavProps {
 
 export function DashboardNav({ username, avatarLevel, showAdminLink = false, onProfileClick, onLogout }: DashboardNavProps) {
   const { mode, accent, accentPresets, setMode, setAccent } = useTheme();
-  const isLightMode = mode === "light";
   const [hoveredMode, setHoveredMode] = useState<ThemeMode | null>(null);
   const [hoveredAccent, setHoveredAccent] = useState<AccentPresetId | null>(null);
   const effectiveMode = hoveredMode ?? mode;
@@ -165,8 +164,6 @@ export function DashboardNav({ username, avatarLevel, showAdminLink = false, onP
                   Display Mode
                 </DropdownMenuSubTrigger>
                 <DropdownMenuSubContent
-                  side="left"
-                  alignOffset={-4}
                   className={cn(
                     "w-[300px] rounded-2xl p-3 text-raw-text",
                     isEffectiveLight
