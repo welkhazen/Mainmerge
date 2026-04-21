@@ -1,4 +1,4 @@
-﻿import type { Request } from "express";
+import type { Request } from "express";
 import { Router } from "express";
 import rateLimit from "express-rate-limit";
 import { z } from "zod";
@@ -9,7 +9,6 @@ import { getAnonymousVotes } from "../lib/store";
 import { hashPassword, verifyPassword } from "../lib/password";
 import { hashPhone, normalizePhone } from "../lib/phoneHash";
 import { sendOtp, verifyOtp } from "../lib/twilio";
-import { ProfileRepository } from "../mvc/repositories/profileRepository";
 import { sendTransactionalEmail } from "../lib/email";
 import type { AuthSessionData } from "../types";
 
@@ -43,11 +42,6 @@ const loginSchema = z.object({
 
 const codeSchema = z.object({
   code: z.string().regex(/^\d{6}$/),
-});
-
-const stytchExchangeSchema = z.object({
-  sessionToken: z.string().min(10),
-  email: z.string().email().optional(),
 });
 
 const magicLinkRequestSchema = z.object({
@@ -133,51 +127,6 @@ function incrementPhoneSendCount(phoneHash: string): void {
   } else {
     entry.count += 1;
   }
-}
-
-type StytchAuthenticateResponse = {
-  session?: {
-    user_id?: string;
-  };
-  user?: {
-    user_id?: string;
-    emails?: Array<{ email: string }>;
-  };
-};
-
-async function authenticateStytchSessionToken(sessionToken: string): Promise<{ stytchUserId: string; email: string } | null> {
-  if (!env.STYTCH_PROJECT_ID || !env.STYTCH_SECRET) {
-    return null;
-  }
-
-  const baseUrl = env.STYTCH_ENV === "live" ? "https://api.stytch.com" : "https://test.stytch.com";
-  const basicAuth = Buffer.from(`${env.STYTCH_PROJECT_ID}:${env.STYTCH_SECRET}`).toString("base64");
-
-  const response = await fetch(`${baseUrl}/v1/sessions/authenticate`, {
-    method: "POST",
-    headers: {
-      Authorization: `Basic ${basicAuth}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      session_token: sessionToken,
-      session_duration_minutes: 60,
-    }),
-  });
-
-  if (!response.ok) {
-    return null;
-  }
-
-  const payload = (await response.json()) as StytchAuthenticateResponse;
-  const stytchUserId = payload.user?.user_id ?? payload.session?.user_id;
-  const email = payload.user?.emails?.[0]?.email;
-
-  if (!stytchUserId || !email) {
-    return null;
-  }
-
-  return { stytchUserId, email };
 }
 
 export const authRouter = Router();
@@ -280,18 +229,6 @@ authRouter.post("/signup/verify", async (req, res) => {
 
   if (pendingSignup.referralCode) {
     await userRepository.registerReferralActivation(pendingSignup.referralCode, user.id);
-    try {
-      const profileRepository = new ProfileRepository();
-      const referrer = await userRepository.findByReferralCode(pendingSignup.referralCode);
-      if (referrer) {
-        await Promise.all([
-          profileRepository.addXp(referrer.id, 30),
-          profileRepository.addXp(user.id, 10),
-        ]);
-      }
-    } catch {
-      // Ignore referral XP failures when profile tables are not configured.
-    }
   }
 
   await regenerateSession(req.session);
@@ -397,35 +334,4 @@ authRouter.post("/magic-link/verify", async (req, res) => {
   magicLinks.delete(parsed.data.token);
 
   return res.status(200).json({ ok: true });
-});
-
-authRouter.post("/stytch/session-exchange", async (req, res) => {
-  const parsed = stytchExchangeSchema.safeParse(req.body);
-  if (!parsed.success) {
-    return res.status(400).json({ error: "Invalid Stytch session payload." });
-  }
-
-  const verified = await authenticateStytchSessionToken(parsed.data.sessionToken);
-  if (!verified) {
-    return res.status(401).json({ error: "Invalid or expired Stytch session." });
-  }
-
-  try {
-    const previousAnonymousVotes = getAnonymousVotes(getSessionData(req));
-    const user = await userRepository.findOrCreateByStytchIdentity({
-      stytchUserId: verified.stytchUserId,
-      email: verified.email,
-    });
-
-    await regenerateSession(req.session);
-    const newSession = getSessionData(req);
-    newSession.userId = user.id;
-    newSession.anonymousVotes = previousAnonymousVotes;
-
-    audit("auth.stytch.exchange", { userId: user.id, username: user.username, ip: req.ip });
-    return res.status(200).json({ ok: true, user: { id: user.id, username: user.username } });
-  } catch (error) {
-    console.error("auth.stytch.exchange.error", error);
-    return res.status(500).json({ error: "Unable to sync Stytch user." });
-  }
 });

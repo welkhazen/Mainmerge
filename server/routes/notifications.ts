@@ -4,7 +4,7 @@ import { z } from "zod";
 import { requireAuth } from "../middleware/requireAuth";
 import type { AuthSessionData } from "../types";
 import { sendTransactionalEmail } from "../lib/email";
-import { ProfileRepository } from "../mvc/repositories/profileRepository";
+import { isUserAdmin } from "../lib/admin";
 
 const inviteSchema = z.object({
   to: z.string().email(),
@@ -28,18 +28,13 @@ function getUserId(req: Request): string | undefined {
   return session.userId;
 }
 
-async function ensureAdmin(userId: string): Promise<boolean> {
-  const profileRepository = new ProfileRepository();
-  return profileRepository.isAdmin(userId);
-}
-
 export const notificationsRouter = Router();
 
 notificationsRouter.use(requireAuth);
 
 notificationsRouter.post("/community-invite", async (req, res) => {
   const userId = getUserId(req);
-  if (!userId || !(await ensureAdmin(userId))) {
+  if (!userId || !(await isUserAdmin(userId))) {
     return res.status(403).json({ error: "Admin permissions required." });
   }
 
@@ -59,7 +54,7 @@ notificationsRouter.post("/community-invite", async (req, res) => {
 
 notificationsRouter.post("/weekly-digest", async (req, res) => {
   const userId = getUserId(req);
-  if (!userId || !(await ensureAdmin(userId))) {
+  if (!userId || !(await isUserAdmin(userId))) {
     return res.status(403).json({ error: "Admin permissions required." });
   }
 
@@ -77,7 +72,7 @@ notificationsRouter.post("/weekly-digest", async (req, res) => {
 
 notificationsRouter.post("/streak-at-risk", async (req, res) => {
   const userId = getUserId(req);
-  if (!userId || !(await ensureAdmin(userId))) {
+  if (!userId || !(await isUserAdmin(userId))) {
     return res.status(403).json({ error: "Admin permissions required." });
   }
 

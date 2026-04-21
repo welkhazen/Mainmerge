@@ -61,22 +61,13 @@ This project is built with:
 - Tailwind CSS
 
 
-## PostHog setup (EU)
+## Local env setup
 
-1. Copy env template and keep secrets in a local file:
+Copy the env template and keep secrets in a local file:
 
 ```sh
 cp .env.example .env.local
 ```
-
-2. Set PostHog values in `.env.local`:
-
-```env
-VITE_PUBLIC_POSTHOG_PROJECT_TOKEN=phc_C6VjShPz9cMttT9XWJeXAnPTf8wGJDTgkzd3hchT98KA
-VITE_PUBLIC_POSTHOG_HOST=https://eu.i.posthog.com
-```
-
-> Better alternative for multi-environment teams: keep `.env.example` with placeholders and inject real values from CI secrets or your hosting provider's environment manager.
 
 ## How can I deploy this project?
 

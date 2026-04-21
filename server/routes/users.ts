@@ -6,7 +6,7 @@ import { requireAuth } from "../middleware/requireAuth";
 import { audit } from "../lib/audit";
 import { getUserRepository } from "../lib/userRepository";
 import { hashPassword, verifyPassword } from "../lib/password";
-import { ProfileRepository } from "../mvc/repositories/profileRepository";
+import { resolveUserRole } from "../lib/admin";
 import type { AuthSessionData, UserRecord } from "../types";
 
 const usernameRegex = /^[a-zA-Z0-9._-]{3,24}$/;
@@ -85,16 +85,6 @@ function toApiUser(user: UserRecord) {
     updatedAt: new Date(user.updatedAt).toISOString(),
     passwordChangedAt: new Date(user.passwordChangedAt).toISOString(),
   };
-}
-
-async function resolveUserRole(userId: string): Promise<"admin" | "member"> {
-  try {
-    const profileRepository = new ProfileRepository();
-    const isAdmin = await profileRepository.isAdmin(userId);
-    return isAdmin ? "admin" : "member";
-  } catch {
-    return "member";
-  }
 }
 
 export const usersRouter = Router();

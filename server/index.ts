@@ -7,7 +7,6 @@ import rateLimit from "express-rate-limit";
 import session from "express-session";
 import { env } from "./config/env";
 import { assistantRouter } from "./routes/assistant";
-import { appV2Router } from "./routes/appV2";
 import { authRouter } from "./routes/auth";
 import { cronRouter } from "./routes/cron";
 import { notificationsRouter } from "./routes/notifications";
@@ -92,7 +91,6 @@ app.use("/api/users", usersRouter);
 app.use("/api/assistant", assistantRouter);
 app.use("/api/notifications", notificationsRouter);
 app.use("/api/cron", cronRouter);
-app.use("/api/v2", appV2Router);
 app.use("/api", pollsRouter);
 
 app.use((err: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {

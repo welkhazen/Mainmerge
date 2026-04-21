@@ -1,8 +1,8 @@
 import { useCallback, useMemo, useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { identify, reset, track } from "@/lib/analytics";
 import { ApiError, apiRequest } from "@/lib/api/client";
-import type { AuthResult, StytchSession, User } from "@/store/types";
+import type { AuthResult, User } from "@/store/types";
 
 type ApiUser = {
   id: string;
@@ -13,7 +13,6 @@ type ApiUser = {
 export function useAuth() {
   const queryClient = useQueryClient();
   const [showSignup, setShowSignup] = useState(false);
-  const [stytchSession, setStytchSessionState] = useState<StytchSession | null>(null);
 
   const meQuery = useQuery({
     queryKey: ["auth", "me"],
@@ -34,18 +33,6 @@ export function useAuth() {
         }
         throw error;
       }
-    },
-  });
-
-  const stytchExchange = useMutation({
-    mutationFn: async (payload: { sessionToken: string; email?: string }) => {
-      return apiRequest<{ ok: boolean }>("/api/auth/stytch/session-exchange", {
-        method: "POST",
-        body: JSON.stringify(payload),
-      });
-    },
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
     },
   });
 
@@ -113,21 +100,10 @@ export function useAuth() {
       // Ignore logout network errors and clear local session state anyway.
     }
 
-    setStytchSessionState(null);
     queryClient.setQueryData(["auth", "me"], null);
     await queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
     reset();
   }, [queryClient]);
-
-  const setStytchSession = useCallback((session: StytchSession | null) => {
-    setStytchSessionState(session);
-    if (session?.authenticated && session.sessionToken) {
-      stytchExchange.mutate({
-        sessionToken: session.sessionToken,
-        email: session.email,
-      });
-    }
-  }, [stytchExchange]);
 
   const user = meQuery.data ?? null;
   const isLoggedIn = Boolean(user);
@@ -136,8 +112,6 @@ export function useAuth() {
     user,
     isLoggedIn,
     isAdmin: user?.role === "admin",
-    stytchSession,
-    setStytchSession,
     showSignup,
     setShowSignup,
     requestSignupOtp,
@@ -149,9 +123,7 @@ export function useAuth() {
     login,
     logout,
     requestSignupOtp,
-    setStytchSession,
     showSignup,
-    stytchSession,
     user,
     verifySignupOtp,
   ]);
