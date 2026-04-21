@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AvatarFigure } from "@/components/ui/avatar-figure";
+import { LEVEL_THEMES } from "@/lib/avatar-theme";
 import { AvatarPhoneHomeScreen } from "@/components/ui/avatar-phone-home-screen";
 import { PhoneMockup } from "@/components/ui/phone-mockup";
 import { SwipeablePollCard } from "./SwipeablePollCard";
@@ -256,50 +257,26 @@ export function OnboardingJourney({
               </p>
 
               <div className="mt-8 grid gap-8 grid-cols-2 items-center">
-                {/* Left: Avatar Selector Grid (3 rows) */}
+                {/* Left: Avatar Selector Grid */}
                 <div className="flex flex-col items-center justify-center min-w-0">
-                  <div className="space-y-6">
-                    {/* Row 1: Levels 1-4 */}
-                    <div className="flex items-center justify-center gap-4">
-                      {Array.from({ length: 4 }, (_, i) => i + 1).map((lvl) => (
-                        <button
-                          key={lvl}
-                          onClick={() => { track("onboarding_avatar_selected", { avatar_level: lvl, attempts: 1 }); onAvatarLevelChange(lvl); }}
-                          className="flex flex-col items-center gap-2 group transition-transform hover:scale-105"
+                  <div className="grid grid-cols-5 gap-4">
+                    {Array.from({ length: LEVEL_THEMES.length }, (_, i) => i + 1).map((lvl) => (
+                      <button
+                        key={lvl}
+                        onClick={() => { track("onboarding_avatar_selected", { avatar_level: lvl, attempts: 1 }); onAvatarLevelChange(lvl); }}
+                        className="flex flex-col items-center gap-2 group transition-transform hover:scale-105"
+                      >
+                        <div
+                          className={`rounded-full p-1 transition-all ${
+                            lvl === avatarLevel
+                              ? "border-2 border-raw-gold ring-2 ring-raw-gold/30"
+                              : "border-2 border-raw-border hover:border-raw-gold/50"
+                          }`}
                         >
-                          <div
-                            className={`rounded-full p-1 transition-all ${
-                              lvl === avatarLevel
-                                ? "border-2 border-raw-gold ring-2 ring-raw-gold/30"
-                                : "border-2 border-raw-border hover:border-raw-gold/50"
-                            }`}
-                          >
-                            <AvatarFigure level={lvl} size="lg" selected={lvl === avatarLevel} />
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-
-                    {/* Row 2: Levels 5-8 */}
-                    <div className="flex items-center justify-center gap-4">
-                      {Array.from({ length: 4 }, (_, i) => i + 5).map((lvl) => (
-                        <button
-                          key={lvl}
-                          onClick={() => { track("onboarding_avatar_selected", { avatar_level: lvl, attempts: 1 }); onAvatarLevelChange(lvl); }}
-                          className="flex flex-col items-center gap-2 group transition-transform hover:scale-105"
-                        >
-                          <div
-                            className={`rounded-full p-1 transition-all ${
-                              lvl === avatarLevel
-                                ? "border-2 border-raw-gold ring-2 ring-raw-gold/30"
-                                : "border-2 border-raw-border hover:border-raw-gold/50"
-                            }`}
-                          >
-                            <AvatarFigure level={lvl} size="lg" selected={lvl === avatarLevel} />
-                          </div>
-                        </button>
-                      ))}
-                    </div>
+                          <AvatarFigure level={lvl} size="md" selected={lvl === avatarLevel} />
+                        </div>
+                      </button>
+                    ))}
                   </div>
                 </div>
 

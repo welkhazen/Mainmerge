@@ -9,14 +9,16 @@ export interface AvatarTheme {
 }
 
 export const LEVEL_THEMES: AvatarTheme[] = [
-  { bg: "#141d16", figure: "#6a8a52", ring: "#3f5a36", glow: "#7fa05a55",  name: "Mossgrown",       imageSrc: "/avatars/avatar-1.png" },
-  { bg: "#1a1411", figure: "#e0842a", ring: "#9a531a", glow: "#ff7a0055",  name: "Combat Helm",     imageSrc: "/avatars/avatar-2.png" },
-  { bg: "#0f1a26", figure: "#4fc3ff", ring: "#2b78b8", glow: "#4fc3ff66",  name: "Plasma Wraith",   imageSrc: "/avatars/avatar-3.png" },
-  { bg: "#120f16", figure: "#4a3a56", ring: "#2e2437", glow: "#6a3fa040",  name: "Shadow Panther",  imageSrc: "/avatars/avatar-4.png" },
-  { bg: "#1a1014", figure: "#c4c4cc", ring: "#7a1f22", glow: "#ff2a2a55",  name: "Death Chrome",    imageSrc: "/avatars/avatar-5.png" },
-  { bg: "#1a1510", figure: "#d4a84c", ring: "#8a6a22", glow: "#e0b05055",  name: "Gilded Samurai",  imageSrc: "/avatars/avatar-6.png" },
-  { bg: "#1c1422", figure: "#ff66b0", ring: "#a5367a", glow: "#ff66b055",  name: "Neon Streamer",   imageSrc: "/avatars/avatar-7.png" },
-  { bg: "#1a1020", figure: "#9a4ddf", ring: "#5b2a8a", glow: "#b96aff60",  name: "Violet Overlord", imageSrc: "/avatars/avatar-8.png" },
+  { bg: "#1a1a1a", figure: "#c8c8c8", ring: "#8a8a8a", glow: "none",       name: "Silver Initiate"  },
+  { bg: "#0c1a24", figure: "#5ed6ff", ring: "#2ea6d6", glow: "#5ed6ff80",  name: "Cyan Scout"       },
+  { bg: "#0a1124", figure: "#3f8bff", ring: "#2557c4", glow: "#3f8bff80",  name: "Azure Sentinel"   },
+  { bg: "#0f1f12", figure: "#4ade80", ring: "#22a84a", glow: "#4ade8080",  name: "Emerald Ranger"   },
+  { bg: "#0b1a0e", figure: "#16a34a", ring: "#0f7a36", glow: "#16a34a80",  name: "Forest Guardian"  },
+  { bg: "#1f0d18", figure: "#ec4899", ring: "#a6235f", glow: "#ec489980",  name: "Rose Phantom"     },
+  { bg: "#150a22", figure: "#8b5cf6", ring: "#5b2aa8", glow: "#8b5cf680",  name: "Violet Overlord"  },
+  { bg: "#1f1208", figure: "#f97316", ring: "#b0550f", glow: "#f9731680",  name: "Ember Warlord"    },
+  { bg: "#1f0a0a", figure: "#dc2626", ring: "#8a1515", glow: "#dc262680",  name: "Crimson Reaper"   },
+  { bg: "#1f1705", figure: "#facc15", ring: "#b8900b", glow: "#facc1590",  name: "Golden Legend"    },
 ];
 
 export function getAvatarTheme(level: number): AvatarTheme {
