@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef } from "react";
-import { usePostHog } from "posthog-js/react";
+import { usePostHog } from "@posthog/react";
 import { track } from "@/lib/analytics";
 
 export type HeroCopyVariant = "control" | "identity-first";

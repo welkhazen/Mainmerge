@@ -1,10 +1,11 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { PostHogProvider } from "posthog-js/react";
+import { PostHogProvider } from "@posthog/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { track } from "@/lib/analytics";
 import { initSentry } from "@/lib/sentry";
+import { initPostHog } from "@/lib/posthog";
 import App from "./App.tsx";
 import "./index.css";
 
@@ -17,6 +18,7 @@ const posthogApiKey = import.meta.env.VITE_PUBLIC_POSTHOG_PROJECT_TOKEN;
 const queryClient = new QueryClient();
 
 initSentry();
+initPostHog();
 
 if (typeof window !== "undefined" && import.meta.env.DEV) {
   const params = new URLSearchParams(window.location.search);
