@@ -179,6 +179,7 @@ const Index = () => {
       />
 
       <Hero onSignupClick={() => setShowSignup(true)} />
+      <ProblemSection />
       <PollSection
         polls={polls}
         votedPolls={votedPolls}
@@ -187,7 +188,6 @@ const Index = () => {
         onVote={vote}
         onSignupClick={() => setShowSignup(true)}
       />
-      <ProblemSection />
       <HowItWorks />
       <Communities onSignupClick={() => setShowSignup(true)} />
       <AvatarIdentity
