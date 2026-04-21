@@ -60,6 +60,24 @@ This project is built with:
 - shadcn-ui
 - Tailwind CSS
 
+
+## PostHog setup (EU)
+
+1. Copy env template and keep secrets in a local file:
+
+```sh
+cp .env.example .env.local
+```
+
+2. Set PostHog values in `.env.local`:
+
+```env
+VITE_PUBLIC_POSTHOG_PROJECT_TOKEN=<your_posthog_project_api_key>
+VITE_PUBLIC_POSTHOG_HOST=https://eu.i.posthog.com
+```
+
+> Better alternative for multi-environment teams: keep `.env.example` placeholders, use `.env.local` for local dev, and inject production values through your hosting provider or CI secret manager.
+
 ## How can I deploy this project?
 
 Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.

@@ -1,6 +1,6 @@
 import { ReactNode, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { usePostHog } from "posthog-js/react";
+import { usePostHog } from "@posthog/react";
 import { onCLS, onLCP, onINP, onFCP, onTTFB, type Metric } from "web-vitals";
 import { setClient } from "@/lib/analytics/client";
 import { registerSuperProps, track } from "@/lib/analytics";

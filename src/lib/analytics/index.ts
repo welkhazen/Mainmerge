@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { usePostHog } from "posthog-js/react";
+import { usePostHog } from "@posthog/react";
 import type { EventName, EventPropsFor } from "./events";
 import { getClient } from "./client";
 
