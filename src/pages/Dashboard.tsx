@@ -141,7 +141,7 @@ export default function Dashboard({
           />
         );
       case "daily-spin":
-        return <DashboardDailySpin userId={user.id} />;
+        return <DashboardDailySpin userId={user.id} isAdmin={user.role === "admin"} />;
       case "profile":
         return (
           <DashboardProfile

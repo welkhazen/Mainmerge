@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { AvatarFigure, getAvatarTheme } from "@/components/ui/avatar-figure";
+import { LEVEL_THEMES } from "@/lib/avatar-theme";
 import {
   Trophy,
   Target,
@@ -83,7 +84,7 @@ export function DashboardProfile({
 
             {/* Level selector */}
             <div className="mt-5 flex items-center gap-1 flex-wrap justify-center">
-              {Array.from({ length: 10 }, (_, i) => i + 1).map((lvl) => (
+              {Array.from({ length: LEVEL_THEMES.length }, (_, i) => i + 1).map((lvl) => (
                 <button
                   key={lvl}
                   onClick={() => onLevelChange(lvl)}

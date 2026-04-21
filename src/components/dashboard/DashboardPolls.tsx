@@ -2,6 +2,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { Poll } from "@/store/useRawStore";
 import { useTheme } from "@/providers/ThemeProvider";
 import {
+  ArrowLeft,
+  ArrowRight,
   BarChart3,
   ChevronLeft,
   ChevronRight,
@@ -51,18 +53,44 @@ export function DashboardPolls({
 }: DashboardPollsProps) {
   const { mode } = useTheme();
   const isLightMode = mode === "light";
+  const answersStorageKey = `raw.poll-history.answers.${userId}`;
+  const commentsStorageKey = `raw.poll-history.comments.${userId}`;
   const swipeGuideStorageKey = `raw.polls.swipe-guide-seen.${userId}`;
   const [answerHistory, setAnswerHistory] = useState<Record<string, string>>({});
   const [historyComments, setHistoryComments] = useState<Record<string, PollHistoryComment[]>>({});
   const [commentDraft, setCommentDraft] = useState("");
   const [replyDrafts, setReplyDrafts] = useState<Record<string, string>>({});
   const [currentPollIndex, setCurrentPollIndex] = useState(0);
-  const [expandedInsightId, setExpandedInsightId] = useState<string | null>(null);
-  const [showAllInsights, setShowAllInsights] = useState(false);
   const pointerStartXRef = useRef<number | null>(null);
   const swipeGuideButtonRef = useRef<HTMLButtonElement | null>(null);
   const [swipeOffsetX, setSwipeOffsetX] = useState(0);
   const [hasSeenSwipeGuide, setHasSeenSwipeGuide] = useState(false);
+
+  useEffect(() => {
+    try {
+      const rawAnswers = window.localStorage.getItem(answersStorageKey);
+      const parsedAnswers = rawAnswers ? (JSON.parse(rawAnswers) as Record<string, string>) : {};
+      setAnswerHistory(parsedAnswers && typeof parsedAnswers === "object" ? parsedAnswers : {});
+    } catch {
+      setAnswerHistory({});
+    }
+
+    try {
+      const rawComments = window.localStorage.getItem(commentsStorageKey);
+      const parsedComments = rawComments ? (JSON.parse(rawComments) as Record<string, PollHistoryComment[]>) : {};
+      setHistoryComments(parsedComments && typeof parsedComments === "object" ? parsedComments : {});
+    } catch {
+      setHistoryComments({});
+    }
+  }, [answersStorageKey, commentsStorageKey]);
+
+  useEffect(() => {
+    window.localStorage.setItem(answersStorageKey, JSON.stringify(answerHistory));
+  }, [answerHistory, answersStorageKey]);
+
+  useEffect(() => {
+    window.localStorage.setItem(commentsStorageKey, JSON.stringify(historyComments));
+  }, [commentsStorageKey, historyComments]);
 
   useEffect(() => {
     const saved = window.localStorage.getItem(swipeGuideStorageKey);
@@ -89,7 +117,6 @@ export function DashboardPolls({
     : undefined;
   const selectedOptionId = currentPoll ? answerHistory[currentPoll.id] : undefined;
   const hasVotedCurrent = Boolean(currentPoll && answerHistory[currentPoll.id]);
-  const showPercentages = hasVotedCurrent;
   const currentComments = currentPoll ? historyComments[currentPoll.id] ?? [] : [];
   const yesOption = currentPoll?.options.find((option) => option.text.trim().toLowerCase() === "yes");
   const noOption = currentPoll?.options.find((option) => option.text.trim().toLowerCase() === "no");
@@ -172,7 +199,6 @@ export function DashboardPolls({
   ];
 
   const unlockedReports = insightsProgress.filter((item) => item.unlocked).length;
-  const visibleInsights = showAllInsights ? insightsProgress : insightsProgress.slice(0, 3);
 
   const handleVote = (pollId: string, optionId: string) => {
     setHasSeenSwipeGuide(true);
@@ -490,165 +516,184 @@ export function DashboardPolls({
               </>
             )}
 
-            {!hasVotedCurrent && (
-              <div className="mb-3 flex items-center justify-between text-[10px] uppercase tracking-[0.14em]">
-                <span className={`transition ${swipeOffsetX < -20 ? "text-rose-300" : "text-raw-silver/35"}`}>No</span>
-                <span className={`transition ${swipeOffsetX > 20 ? "text-emerald-300" : "text-raw-silver/35"}`}>Yes</span>
-              </div>
-            )}
+            <div
+              className={`mb-3 flex items-center justify-between text-[10px] uppercase tracking-[0.14em] transition-opacity ${
+                hasVotedCurrent ? "pointer-events-none opacity-0" : "opacity-100"
+              }`}
+              aria-hidden={hasVotedCurrent}
+            >
+              <span className={`transition ${swipeOffsetX < -20 ? "text-rose-300" : "text-raw-silver/35"}`}>No</span>
+              <span className={`transition ${swipeOffsetX > 20 ? "text-emerald-300" : "text-raw-silver/35"}`}>Yes</span>
+            </div>
 
             <h2 className="text-center font-display text-2xl leading-tight text-raw-text sm:text-[2rem]">
               {currentPoll.question}
             </h2>
 
             <div className="mt-6 space-y-3">
-              <div className="space-y-3">
-                <div className="grid grid-cols-2 gap-3">
-                  <button
-                    onClick={() => {
-                      const selected = noOption ?? currentPoll.options[0];
-                      if (selected) {
-                        handleVote(currentPoll.id, selected.id);
-                      }
-                    }}
-                    disabled={hasVotedCurrent}
-                    className={`rounded-2xl border px-4 py-3 text-left text-base font-medium transition disabled:cursor-not-allowed ${
-                      selectedNo
-                        ? "border-raw-gold/70 bg-raw-gold/55 text-black"
-                        : "border-raw-gold/30 bg-raw-gold/18 text-raw-text hover:bg-raw-gold/28 disabled:opacity-55"
-                    }`}
-                  >
-                    No
-                    {showPercentages && noOption ? (
-                      <span className={`ml-2 text-sm ${selectedNo ? "text-black/85" : "text-raw-silver/75"}`}>{noPercent}%</span>
-                    ) : null}
-                  </button>
-                  <button
-                    onClick={() => {
-                      const selected = yesOption ?? currentPoll.options[1] ?? currentPoll.options[0];
-                      if (selected) {
-                        handleVote(currentPoll.id, selected.id);
-                      }
-                    }}
-                    disabled={hasVotedCurrent}
-                    className={`rounded-2xl border px-4 py-3 text-right text-base font-medium transition disabled:cursor-not-allowed ${
-                      selectedYes
-                        ? "border-raw-gold/70 bg-raw-gold/55 text-black"
-                        : "border-raw-gold/30 bg-raw-gold/18 text-raw-text hover:bg-raw-gold/28 disabled:opacity-55"
-                    }`}
-                  >
-                    {showPercentages && yesOption ? (
-                      <span className={`mr-2 text-sm ${selectedYes ? "text-black/85" : "text-raw-silver/75"}`}>{yesPercent}%</span>
-                    ) : null}
-                    Yes
-                  </button>
-                </div>
+              <div
+                className={`flex h-[42px] items-center justify-between rounded-xl border border-raw-border/35 bg-raw-black/30 px-3 py-2 text-[11px] uppercase tracking-[0.12em] text-raw-silver/55 transition-opacity ${
+                  hasVotedCurrent ? "pointer-events-none opacity-0" : "opacity-100"
+                }`}
+                aria-hidden={hasVotedCurrent}
+              >
+                <span className="flex items-center gap-1.5 text-rose-200/85">
+                  <ArrowLeft className="h-3.5 w-3.5" />
+                  Swipe left = No
+                </span>
+                <span className="flex items-center gap-1.5 text-emerald-200/85">
+                  Swipe right = Yes
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </span>
+              </div>
 
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  onClick={() => {
+                    const selected = noOption ?? currentPoll.options[0];
+                    if (selected) {
+                      handleVote(currentPoll.id, selected.id);
+                    }
+                  }}
+                  disabled={hasVotedCurrent}
+                  className={`relative rounded-2xl border px-4 py-3 text-left text-base font-medium transition disabled:cursor-not-allowed ${
+                    selectedNo
+                      ? "border-raw-gold/65 bg-raw-gold/50 text-black shadow-[0_0_18px_rgba(255,204,77,0.35)]"
+                      : "border-raw-gold/30 bg-raw-gold/18 text-raw-text hover:bg-raw-gold/28"
+                  } ${hasVotedCurrent ? "opacity-100" : "disabled:opacity-55"}`}
+                >
+                  <span>No</span>
+                  {hasVotedCurrent ? (
+                    <span className={`absolute right-4 top-1/2 -translate-y-1/2 text-sm font-semibold ${selectedNo ? "text-black" : "text-raw-text"}`}>
+                      {noPercent}%
+                    </span>
+                  ) : null}
+                </button>
+
+                <button
+                  onClick={() => {
+                    const selected = yesOption ?? currentPoll.options[1] ?? currentPoll.options[0];
+                    if (selected) {
+                      handleVote(currentPoll.id, selected.id);
+                    }
+                  }}
+                  disabled={hasVotedCurrent}
+                  className={`relative rounded-2xl border px-4 py-3 text-right text-base font-medium transition disabled:cursor-not-allowed ${
+                    selectedYes
+                      ? "border-raw-gold/65 bg-raw-gold/50 text-black shadow-[0_0_18px_rgba(255,204,77,0.35)]"
+                      : "border-raw-gold/30 bg-raw-gold/18 text-raw-text hover:bg-raw-gold/28"
+                  } ${hasVotedCurrent ? "opacity-100" : "disabled:opacity-55"}`}
+                >
+                  <span>Yes</span>
+                  {hasVotedCurrent ? (
+                    <span className={`absolute left-4 top-1/2 -translate-y-1/2 text-sm font-semibold ${selectedYes ? "text-black" : "text-raw-text"}`}>
+                      {yesPercent}%
+                    </span>
+                  ) : null}
+                </button>
               </div>
             </div>
 
-            {hasVotedCurrent && (
+            {hasVotedCurrent ? (
               <div className="mt-5">
                 <div className="mb-2 flex items-center justify-between">
                   <p className={`text-[11px] uppercase tracking-[0.12em] ${isLightMode ? "text-slate-600" : "text-raw-silver/55"}`}>Comments</p>
                 </div>
-                <>
-                  <form
-                    onSubmit={(event) => {
-                      event.preventDefault();
-                      handleCommentAdd();
-                    }}
-                    className={`flex items-center gap-2 rounded-full border px-3 py-2 ${
+                <form
+                  onSubmit={(event) => {
+                    event.preventDefault();
+                    handleCommentAdd();
+                  }}
+                  className={`flex items-center gap-2 rounded-full border px-3 py-2 ${
+                    isLightMode
+                      ? "border-slate-300 bg-white/95"
+                      : "border-raw-border/35 bg-raw-black/35"
+                  }`}
+                >
+                  <input
+                    value={commentDraft}
+                    onChange={(event) => setCommentDraft(event.target.value)}
+                    onKeyDown={handleCommentKeyDown}
+                    placeholder="Add a comment..."
+                    className={`flex-1 bg-transparent text-sm focus:outline-none ${
                       isLightMode
-                        ? "border-slate-300 bg-white/95"
-                        : "border-raw-border/35 bg-raw-black/35"
+                        ? "text-slate-800 placeholder:text-slate-400"
+                        : "text-raw-text placeholder:text-raw-silver/35"
                     }`}
+                  />
+                  <button
+                    type="submit"
+                    disabled={!commentDraft.trim()}
+                    className={`rounded-full border p-2 transition disabled:cursor-not-allowed disabled:opacity-40 ${
+                      isLightMode
+                        ? "border-slate-300 bg-slate-50 text-slate-700 hover:bg-slate-100"
+                        : "border-raw-border/40 bg-raw-surface/40 text-raw-silver/80 hover:bg-raw-surface/55"
+                    }`}
+                    aria-label="Add comment"
                   >
-                    <input
-                      value={commentDraft}
-                      onChange={(event) => setCommentDraft(event.target.value)}
-                      onKeyDown={handleCommentKeyDown}
-                      placeholder="Add a comment..."
-                      className={`flex-1 bg-transparent text-sm focus:outline-none ${
-                        isLightMode
-                          ? "text-slate-800 placeholder:text-slate-400"
-                          : "text-raw-text placeholder:text-raw-silver/35"
-                      }`}
-                    />
-                    <button
-                      type="submit"
-                      disabled={!commentDraft.trim()}
-                      className={`rounded-full border p-2 transition disabled:cursor-not-allowed disabled:opacity-40 ${
-                        isLightMode
-                          ? "border-slate-300 bg-slate-50 text-slate-700 hover:bg-slate-100"
-                          : "border-raw-border/40 bg-raw-surface/40 text-raw-silver/80 hover:bg-raw-surface/55"
-                      }`}
-                      aria-label="Add comment"
-                    >
-                      <SendHorizontal className="h-3.5 w-3.5" />
-                    </button>
-                  </form>
+                    <SendHorizontal className="h-3.5 w-3.5" />
+                  </button>
+                </form>
 
-                  <div className="mt-4 space-y-2.5">
-                    {currentComments.length === 0 ? (
-                      <p className={`text-center text-xs ${isLightMode ? "text-slate-500" : "text-raw-silver/45"}`}>
-                        No comments yet for this poll. Be the first to comment.
-                      </p>
-                    ) : (
-                      currentComments.slice(0, 3).map((comment) => (
-                        <article key={comment.id} className="rounded-2xl border border-raw-border/35 bg-raw-black/50 px-3.5 py-2.5">
-                          <div className="flex items-center justify-between text-[11px] text-raw-silver/50">
-                            <span>@{comment.author}</span>
-                            <span>{comment.createdAt}</span>
-                          </div>
-                          <p className="mt-1 text-sm text-raw-silver/85">{comment.content}</p>
+                <div className="mt-4 space-y-2.5">
+                  {currentComments.length === 0 ? (
+                    <p className={`text-center text-xs ${isLightMode ? "text-slate-500" : "text-raw-silver/45"}`}>
+                      No comments yet for this poll. Be the first to comment.
+                    </p>
+                  ) : (
+                    currentComments.slice(0, 3).map((comment) => (
+                      <article key={comment.id} className="rounded-2xl border border-raw-border/35 bg-raw-black/50 px-3.5 py-2.5">
+                        <div className="flex items-center justify-between text-[11px] text-raw-silver/50">
+                          <span>@{comment.author}</span>
+                          <span>{comment.createdAt}</span>
+                        </div>
+                        <p className="mt-1 text-sm text-raw-silver/85">{comment.content}</p>
 
-                          <div className="mt-2 space-y-1.5">
-                            {(comment.replies ?? []).slice(-2).map((reply) => (
-                              <div key={reply.id} className="rounded-xl border border-raw-border/35 bg-raw-black/30 px-3 py-2">
-                                <div className="flex items-center justify-between text-[10px] text-raw-silver/45">
-                                  <span>@{reply.author}</span>
-                                  <span>{reply.createdAt}</span>
-                                </div>
-                                <p className="mt-0.5 text-xs text-raw-silver/80">{reply.content}</p>
+                        <div className="mt-2 space-y-1.5">
+                          {(comment.replies ?? []).slice(-2).map((reply) => (
+                            <div key={reply.id} className="rounded-xl border border-raw-border/35 bg-raw-black/30 px-3 py-2">
+                              <div className="flex items-center justify-between text-[10px] text-raw-silver/45">
+                                <span>@{reply.author}</span>
+                                <span>{reply.createdAt}</span>
                               </div>
-                            ))}
-                          </div>
+                              <p className="mt-0.5 text-xs text-raw-silver/80">{reply.content}</p>
+                            </div>
+                          ))}
+                        </div>
 
-                          <form
-                            onSubmit={(event) => {
-                              event.preventDefault();
-                              handleReplyAdd(comment.id);
-                            }}
-                            className="mt-2 flex items-center gap-2 rounded-full border border-raw-border/35 bg-raw-black/30 px-3 py-1.5"
+                        <form
+                          onSubmit={(event) => {
+                            event.preventDefault();
+                            handleReplyAdd(comment.id);
+                          }}
+                          className="mt-2 flex items-center gap-2 rounded-full border border-raw-border/35 bg-raw-black/30 px-3 py-1.5"
+                        >
+                          <input
+                            value={replyDrafts[comment.id] ?? ""}
+                            onChange={(event) =>
+                              setReplyDrafts((previous) => ({
+                                ...previous,
+                                [comment.id]: event.target.value,
+                              }))
+                            }
+                            onKeyDown={(event) => handleReplyKeyDown(event, comment.id)}
+                            placeholder="Reply..."
+                            className="flex-1 bg-transparent text-xs text-raw-text placeholder:text-raw-silver/35 focus:outline-none"
+                          />
+                          <button
+                            type="submit"
+                            disabled={!(replyDrafts[comment.id] ?? "").trim()}
+                            className="rounded-full border border-raw-border/40 px-2 py-0.5 text-[10px] text-raw-silver/80 hover:bg-raw-surface/40 disabled:cursor-not-allowed disabled:opacity-40"
                           >
-                            <input
-                              value={replyDrafts[comment.id] ?? ""}
-                              onChange={(event) =>
-                                setReplyDrafts((previous) => ({
-                                  ...previous,
-                                  [comment.id]: event.target.value,
-                                }))
-                              }
-                              onKeyDown={(event) => handleReplyKeyDown(event, comment.id)}
-                              placeholder="Reply..."
-                              className="flex-1 bg-transparent text-xs text-raw-text placeholder:text-raw-silver/35 focus:outline-none"
-                            />
-                            <button
-                              type="submit"
-                              disabled={!(replyDrafts[comment.id] ?? "").trim()}
-                              className="rounded-full border border-raw-border/40 px-2 py-0.5 text-[10px] text-raw-silver/80 hover:bg-raw-surface/40 disabled:cursor-not-allowed disabled:opacity-40"
-                            >
-                              Reply
-                            </button>
-                          </form>
-                        </article>
-                      ))
-                    )}
-                  </div>
-                </>
+                            Reply
+                          </button>
+                        </form>
+                      </article>
+                    ))
+                  )}
+                </div>
               </div>
-            )}
+            ) : null}
           </div>
 
           <div className="mt-4 flex gap-3 md:hidden">
@@ -689,27 +734,14 @@ export function DashboardPolls({
           </div>
         </div>
 
-        <div className="flex items-center justify-between px-1">
-          <p className="text-[11px] uppercase tracking-[0.14em] text-raw-silver/45">
-            {showAllInsights ? "Showing all reports" : "Showing featured reports"}
-          </p>
-          <button
-            type="button"
-            onClick={() => setShowAllInsights((previous) => !previous)}
-            className="rounded-full border border-raw-gold/35 bg-raw-gold/10 px-3 py-1 text-[10px] uppercase tracking-[0.12em] text-raw-gold/85 transition hover:bg-raw-gold/20"
-          >
-            {showAllInsights ? "See less" : "See all"}
-          </button>
-        </div>
-
-        <div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
-          {visibleInsights.map((item) => (
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {insightsProgress.map((item) => (
             <article
               key={item.id}
-              className="group flex min-h-[205px] flex-col rounded-2xl border border-raw-border/35 bg-gradient-to-b from-raw-surface/30 to-raw-black/35 p-3.5 shadow-[0_8px_20px_rgba(0,0,0,0.2)] transition-all duration-300 hover:-translate-y-0.5 hover:border-raw-gold/35 hover:shadow-[0_12px_26px_rgba(255,194,102,0.14)]"
+              className="rounded-2xl border border-raw-border/35 bg-raw-surface/25 p-4"
             >
               <div className="flex items-center justify-between">
-                <p className="font-display text-[1.05rem] leading-tight text-raw-text">{item.name}</p>
+                <p className="font-display text-base text-raw-text">{item.name}</p>
                 <span
                   className={`rounded-full border px-2.5 py-1 text-[10px] uppercase tracking-[0.1em] ${
                     item.unlocked
@@ -721,40 +753,25 @@ export function DashboardPolls({
                 </span>
               </div>
 
-              <p className="mt-1.5 line-clamp-2 text-[11px] leading-relaxed text-raw-silver/55">{item.description}</p>
+              <p className="mt-2 text-xs leading-relaxed text-raw-silver/55">{item.description}</p>
 
-              <button
-                type="button"
-                onClick={() => setExpandedInsightId((previous) => (previous === item.id ? null : item.id))}
-                className="mt-2 w-fit rounded-full border border-raw-border/35 px-2.5 py-1 text-[10px] uppercase tracking-[0.12em] text-raw-silver/65 transition-colors hover:border-raw-gold/25 hover:bg-raw-black/35 hover:text-raw-text"
-              >
-                {expandedInsightId === item.id ? "Read less" : "Read more"}
-              </button>
-
-              <div
-                className={`overflow-hidden transition-all duration-300 ${expandedInsightId === item.id ? "mt-3 max-h-56" : "max-h-0"}`}
-              >
-                <div className="rounded-xl border border-raw-border/35 bg-raw-black/35 p-3">
-                  <p className="text-[11px] leading-relaxed text-raw-silver/65">{item.description}</p>
-                  {!item.unlocked && (
-                    <>
-                      <p className="mt-3 text-[10px] uppercase tracking-[0.12em] text-raw-silver/40">Unlock To-Do</p>
-                      <div className="mt-2 space-y-1.5 text-xs text-raw-silver/60">
-                        {item.unlockRequirements.map((requirement) => (
-                          <p key={`${item.id}-${requirement}`}>{requirement}</p>
-                        ))}
-                        {item.unlockRequirements.some((requirement) => /polls/i.test(requirement)) && (
-                          <p className="text-raw-silver/45">{pollsAnswered} polls answered</p>
-                        )}
-                      </div>
-                    </>
-                  )}
+              {!item.unlocked && (
+                <div className="mt-3 rounded-xl border border-raw-border/35 bg-raw-black/35 p-3">
+                  <p className="text-[10px] uppercase tracking-[0.12em] text-raw-silver/40">Unlock To-Do</p>
+                  <div className="mt-2 space-y-1.5 text-xs text-raw-silver/60">
+                    {item.unlockRequirements.map((requirement) => (
+                      <p key={`${item.id}-${requirement}`}>{requirement}</p>
+                    ))}
+                    {item.unlockRequirements.some((requirement) => /polls/i.test(requirement)) && (
+                      <p className="text-raw-silver/45">{pollsAnswered} polls answered</p>
+                    )}
+                  </div>
                 </div>
-              </div>
+              )}
 
               <button
                 disabled={!item.unlocked}
-                className={`mt-auto w-full rounded-xl border px-3 py-1.5 text-[11px] transition ${
+                className={`mt-4 w-full rounded-xl border px-3 py-2 text-xs transition ${
                   item.unlocked
                     ? "border-emerald-400/35 bg-emerald-500/12 text-emerald-100 hover:bg-emerald-500/20"
                     : "cursor-not-allowed border-raw-border/40 bg-raw-black/35 text-raw-silver/45"

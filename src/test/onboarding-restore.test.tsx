@@ -59,13 +59,6 @@ vi.mock("@/hooks/use-host-mode", () => ({
   }),
 }));
 
-vi.mock("@/hooks/useSyncStytchAuth", () => ({
-  useSyncStytchAuth: () => ({
-    isInitialized: true,
-    isStytchAuthenticated: false,
-  }),
-}));
-
 describe("onboarding restore flow", () => {
   beforeEach(() => {
     window.localStorage.clear();
