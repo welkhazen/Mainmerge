@@ -6,7 +6,6 @@ import {
   sanitizePasswordInput,
   sanitizeUsernameInput,
 } from "@/lib/inputSecurity";
-import { StytchAuthOptions } from "@/components/auth/StytchAuthOptions";
 import type { AuthResult } from "@/store/useRawStore";
 import { track } from "@/lib/analytics";
 
@@ -465,8 +464,6 @@ export function SignupModal({ open, onClose, onRequestSignupOtp, onVerifySignupO
             </button>
           </form>
         )}
-
-        <StytchAuthOptions />
 
         <p className="mt-5 text-center text-[11px] text-raw-silver/30">
           {isSignup ? "No email, no phone required." : "Sign in with your username and password."}

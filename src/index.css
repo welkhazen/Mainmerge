@@ -475,60 +475,59 @@ html.theme-light .landing-page-shell [class*="bg-raw-surface/"] {
   border-color: rgb(120 132 151 / 0.38) !important;
 }
 
-html.theme-light .minimal-footer-shell {
-  border-color: rgb(var(--raw-border) / 0.48) !important;
-  background: linear-gradient(155deg, rgb(255 255 255 / 0.97) 0%, rgb(246 250 255 / 0.96) 52%, rgb(240 246 255 / 0.98) 100%) !important;
-  box-shadow: 0 24px 48px rgb(17 24 39 / 0.12), inset 0 1px 0 rgb(255 255 255 / 0.8) !important;
+@keyframes jackpot-screen-flash {
+  0% {
+    opacity: 0;
+  }
+  18% {
+    opacity: 0.62;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
-html.theme-light .minimal-footer-glow-a {
-  background: radial-gradient(460px 220px at 18% -5%, rgb(var(--raw-accent) / 0.16), transparent 72%) !important;
+@keyframes jackpot-coin-fall {
+  0% {
+    transform: translate3d(0, -14vh, 0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.95;
+  }
+  100% {
+    transform: translate3d(28px, 118vh, 0) rotate(680deg);
+    opacity: 0;
+  }
 }
 
-html.theme-light .minimal-footer-glow-b {
-  background: radial-gradient(520px 220px at 88% 118%, rgb(37 99 235 / 0.08), transparent 72%) !important;
+@keyframes jackpot-claim-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 rgb(241 196 45 / 0), 0 0 0 rgb(241 196 45 / 0);
+  }
+  50% {
+    box-shadow: 0 0 24px rgb(241 196 45 / 0.55), 0 0 48px rgb(241 196 45 / 0.35);
+  }
 }
 
-html.theme-light .minimal-footer-grain {
-  opacity: 0.11 !important;
+.jackpot-screen-flash {
+  background: radial-gradient(circle at 50% 50%, rgb(255 228 94 / 0.85) 0%, rgb(255 205 48 / 0.48) 42%, rgb(14 10 1 / 0.2) 82%, transparent 100%);
+  mix-blend-mode: screen;
+  animation: jackpot-screen-flash 800ms ease-out;
 }
 
-html.theme-light .minimal-footer-top {
-  border-color: rgb(var(--raw-border) / 0.36) !important;
-  background: rgb(var(--raw-accent) / 0.08) !important;
+.jackpot-coin {
+  position: absolute;
+  top: -16vh;
+  border-radius: 999px;
+  background: radial-gradient(circle at 35% 35%, #fff8cf 0%, #f5da67 34%, #e0b727 62%, #a97b10 100%);
+  box-shadow: 0 0 12px rgb(247 211 77 / 0.45), inset 0 0 0 1px rgb(255 236 169 / 0.5);
+  animation-name: jackpot-coin-fall;
+  animation-timing-function: linear;
+  animation-iteration-count: 1;
 }
 
-html.theme-light .minimal-footer-brand {
-  color: rgb(var(--raw-text) / 0.9) !important;
-}
-
-html.theme-light .minimal-footer-tagline,
-html.theme-light .minimal-footer-link,
-html.theme-light .minimal-footer-copy {
-  color: rgb(var(--raw-silver) / 0.9) !important;
-}
-
-html.theme-light .minimal-footer-heading {
-  color: rgb(var(--raw-accent) / 0.9) !important;
-}
-
-html.theme-light .minimal-footer-social {
-  border-color: rgb(var(--raw-border) / 0.46) !important;
-  background: rgb(255 255 255 / 0.72) !important;
-  color: rgb(var(--raw-silver) / 0.78) !important;
-}
-
-html.theme-light .minimal-footer-social:hover {
-  background: rgb(var(--raw-accent) / 0.16) !important;
-  border-color: rgb(var(--raw-accent) / 0.42) !important;
-  color: rgb(133 77 14) !important;
-}
-
-html.theme-light .minimal-footer-bottom {
-  border-color: rgb(var(--raw-border) / 0.36) !important;
-  background: rgb(236 242 252 / 0.82) !important;
-}
-
-html.theme-light .minimal-footer-credit {
-  color: rgb(161 98 7 / 0.95) !important;
+.jackpot-claim-button {
+  animation: jackpot-claim-pulse 1000ms ease-in-out infinite;
 }

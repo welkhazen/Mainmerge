@@ -259,9 +259,9 @@ export function OnboardingJourney({
                 {/* Left: Avatar Selector Grid (3 rows) */}
                 <div className="flex flex-col items-center justify-center min-w-0">
                   <div className="space-y-6">
-                    {/* Row 1: Levels 1-3 */}
+                    {/* Row 1: Levels 1-4 */}
                     <div className="flex items-center justify-center gap-4">
-                      {Array.from({ length: 3 }, (_, i) => i + 1).map((lvl) => (
+                      {Array.from({ length: 4 }, (_, i) => i + 1).map((lvl) => (
                         <button
                           key={lvl}
                           onClick={() => { track("onboarding_avatar_selected", { avatar_level: lvl, attempts: 1 }); onAvatarLevelChange(lvl); }}
@@ -280,30 +280,9 @@ export function OnboardingJourney({
                       ))}
                     </div>
 
-                    {/* Row 2: Levels 4-6 */}
+                    {/* Row 2: Levels 5-8 */}
                     <div className="flex items-center justify-center gap-4">
-                      {Array.from({ length: 3 }, (_, i) => i + 4).map((lvl) => (
-                        <button
-                          key={lvl}
-                          onClick={() => { track("onboarding_avatar_selected", { avatar_level: lvl, attempts: 1 }); onAvatarLevelChange(lvl); }}
-                          className="flex flex-col items-center gap-2 group transition-transform hover:scale-105"
-                        >
-                          <div
-                            className={`rounded-full p-1 transition-all ${
-                              lvl === avatarLevel
-                                ? "border-2 border-raw-gold ring-2 ring-raw-gold/30"
-                                : "border-2 border-raw-border hover:border-raw-gold/50"
-                            }`}
-                          >
-                            <AvatarFigure level={lvl} size="lg" selected={lvl === avatarLevel} />
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-
-                    {/* Row 3: Levels 7-9 */}
-                    <div className="flex items-center justify-center gap-4">
-                      {Array.from({ length: 3 }, (_, i) => i + 7).map((lvl) => (
+                      {Array.from({ length: 4 }, (_, i) => i + 5).map((lvl) => (
                         <button
                           key={lvl}
                           onClick={() => { track("onboarding_avatar_selected", { avatar_level: lvl, attempts: 1 }); onAvatarLevelChange(lvl); }}
