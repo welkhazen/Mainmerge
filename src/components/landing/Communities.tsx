@@ -46,7 +46,7 @@ export function Communities({ onSignupClick }: CommunitiesProps) {
     <section
       ref={sectionRef as React.RefObject<HTMLElement>}
       id="communities"
-      className="relative py-28 px-6 bg-gradient-to-b from-transparent to-[rgba(255,255,255,0.01)]"
+      className="relative py-28 px-6 bg-black/40"
     >
       <div className="mx-auto w-full max-w-6xl">
         <div className="mb-14 text-center">

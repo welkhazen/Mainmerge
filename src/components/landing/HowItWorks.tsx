@@ -35,7 +35,7 @@ export function HowItWorks() {
   return (
     <section
       ref={sectionRef as React.RefObject<HTMLElement>}
-      className="relative px-6 py-28 bg-gradient-to-b from-transparent to-[rgba(255,255,255,0.01)]"
+      className="relative px-6 py-28 bg-black/40"
     >
       <div className="w-full">
         <h2 className="mb-4 text-center font-display text-2xl tracking-wide text-raw-text sm:text-3xl">

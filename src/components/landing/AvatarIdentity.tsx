@@ -21,7 +21,7 @@ export function AvatarIdentity({ avatarLevel, onLevelChange }: AvatarIdentityPro
     <section
       ref={sectionRef as React.RefObject<HTMLElement>}
       id="avatar"
-      className="relative px-6 py-28 bg-gradient-to-b from-transparent to-[rgba(255,255,255,0.01)]"
+      className="relative px-6 py-28 bg-black/60"
     >
       <div className="mx-auto w-full max-w-5xl">
         {/* Heading */}

@@ -53,7 +53,7 @@ export function Hero({ onSignupClick }: HeroProps) {
   return (
     <section
       ref={sectionRef as React.RefObject<HTMLElement>}
-      className="hero-landing relative flex min-h-screen items-center overflow-hidden px-6 pb-16 pt-24 sm:pt-28 bg-raw-black"
+      className="hero-landing relative flex min-h-screen items-center overflow-hidden px-6 pb-16 pt-24 sm:pt-28 bg-black/40"
     >
       <div className="absolute inset-0 z-0 overflow-hidden">
         <div className="hero-landing-overlay absolute inset-0 z-[1] bg-gradient-to-b from-raw-black via-raw-black to-raw-surface" />
