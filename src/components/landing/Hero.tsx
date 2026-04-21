@@ -56,7 +56,7 @@ export function Hero({ onSignupClick }: HeroProps) {
       className="hero-landing relative flex min-h-screen items-center overflow-hidden px-6 pb-16 pt-24 sm:pt-28 bg-black/40"
     >
       <div className="absolute inset-0 z-0 overflow-hidden">
-        <div className="hero-landing-overlay absolute inset-0 z-[1] bg-gradient-to-b from-black/50 via-black/30 to-black/40" />
+        <div className="hero-landing-overlay absolute inset-0 z-[1] bg-gradient-to-b from-black/20 via-black/20 to-black/40" />
         <Suspense fallback={null}>
           <BoxesLazy className="opacity-30" />
         </Suspense>
