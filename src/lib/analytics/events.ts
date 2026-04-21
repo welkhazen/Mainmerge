@@ -363,7 +363,7 @@ export type AppEvent =
   | {
       name: "diagnostics_probe_fired";
       properties: {
-        source: "hidden_button";
+        source: "hidden_button" | "query_param";
         mode: string;
       };
     };
