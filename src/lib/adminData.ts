@@ -55,30 +55,43 @@ export const CHAT_REPORTS_STORAGE_KEY = "raw.chat-reports.v1";
 
 const ADMIN_USERNAMES = new Set(["admin", "rawadmin", "founder", "owner"]);
 
+const memoryStore = {
+  users: [] as PersistedUserRecord[],
+  authSessionUserId: null as string | null,
+  communityRequests: [] as CommunityRequestRecord[],
+  chatReports: [] as ChatReportRecord[],
+};
+
 function readJsonArray<T>(storageKey: string): T[] {
-  if (typeof window === "undefined") {
-    return [];
+  if (storageKey === USER_STORAGE_KEY) {
+    return [...memoryStore.users] as T[];
   }
 
-  try {
-    const rawValue = window.localStorage.getItem(storageKey);
-    if (!rawValue) {
-      return [];
-    }
-
-    const parsed = JSON.parse(rawValue) as T[];
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
+  if (storageKey === COMMUNITY_REQUESTS_STORAGE_KEY) {
+    return [...memoryStore.communityRequests] as T[];
   }
+
+  if (storageKey === CHAT_REPORTS_STORAGE_KEY) {
+    return [...memoryStore.chatReports] as T[];
+  }
+
+  return [];
 }
 
 function writeJsonArray<T>(storageKey: string, entries: T[]): void {
-  if (typeof window === "undefined") {
+  if (storageKey === USER_STORAGE_KEY) {
+    memoryStore.users = entries as PersistedUserRecord[];
     return;
   }
 
-  window.localStorage.setItem(storageKey, JSON.stringify(entries));
+  if (storageKey === COMMUNITY_REQUESTS_STORAGE_KEY) {
+    memoryStore.communityRequests = entries as CommunityRequestRecord[];
+    return;
+  }
+
+  if (storageKey === CHAT_REPORTS_STORAGE_KEY) {
+    memoryStore.chatReports = entries as ChatReportRecord[];
+  }
 }
 
 function normalizeUsernameKey(username: string): string {
@@ -162,27 +175,15 @@ export function updateUserModerationStatus(
 }
 
 export function persistAuthSession(userId: string): void {
-  if (typeof window === "undefined") {
-    return;
-  }
-
-  window.localStorage.setItem(AUTH_SESSION_STORAGE_KEY, userId);
+  memoryStore.authSessionUserId = userId;
 }
 
 export function readAuthSession(): string | null {
-  if (typeof window === "undefined") {
-    return null;
-  }
-
-  return window.localStorage.getItem(AUTH_SESSION_STORAGE_KEY);
+  return memoryStore.authSessionUserId;
 }
 
 export function clearAuthSession(): void {
-  if (typeof window === "undefined") {
-    return;
-  }
-
-  window.localStorage.removeItem(AUTH_SESSION_STORAGE_KEY);
+  memoryStore.authSessionUserId = null;
 }
 
 export function readCommunityRequests(): CommunityRequestRecord[] {

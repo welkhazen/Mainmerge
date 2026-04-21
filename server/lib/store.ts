@@ -33,6 +33,7 @@ const polls: Poll[] = [
 const usersById = new Map<string, UserRecord>();
 const userIdByUsername = new Map<string, string>();
 const userIdByPhoneHash = new Map<string, string>();
+const userIdByReferralCode = new Map<string, string>();
 
 function normalizeUsername(username: string): string {
   return username.toLowerCase();
@@ -58,14 +59,30 @@ export function findUserByPhoneHash(phoneHash: string): UserRecord | null {
   return userId ? usersById.get(userId) ?? null : null;
 }
 
-export function createUser(username: string, passwordHash: string, phoneHash: string): UserRecord {
+export function findUserByReferralCode(referralCode: string): UserRecord | null {
+  const userId = userIdByReferralCode.get(referralCode.toUpperCase());
+  return userId ? usersById.get(userId) ?? null : null;
+}
+
+function buildReferralCode(username: string): string {
+  const base = username.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 6) || "RAW";
+  let candidate = `${base}${Math.floor(Math.random() * 900 + 100)}`;
+  while (userIdByReferralCode.has(candidate)) {
+    candidate = `${base}${Math.floor(Math.random() * 900 + 100)}`;
+  }
+  return candidate;
+}
+
+export function createUser(username: string, passwordHash: string, phoneHash: string, referralCode?: string): UserRecord {
   const id = crypto.randomUUID();
   const now = Date.now();
+  const normalizedReferralCode = (referralCode ?? buildReferralCode(username)).toUpperCase();
   const user: UserRecord = {
     id,
     username,
     displayName: null,
     bio: null,
+    referralCode: normalizedReferralCode,
     createdAt: now,
     updatedAt: now,
     passwordChangedAt: now,
@@ -77,6 +94,7 @@ export function createUser(username: string, passwordHash: string, phoneHash: st
   usersById.set(id, user);
   userIdByUsername.set(normalizeUsername(username), id);
   userIdByPhoneHash.set(phoneHash, id);
+  userIdByReferralCode.set(normalizedReferralCode, id);
   return user;
 }
 
@@ -171,6 +189,7 @@ export function toPublicUser(user: UserRecord): User {
     username: user.username,
     displayName: user.displayName,
     bio: user.bio,
+    referralCode: user.referralCode,
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
     passwordChangedAt: user.passwordChangedAt,

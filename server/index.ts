@@ -6,9 +6,14 @@ import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import session from "express-session";
 import { env } from "./config/env";
+import { assistantRouter } from "./routes/assistant";
+import { appV2Router } from "./routes/appV2";
 import { authRouter } from "./routes/auth";
+import { cronRouter } from "./routes/cron";
+import { notificationsRouter } from "./routes/notifications";
 import { pollsRouter } from "./routes/polls";
 import { usersRouter } from "./routes/users";
+import { runStreakResetAtUtc, sendStreakAtRiskEmailsUtc } from "./lib/streakCron";
 
 const app = express();
 const isProduction = env.NODE_ENV === "production";
@@ -84,6 +89,10 @@ app.get("/api/health", (_req, res) => {
 
 app.use("/api/auth", authRouter);
 app.use("/api/users", usersRouter);
+app.use("/api/assistant", assistantRouter);
+app.use("/api/notifications", notificationsRouter);
+app.use("/api/cron", cronRouter);
+app.use("/api/v2", appV2Router);
 app.use("/api", pollsRouter);
 
 app.use((err: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
@@ -94,3 +103,40 @@ app.use((err: unknown, _req: express.Request, res: express.Response, _next: expr
 app.listen(port, () => {
   console.info(`Auth API listening on http://localhost:${port}`);
 });
+
+if (env.CRON_ENABLED !== "false") {
+  let lastResetDate = "";
+  let lastRiskEmailDate = "";
+
+  const scheduler = async () => {
+    const now = new Date();
+    const hour = now.getUTCHours();
+    const minute = now.getUTCMinutes();
+    const dayKey = now.toISOString().slice(0, 10);
+
+    if (hour === 0 && minute < 3 && dayKey !== lastResetDate) {
+      try {
+        const result = await runStreakResetAtUtc();
+        lastResetDate = dayKey;
+        console.info("cron.streak.reset", result);
+      } catch (error) {
+        console.error("cron.streak.reset.error", error);
+      }
+    }
+
+    if (hour === 18 && minute < 3 && dayKey !== lastRiskEmailDate) {
+      try {
+        const result = await sendStreakAtRiskEmailsUtc();
+        lastRiskEmailDate = dayKey;
+        console.info("cron.streak.at_risk", result);
+      } catch (error) {
+        console.error("cron.streak.at_risk.error", error);
+      }
+    }
+  };
+
+  void scheduler();
+  setInterval(() => {
+    void scheduler();
+  }, 60 * 1000);
+}

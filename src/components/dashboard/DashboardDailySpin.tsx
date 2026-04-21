@@ -118,29 +118,9 @@ export function DashboardDailySpin({ userId, isAdmin = false }: DashboardDailySp
   }, []);
 
   useEffect(() => {
-    try {
-      const raw = window.localStorage.getItem(storageKey);
-      if (!raw) {
-        setHasSpunToday(false);
-        setSelectedRewardId(null);
-        return;
-      }
-
-      const parsed = JSON.parse(raw) as { date: string; rewardId: string };
-      if (parsed.date === todayKey) {
-        setSelectedRewardId(parsed.rewardId);
-        setHasSpunToday(true);
-        return;
-      }
-
-      setHasSpunToday(false);
-      setSelectedRewardId(null);
-      window.localStorage.removeItem(storageKey);
-    } catch {
-      setHasSpunToday(false);
-      setSelectedRewardId(null);
-    }
-  }, [storageKey, todayKey]);
+    setHasSpunToday(false);
+    setSelectedRewardId(null);
+  }, [todayKey, userId]);
 
   const selectedPrize = prizes.find((prize) => prize.id === selectedRewardId) ?? null;
 
@@ -148,7 +128,6 @@ export function DashboardDailySpin({ userId, isAdmin = false }: DashboardDailySp
     setSelectedRewardId(prize.id);
     setHasSpunToday(true);
     setPrizeModal(prize);
-    window.localStorage.setItem(storageKey, JSON.stringify({ date: todayKey, rewardId: prize.id }));
   };
 
   const selectedMessage = selectedPrize ? prizeMessages[selectedPrize.id] : null;

@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import Index from "@/pages/Index";
 import { persistAuthSession, registerOrUpdateUser } from "@/lib/adminData";
@@ -79,11 +79,9 @@ describe("onboarding restore flow", () => {
       })
     );
 
-    render(<Index />);
+    const { findByTestId, queryByTestId } = render(<Index />);
 
-    await waitFor(() => {
-      expect(screen.getByTestId("dashboard-screen")).toBeInTheDocument();
-    });
-    expect(screen.queryByTestId("onboarding-journey")).not.toBeInTheDocument();
+    expect(await findByTestId("dashboard-screen")).toBeInTheDocument();
+    expect(queryByTestId("onboarding-journey")).not.toBeInTheDocument();
   });
 });

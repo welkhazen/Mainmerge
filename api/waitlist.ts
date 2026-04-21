@@ -28,62 +28,77 @@ function isValidEmail(value: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
 
+function jsonResponse(body: Record<string, unknown>, status: number): Response {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { "content-type": "application/json" },
+  });
+}
+
 export default async function handler(request: Request): Promise<Response> {
   if (request.method !== "POST") {
-    return new Response(JSON.stringify({ error: "method_not_allowed" }), {
-      status: 405,
-      headers: { "content-type": "application/json" },
-    });
+    return jsonResponse({ error: "method_not_allowed" }, 405);
   }
 
   let payload: WaitlistPayload;
   try {
     payload = (await request.json()) as WaitlistPayload;
   } catch {
-    return new Response(JSON.stringify({ error: "invalid_json" }), {
-      status: 400,
-      headers: { "content-type": "application/json" },
-    });
+    return jsonResponse({ error: "invalid_json" }, 400);
   }
 
   if (!payload?.email || !isValidEmail(payload.email) || !isRole(payload.role)) {
-    return new Response(JSON.stringify({ error: "invalid_payload" }), {
-      status: 400,
-      headers: { "content-type": "application/json" },
-    });
+    return jsonResponse({ error: "invalid_payload" }, 400);
   }
 
   const supabaseUrl = process.env.SUPABASE_URL;
   const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
   if (supabaseUrl && supabaseKey) {
-    const insertResponse = await fetch(`${supabaseUrl}/rest/v1/waitlist_signups`, {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-        apikey: supabaseKey,
-        Authorization: `Bearer ${supabaseKey}`,
-        Prefer: "return=minimal",
-      },
-      body: JSON.stringify({
-        email: payload.email,
-        role: payload.role,
-        utm_source: payload.utm_source ?? null,
-        utm_medium: payload.utm_medium ?? null,
-        utm_campaign: payload.utm_campaign ?? null,
-      }),
-    });
-
-    if (!insertResponse.ok) {
-      return new Response(JSON.stringify({ error: "insert_failed" }), {
-        status: 502,
-        headers: { "content-type": "application/json" },
+    try {
+      const insertResponse = await fetch(`${supabaseUrl}/rest/v1/waitlist_signups`, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          apikey: supabaseKey,
+          Authorization: `Bearer ${supabaseKey}`,
+          Prefer: "return=minimal",
+        },
+        body: JSON.stringify({
+          email: payload.email,
+          role: payload.role,
+          utm_source: payload.utm_source ?? null,
+          utm_medium: payload.utm_medium ?? null,
+          utm_campaign: payload.utm_campaign ?? null,
+        }),
       });
+
+      if (!insertResponse.ok) {
+        const upstreamText = await insertResponse.text().catch(() => "");
+        console.error("waitlist_insert_failed", {
+          upstream_status: insertResponse.status,
+          upstream_body: upstreamText.slice(0, 500),
+        });
+
+        return jsonResponse(
+          {
+            error: "waitlist_unavailable",
+            detail: "upstream_insert_failed",
+          },
+          503,
+        );
+      }
+    } catch (error) {
+      console.error("waitlist_insert_exception", error);
+      return jsonResponse(
+        {
+          error: "waitlist_unavailable",
+          detail: "upstream_request_failed",
+        },
+        503,
+      );
     }
   }
 
-  return new Response(JSON.stringify({ ok: true }), {
-    status: 202,
-    headers: { "content-type": "application/json" },
-  });
+  return jsonResponse({ ok: true }, 202);
 }

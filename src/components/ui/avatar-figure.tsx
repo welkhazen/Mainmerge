@@ -62,7 +62,6 @@ export function AvatarFigure({ level, size = "md", selected = false, className =
   const eyeH = r * faceScale * 0.22;
   const eyeY = cy - r * 0.08;
   const eyeGap = r * faceScale * 0.12;
-  const bridgeW = eyeGap;
 
   return (
     <div className={`relative inline-flex items-center justify-center ${className}`}>

@@ -27,9 +27,7 @@ export function readCommunityChats(): PersistedCommunityRecord[] {
   const communities = (storedCommunities.length > 0 ? mergeWithDefaults(storedCommunities) : buildDefaultCommunities())
     .filter((community) => !RETIRED_COMMUNITY_IDS.has(community.id));
 
-  if (typeof window !== "undefined") {
-    writeCommunityChats(communities);
-  }
+  writeCommunityChats(communities);
 
   return communities;
 }

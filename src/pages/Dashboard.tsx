@@ -142,7 +142,15 @@ export default function Dashboard({
           />
         );
       default:
-        return null;
+        return (
+          <DashboardHome
+            username={user.username}
+            avatarLevel={avatarLevel}
+            polls={polls}
+            votedPolls={votedPolls}
+            onNavigate={handleTabChange}
+          />
+        );
     }
   };
 

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { AlertTriangle, ArrowLeft, Bell, BellOff, Clock3, FileText, Flag, MessageCircle, Plus, Reply, Search, Send, ShieldCheck, Trash2, Users, X } from "lucide-react";
+import { AlertTriangle, ArrowLeft, Bell, BellOff, Clock3, Heart, MessageCircle, Plus, Reply, Search, Send, Trash2, Users, X } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -110,6 +110,7 @@ export function DashboardCommunities({
   const [reportDraft, setReportDraft] = useState<ReportDraft>(INITIAL_REPORT_DRAFT);
   const [reportTarget, setReportTarget] = useState<ReportTarget | null>(null);
   const [replyTarget, setReplyTarget] = useState<CommunityChatMessageRecord | null>(null);
+  const [likedMessageIds, setLikedMessageIds] = useState<Set<string>>(() => new Set());
   const [communityRequests, setCommunityRequests] = useState<CommunityRequestRecord[]>([]);
   const [chatReports, setChatReports] = useState<ChatReportRecord[]>([]);
   const lastTouchedCommunityRef = useRef<string>("");
@@ -130,10 +131,6 @@ export function DashboardCommunities({
       [communityRequests, user.id]
     );
     const activePendingRequest = userRequests.find((request) => request.status === "pending") ?? null;
-    const userReportCount = useMemo(
-      () => chatReports.filter((report) => report.reporterId === user.id).length,
-      [chatReports, user.id]
-    );
     const currentUserRecord = useMemo(() => getPersistedUserById(user.id), [user.id, chatReports]);
     const isUserBanned = (currentUserRecord?.moderationStatus ?? user.moderationStatus) === "banned";
     const warningCount = currentUserRecord?.warnings ?? user.warnings;
@@ -350,18 +347,16 @@ export function DashboardCommunities({
       });
     };
 
-    const openReportDialog = (message: CommunityChatMessageRecord) => {
-      if (!selectedCommunity) {
-        return;
-      }
-
-      setReportTarget({
-        communityId: selectedCommunity.id,
-        communityTitle: selectedCommunity.title,
-        message,
+    const toggleMessageLike = (messageId: string) => {
+      setLikedMessageIds((previous) => {
+        const next = new Set(previous);
+        if (next.has(messageId)) {
+          next.delete(messageId);
+        } else {
+          next.add(messageId);
+        }
+        return next;
       });
-      setReportDraft(INITIAL_REPORT_DRAFT);
-      setReportDialogOpen(true);
     };
 
     const handleSubmitReport = () => {
@@ -711,7 +706,7 @@ export function DashboardCommunities({
                 </div>
                 {group.messages.map((message) => {
                   const isOwnMessage = message.senderId === user.id || message.senderName === user.username;
-                  const hasUserReportedMessage = chatReports.some((report) => report.messageId === message.id && report.reporterId === user.id);
+                  const liked = likedMessageIds.has(message.id);
 
                   return (
                     <div key={message.id} className={`flex ${isOwnMessage ? "justify-end" : "justify-start"}`}>
@@ -736,12 +731,24 @@ export function DashboardCommunities({
                         <p className={`mt-2 text-sm leading-relaxed ${message.deletedAt ? "italic text-raw-silver/45" : ""}`}>{message.text}</p>
                         <div className="mt-3 flex justify-end gap-2">
                           {!message.deletedAt && isJoined && (
-                            <button
-                              onClick={() => setReplyTarget(message)}
-                              className="inline-flex items-center gap-1 rounded-full border border-raw-border/20 px-2.5 py-1 text-[10px] uppercase tracking-[0.14em] text-raw-silver/70 transition-colors hover:bg-raw-surface/20"
-                            >
-                              <Reply className="h-3 w-3" /> Reply
-                            </button>
+                            <>
+                              <button
+                                onClick={() => setReplyTarget(message)}
+                                className="inline-flex items-center gap-1 rounded-full border border-raw-border/20 px-2.5 py-1 text-[10px] uppercase tracking-[0.14em] text-raw-silver/70 transition-colors hover:bg-raw-surface/20"
+                              >
+                                <Reply className="h-3 w-3" /> Reply
+                              </button>
+                              <button
+                                onClick={() => toggleMessageLike(message.id)}
+                                className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[10px] uppercase tracking-[0.14em] transition-colors ${
+                                  liked
+                                    ? "border-raw-gold/45 bg-raw-gold/10 text-raw-gold"
+                                    : "border-raw-border/20 text-raw-silver/70 hover:bg-raw-surface/20"
+                                }`}
+                              >
+                                <Heart className="h-3 w-3" /> {liked ? "Liked" : "Like"}
+                              </button>
+                            </>
                           )}
                           {isOwnMessage && !message.deletedAt && (
                             <button
@@ -749,15 +756,6 @@ export function DashboardCommunities({
                               className="inline-flex items-center gap-1 rounded-full border border-red-400/20 px-2.5 py-1 text-[10px] uppercase tracking-[0.14em] text-red-200/75 transition-colors hover:bg-red-500/10"
                             >
                               <Trash2 className="h-3 w-3" /> Delete
-                            </button>
-                          )}
-                          {!isOwnMessage && !message.deletedAt && (
-                            <button
-                              onClick={() => openReportDialog(message)}
-                              disabled={hasUserReportedMessage}
-                              className="inline-flex items-center gap-1 rounded-full border border-red-400/20 px-2.5 py-1 text-[10px] uppercase tracking-[0.14em] text-red-200/75 transition-colors hover:bg-red-500/10"
-                            >
-                              <Flag className="h-3 w-3" /> {hasUserReportedMessage ? "Reported" : "Report"}
                             </button>
                           )}
                         </div>
@@ -798,7 +796,7 @@ export function DashboardCommunities({
             )}
             {!isJoined && (
               <div className="mb-4 rounded-xl border border-raw-gold/20 bg-raw-gold/[0.07] px-4 py-3 text-sm text-raw-gold/85">
-                Join this community first. Once you are in, you can chat, report messages, and stay synced with the group.
+                Join this community first. Once you are in, you can chat, like messages, and stay synced with the group.
               </div>
             )}
             <label className="mb-2 block text-[11px] uppercase tracking-[0.16em] text-raw-silver/35">
@@ -839,7 +837,7 @@ export function DashboardCommunities({
                 <Send className="h-4 w-4" /> Send
               </button>
             </div>
-            <p className="mt-3 text-[11px] text-raw-silver/35">Reports submitted by you: {userReportCount}</p>
+            <p className="mt-3 text-[11px] text-raw-silver/35">Messages in this community: {activeMessages.length}</p>
           </div>
         </div>
       );

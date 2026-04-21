@@ -28,7 +28,7 @@ interface OnboardingJourneyProps {
   onLogout: () => void;
 }
 
-const STEP_ORDER: OnboardingStep[] = ["avatar", "polls", "communities", "ready"];
+const STEP_ORDER: OnboardingStep[] = ["avatar", "polls", "communities"];
 const STEP_LABELS: Record<OnboardingStep, string> = {
   avatar: "avatar",
   polls: "polls",
@@ -540,37 +540,20 @@ export function OnboardingJourney({
 
               <div className="mt-8 flex justify-end">
                 <button
-                  onClick={goToNextStep}
+                  onClick={() => {
+                    track("onboarding_completed", {
+                      total_duration_ms: Date.now() - stepStartTimeRef.current,
+                      polls_answered: answeredCount,
+                      communities_selected: selectedCommunityIds.length,
+                    });
+                    onCompleteOnboarding();
+                  }}
                   disabled={!canContinueFromCommunities}
                   className="rounded-xl bg-raw-gold px-5 py-2.5 text-sm font-semibold text-raw-ink transition-opacity disabled:cursor-not-allowed disabled:opacity-40"
                 >
-                  Next: Ready
+                  Complete onboarding
                 </button>
               </div>
-            </section>
-          )}
-
-          {(onboardingStep === "ready" || onboardingStep === "marketplace") && (
-            <section className="text-center">
-              <p className="text-xs uppercase tracking-[0.25em] text-raw-gold/70">Final step</p>
-              <h2 className="mt-3 font-display text-3xl tracking-wide text-raw-text">Click if you are ready to be raW</h2>
-              <p className="mx-auto mt-3 max-w-xl text-sm text-raw-silver/50">
-                You are now configured and ready for full free-roam mode. This action unlocks your dashboard.
-              </p>
-
-              <button
-                onClick={() => {
-                  track("onboarding_completed", {
-                    total_duration_ms: Date.now() - stepStartTimeRef.current,
-                    polls_answered: answeredCount,
-                    communities_selected: selectedCommunityIds.length,
-                  });
-                  onCompleteOnboarding();
-                }}
-                className="mt-8 rounded-2xl bg-raw-gold px-7 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-raw-ink"
-              >
-                Click If You Are Ready To Be raW
-              </button>
             </section>
           )}
         </div>
