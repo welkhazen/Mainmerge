@@ -38,7 +38,7 @@ export default function Dashboard({
 }: DashboardProps) {
   const navigate = useNavigate();
   const location = useLocation();
-  const [activeTab, setActiveTab] = useState<DashboardTab>("polls");
+  const [activeTab, setActiveTab] = useState<DashboardTab>("home");
   const [isHome, setIsHome] = useState(true);
   const communityRouteMatch = matchPath("/dashboard/communities/:communityId", location.pathname);
   const activeCommunityId = communityRouteMatch?.params.communityId ?? null;
@@ -85,7 +85,7 @@ export default function Dashboard({
   };
 
   const renderContent = () => {
-    if (isHome) {
+    if (isHome || activeTab === "home") {
       return (
         <DashboardHome
           username={user.username}
@@ -98,6 +98,16 @@ export default function Dashboard({
     }
 
     switch (activeTab) {
+      case "home":
+        return (
+          <DashboardHome
+            username={user.username}
+            avatarLevel={avatarLevel}
+            polls={polls}
+            votedPolls={votedPolls}
+            onNavigate={handleTabChange}
+          />
+        );
       case "polls":
         return (
           <DashboardPolls
