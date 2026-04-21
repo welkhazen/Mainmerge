@@ -72,11 +72,11 @@ cp .env.example .env.local
 2. Set PostHog values in `.env.local`:
 
 ```env
-VITE_PUBLIC_POSTHOG_PROJECT_TOKEN=<your_posthog_project_api_key>
+VITE_PUBLIC_POSTHOG_PROJECT_TOKEN=phc_C6VjShPz9cMttT9XWJeXAnPTf8wGJDTgkzd3hchT98KA
 VITE_PUBLIC_POSTHOG_HOST=https://eu.i.posthog.com
 ```
 
-> Better alternative for multi-environment teams: keep `.env.example` placeholders, use `.env.local` for local dev, and inject production values through your hosting provider or CI secret manager.
+> Better alternative for multi-environment teams: keep `.env.example` with placeholders and inject real values from CI secrets or your hosting provider's environment manager.
 
 ## How can I deploy this project?
 
