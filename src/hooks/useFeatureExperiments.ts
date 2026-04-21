@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef } from "react";
-import { usePostHog } from "@posthog/react";
+import { usePostHog } from "posthog-js/react";
 
 export type HeroCopyVariant = "control" | "identity-first";
 export type SignupCtaVariant = "join-free" | "start-anonymous";
