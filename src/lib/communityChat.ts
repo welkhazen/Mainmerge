@@ -301,4 +301,4 @@ export function deleteCommunityMessage(communityId: string, messageId: string, r
 }
 
 export type { PersistedCommunityRecord, CommunityChatMessageRecord, CommunityChatMemberRecord, CommunityStatus } from "./communityChat.types";
-export { countOnlineMembers, countUnreadMessages, formatChatTimestamp, formatChatDayLabel } from "./communityChat.utils";
+export { countOnlineMembers, countUnreadMessages, formatChatTimestamp, formatChatDayLabel, canManageCommunity } from "./communityChat.utils";
