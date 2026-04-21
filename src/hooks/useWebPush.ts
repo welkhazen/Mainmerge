@@ -28,9 +28,6 @@ export function useWebPush(isLoggedIn: boolean) {
           window.OneSignal?.showSlidedownPrompt();
           track("push_prompt_shown", { provider: "onesignal" });
         });
-      return;
     }
-
-    track("push_prompt_shown", { provider: "posthog" });
   }, [isLoggedIn]);
 }

@@ -1,5 +1,5 @@
 /**
- * Event taxonomy. Every PostHog event the app may emit is declared here as a
+ * Event taxonomy. Every analytics event the app may emit is declared here as a
  * discriminated union. `track(name, props)` enforces the matching property
  * shape at compile time.
  */
@@ -8,7 +8,7 @@
 
 export type Surface = "landing" | "app" | "admin";
 export type DeviceClass = "mobile" | "tablet" | "desktop";
-export type AuthMethod = "username_password" | "stytch_email" | "oauth_google";
+export type AuthMethod = "username_password" | "oauth_google";
 export type OtpChannel = "sms" | "whatsapp" | "email";
 export type OnboardingStepName = "avatar" | "polls" | "communities" | "ready";
 export type WaitlistRole = "owner" | "provider" | "user";
@@ -322,7 +322,7 @@ export type AppEvent =
   | {
       name: "push_prompt_shown";
       properties: {
-        provider: "onesignal" | "posthog";
+        provider: "onesignal";
       };
     }
 

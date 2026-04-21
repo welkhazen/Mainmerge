@@ -1,5 +1,4 @@
 import { useCallback } from "react";
-import { usePostHog } from "@posthog/react";
 import type { EventName, EventPropsFor } from "./events";
 import { getClient } from "./client";
 
@@ -49,10 +48,6 @@ function captureWithGuards(
   client.capture(name, properties);
 }
 
-/**
- * Identify the current user. Also alias the anonymous id so pre-signup events
- * stitch to the user.
- */
 export function identify(
   userId: string,
   traits?: Record<string, unknown>,
@@ -69,7 +64,7 @@ export function identify(
   try {
     const anonId = client.get_distinct_id?.();
     client.identify(userId, traits);
-    if (anonId && anonId !== userId) {
+    if (anonId && anonId !== userId && client.alias) {
       client.alias(userId, anonId);
     }
   } catch {
@@ -77,9 +72,6 @@ export function identify(
   }
 }
 
-/**
- * Clear the current identity (logout).
- */
 export function reset(): void {
   if (isTestMode) {
     return;
@@ -89,9 +81,6 @@ export function reset(): void {
   client?.reset();
 }
 
-/**
- * Attach the user to a group. Useful for per-community cohorts later.
- */
 export function group(
   groupType: string,
   groupKey: string,
@@ -105,9 +94,6 @@ export function group(
   client?.group(groupType, groupKey, traits);
 }
 
-/**
- * Register super-properties sent with every subsequent event.
- */
 export function registerSuperProps(props: Record<string, unknown>): void {
   if (isTestMode) {
     return;
@@ -118,33 +104,18 @@ export function registerSuperProps(props: Record<string, unknown>): void {
 }
 
 /**
- * React hook that returns a stable `track` bound to the live PostHog client.
- * Prefer this inside components so the binding updates if the client swaps.
+ * React hook that returns a stable `track`. Kept for API compatibility;
+ * delegates to the module-level client.
  */
 export function useTrack(): <E extends EventName>(
   name: E,
   properties: EventPropsFor<E>,
 ) => void {
-  const ph = usePostHog();
-
   return useCallback(
     <E extends EventName>(name: E, properties: EventPropsFor<E>) => {
-      if (isTestMode) {
-        return;
-      }
-
-      if (isDevMode) {
-        // eslint-disable-next-line no-console
-        console.log(`[analytics] ${name}`, properties);
-      }
-
-      if (!ph) {
-        return;
-      }
-
-      ph.capture(name, properties as Record<string, unknown>);
+      captureWithGuards(name, properties as Record<string, unknown>);
     },
-    [ph],
+    [],
   );
 }
 

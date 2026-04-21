@@ -1,16 +1,27 @@
-import type { PostHog } from "posthog-js";
-
 /**
- * Module-level singleton reference to the PostHog client.
- * AnalyticsProvider calls `setClient` on mount so that `track()` calls from
- * anywhere in the app (including outside React) resolve to the real client.
+ * Minimal analytics client shape used internally. The production analytics
+ * backend has been removed; `track()` etc. fall back to dev-mode console logs.
  */
-let phClient: PostHog | null = null;
-
-export function setClient(client: PostHog | null): void {
-  phClient = client;
+export interface AnalyticsClient {
+  capture: (name: string, properties?: Record<string, unknown>) => void;
+  identify: (userId: string, traits?: Record<string, unknown>) => void;
+  alias?: (newId: string, previousId: string) => void;
+  reset: () => void;
+  group: (
+    groupType: string,
+    groupKey: string,
+    traits?: Record<string, unknown>,
+  ) => void;
+  register: (props: Record<string, unknown>) => void;
+  get_distinct_id?: () => string;
 }
 
-export function getClient(): PostHog | null {
-  return phClient;
+let client: AnalyticsClient | null = null;
+
+export function setClient(next: AnalyticsClient | null): void {
+  client = next;
+}
+
+export function getClient(): AnalyticsClient | null {
+  return client;
 }

@@ -11,13 +11,6 @@ export interface AuthResult {
   error?: string;
 }
 
-export interface StytchSession {
-  authenticated: boolean;
-  userId?: string;
-  email?: string;
-  sessionToken?: string;
-}
-
 export interface PollOption {
   id: string;
   text: string;

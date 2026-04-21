@@ -38,7 +38,7 @@ CORE FEATURES:
 - XP & Streaks: Earn XP from poll voting, community messages, challenges. Daily streak tracking in profile.
 
 AUTHENTICATION & ACCOUNTS:
-- Sign up via email OTP or Stytch magic link
+- Sign up via phone OTP or email magic link
 - Users have username, password, optional email/phone
 - Session management with logout functionality
 - Admin accounts with moderation dashboard
@@ -51,7 +51,6 @@ MODERATION & SAFETY:
 
 TECHNICAL:
 - Built with React + Vite, TypeScript, Tailwind CSS
-- PostHog analytics tracking all events
 - Sentry error monitoring
 - Multiple theme/accent customization options
 - Light/dark mode support

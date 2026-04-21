@@ -24,13 +24,6 @@ const envSchema = z.object({
     z.string().min(16, "AUTH_PASSWORD_PEPPER must be at least 16 characters.").default("dev-pepper-16chars")
   ),
   BCRYPT_ROUNDS: z.coerce.number().int().min(10).max(15).default(12),
-  SUPABASE_URL: z.preprocess(emptyToUndefined, z.string().url().optional()),
-  SUPABASE_SERVICE_ROLE_KEY: z.preprocess(emptyToUndefined, z.string().min(30).optional()),
-  SUPABASE_SCHEMA: z.string().min(1).default("public"),
-  SUPABASE_USERS_TABLE: z.string().min(1).default("app_users"),
-  STYTCH_PROJECT_ID: z.preprocess(emptyToUndefined, z.string().min(10).optional()),
-  STYTCH_SECRET: z.preprocess(emptyToUndefined, z.string().min(10).optional()),
-  STYTCH_ENV: z.enum(["test", "live"]).default("test"),
   APP_BASE_URL: z.string().url().default("http://localhost:8080"),
   EMAIL_PROVIDER: z.enum(["resend", "postmark", "none"]).default("none"),
   EMAIL_FROM: z.preprocess(emptyToUndefined, z.string().email().optional()),

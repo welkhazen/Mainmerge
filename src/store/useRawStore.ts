@@ -5,7 +5,7 @@ import { useOnboarding } from "@/store/useOnboarding";
 import { usePolls } from "@/store/usePolls";
 import { useRewards } from "@/store/useRewards";
 
-export type { AuthResult, OnboardingStep, Poll, PollOption, StytchSession, User } from "@/store/types";
+export type { AuthResult, OnboardingStep, Poll, PollOption, User } from "@/store/types";
 
 export function useRawStore() {
   const auth = useAuth();
@@ -18,8 +18,6 @@ export function useRawStore() {
     user: auth.user,
     isLoggedIn: auth.isLoggedIn,
     isAdmin: auth.isAdmin,
-    stytchSession: auth.stytchSession,
-    setStytchSession: auth.setStytchSession,
     polls: polls.polls,
     votedPolls: polls.votedPolls,
     freeVotesUsed: polls.freeVotesUsed,

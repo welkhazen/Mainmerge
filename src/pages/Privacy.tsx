@@ -74,7 +74,7 @@ export default function Privacy() {
             <section>
               <h2 className="text-lg font-semibold text-raw-text">6. Third-Party Services</h2>
               <p className="mt-2 text-sm leading-relaxed">
-                We use third-party services for analytics (PostHog), error tracking (Sentry), and authentication (Stytch). These services have their own privacy policies governing their use of data.
+                We use third-party services for error tracking (Sentry). These services have their own privacy policies governing their use of data.
               </p>
             </section>
 
