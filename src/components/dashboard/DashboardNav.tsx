@@ -28,7 +28,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-export type DashboardTab = "polls" | "challenges" | "daily-spin" | "communities" | "profile";
+export type DashboardTab = "home" | "polls" | "challenges" | "daily-spin" | "communities" | "profile";
 
 interface DashboardNavProps {
   username: string;
