@@ -172,37 +172,39 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-raw-black">
-      <PerforatedBackground />
-      <MatrixBackground />
-      {showMatrixIntro ? <MatrixBackgroundIntro onComplete={() => setShowMatrixIntro(false)} /> : null}
+      <div className="relative">
+        <PerforatedBackground />
+        <MatrixBackground />
+        {showMatrixIntro ? <MatrixBackgroundIntro onComplete={() => setShowMatrixIntro(false)} /> : null}
 
-      <Navbar
-        isLoggedIn={isLoggedIn}
-        username={user?.username}
-        onSignupClick={() => setShowSignup(true)}
-      />
+        <Navbar
+          isLoggedIn={isLoggedIn}
+          username={user?.username}
+          onSignupClick={() => setShowSignup(true)}
+        />
 
-      <Hero onSignupClick={() => setShowSignup(true)} />
-      <ProblemSection />
-      <HowItWorks />
-      <PollSection
-        polls={polls}
-        votedPolls={votedPolls}
-        isLoggedIn={isLoggedIn}
-        freeVotesUsed={freeVotesUsed}
-        onVote={vote}
-        onSignupClick={() => setShowSignup(true)}
-      />
-      <Communities onSignupClick={() => setShowSignup(true)} />
-      <AvatarIdentity
-        avatarLevel={avatarLevel}
-        onLevelChange={setAvatarLevel}
-      />
-      <WheelReward
-        onLevelChange={setAvatarLevel}
-        onSignupClick={() => setShowSignup(true)}
-      />
-      <WhyAnonymity />
+        <Hero onSignupClick={() => setShowSignup(true)} />
+        <ProblemSection />
+        <HowItWorks />
+        <PollSection
+          polls={polls}
+          votedPolls={votedPolls}
+          isLoggedIn={isLoggedIn}
+          freeVotesUsed={freeVotesUsed}
+          onVote={vote}
+          onSignupClick={() => setShowSignup(true)}
+        />
+        <Communities onSignupClick={() => setShowSignup(true)} />
+        <AvatarIdentity
+          avatarLevel={avatarLevel}
+          onLevelChange={setAvatarLevel}
+        />
+        <WheelReward
+          onLevelChange={setAvatarLevel}
+          onSignupClick={() => setShowSignup(true)}
+        />
+        <WhyAnonymity />
+      </div>
       <LandingFooter />
 
       <Suspense fallback={null}>
