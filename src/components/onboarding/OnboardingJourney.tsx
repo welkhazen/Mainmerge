@@ -217,12 +217,12 @@ export function OnboardingJourney({
   const currentStepIndex = STEP_ORDER.indexOf(onboardingStep);
   return (
     <div className="min-h-screen bg-raw-black">
-      <div className="mx-auto flex min-h-screen w-full max-w-5xl flex-col px-4 py-6 sm:px-6 sm:py-10">
-        <div className="mb-6 flex items-start justify-between gap-3 sm:mb-8 sm:gap-4">
-          <div className="min-w-0 flex-1">
-            <p className="font-display text-[10px] uppercase tracking-[0.3em] text-raw-gold/60 sm:text-xs sm:tracking-[0.35em]">Welcome to raW</p>
-            <h1 className="mt-2 font-display text-xl tracking-wide text-raw-text sm:mt-3 sm:text-2xl md:text-3xl">
-              Complete your path, {user.username}
+      <div className="mx-auto flex min-h-screen w-full max-w-5xl flex-col px-4 py-6 sm:px-6 sm:py-8 md:py-10">
+        <div className="mb-8 flex items-start justify-between gap-4">
+          <div>
+            <p className="font-display text-xs uppercase tracking-[0.35em] text-raw-gold/60">Welcome to raW</p>
+            <h1 className="mt-3 font-display text-2xl tracking-wide text-raw-text sm:text-3xl">
+              Complete your identity path, {user.username}
             </h1>
             <p className="mt-2 max-w-2xl text-xs text-raw-silver/50 sm:text-sm">
               One flow. No skipping. Finish the sequence to unlock full dashboard access.
@@ -256,17 +256,10 @@ export function OnboardingJourney({
                 Your avatar is your public signal. You can evolve it later, but choose your starting form now.
               </p>
 
-              <div className="mt-6 grid grid-cols-1 items-center gap-6 sm:mt-8 md:grid-cols-2 md:gap-8">
-                {/* Phone Mockup — first on mobile so user sees the live preview */}
-                <div className="flex flex-col items-center justify-center md:order-2">
-                  <PhoneMockup>
-                    <AvatarPhoneHomeScreen displayLevel={avatarLevel} />
-                  </PhoneMockup>
-                </div>
-
-                {/* Avatar Selector Grid */}
-                <div className="flex min-w-0 flex-col items-center justify-center md:order-1">
-                  <div className="mx-auto grid w-full max-w-xs grid-cols-5 gap-2 sm:max-w-sm sm:gap-3 md:gap-4">
+              <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-8 md:items-center">
+                {/* Left: Avatar Selector Grid */}
+                <div className="flex flex-col items-center justify-center min-w-0">
+                  <div className="grid grid-cols-5 gap-2 sm:gap-3 md:gap-4">
                     {Array.from({ length: LEVEL_THEMES.length }, (_, i) => i + 1).map((lvl) => (
                       <button
                         key={lvl}

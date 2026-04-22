@@ -45,7 +45,7 @@ export function WheelReward({ onLevelChange, onSignupClick }: WheelRewardProps) 
     <section
       ref={sectionRef as React.RefObject<HTMLElement>}
       id="wheel"
-      className="relative bg-black/40 px-4 py-16 sm:px-6 sm:py-24"
+      className="relative px-4 py-12 sm:px-6 sm:py-20 md:py-24 bg-black/40"
     >
       <div className="mx-auto w-full max-w-3xl">
         <div className="mb-8 text-center sm:mb-10">
@@ -64,7 +64,7 @@ export function WheelReward({ onLevelChange, onSignupClick }: WheelRewardProps) 
           </p>
         </div>
 
-        <div className="flex flex-col items-center gap-8 sm:gap-10">
+        <div className="flex flex-col items-center gap-6 sm:gap-10">
           <WheelOfFortune prizes={RANK_PRIZES} onSpinEnd={handleSpinEnd} disabled={hasSpun} />
 
           {landedLevel && (

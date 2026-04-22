@@ -214,7 +214,7 @@ function IconContainer({
         className={cn(
           "relative flex aspect-square items-center justify-center rounded-full border text-raw-silver/70 shadow-[0_8px_18px_rgba(6,10,24,0.2)] transition-colors",
           active
-            ? "border-raw-gold/45 bg-raw-gold/15 text-raw-gold"
+            ? "border-primary/45 bg-primary/15 text-primary shadow-[0_0_18px_rgb(var(--raw-accent)/0.45)]"
             : "border-raw-border/40 bg-raw-black/25 hover:border-raw-border/60 hover:text-raw-text",
         )}
       >

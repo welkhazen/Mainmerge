@@ -49,7 +49,7 @@ export function WhyAnonymity() {
   const sectionRef = useTrackSectionView("why_anonymity");
 
   return (
-    <section ref={sectionRef as React.RefObject<HTMLElement>} className="relative bg-black/60 px-4 py-16 sm:px-6 sm:py-24 md:py-28">
+    <section ref={sectionRef as React.RefObject<HTMLElement>} className="relative py-14 px-4 sm:py-20 sm:px-6 md:py-28 bg-black/60">
       <div className="w-full">
         <h2 className="mb-8 text-center font-display text-xl tracking-wide text-raw-text sm:mb-12 sm:text-2xl md:text-3xl">
           No real names. Better honesty. Better matching.

@@ -3,6 +3,7 @@ import { Logo3D } from "@/components/ui/logo-3d";
 import { track } from "@/lib/analytics";
 import { useTrackSectionView } from "@/lib/analytics/useTrackSectionView";
 import { useFeatureExperiments } from "@/hooks/useFeatureExperiments";
+import { DottedSurface } from "@/components/ui/dotted-surface";
 
 const BoxesLazy = lazy(() => import("@/components/ui/background-boxes").then((module) => ({ default: module.Boxes })));
 const TypewriterEffectLazy = lazy(() =>
@@ -11,9 +12,10 @@ const TypewriterEffectLazy = lazy(() =>
 
 interface HeroProps {
   onSignupClick: () => void;
+  showDottedSurface?: boolean;
 }
 
-export function Hero({ onSignupClick }: HeroProps) {
+export function Hero({ onSignupClick, showDottedSurface = true }: HeroProps) {
   const sectionRef = useTrackSectionView("hero");
   const { heroCopy, signupCta } = useFeatureExperiments();
 
@@ -53,9 +55,10 @@ export function Hero({ onSignupClick }: HeroProps) {
   return (
     <section
       ref={sectionRef as React.RefObject<HTMLElement>}
-      className="hero-landing relative flex min-h-[100svh] items-center overflow-hidden bg-black/40 px-4 pb-12 pt-20 sm:px-6 sm:pb-16 sm:pt-28"
+      className="hero-landing relative flex min-h-screen items-center overflow-hidden px-4 pb-10 pt-20 sm:px-6 sm:pb-16 sm:pt-24 md:pt-28 bg-black/40"
     >
       <div className="absolute inset-0 z-0 overflow-hidden">
+        <DottedSurface className="absolute inset-0 z-0" />
         <div className="hero-landing-overlay absolute inset-0 z-[1] bg-gradient-to-b from-black/20 via-black/20 to-black/40" />
         <Suspense fallback={null}>
           <BoxesLazy className="opacity-30" />
@@ -69,7 +72,7 @@ export function Hero({ onSignupClick }: HeroProps) {
           <Logo3D size={104} className="sm:[width:148px] sm:[height:148px] md:[width:172px] md:[height:172px] lg:[width:196px] lg:[height:196px]" />
         </div>
 
-        <p className="mb-4 font-display text-[10px] uppercase tracking-[0.28em] text-raw-gold/70 sm:mb-5 sm:tracking-[0.33em] sm:text-[11px]">
+        <p className="mb-5 font-display text-[10px] uppercase tracking-[0.2em] text-raw-gold/70 sm:tracking-[0.33em] sm:text-[11px]">
           Anonymous &bull; Community-First &bull; Identity-Driven
         </p>
 
@@ -82,15 +85,15 @@ export function Hero({ onSignupClick }: HeroProps) {
 
         <p className="mt-3 font-display text-base tracking-wide text-metallic sm:mt-4 sm:text-2xl">Grow behind your avatar.</p>
 
-        <p className="mt-4 max-w-2xl text-sm leading-relaxed text-raw-silver/60 sm:mt-5 sm:text-lg">
+        <p className="mt-4 max-w-2xl text-sm leading-relaxed text-raw-silver/60 sm:mt-5 sm:text-base md:text-lg">
           Anonymous poll voting. Real conversations. Communities that match who you actually are. No algorithms. No reputation damage.
         </p>
 
-        <div className="mt-7 flex w-full max-w-xl flex-col items-stretch gap-3 sm:mt-9 sm:flex-row sm:items-center sm:justify-center sm:gap-4">
+        <div className="mt-7 flex w-full max-w-xs flex-col items-stretch gap-3 sm:max-w-xl sm:flex-row sm:items-center sm:justify-center sm:gap-4">
           <button
             type="button"
             onClick={handleJoinClick}
-            className="w-full whitespace-nowrap rounded-full bg-raw-gold px-6 py-3.5 text-sm font-bold text-raw-black transition-all hover:bg-raw-gold/90 hover:shadow-lg hover:shadow-raw-gold/20 sm:w-auto sm:px-8"
+            className="rounded-full bg-raw-gold px-8 py-3.5 text-sm font-bold text-raw-black transition-all hover:bg-raw-gold/90 hover:shadow-lg hover:shadow-raw-gold/20 sm:w-auto"
           >
             {signupLabel}
           </button>
@@ -98,10 +101,9 @@ export function Hero({ onSignupClick }: HeroProps) {
           <a
             href="#communities"
             onClick={handleExploreClick}
-            className="w-full rounded-full border border-raw-border px-4 py-3.5 text-center text-sm font-medium leading-snug text-raw-silver/80 transition-all hover:border-raw-silver/30 hover:text-raw-text sm:w-auto sm:px-8"
+            className="rounded-full border border-raw-border px-6 py-3.5 text-center text-sm font-medium text-raw-silver/80 transition-all hover:border-raw-silver/30 hover:text-raw-text sm:w-auto sm:px-8"
           >
-            <span className="sm:hidden">Explore the 3 Communities</span>
-            <span className="hidden sm:inline">Explore the 3 Founding Communities</span>
+            Explore Communities
           </a>
         </div>
 

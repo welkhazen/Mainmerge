@@ -11,7 +11,7 @@ const FONT_SIZE = 14;
 const START_INTERVAL = 16;
 const END_INTERVAL = 52;
 const SLOWDOWN_MS = 5000;
-const FADE_DELAY_MS = 4000;
+const FADE_DELAY_MS = 3000;
 const FADE_DURATION_MS = 1800;
 
 const MatrixBackgroundIntro = memo(function MatrixBackgroundIntro({

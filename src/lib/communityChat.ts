@@ -298,5 +298,22 @@ export function deleteCommunityMessage(communityId: string, messageId: string, r
   return nextCommunities.find((community) => community.id === communityId) ?? null;
 }
 
+export function likeCommunityMessage(communityId: string, messageId: string, userId: string): void {
+  const communities = readCommunityChats();
+  const nextCommunities = communities.map((community) => {
+    if (community.id !== communityId) return community;
+    return {
+      ...community,
+      messages: community.messages.map((message) => {
+        if (message.id !== messageId || message.deletedAt) return message;
+        const likedBy = message.likedBy ?? [];
+        if (likedBy.includes(userId)) return message;
+        return { ...message, likedBy: [...likedBy, userId] };
+      }),
+    };
+  });
+  writeCommunityChats(nextCommunities);
+}
+
 export type { PersistedCommunityRecord, CommunityChatMessageRecord, CommunityChatMemberRecord, CommunityStatus } from "./communityChat.types";
 export { countOnlineMembers, countUnreadMessages, formatChatTimestamp, formatChatDayLabel, canManageCommunity } from "./communityChat.utils";

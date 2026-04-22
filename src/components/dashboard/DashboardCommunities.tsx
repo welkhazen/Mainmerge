@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import lntCoverVideo from "@/assets/2026-04-18 10_10_00.MP4";
-import { AlertTriangle, ArrowLeft, Bell, BellOff, Clock3, Heart, MessageCircle, Plus, Reply, Search, Send, Trash2, Users, X } from "lucide-react";
+import { AlertTriangle, ArrowLeft, Bell, BellOff, Clock3, Heart, ImagePlus, MessageCircle, Plus, Reply, Search, Send, Trash2, Users, X } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,10 +22,10 @@ import {
   canManageCommunity,
   countUnreadMessages,
   countOnlineMembers,
-  deleteCommunityMessage,
   formatChatDayLabel,
   formatChatTimestamp,
   joinCommunityChat,
+  likeCommunityMessage,
   markCommunityRead,
   readCommunityChats,
   sendCommunityMessage,
@@ -108,14 +108,13 @@ export function DashboardCommunities({
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedDescs, setExpandedDescs] = useState<Set<string>>(new Set());
   const [requestFormOpen, setRequestFormOpen] = useState(false);
+  const [requestSubmitAttempted, setRequestSubmitAttempted] = useState(false);
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
   const [logoDialogOpen, setLogoDialogOpen] = useState(false);
   const [communitySettingsDraft, setCommunitySettingsDraft] = useState<CommunitySettingsDraft>(INITIAL_COMMUNITY_SETTINGS_DRAFT);
   const [requestDraft, setRequestDraft] = useState<CommunityRequestDraft>(INITIAL_REQUEST_DRAFT);
   const [reportDraft, setReportDraft] = useState<ReportDraft>(INITIAL_REPORT_DRAFT);
   const [reportTarget, setReportTarget] = useState<ReportTarget | null>(null);
-  const [replyTarget, setReplyTarget] = useState<CommunityChatMessageRecord | null>(null);
-  const [likedMessageIds, setLikedMessageIds] = useState<Set<string>>(() => new Set());
   const [communityRequests, setCommunityRequests] = useState<CommunityRequestRecord[]>([]);
   const [chatReports, setChatReports] = useState<ChatReportRecord[]>([]);
   const lastTouchedCommunityRef = useRef<string>("");
@@ -186,7 +185,6 @@ export function DashboardCommunities({
 
     useEffect(() => {
       setSearchQuery("");
-      setReplyTarget(null);
     }, [activeCommunityId]);
 
     useEffect(() => {
@@ -263,14 +261,6 @@ export function DashboardCommunities({
         return;
       }
 
-      if (!isJoined) {
-        toast({
-          title: "Join the group first",
-          description: `Enter ${selectedCommunity.title} before sending messages.`,
-        });
-        return;
-      }
-
       if (isUserBanned) {
         toast({
           title: "Chat access restricted",
@@ -284,31 +274,18 @@ export function DashboardCommunities({
         return;
       }
 
+      if (!isJoined) {
+        joinCommunityChat(selectedCommunity.id, { userId: user.id, username: user.username });
+        lastTouchedCommunityRef.current = `${selectedCommunity.id}:${user.id}`;
+      }
+
       sendCommunityMessage(selectedCommunity.id, {
         senderId: user.id,
         senderName: user.username,
         text: trimmedMessage,
-        replyToMessage: replyTarget,
       });
       reloadChatData();
       setMessageDraft("");
-      setReplyTarget(null);
-    };
-
-    const handleDeleteMessage = (message: CommunityChatMessageRecord) => {
-      if (!selectedCommunity || message.senderId !== user.id || message.deletedAt) {
-        return;
-      }
-
-      deleteCommunityMessage(selectedCommunity.id, message.id, user.id);
-      reloadChatData();
-      if (replyTarget?.id === message.id) {
-        setReplyTarget(null);
-      }
-      toast({
-        title: "Message deleted",
-        description: "Your message was removed from the group chat.",
-      });
     };
 
     const handleCommunitySettingsSave = () => {
@@ -349,18 +326,6 @@ export function DashboardCommunities({
       toast({
         title: "Community updated",
         description: `${updatedCommunity.title} now shows the latest name and logo across the app.`,
-      });
-    };
-
-    const toggleMessageLike = (messageId: string) => {
-      setLikedMessageIds((previous) => {
-        const next = new Set(previous);
-        if (next.has(messageId)) {
-          next.delete(messageId);
-        } else {
-          next.add(messageId);
-        }
-        return next;
       });
     };
 
@@ -435,9 +400,10 @@ export function DashboardCommunities({
       };
 
       if (!trimmedDraft.communityName || !trimmedDraft.focusArea || !trimmedDraft.audience || !trimmedDraft.whyNow) {
+        setRequestSubmitAttempted(true);
         toast({
           title: "Complete the request form",
-          description: "Add the community name, focus, intended members, and your reason before submitting.",
+          description: "Fill in all required fields before submitting.",
         });
         return;
       }
@@ -461,6 +427,7 @@ export function DashboardCommunities({
         return nextRequests;
       });
       setRequestDraft(INITIAL_REQUEST_DRAFT);
+      setRequestSubmitAttempted(false);
       setRequestFormOpen(false);
       toast({
         title: "Request sent to admin",
@@ -604,20 +571,19 @@ export function DashboardCommunities({
       }
 
       return (
-        <div className="space-y-5 sm:space-y-6">
-          <div className="flex flex-col gap-4 rounded-2xl border border-raw-border/30 bg-raw-surface/25 p-4 sm:rounded-3xl sm:p-5 md:flex-row md:flex-wrap md:items-start md:justify-between">
-            <div className="flex items-start gap-3 sm:gap-4">
+        <div className="space-y-6">
+          <div className="flex flex-wrap items-start justify-between gap-3 rounded-2xl border border-raw-border/30 bg-raw-surface/25 p-4 sm:rounded-3xl sm:gap-4 sm:p-5">
+            <div className="flex min-w-0 flex-1 items-start gap-3 sm:gap-4">
               <button
                 onClick={() => onBackToCommunities?.()}
-                className="mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-raw-border/30 text-raw-silver/55 transition-colors hover:border-raw-gold/20 hover:text-raw-gold"
-                aria-label="Back to communities"
+                className="mt-1 shrink-0 rounded-full border border-raw-border/30 p-2 text-raw-silver/55 transition-colors hover:border-raw-gold/20 hover:text-raw-gold"
               >
                 <ArrowLeft className="h-4 w-4" />
               </button>
               <CommunityBadge abbr={selectedCommunity.abbr} title={selectedCommunity.title} logoUrl={selectedCommunity.logoUrl} />
-              <div className="min-w-0 flex-1">
-                <h1 className="font-display text-lg tracking-wide text-raw-text sm:text-xl md:text-2xl">{selectedCommunity.title}</h1>
-                <p className="mt-2 text-xs text-raw-silver/45 sm:text-sm">{selectedCommunity.description}</p>
+              <div className="min-w-0">
+                <h1 className="font-display text-xl tracking-wide text-raw-text sm:text-2xl">{selectedCommunity.title}</h1>
+                <p className="mt-2 text-sm text-raw-silver/45">{selectedCommunity.description}</p>
                 <p className="mt-2 text-xs text-raw-silver/35">Topic prompt: {selectedCommunity.topic}</p>
                 <p className="mt-2 text-xs text-raw-silver/35">
                   Members: {selectedCommunity.members.length} · {visibleMembers.map((member) => `@${member.username}`).join(", ")}
@@ -686,7 +652,7 @@ export function DashboardCommunities({
             </div>
           )}
 
-          <div ref={messagesContainerRef} className="max-h-[60vh] space-y-3 overflow-y-auto rounded-2xl border border-raw-border/20 bg-raw-black/35 p-3 sm:max-h-[560px] sm:p-4">
+          <div ref={messagesContainerRef} className="max-h-[50vh] min-h-[200px] space-y-3 overflow-y-auto rounded-2xl border border-raw-border/20 bg-raw-black/35 p-3 sm:max-h-[560px] sm:p-4">
             <div className="flex items-center gap-3 rounded-2xl border border-raw-border/20 bg-raw-black/35 px-4 py-3">
               <Search className="h-4 w-4 text-raw-silver/35" />
               <input
@@ -714,7 +680,9 @@ export function DashboardCommunities({
                 </div>
                 {group.messages.map((message) => {
                   const isOwnMessage = message.senderId === user.id || message.senderName === user.username;
-                  const liked = likedMessageIds.has(message.id);
+                  const likedBy = message.likedBy ?? [];
+                  const alreadyLiked = likedBy.includes(user.id);
+                  const likeCount = likedBy.length;
 
                   return (
                     <div key={message.id} className={`flex ${isOwnMessage ? "justify-end" : "justify-start"}`}>
@@ -737,36 +705,26 @@ export function DashboardCommunities({
                           </div>
                         )}
                         <p className={`mt-2 text-sm leading-relaxed ${message.deletedAt ? "italic text-raw-silver/45" : ""}`}>{message.text}</p>
-                        <div className="mt-3 flex justify-end gap-2">
-                          {!message.deletedAt && isJoined && (
-                            <>
-                              <button
-                                onClick={() => setReplyTarget(message)}
-                                className="inline-flex items-center gap-1 rounded-full border border-raw-border/20 px-2.5 py-1 text-[10px] uppercase tracking-[0.14em] text-raw-silver/70 transition-colors hover:bg-raw-surface/20"
-                              >
-                                <Reply className="h-3 w-3" /> Reply
-                              </button>
-                              <button
-                                onClick={() => toggleMessageLike(message.id)}
-                                className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[10px] uppercase tracking-[0.14em] transition-colors ${
-                                  liked
-                                    ? "border-raw-gold/45 bg-raw-gold/10 text-raw-gold"
-                                    : "border-raw-border/20 text-raw-silver/70 hover:bg-raw-surface/20"
-                                }`}
-                              >
-                                <Heart className="h-3 w-3" /> {liked ? "Liked" : "Like"}
-                              </button>
-                            </>
-                          )}
-                          {isOwnMessage && !message.deletedAt && (
+                        {!message.deletedAt && (
+                          <div className="mt-2 flex justify-end">
                             <button
-                              onClick={() => handleDeleteMessage(message)}
-                              className="inline-flex items-center gap-1 rounded-full border border-red-400/20 px-2.5 py-1 text-[10px] uppercase tracking-[0.14em] text-red-200/75 transition-colors hover:bg-red-500/10"
+                              onClick={() => {
+                                if (alreadyLiked) return;
+                                likeCommunityMessage(selectedCommunity.id, message.id, user.id);
+                                reloadChatData();
+                              }}
+                              disabled={alreadyLiked}
+                              className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] transition-colors ${
+                                alreadyLiked
+                                  ? "border-raw-gold/45 bg-raw-gold/10 text-raw-gold cursor-default"
+                                  : "border-raw-border/20 text-raw-silver/50 hover:border-raw-gold/30 hover:text-raw-gold/70"
+                              }`}
                             >
-                              <Trash2 className="h-3 w-3" /> Delete
+                              <Heart className={`h-3 w-3 ${alreadyLiked ? "fill-current" : ""}`} />
+                              {likeCount > 0 && <span>{likeCount}</span>}
                             </button>
-                          )}
-                        </div>
+                          </div>
+                        )}
                       </div>
                     </div>
                   );
@@ -802,28 +760,9 @@ export function DashboardCommunities({
                 Chat posting is disabled for this account. An admin has marked it as banned after review.
               </div>
             )}
-            {!isJoined && (
-              <div className="mb-4 rounded-xl border border-raw-gold/20 bg-raw-gold/[0.07] px-4 py-3 text-sm text-raw-gold/85">
-                Join this community first. Once you are in, you can chat, like messages, and stay synced with the group.
-              </div>
-            )}
             <label className="mb-2 block text-[11px] uppercase tracking-[0.16em] text-raw-silver/35">
-              {isJoined ? `Say something real in ${selectedCommunity.title}` : `Join ${selectedCommunity.title} to start chatting`}
+              {`Say something real in ${selectedCommunity.title}`}
             </label>
-            {replyTarget && (
-              <div className="mb-3 flex items-start justify-between gap-3 rounded-xl border border-raw-gold/20 bg-raw-gold/[0.06] px-4 py-3 text-sm">
-                <div>
-                  <p className="text-[11px] uppercase tracking-[0.16em] text-raw-gold/75">Replying to {replyTarget.senderName}</p>
-                  <p className="mt-1 text-raw-silver/70">{replyTarget.text}</p>
-                </div>
-                <button
-                  onClick={() => setReplyTarget(null)}
-                  className="rounded-full p-1 text-raw-silver/40 transition-colors hover:bg-raw-surface/30 hover:text-raw-text"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              </div>
-            )}
             <div className="flex gap-3">
               <input
                 value={messageDraft}
@@ -833,13 +772,13 @@ export function DashboardCommunities({
                     handleSendMessage();
                   }
                 }}
-                placeholder={isJoined ? "Type your message..." : "Join the group to type a message"}
-                disabled={isUserBanned || !isJoined}
+                placeholder="Type your message..."
+                disabled={isUserBanned}
                 className="flex-1 rounded-xl border border-raw-border/30 bg-raw-surface/30 px-4 py-3 text-sm text-raw-text placeholder:text-raw-silver/25 focus:border-raw-gold/25 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
               />
               <button
                 onClick={handleSendMessage}
-                disabled={isUserBanned || !isJoined}
+                disabled={isUserBanned}
                 className="flex items-center gap-2 rounded-xl bg-raw-gold px-4 py-3 text-sm font-semibold text-raw-ink disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <Send className="h-4 w-4" /> Send
@@ -917,7 +856,7 @@ export function DashboardCommunities({
           </DialogContent>
         </Dialog>
 
-        <Dialog open={requestFormOpen} onOpenChange={setRequestFormOpen}>
+        <Dialog open={requestFormOpen} onOpenChange={(open) => { setRequestFormOpen(open); if (!open) setRequestSubmitAttempted(false); }}>
           <DialogContent className="border border-raw-border/40 bg-raw-black p-0 text-raw-text sm:max-w-2xl sm:rounded-3xl">
             <div className="border-b border-raw-border/20 bg-gradient-to-br from-raw-gold/[0.08] via-raw-black to-raw-black px-6 py-6">
               <DialogHeader className="space-y-2 text-left">
@@ -930,41 +869,61 @@ export function DashboardCommunities({
             <div className="space-y-5 px-6 py-6">
               <div className="grid gap-5 sm:grid-cols-2">
                 <div className="space-y-2">
-                  <label className="text-[11px] uppercase tracking-[0.16em] text-raw-silver/40">Community name</label>
+                  <label className="text-[11px] uppercase tracking-[0.16em] text-raw-silver/40">
+                    Community name <span className="text-primary">*</span>
+                  </label>
                   <Input
                     value={requestDraft.communityName}
                     onChange={(event) => updateRequestDraft("communityName", event.target.value)}
                     placeholder="Example: Creator Burnout Circle"
-                    className="h-11 rounded-xl border-raw-border/30 bg-raw-surface/30 text-raw-text placeholder:text-raw-silver/25"
+                    className={`h-11 rounded-xl bg-raw-surface/30 text-raw-text placeholder:text-raw-silver/25 ${requestSubmitAttempted && !requestDraft.communityName.trim() ? "border-primary/60 focus-visible:ring-primary/30" : "border-raw-border/30"}`}
                   />
+                  {requestSubmitAttempted && !requestDraft.communityName.trim() && (
+                    <p className="text-[11px] text-primary/80">This field is required</p>
+                  )}
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[11px] uppercase tracking-[0.16em] text-raw-silver/40">Focus area</label>
+                  <label className="text-[11px] uppercase tracking-[0.16em] text-raw-silver/40">
+                    Focus area <span className="text-primary">*</span>
+                  </label>
                   <Input
                     value={requestDraft.focusArea}
                     onChange={(event) => updateRequestDraft("focusArea", event.target.value)}
                     placeholder="What theme would this room center on?"
-                    className="h-11 rounded-xl border-raw-border/30 bg-raw-surface/30 text-raw-text placeholder:text-raw-silver/25"
+                    className={`h-11 rounded-xl bg-raw-surface/30 text-raw-text placeholder:text-raw-silver/25 ${requestSubmitAttempted && !requestDraft.focusArea.trim() ? "border-primary/60 focus-visible:ring-primary/30" : "border-raw-border/30"}`}
                   />
+                  {requestSubmitAttempted && !requestDraft.focusArea.trim() && (
+                    <p className="text-[11px] text-primary/80">This field is required</p>
+                  )}
                 </div>
               </div>
               <div className="space-y-2">
-                <label className="text-[11px] uppercase tracking-[0.16em] text-raw-silver/40">Who is this for?</label>
+                <label className="text-[11px] uppercase tracking-[0.16em] text-raw-silver/40">
+                  Who is this for? <span className="text-primary">*</span>
+                </label>
                 <Input
                   value={requestDraft.audience}
                   onChange={(event) => updateRequestDraft("audience", event.target.value)}
                   placeholder="Who would join and benefit from this community?"
-                  className="h-11 rounded-xl border-raw-border/30 bg-raw-surface/30 text-raw-text placeholder:text-raw-silver/25"
+                  className={`h-11 rounded-xl bg-raw-surface/30 text-raw-text placeholder:text-raw-silver/25 ${requestSubmitAttempted && !requestDraft.audience.trim() ? "border-primary/60 focus-visible:ring-primary/30" : "border-raw-border/30"}`}
                 />
+                {requestSubmitAttempted && !requestDraft.audience.trim() && (
+                  <p className="text-[11px] text-primary/80">This field is required</p>
+                )}
               </div>
               <div className="space-y-2">
-                <label className="text-[11px] uppercase tracking-[0.16em] text-raw-silver/40">Why should admin approve it?</label>
+                <label className="text-[11px] uppercase tracking-[0.16em] text-raw-silver/40">
+                  Why should admin approve it? <span className="text-primary">*</span>
+                </label>
                 <Textarea
                   value={requestDraft.whyNow}
                   onChange={(event) => updateRequestDraft("whyNow", event.target.value)}
                   placeholder="Explain the need, how it adds value, and what kind of conversations it should unlock."
-                  className="min-h-[130px] rounded-2xl border-raw-border/30 bg-raw-surface/30 text-raw-text placeholder:text-raw-silver/25"
+                  className={`min-h-[130px] rounded-2xl bg-raw-surface/30 text-raw-text placeholder:text-raw-silver/25 ${requestSubmitAttempted && !requestDraft.whyNow.trim() ? "border-primary/60 focus-visible:ring-primary/30" : "border-raw-border/30"}`}
                 />
+                {requestSubmitAttempted && !requestDraft.whyNow.trim() && (
+                  <p className="text-[11px] text-primary/80">This field is required</p>
+                )}
               </div>
               <div className="space-y-2">
                 <label className="text-[11px] uppercase tracking-[0.16em] text-raw-silver/40">Sample opening prompt</label>
@@ -975,6 +934,17 @@ export function DashboardCommunities({
                   className="min-h-[96px] rounded-2xl border-raw-border/30 bg-raw-surface/30 text-raw-text placeholder:text-raw-silver/25"
                 />
               </div>
+              <div className="space-y-2">
+                <label className="text-[11px] uppercase tracking-[0.16em] text-raw-silver/40">Community image / video</label>
+                <button
+                  type="button"
+                  disabled
+                  className="flex w-full items-center justify-center gap-3 rounded-2xl border border-dashed border-raw-border/35 bg-raw-surface/20 px-4 py-5 text-sm text-raw-silver/35 cursor-not-allowed"
+                >
+                  <ImagePlus className="h-5 w-5 shrink-0" />
+                  <span>Upload image or video <span className="text-[10px] uppercase tracking-wider text-raw-silver/25 ml-1">Coming soon</span></span>
+                </button>
+              </div>
             </div>
             <DialogFooter className="border-t border-raw-border/20 px-6 py-5 sm:justify-between">
               <p className="text-xs leading-relaxed text-raw-silver/40">
@@ -983,7 +953,7 @@ export function DashboardCommunities({
               <div className="flex items-center gap-3">
                 <Button
                   variant="outline"
-                  onClick={() => setRequestFormOpen(false)}
+                  onClick={() => { setRequestFormOpen(false); setRequestSubmitAttempted(false); }}
                   className="rounded-xl border-raw-border/30 bg-transparent text-raw-silver/70 hover:bg-raw-surface/30 hover:text-raw-text"
                 >
                   Cancel

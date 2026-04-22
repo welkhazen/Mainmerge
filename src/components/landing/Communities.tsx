@@ -34,11 +34,11 @@ export function Communities({ onSignupClick }: CommunitiesProps) {
     <section
       ref={sectionRef as React.RefObject<HTMLElement>}
       id="communities"
-      className="relative bg-black/40 px-4 py-16 sm:px-6 sm:py-24 md:py-28"
+      className="relative py-14 px-4 sm:py-20 sm:px-6 md:py-28 bg-black/40"
     >
       <div className="mx-auto w-full max-w-6xl">
-        <div className="mb-10 text-center sm:mb-14">
-          <h2 className="font-display text-2xl tracking-wide text-raw-text sm:text-3xl md:text-4xl">
+        <div className="mb-8 text-center sm:mb-14">
+          <h2 className="font-display text-3xl tracking-wide text-raw-text sm:text-4xl">
             24/7 communities for real talk.
           </h2>
           <p className="mx-auto mt-3 max-w-xl text-sm text-raw-silver/50 sm:mt-4 sm:text-base">
@@ -63,7 +63,7 @@ export function Communities({ onSignupClick }: CommunitiesProps) {
         </div>
 
         {/* Communities worldwide */}
-        <div className="mx-auto mt-12 flex max-w-5xl flex-col items-center gap-6 sm:mt-16 sm:gap-8 md:flex-row md:items-center md:gap-10">
+        <div className="mx-auto mt-10 flex max-w-5xl flex-col items-center gap-6 sm:mt-16 sm:gap-8 md:flex-row md:items-center md:gap-10">
           <div className="flex-1 text-center md:text-left">
             <p className="font-display text-[10px] tracking-[0.3em] uppercase text-raw-silver/40">
               Communities worldwide

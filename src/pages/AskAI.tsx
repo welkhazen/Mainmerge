@@ -102,9 +102,9 @@ export default function AskAI() {
 
   return (
     <div className="min-h-screen bg-raw-black">
-      <header className="border-b border-raw-border/30 bg-raw-black/85 px-4 py-3 backdrop-blur-sm sm:px-6 sm:py-4">
-        <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-3">
-          <Link to="/" className="font-display text-lg tracking-[0.2em] text-raw-text/85 sm:text-xl">
+      <header className="border-b border-raw-border/30 bg-raw-black/85 px-4 py-4 backdrop-blur-sm sm:px-6">
+        <div className="mx-auto flex w-full max-w-6xl items-center justify-between">
+          <Link to="/" className="font-display text-xl tracking-[0.2em] text-raw-text/85">
             ra<span className="text-raw-gold">W</span>
           </Link>
           <Link
@@ -116,15 +116,15 @@ export default function AskAI() {
         </div>
       </header>
 
-      <section className="px-4 py-10 sm:px-6 sm:py-20">
-        <div className="mx-auto max-w-5xl rounded-3xl border border-raw-gold/15 bg-[linear-gradient(160deg,rgba(18,18,18,0.96),rgba(8,8,8,0.98))] p-4 shadow-[0_20px_50px_rgba(0,0,0,0.45)] sm:rounded-[2rem] sm:p-8">
+      <section className="px-4 py-10 sm:px-6 sm:py-16 md:py-20">
+        <div className="mx-auto max-w-5xl rounded-2xl border border-raw-gold/15 bg-[linear-gradient(160deg,rgba(18,18,18,0.96),rgba(8,8,8,0.98))] p-4 shadow-[0_20px_50px_rgba(0,0,0,0.45)] sm:rounded-[2rem] sm:p-6 md:p-8">
           <p className="text-[11px] uppercase tracking-[0.2em] text-raw-gold/75">Ask AI</p>
           <h1 className="mt-2 font-display text-2xl tracking-wide text-raw-text sm:text-3xl md:text-4xl">Website Assistant</h1>
           <p className="mt-2 text-sm text-raw-silver/55">
             Ask anything about your website features, onboarding, dashboard, policies, and settings.
           </p>
 
-          <div className="mt-5 h-[50vh] min-h-[280px] overflow-y-auto rounded-2xl border border-raw-border/35 bg-raw-black/35 p-3 sm:mt-6 sm:h-[46vh] sm:min-h-[320px] sm:p-4">
+          <div className="mt-6 h-[38vh] min-h-[240px] overflow-y-auto rounded-2xl border border-raw-border/35 bg-raw-black/35 p-4 sm:h-[46vh] sm:min-h-[320px]">
             {messages.length === 0 ? (
               <p className="text-sm text-raw-silver/45">Start by asking a question about your website.</p>
             ) : (

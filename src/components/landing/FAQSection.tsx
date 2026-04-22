@@ -36,9 +36,9 @@ export function FAQSection() {
   };
 
   return (
-    <section id="faq" className="px-4 py-12 sm:px-6 sm:py-20">
-      <div className="mx-auto max-w-6xl rounded-3xl border border-raw-gold/15 bg-[linear-gradient(160deg,rgba(18,18,18,0.96),rgba(8,8,8,0.98))] p-4 shadow-[0_20px_50px_rgba(0,0,0,0.45)] sm:rounded-[2rem] sm:p-8">
-        <div className="mb-6 flex flex-col gap-2 sm:mb-8">
+    <section id="faq" className="px-4 py-12 sm:px-6 sm:py-16 md:py-20">
+      <div className="mx-auto max-w-6xl rounded-2xl border border-raw-gold/15 bg-[linear-gradient(160deg,rgba(18,18,18,0.96),rgba(8,8,8,0.98))] p-4 shadow-[0_20px_50px_rgba(0,0,0,0.45)] sm:rounded-[2rem] sm:p-6 md:p-8">
+        <div className="mb-8 flex flex-col gap-2">
           <p className="text-[11px] uppercase tracking-[0.2em] text-raw-gold/75">FAQ</p>
           <h2 className="font-display text-2xl tracking-wide text-raw-text sm:text-3xl md:text-4xl">Frequently Asked Questions</h2>
           <p className="text-sm text-raw-silver/55">Quick answers, plus a place to ask your own question.</p>

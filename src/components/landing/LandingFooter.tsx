@@ -7,11 +7,11 @@ export function LandingFooter() {
   const whatsAppHref = `https://wa.me/${supportWhatsAppNumber.replace(/\D/g, "")}`;
 
   return (
-    <section className="pt-12 sm:pt-20 bg-raw-black relative z-10">
-      <div className="border-t border-raw-border/20 bg-raw-black px-4 py-10 sm:px-6 sm:py-16">
+    <section className="pt-16 sm:pt-20 bg-raw-black relative z-10">
+      <div className="border-t border-raw-border/20 bg-raw-black px-4 py-8 sm:px-6 sm:py-12 md:py-16">
         <div className="mx-auto max-w-6xl">
           {/* Main Footer Grid */}
-          <div className="mb-10 grid grid-cols-2 gap-6 sm:mb-12 sm:grid-cols-4 sm:gap-8 md:grid-cols-5">
+          <div className="grid grid-cols-2 gap-6 sm:grid-cols-4 sm:gap-8 md:grid-cols-5 mb-8 sm:mb-12">
             {/* Product */}
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.1em] text-raw-gold/75">Product</p>

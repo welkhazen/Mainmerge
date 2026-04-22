@@ -181,7 +181,7 @@ export function DashboardDailySpin({ userId, isAdmin = false }: DashboardDailySp
       )}
 
       <div
-        className={`rounded-2xl border p-4 sm:rounded-[2rem] sm:p-8 ${
+        className={`rounded-2xl border p-4 sm:rounded-[2rem] sm:p-6 md:p-8 ${
           mode === "light"
             ? "border-raw-border/70 bg-[radial-gradient(circle_at_50%_10%,rgba(241,196,45,0.2),rgba(224,231,242,0.96)_58%)]"
             : "border-raw-border/35 bg-[radial-gradient(circle_at_50%_10%,rgba(241,196,45,0.08),rgba(0,0,0,0.8)_48%)]"

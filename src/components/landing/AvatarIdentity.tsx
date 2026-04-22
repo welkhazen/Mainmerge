@@ -21,12 +21,12 @@ export function AvatarIdentity({ avatarLevel, onLevelChange }: AvatarIdentityPro
     <section
       ref={sectionRef as React.RefObject<HTMLElement>}
       id="avatar"
-      className="relative bg-black/60 px-4 py-16 sm:px-6 sm:py-24 lg:py-28"
+      className="relative px-4 py-14 sm:px-6 sm:py-20 md:py-28 bg-black/60"
     >
       <div className="mx-auto w-full max-w-5xl">
         {/* Heading */}
         <div className="mb-8 text-center sm:mb-12">
-          <h2 className="font-display text-2xl tracking-wide text-raw-text sm:text-3xl md:text-4xl">
+          <h2 className="font-display text-3xl tracking-wide text-raw-text sm:text-4xl">
             Your avatar is your identity.
           </h2>
           <p className="mx-auto mt-3 max-w-xl text-sm text-raw-silver/50 sm:mt-4 sm:text-base">
@@ -48,11 +48,11 @@ export function AvatarIdentity({ avatarLevel, onLevelChange }: AvatarIdentityPro
 
         {/* Avatar progression row */}
         <div className="mt-10 sm:mt-14">
-          <p className="mb-5 text-center font-display text-[10px] uppercase tracking-[0.3em] text-raw-silver/50 sm:mb-6 sm:text-xs">
+          <p className="mb-6 text-center font-display text-xs uppercase tracking-[0.3em] text-raw-silver/50">
             Avatar Progression
           </p>
 
-          <div className="mx-auto grid max-w-md grid-cols-5 gap-x-2 gap-y-5 sm:max-w-none sm:gap-x-6 sm:gap-y-6">
+          <div className="grid grid-cols-5 gap-x-2 gap-y-4 sm:gap-x-4 sm:gap-y-6 md:gap-x-6">
             {LEVEL_THEMES.map((t, i) => {
               const level = i + 1;
               const isActive = level === displayLevel;

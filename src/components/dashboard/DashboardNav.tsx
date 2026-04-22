@@ -3,16 +3,13 @@ import { track } from "@/lib/analytics";
 import {
   Bell,
   Check,
-  CircleDollarSign,
-  FileText,
   LogOut,
   Moon,
   Palette,
+  Receipt,
   Settings,
   Shield,
   Sun,
-  Trophy,
-  User,
 } from "lucide-react";
 import { AvatarFigure } from "@/components/ui/avatar-figure";
 import { cn } from "@/lib/utils";
@@ -104,7 +101,7 @@ export function DashboardNav({ username, avatarLevel, showAdminLink = false, onP
               sideOffset={10}
               collisionPadding={12}
               className={cn(
-                "w-[calc(100vw-1.5rem)] max-w-[320px] rounded-2xl p-2 text-raw-text sm:w-[285px]",
+                "w-[285px] max-w-[calc(100vw-1rem)] rounded-2xl p-2 text-raw-text",
                 isEffectiveLight
                   ? "border border-slate-300/80 bg-[linear-gradient(160deg,rgba(255,255,255,0.97),rgba(242,247,255,0.96))] shadow-[0_20px_50px_rgba(28,38,58,0.18)]"
                   : "border border-raw-border/40 bg-[linear-gradient(160deg,rgba(17,17,17,0.96),rgba(9,9,9,0.98))] shadow-[0_20px_50px_rgba(0,0,0,0.55)]",
@@ -126,21 +123,9 @@ export function DashboardNav({ username, avatarLevel, showAdminLink = false, onP
                 </div>
               </button>
 
-              <DropdownMenuItem onClick={onProfileClick} className={cn("rounded-lg px-3 py-2.5 text-sm focus:text-raw-text", isEffectiveLight ? "text-slate-700 focus:bg-slate-100" : "text-raw-silver/80 focus:bg-raw-surface/80")}>
-                <User className="mr-3 h-4 w-4" />
-                Edit Avatar
-              </DropdownMenuItem>
               <DropdownMenuItem className={cn("rounded-lg px-3 py-2.5 text-sm focus:text-raw-text", isEffectiveLight ? "text-slate-700 focus:bg-slate-100" : "text-raw-silver/80 focus:bg-raw-surface/80")}>
-                <FileText className="mr-3 h-4 w-4" />
-                Drafts
-              </DropdownMenuItem>
-              <DropdownMenuItem className={cn("rounded-lg px-3 py-2.5 text-sm focus:text-raw-text", isEffectiveLight ? "text-slate-700 focus:bg-slate-100" : "text-raw-silver/80 focus:bg-raw-surface/80")}>
-                <Trophy className="mr-3 h-4 w-4" />
-                Achievements
-              </DropdownMenuItem>
-              <DropdownMenuItem className={cn("rounded-lg px-3 py-2.5 text-sm focus:text-raw-text", isEffectiveLight ? "text-slate-700 focus:bg-slate-100" : "text-raw-silver/80 focus:bg-raw-surface/80")}>
-                <CircleDollarSign className="mr-3 h-4 w-4" />
-                Earn
+                <Receipt className="mr-3 h-4 w-4" />
+                Billing
               </DropdownMenuItem>
 
               <DropdownMenuSeparator className={cn("my-2", isEffectiveLight ? "bg-slate-200" : "bg-raw-border/30")} />
@@ -157,12 +142,12 @@ export function DashboardNav({ username, avatarLevel, showAdminLink = false, onP
               <DropdownMenuSub>
                 <DropdownMenuSubTrigger className={cn("rounded-lg px-3 py-2.5 text-sm focus:text-raw-text data-[state=open]:text-raw-text", isEffectiveLight ? "text-slate-700 focus:bg-slate-100 data-[state=open]:bg-slate-100" : "text-raw-silver/80 focus:bg-raw-surface/80 data-[state=open]:bg-raw-surface/80")}>
                   <Settings className="mr-3 h-4 w-4" />
-                  Display Mode
+                  Appearance
                 </DropdownMenuSubTrigger>
                 <DropdownMenuSubContent
                   collisionPadding={12}
                   className={cn(
-                    "w-[calc(100vw-1.5rem)] max-w-[320px] rounded-2xl p-3 text-raw-text sm:w-[300px]",
+                    "w-[300px] max-w-[calc(100vw-1rem)] rounded-2xl p-3 text-raw-text",
                     isEffectiveLight
                       ? "border border-slate-300/80 bg-[linear-gradient(160deg,rgba(255,255,255,0.98),rgba(245,249,255,0.98))] shadow-[0_20px_50px_rgba(28,38,58,0.2)]"
                       : "border border-raw-border/35 bg-[linear-gradient(160deg,rgba(16,16,16,0.98),rgba(8,8,8,0.98))] shadow-[0_20px_50px_rgba(0,0,0,0.55)]",
