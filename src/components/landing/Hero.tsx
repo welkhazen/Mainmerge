@@ -58,7 +58,7 @@ export function Hero({ onSignupClick, showDottedSurface = true }: HeroProps) {
       className="hero-landing relative flex min-h-screen items-center overflow-hidden px-4 pb-10 pt-20 sm:px-6 sm:pb-16 sm:pt-24 md:pt-28 bg-black/40"
     >
       <div className="absolute inset-0 z-0 overflow-hidden">
-        {showDottedSurface ? <DottedSurface className="absolute inset-0 z-[3]" /> : null}
+        <DottedSurface className="absolute inset-0 z-0" />
         <div className="hero-landing-overlay absolute inset-0 z-[1] bg-gradient-to-b from-black/20 via-black/20 to-black/40" />
         <Suspense fallback={null}>
           <BoxesLazy className="opacity-30" />
