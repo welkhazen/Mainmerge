@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import lntCoverVideo from "@/assets/2026-04-18 10_10_00.MP4";
 import { AlertTriangle, ArrowLeft, Bell, BellOff, Heart, ImagePlus, Plus, Search, Send, Users, X } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -86,16 +85,14 @@ const INITIAL_COMMUNITY_SETTINGS_DRAFT: CommunitySettingsDraft = {
   logoUrl: "",
 };
 
-const FEATURED_DIRECTORY_COMMUNITY_IDS = ["lnt", "sic", "mw"] as const;
+const FEATURED_DIRECTORY_COMMUNITY_IDS = ["lnt", "syt", "mw"] as const;
 
 const COMMUNITY_COVER_IMAGES: Record<string, string> = {
-  sic: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=1200&q=80",
-  mw: "https://images.unsplash.com/photo-1493836512294-502baa1986e2?auto=format&fit=crop&w=1200&q=80",
+  lnt: "/late-night-talks.jpg",
+  syt: "/speak-your-truth.jpg",
+  mw: "/assets/mental-health-image.png",
 };
 
-const COMMUNITY_COVER_VIDEOS: Record<string, string> = {
-  lnt: lntCoverVideo,
-};
 
 export function DashboardCommunities({
   user,
@@ -485,21 +482,18 @@ export function DashboardCommunities({
             const joined = community.members.some((member) => member.userId === user.id);
             const communityUnreadCount = joined ? countUnreadMessages(community, user.id) : 0;
             const coverImage = COMMUNITY_COVER_IMAGES[community.id] ?? community.logoUrl;
-            const coverVideo = COMMUNITY_COVER_VIDEOS[community.id];
             const isExpanded = expandedDescs.has(community.id);
             const descLong = community.description.length > 120;
 
             return (
               <div key={community.id} className="flex flex-col overflow-hidden rounded-3xl border border-raw-border/30 bg-raw-surface/35 shadow-[0_16px_36px_rgba(0,0,0,0.28)]">
                 <div className="relative h-44 shrink-0 overflow-hidden border-b border-raw-border/25">
-                  {coverVideo ? (
-                    <video src={coverVideo} className="h-full w-full object-cover" autoPlay loop muted playsInline />
-                  ) : coverImage ? (
+                  {coverImage ? (
                     <img src={coverImage} alt={`${community.title} cover`} className="h-full w-full object-cover" loading="lazy" />
                   ) : (
                     <div className="h-full w-full bg-gradient-to-br from-raw-gold/12 via-raw-surface/30 to-raw-black/70" />
                   )}
-                  {!coverVideo && <div className="absolute inset-0 bg-gradient-to-t from-raw-black/85 via-raw-black/30 to-transparent" />}
+                  <div className="absolute inset-0 bg-gradient-to-t from-raw-black/85 via-raw-black/30 to-transparent" />
                   <div className="absolute bottom-3 right-3 rounded-full border border-raw-border/40 bg-raw-black/60 px-2.5 py-1 text-[10px] text-raw-silver/70 backdrop-blur-sm">
                     {joined ? "Joined" : "Not joined"}
                   </div>
@@ -650,7 +644,7 @@ export function DashboardCommunities({
           )}
 
           <div ref={messagesContainerRef} className="h-[calc(100vh-320px)] min-h-[200px] space-y-3 overflow-y-auto rounded-2xl border border-raw-border/20 bg-raw-black/35 p-3 sm:p-4">
-            <div className="flex items-center gap-3 rounded-2xl border border-raw-border/20 bg-raw-black/35 px-4 py-3">
+            <div className="flex items-center gap-3 rounded-t-2xl border border-raw-border/40 bg-white/10 backdrop-blur-md px-4 py-3">
               <Search className="h-4 w-4 text-raw-silver/35" />
               <input
                 value={searchQuery}
@@ -746,29 +740,29 @@ export function DashboardCommunities({
                 Chat posting is disabled for this account. An admin has marked it as banned after review.
               </div>
             )}
-            <label className="mb-1.5 block text-[11px] uppercase tracking-[0.16em] text-raw-silver/35">
-              {`Say something real in ${selectedCommunity.title}`}
-            </label>
-            <div className="flex gap-3">
-              <input
-                value={messageDraft}
-                onChange={(event) => setMessageDraft(event.target.value)}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter") {
-                    handleSendMessage();
-                  }
-                }}
-                placeholder="Type your message..."
-                disabled={isUserBanned}
-                className="flex-1 rounded-xl border border-raw-border/30 bg-raw-surface/30 px-4 py-3 text-sm text-raw-text placeholder:text-raw-silver/25 focus:border-raw-gold/25 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
-              />
-              <button
-                onClick={handleSendMessage}
-                disabled={isUserBanned}
-                className="flex items-center gap-2 rounded-xl bg-raw-gold px-4 py-3 text-sm font-semibold text-raw-ink disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                <Send className="h-4 w-4" /> Send
-              </button>
+            <div className="w-full flex rounded-b-2xl border-x border-b border-raw-border/40 bg-white/10 backdrop-blur-md shadow-lg" style={{marginTop: '-1px'}}>
+              <div className="flex w-full rounded-2xl border border-raw-border/60 bg-white/10 backdrop-blur-md shadow-lg">
+                <input
+                  value={messageDraft}
+                  onChange={(event) => setMessageDraft(event.target.value)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") {
+                      handleSendMessage();
+                    }
+                  }}
+                  placeholder="Type your message..."
+                  disabled={isUserBanned}
+                  className="flex-1 px-4 py-3 text-sm text-raw-text placeholder:text-raw-silver/25 bg-transparent focus:outline-none disabled:cursor-not-allowed disabled:opacity-60 rounded-l-2xl border-none"
+                />
+                <button
+                  onClick={handleSendMessage}
+                  disabled={isUserBanned}
+                  className="flex items-center gap-2 bg-raw-gold px-6 py-3 text-sm font-semibold text-raw-ink disabled:cursor-not-allowed disabled:opacity-60 rounded-r-2xl border-none"
+                  style={{ marginLeft: 0 }}
+                >
+                  <Send className="h-4 w-4" /> Send
+                </button>
+              </div>
             </div>
             <p className="mt-3 text-[11px] text-raw-silver/35">Messages in this community: {activeMessages.length}</p>
           </div>
