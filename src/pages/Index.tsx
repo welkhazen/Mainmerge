@@ -11,6 +11,7 @@ import { WhyAnonymity } from "@/components/landing/WhyAnonymity";
 import { LandingFooter } from "@/components/landing/LandingFooter";
 import { OnboardingJourney } from "@/components/onboarding/OnboardingJourney";
 import PerforatedBackground from "@/components/ui/perforated-background";
+import MatrixBackgroundIntro from "@/components/ui/matrix-background-intro";
 import { useHostMode } from "@/hooks/use-host-mode";
 import Dashboard from "@/pages/Dashboard";
 import { useRawStore } from "@/store/useRawStore";
