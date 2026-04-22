@@ -3,16 +3,13 @@ import { track } from "@/lib/analytics";
 import {
   Bell,
   Check,
-  CircleDollarSign,
-  FileText,
   LogOut,
   Moon,
   Palette,
+  Receipt,
   Settings,
   Shield,
   Sun,
-  Trophy,
-  User,
 } from "lucide-react";
 import { AvatarFigure } from "@/components/ui/avatar-figure";
 import { cn } from "@/lib/utils";
@@ -121,21 +118,9 @@ export function DashboardNav({ username, avatarLevel, showAdminLink = false, onP
                 </div>
               </button>
 
-              <DropdownMenuItem onClick={onProfileClick} className={cn("rounded-lg px-3 py-2.5 text-sm focus:text-raw-text", isEffectiveLight ? "text-slate-700 focus:bg-slate-100" : "text-raw-silver/80 focus:bg-raw-surface/80")}>
-                <User className="mr-3 h-4 w-4" />
-                Edit Avatar
-              </DropdownMenuItem>
               <DropdownMenuItem className={cn("rounded-lg px-3 py-2.5 text-sm focus:text-raw-text", isEffectiveLight ? "text-slate-700 focus:bg-slate-100" : "text-raw-silver/80 focus:bg-raw-surface/80")}>
-                <FileText className="mr-3 h-4 w-4" />
-                Drafts
-              </DropdownMenuItem>
-              <DropdownMenuItem className={cn("rounded-lg px-3 py-2.5 text-sm focus:text-raw-text", isEffectiveLight ? "text-slate-700 focus:bg-slate-100" : "text-raw-silver/80 focus:bg-raw-surface/80")}>
-                <Trophy className="mr-3 h-4 w-4" />
-                Achievements
-              </DropdownMenuItem>
-              <DropdownMenuItem className={cn("rounded-lg px-3 py-2.5 text-sm focus:text-raw-text", isEffectiveLight ? "text-slate-700 focus:bg-slate-100" : "text-raw-silver/80 focus:bg-raw-surface/80")}>
-                <CircleDollarSign className="mr-3 h-4 w-4" />
-                Earn
+                <Receipt className="mr-3 h-4 w-4" />
+                Billing
               </DropdownMenuItem>
 
               <DropdownMenuSeparator className={cn("my-2", isEffectiveLight ? "bg-slate-200" : "bg-raw-border/30")} />
@@ -152,7 +137,7 @@ export function DashboardNav({ username, avatarLevel, showAdminLink = false, onP
               <DropdownMenuSub>
                 <DropdownMenuSubTrigger className={cn("rounded-lg px-3 py-2.5 text-sm focus:text-raw-text data-[state=open]:text-raw-text", isEffectiveLight ? "text-slate-700 focus:bg-slate-100 data-[state=open]:bg-slate-100" : "text-raw-silver/80 focus:bg-raw-surface/80 data-[state=open]:bg-raw-surface/80")}>
                   <Settings className="mr-3 h-4 w-4" />
-                  Display Mode
+                  Appearance
                 </DropdownMenuSubTrigger>
                 <DropdownMenuSubContent
                   className={cn(
