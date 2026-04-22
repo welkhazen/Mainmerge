@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { AlertTriangle, ArrowLeft, Bell, BellOff, Heart, ImagePlus, Plus, Search, Send, Users, X } from "lucide-react";
+import lntCoverVideo from "@/assets/2026-04-18 10_10_00.MP4";
+import { AlertTriangle, ArrowLeft, Bell, BellOff, Clock3, Heart, ImagePlus, MessageCircle, Plus, Reply, Search, Send, Trash2, Users, X } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -85,14 +86,16 @@ const INITIAL_COMMUNITY_SETTINGS_DRAFT: CommunitySettingsDraft = {
   logoUrl: "",
 };
 
-const FEATURED_DIRECTORY_COMMUNITY_IDS = ["lnt", "syt", "mw"] as const;
+const FEATURED_DIRECTORY_COMMUNITY_IDS = ["lnt", "sic", "mw"] as const;
 
 const COMMUNITY_COVER_IMAGES: Record<string, string> = {
-  lnt: "/late-night-talks.jpg",
-  syt: "/speak-your-truth.jpg",
-  mw: "/assets/mental-health-image.png",
+  sic: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=1200&q=80",
+  mw: "https://images.unsplash.com/photo-1493836512294-502baa1986e2?auto=format&fit=crop&w=1200&q=80",
 };
 
+const COMMUNITY_COVER_VIDEOS: Record<string, string> = {
+  lnt: lntCoverVideo,
+};
 
 export function DashboardCommunities({
   user,
@@ -482,18 +485,21 @@ export function DashboardCommunities({
             const joined = community.members.some((member) => member.userId === user.id);
             const communityUnreadCount = joined ? countUnreadMessages(community, user.id) : 0;
             const coverImage = COMMUNITY_COVER_IMAGES[community.id] ?? community.logoUrl;
+            const coverVideo = COMMUNITY_COVER_VIDEOS[community.id];
             const isExpanded = expandedDescs.has(community.id);
             const descLong = community.description.length > 120;
 
             return (
               <div key={community.id} className="flex flex-col overflow-hidden rounded-3xl border border-raw-border/30 bg-raw-surface/35 shadow-[0_16px_36px_rgba(0,0,0,0.28)]">
                 <div className="relative h-44 shrink-0 overflow-hidden border-b border-raw-border/25">
-                  {coverImage ? (
+                  {coverVideo ? (
+                    <video src={coverVideo} className="h-full w-full object-cover" autoPlay loop muted playsInline />
+                  ) : coverImage ? (
                     <img src={coverImage} alt={`${community.title} cover`} className="h-full w-full object-cover" loading="lazy" />
                   ) : (
                     <div className="h-full w-full bg-gradient-to-br from-raw-gold/12 via-raw-surface/30 to-raw-black/70" />
                   )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-raw-black/85 via-raw-black/30 to-transparent" />
+                  {!coverVideo && <div className="absolute inset-0 bg-gradient-to-t from-raw-black/85 via-raw-black/30 to-transparent" />}
                   <div className="absolute bottom-3 right-3 rounded-full border border-raw-border/40 bg-raw-black/60 px-2.5 py-1 text-[10px] text-raw-silver/70 backdrop-blur-sm">
                     {joined ? "Joined" : "Not joined"}
                   </div>
@@ -565,20 +571,23 @@ export function DashboardCommunities({
       }
 
       return (
-        <div className="space-y-3">
-          <div className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-raw-border/30 bg-raw-surface/25 p-3">
-            <div className="flex min-w-0 flex-1 items-center gap-3">
+        <div className="space-y-6">
+          <div className="flex flex-wrap items-start justify-between gap-3 rounded-2xl border border-raw-border/30 bg-raw-surface/25 p-4 sm:rounded-3xl sm:gap-4 sm:p-5">
+            <div className="flex min-w-0 flex-1 items-start gap-3 sm:gap-4">
               <button
                 onClick={() => onBackToCommunities?.()}
-                className="shrink-0 rounded-full border border-raw-border/30 p-2 text-raw-silver/55 transition-colors hover:border-raw-gold/20 hover:text-raw-gold"
+                className="mt-1 shrink-0 rounded-full border border-raw-border/30 p-2 text-raw-silver/55 transition-colors hover:border-raw-gold/20 hover:text-raw-gold"
               >
                 <ArrowLeft className="h-4 w-4" />
               </button>
               <CommunityBadge abbr={selectedCommunity.abbr} title={selectedCommunity.title} logoUrl={selectedCommunity.logoUrl} />
               <div className="min-w-0">
-                <h1 className="font-display text-lg tracking-wide text-raw-text">{selectedCommunity.title}</h1>
-                <p className="mt-0.5 text-[11px] text-raw-silver/35">
-                  {selectedCommunity.members.length} members
+                <h1 className="font-display text-xl tracking-wide text-raw-text sm:text-2xl">{selectedCommunity.title}</h1>
+                <p className="mt-2 text-sm text-raw-silver/45">{selectedCommunity.description}</p>
+                <p className="mt-2 text-xs text-raw-silver/35">Topic prompt: {selectedCommunity.topic}</p>
+                <p className="mt-2 text-xs text-raw-silver/35">
+                  Members: {selectedCommunity.members.length} · {visibleMembers.map((member) => `@${member.username}`).join(", ")}
+                  {selectedCommunity.members.length > visibleMembers.length ? ` +${selectedCommunity.members.length - visibleMembers.length} more` : ""}
                 </p>
               </div>
             </div>
@@ -643,8 +652,8 @@ export function DashboardCommunities({
             </div>
           )}
 
-          <div ref={messagesContainerRef} className="h-[calc(100vh-320px)] min-h-[200px] space-y-3 overflow-y-auto rounded-2xl border border-raw-border/20 bg-raw-black/35 p-3 sm:p-4">
-            <div className="flex items-center gap-3 rounded-t-2xl border border-raw-border/40 bg-white/10 backdrop-blur-md px-4 py-3">
+          <div ref={messagesContainerRef} className="max-h-[50vh] min-h-[200px] space-y-3 overflow-y-auto rounded-2xl border border-raw-border/20 bg-raw-black/35 p-3 sm:max-h-[560px] sm:p-4">
+            <div className="flex items-center gap-3 rounded-2xl border border-raw-border/20 bg-raw-black/35 px-4 py-3">
               <Search className="h-4 w-4 text-raw-silver/35" />
               <input
                 value={searchQuery}
@@ -736,7 +745,16 @@ export function DashboardCommunities({
             )}
           </div>
 
-          <div className="rounded-2xl border border-raw-border/20 bg-raw-black/40 p-3">
+          <div className="flex flex-wrap items-center gap-3 text-[11px] text-raw-silver/35">
+            <span className="flex items-center gap-1">
+              <Clock3 className="h-3.5 w-3.5" /> Latest activity: {latestMessage ? formatChatTimestamp(latestMessage.createdAt) : "No activity yet"}
+            </span>
+            <span className="flex items-center gap-1">
+              <MessageCircle className="h-3.5 w-3.5" /> Dedicated community chat page
+            </span>
+          </div>
+
+          <div className="rounded-2xl border border-raw-border/20 bg-raw-black/40 p-4">
             {isUserBanned && (
               <div className="mb-4 rounded-xl border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm text-red-100">
                 Chat posting is disabled for this account. An admin has marked it as banned after review.

@@ -45,7 +45,7 @@ export function ContainerTextFlip({
     return () => clearInterval(intervalId);
   }, [words, interval]);
   return (
-    <motion.div
+    <motion.p
       layout
       layoutId={`words-here-${id}`}
       animate={{ width }}
@@ -88,6 +88,6 @@ export function ContainerTextFlip({
           ))}
         </motion.div>
       </motion.div>
-    </motion.div>
+    </motion.p>
   );
 }
