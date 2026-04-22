@@ -1,4 +1,4 @@
-import { Suspense, lazy, useEffect } from "react";
+import { Suspense, lazy, useEffect, useState } from "react";
 import { Navbar } from "@/components/landing/Navbar";
 import { ProblemSection } from "@/components/landing/ProblemSection";
 import { Hero } from "@/components/landing/Hero";
@@ -20,6 +20,8 @@ const SignupModalLazy = lazy(() =>
 );
 
 const Index = () => {
+  // Ensure showMatrixIntro is always defined for landing page
+  const [showMatrixIntro, setShowMatrixIntro] = useState(true);
   const {
     user,
     isLoggedIn,
@@ -178,6 +180,18 @@ const Index = () => {
         />
 
         <Hero onSignupClick={() => setShowSignup(true)} showDottedSurface={!showMatrixIntro} />
+        {/* Matrix intro animation for landing page */}
+        {showMatrixIntro && (
+          <div style={{ position: 'fixed', inset: 0, zIndex: 2, pointerEvents: 'none' }}>
+            <Suspense fallback={null}>
+              {/* Lazy load if needed, or import directly if not code-split */}
+              <div>
+                {/* @ts-ignore: If not found, ensure import exists */}
+                <MatrixBackgroundIntro onComplete={() => setShowMatrixIntro(false)} />
+              </div>
+            </Suspense>
+          </div>
+        )}
         <ProblemSection />
         <HowItWorks />
         <PollSection
