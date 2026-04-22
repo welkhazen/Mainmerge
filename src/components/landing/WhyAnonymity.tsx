@@ -26,7 +26,7 @@ const testimonials = [
   {
     quote: "The anonymity actually makes the community stronger. People show up as who they really are.",
     name: "midnight_sage",
-    title: "LVL 5 · Self-Improvement Circle",
+    title: "LVL 5 · Speak Your Turth",
   },
   {
     quote: "Finally a place where I don't have to perform. I just exist and connect.",
@@ -41,7 +41,7 @@ const testimonials = [
   {
     quote: "The polls are addictive. Seeing how others think without the social pressure is powerful.",
     name: "raw_thinker",
-    title: "LVL 6 · Self-Improvement Circle",
+    title: "LVL 6 · Speak Your Turth",
   },
 ];
 

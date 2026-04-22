@@ -1,5 +1,4 @@
 import { lazy, Suspense, useMemo } from "react";
-import lntCoverVideo from "@/assets/2026-04-18 10_10_00.MP4";
 import { GlareCard } from "@/components/ui/glare-card";
 import {
   Target,
@@ -13,15 +12,13 @@ import type { DashboardTab } from "./DashboardNav";
 import { readCommunityChats } from "@/lib/communityChat";
 
 const COMMUNITY_COVER_IMAGES: Record<string, string> = {
-  sic: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=1200&q=80",
-  mw: "https://images.unsplash.com/photo-1493836512294-502baa1986e2?auto=format&fit=crop&w=1200&q=80",
+  lnt: "/late-night-talks.jpg",
+  syt: "/speak-your-truth.jpg",
+  mw: "/assets/mental-health-image.png",
 };
 
-const COMMUNITY_COVER_VIDEOS: Record<string, string> = {
-  lnt: lntCoverVideo,
-};
 
-const PREVIEW_IDS = ["lnt", "sic", "mw", "sg"];
+const PREVIEW_IDS = ["lnt", "syt", "mw"];
 
 const ContainerTextFlipLazy = lazy(() =>
   import("@/components/ui/container-text-flip").then((module) => ({ default: module.ContainerTextFlip }))
@@ -120,23 +117,20 @@ export function DashboardHome({
         </div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {previewCommunities.map((community) => {
-            const coverVideo = COMMUNITY_COVER_VIDEOS[community.id];
             const coverImage = COMMUNITY_COVER_IMAGES[community.id] ?? community.logoUrl;
             const isActive = community.status === "active";
             return (
               <GlareCard key={community.id}>
                 <div className="flex flex-col rounded-2xl border border-raw-border/40 bg-raw-surface/40 h-full overflow-hidden">
                   <div className="relative h-32 shrink-0 overflow-hidden">
-                    {coverVideo ? (
-                      <video src={coverVideo} className="h-full w-full object-cover" autoPlay loop muted playsInline />
-                    ) : coverImage ? (
+                    {coverImage ? (
                       <img src={coverImage} alt={`${community.title} cover`} className="h-full w-full object-cover" loading="lazy" />
                     ) : (
                       <div className="h-full w-full bg-gradient-to-br from-raw-gold/10 to-raw-surface flex items-center justify-center">
                         <span className="font-display text-3xl text-raw-gold/20">{community.abbr}</span>
                       </div>
                     )}
-                    {!coverVideo && <div className="absolute inset-0 bg-gradient-to-t from-raw-black/70 via-raw-black/20 to-transparent" />}
+                    <div className="absolute inset-0 bg-gradient-to-t from-raw-black/70 via-raw-black/20 to-transparent" />
                   </div>
                   <div className="p-4">
                     <div className="mb-2 inline-block rounded-full border px-2.5 py-0.5 border-raw-gold/20 bg-raw-gold/5">
