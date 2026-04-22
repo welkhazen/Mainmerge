@@ -55,7 +55,7 @@ export function DashboardPolls({
   const isLightMode = mode === "light";
   const answersStorageKey = `raw.poll-history.answers.${userId}`;
   const commentsStorageKey = `raw.poll-history.comments.${userId}`;
-  const swipeGuideStorageKey = `raw.polls.swipe-guide-seen.${userId}`;
+  const swipeGuideStorageKey = "raw.polls.swipe-guide-seen";
   const [answerHistory, setAnswerHistory] = useState<Record<string, string>>({});
   const [historyComments, setHistoryComments] = useState<Record<string, PollHistoryComment[]>>({});
   const [commentDraft, setCommentDraft] = useState("");
@@ -118,8 +118,8 @@ export function DashboardPolls({
   const selectedOptionId = currentPoll ? answerHistory[currentPoll.id] : undefined;
   const hasVotedCurrent = Boolean(currentPoll && answerHistory[currentPoll.id]);
   const currentComments = currentPoll ? historyComments[currentPoll.id] ?? [] : [];
-  const yesOption = currentPoll?.options.find((option) => option.text.trim().toLowerCase() === "yes");
-  const noOption = currentPoll?.options.find((option) => option.text.trim().toLowerCase() === "no");
+  const leftOption = currentPoll?.options[0];
+  const rightOption = currentPoll?.options[1] ?? currentPoll?.options[0];
   const showSwipeGuide =
     currentPollIndex === 0 && !hasVotedCurrent && !hasSeenSwipeGuide;
 
@@ -219,14 +219,14 @@ export function DashboardPolls({
     }
 
     if (direction === "right") {
-      const selected = yesOption ?? currentPoll.options[0];
+      const selected = currentPoll.options[1] ?? currentPoll.options[0];
       if (selected) {
         handleVote(currentPoll.id, selected.id);
       }
       return;
     }
 
-    const selected = noOption ?? currentPoll.options[1] ?? currentPoll.options[0];
+    const selected = currentPoll.options[0];
     if (selected) {
       handleVote(currentPoll.id, selected.id);
     }
@@ -370,10 +370,10 @@ export function DashboardPolls({
   }
 
   const pollTotalVotes = currentPoll.options.reduce((sum, option) => sum + option.votes, 0);
-  const noPercent = noOption && pollTotalVotes > 0 ? Math.round((noOption.votes / pollTotalVotes) * 100) : 50;
-  const yesPercent = yesOption && pollTotalVotes > 0 ? Math.round((yesOption.votes / pollTotalVotes) * 100) : 50;
-  const selectedYes = yesOption ? selectedOptionId === yesOption.id : false;
-  const selectedNo = noOption ? selectedOptionId === noOption.id : false;
+  const leftPercent = leftOption && pollTotalVotes > 0 ? Math.round((leftOption.votes / pollTotalVotes) * 100) : 50;
+  const rightPercent = rightOption && pollTotalVotes > 0 ? Math.round((rightOption.votes / pollTotalVotes) * 100) : 50;
+  const selectedLeft = leftOption ? selectedOptionId === leftOption.id : false;
+  const selectedRight = rightOption ? selectedOptionId === rightOption.id : false;
   const showMorePollsPaywall = dailyPollLimit > 0 && dailyAnsweredCount >= dailyPollLimit;
 
   return (
@@ -510,7 +510,7 @@ export function DashboardPolls({
                     </button>
                   </div>
                   <p className={`mt-2 text-sm ${isLightMode ? "text-slate-800" : "text-raw-silver/85"}`}>
-                    Swipe to vote. Right means <span className={isLightMode ? "text-emerald-600 font-semibold" : "text-emerald-300 font-semibold"}>Yes</span>, left means <span className={isLightMode ? "text-rose-600 font-semibold" : "text-rose-300 font-semibold"}>No</span>.
+                    Swipe to vote. Right means <span className={isLightMode ? "text-emerald-600 font-semibold" : "text-emerald-300 font-semibold"}>{rightOption?.text ?? "Right"}</span>, left means <span className={isLightMode ? "text-rose-600 font-semibold" : "text-rose-300 font-semibold"}>{leftOption?.text ?? "Left"}</span>.
                   </p>
                 </div>
               </>
@@ -522,8 +522,8 @@ export function DashboardPolls({
               }`}
               aria-hidden={hasVotedCurrent}
             >
-              <span className={`transition ${swipeOffsetX < -20 ? "text-rose-300" : "text-raw-silver/35"}`}>No</span>
-              <span className={`transition ${swipeOffsetX > 20 ? "text-emerald-300" : "text-raw-silver/35"}`}>Yes</span>
+              <span className={`transition ${swipeOffsetX < -20 ? "text-rose-300" : "text-raw-silver/35"}`}>{leftOption?.text}</span>
+              <span className={`transition ${swipeOffsetX > 20 ? "text-emerald-300" : "text-raw-silver/35"}`}>{rightOption?.text}</span>
             </div>
 
             <h2 className="text-center font-display text-2xl leading-tight text-raw-text sm:text-[2rem]">
@@ -539,10 +539,10 @@ export function DashboardPolls({
               >
                 <span className="flex items-center gap-1.5 text-rose-200/85">
                   <ArrowLeft className="h-3.5 w-3.5" />
-                  Swipe left = No
+                  Swipe left = {leftOption?.text}
                 </span>
                 <span className="flex items-center gap-1.5 text-emerald-200/85">
-                  Swipe right = Yes
+                  Swipe right = {rightOption?.text}
                   <ArrowRight className="h-3.5 w-3.5" />
                 </span>
               </div>
@@ -550,44 +550,38 @@ export function DashboardPolls({
               <div className="grid grid-cols-2 gap-3">
                 <button
                   onClick={() => {
-                    const selected = noOption ?? currentPoll.options[0];
-                    if (selected) {
-                      handleVote(currentPoll.id, selected.id);
-                    }
+                    if (leftOption) handleVote(currentPoll.id, leftOption.id);
                   }}
                   disabled={hasVotedCurrent}
                   className={`relative rounded-2xl border px-4 py-3 text-left text-base font-medium transition disabled:cursor-not-allowed ${
-                    selectedNo
+                    selectedLeft
                       ? "border-raw-gold/65 bg-raw-gold/50 text-black shadow-[0_0_18px_rgba(255,204,77,0.35)]"
                       : "border-raw-gold/30 bg-raw-gold/18 text-raw-text hover:bg-raw-gold/28"
                   } ${hasVotedCurrent ? "opacity-100" : "disabled:opacity-55"}`}
                 >
-                  <span>No</span>
+                  <span>{leftOption?.text}</span>
                   {hasVotedCurrent ? (
-                    <span className={`absolute right-4 top-1/2 -translate-y-1/2 text-sm font-semibold ${selectedNo ? "text-black" : "text-raw-text"}`}>
-                      {noPercent}%
+                    <span className={`absolute right-4 top-1/2 -translate-y-1/2 text-sm font-semibold ${selectedLeft ? "text-black" : "text-raw-text"}`}>
+                      {leftPercent}%
                     </span>
                   ) : null}
                 </button>
 
                 <button
                   onClick={() => {
-                    const selected = yesOption ?? currentPoll.options[1] ?? currentPoll.options[0];
-                    if (selected) {
-                      handleVote(currentPoll.id, selected.id);
-                    }
+                    if (rightOption) handleVote(currentPoll.id, rightOption.id);
                   }}
                   disabled={hasVotedCurrent}
                   className={`relative rounded-2xl border px-4 py-3 text-right text-base font-medium transition disabled:cursor-not-allowed ${
-                    selectedYes
+                    selectedRight
                       ? "border-raw-gold/65 bg-raw-gold/50 text-black shadow-[0_0_18px_rgba(255,204,77,0.35)]"
                       : "border-raw-gold/30 bg-raw-gold/18 text-raw-text hover:bg-raw-gold/28"
                   } ${hasVotedCurrent ? "opacity-100" : "disabled:opacity-55"}`}
                 >
-                  <span>Yes</span>
+                  <span>{rightOption?.text}</span>
                   {hasVotedCurrent ? (
-                    <span className={`absolute left-4 top-1/2 -translate-y-1/2 text-sm font-semibold ${selectedYes ? "text-black" : "text-raw-text"}`}>
-                      {yesPercent}%
+                    <span className={`absolute left-4 top-1/2 -translate-y-1/2 text-sm font-semibold ${selectedRight ? "text-black" : "text-raw-text"}`}>
+                      {rightPercent}%
                     </span>
                   ) : null}
                 </button>

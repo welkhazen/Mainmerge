@@ -220,14 +220,25 @@ function IconContainer({
       >
         <AnimatePresence>
           {hovered && (
-            <motion.div
-              initial={{ opacity: 0, y: 10, x: "-50%" }}
-              animate={{ opacity: 1, y: 0, x: "-50%" }}
-              exit={{ opacity: 0, y: 2, x: "-50%" }}
-              className="absolute -top-8 left-1/2 w-fit rounded-md border border-raw-border bg-raw-surface px-2 py-0.5 text-xs whitespace-pre text-raw-text"
-            >
-              {title}
-            </motion.div>
+            axis === "vertical" ? (
+              <motion.div
+                initial={{ opacity: 0, x: -6 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -4 }}
+                className="absolute left-full ml-3 w-fit rounded-md border border-raw-border bg-raw-surface px-2 py-0.5 text-xs whitespace-pre text-raw-text"
+              >
+                {title}
+              </motion.div>
+            ) : (
+              <motion.div
+                initial={{ opacity: 0, y: 10, x: "-50%" }}
+                animate={{ opacity: 1, y: 0, x: "-50%" }}
+                exit={{ opacity: 0, y: 2, x: "-50%" }}
+                className="absolute -top-8 left-1/2 w-fit rounded-md border border-raw-border bg-raw-surface px-2 py-0.5 text-xs whitespace-pre text-raw-text"
+              >
+                {title}
+              </motion.div>
+            )
           )}
         </AnimatePresence>
         <motion.div

@@ -202,6 +202,46 @@ export function writeChatReports(reports: ChatReportRecord[]): void {
   writeJsonArray(CHAT_REPORTS_STORAGE_KEY, reports);
 }
 
+const ADMIN_POLLS_STORAGE_KEY = "raw.admin.polls.v1";
+
+export interface AdminPollRecord {
+  id: string;
+  question: string;
+  options: { id: string; text: string; votes: number }[];
+  locked: boolean;
+  createdAt: string;
+}
+
+export function readAdminPolls(): AdminPollRecord[] {
+  try {
+    const raw = localStorage.getItem(ADMIN_POLLS_STORAGE_KEY);
+    return raw ? (JSON.parse(raw) as AdminPollRecord[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function writeAdminPolls(polls: AdminPollRecord[]): void {
+  localStorage.setItem(ADMIN_POLLS_STORAGE_KEY, JSON.stringify(polls));
+}
+
+export function createAdminPoll(question: string, optionTexts: string[]): AdminPollRecord {
+  const id = `admin-poll-${Date.now()}`;
+  const poll: AdminPollRecord = {
+    id,
+    question: question.trim(),
+    options: optionTexts.map((text, i) => ({ id: `${id}-opt-${i}`, text: text.trim(), votes: 0 })),
+    locked: false,
+    createdAt: new Date().toISOString(),
+  };
+  writeAdminPolls([poll, ...readAdminPolls()]);
+  return poll;
+}
+
+export function deleteAdminPoll(pollId: string): void {
+  writeAdminPolls(readAdminPolls().filter((p) => p.id !== pollId));
+}
+
 export function formatAdminTimestamp(value: string): string {
   return new Intl.DateTimeFormat("en", {
     month: "short",

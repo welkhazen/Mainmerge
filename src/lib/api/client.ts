@@ -20,8 +20,14 @@ function getMockResponse(input: string): unknown {
       },
     };
   }
-  if (input.includes("/api/polls")) {
-    return { polls: [], votedPolls: [] };
+  if (input.includes("/api/polls") || input.includes("/api/v2/polls")) {
+    try {
+      const raw = localStorage.getItem("raw.admin.polls.v1");
+      const polls = raw ? (JSON.parse(raw) as unknown[]) : [];
+      return { polls, votedPolls: [] };
+    } catch {
+      return { polls: [], votedPolls: [] };
+    }
   }
   if (input.includes("/api/assistant")) {
     return { message: "" };

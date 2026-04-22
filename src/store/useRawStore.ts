@@ -11,7 +11,7 @@ export function useRawStore() {
   const auth = useAuth();
   const polls = usePolls(auth.isLoggedIn);
   const rewards = useRewards();
-  const onboarding = useOnboarding(auth.isLoggedIn);
+  const onboarding = useOnboarding(auth.isLoggedIn, auth.user?.username);
   const communities = useCommunities();
 
   return useMemo(() => ({

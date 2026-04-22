@@ -17,7 +17,9 @@ export function useAuth() {
   const meQuery = useQuery({
     queryKey: ["auth", "me"],
     retry: false,
-    enabled: typeof window !== "undefined" ? localStorage.getItem("force-logout") !== "true" : true,
+    enabled: typeof window !== "undefined"
+      ? window.location.hostname !== "localhost" && localStorage.getItem("force-logout") !== "true"
+      : true,
     queryFn: async (): Promise<User | null> => {
       try {
         const response = await apiRequest<{ user: ApiUser }>("/api/users/me");
@@ -46,7 +48,7 @@ export function useAuth() {
     const mockUser: User = {
       id: "test-user-" + Date.now(),
       username,
-      role: "member",
+      role: username === "admin" ? "admin" : "member",
       moderationStatus: "active",
       warnings: 0,
     };

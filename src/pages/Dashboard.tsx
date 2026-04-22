@@ -9,6 +9,7 @@ import { DashboardCommunities } from "@/components/dashboard/DashboardCommunitie
 import { DashboardChallenges } from "@/components/dashboard/DashboardChallenges";
 import { DashboardDailySpin } from "@/components/dashboard/DashboardDailySpin";
 import { DashboardProfile } from "@/components/dashboard/DashboardProfile";
+import { DashboardWallet } from "@/components/dashboard/DashboardWallet";
 import type { User, Poll } from "@/store/useRawStore";
 
 interface DashboardProps {
@@ -134,6 +135,8 @@ export default function Dashboard({
       case "challenges":
         return (
           <DashboardChallenges
+            userId={user.id}
+            isAdmin={user.role === "admin"}
             avatarLevel={avatarLevel}
             pollsAnswered={votedPolls.size}
             dailyAnsweredCount={dailyAnsweredCount}
@@ -142,6 +145,8 @@ export default function Dashboard({
         );
       case "daily-spin":
         return <DashboardDailySpin userId={user.id} isAdmin={user.role === "admin"} />;
+      case "wallet":
+        return <DashboardWallet />;
       case "profile":
         return (
           <DashboardProfile

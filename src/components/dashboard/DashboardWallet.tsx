@@ -1,0 +1,141 @@
+import { useState } from "react";
+import { CheckCircle2, Coins, Sparkles, Zap } from "lucide-react";
+
+const PACKAGES = [
+  {
+    id: "tokens-100",
+    tokens: 100,
+    price: 10,
+    label: "Starter",
+    highlight: false,
+    accent: "from-sky-500/20 via-blue-500/10 to-transparent",
+    icon: Coins,
+    perToken: "10¢ / token",
+  },
+  {
+    id: "tokens-200",
+    tokens: 200,
+    price: 20,
+    label: "Popular",
+    highlight: false,
+    accent: "from-violet-500/20 via-fuchsia-500/10 to-transparent",
+    icon: Zap,
+    perToken: "10¢ / token",
+  },
+  {
+    id: "tokens-500",
+    tokens: 500,
+    price: 40,
+    label: "Best Value",
+    highlight: true,
+    accent: "from-raw-gold/25 via-amber-500/10 to-transparent",
+    icon: Sparkles,
+    perToken: "8¢ / token",
+  },
+  {
+    id: "tokens-1000",
+    tokens: 1000,
+    price: 80,
+    label: "Power User",
+    highlight: false,
+    accent: "from-emerald-500/20 via-teal-500/10 to-transparent",
+    icon: CheckCircle2,
+    perToken: "8¢ / token",
+  },
+] as const;
+
+export function DashboardWallet() {
+  const [balance] = useState(0);
+  const [selected, setSelected] = useState<string | null>(null);
+
+  return (
+    <div className="space-y-8">
+      <header className="space-y-1">
+        <h1 className="font-display text-2xl tracking-wide text-raw-text">Wallet</h1>
+        <p className="text-sm text-raw-silver/45">
+          Purchase tokens to unlock features, boost rewards, and access premium content.
+        </p>
+      </header>
+
+      {/* Balance */}
+      <section className="relative overflow-hidden rounded-2xl border border-raw-gold/25 bg-raw-black/50 p-5">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_10%_-20%,rgba(241,196,45,0.18),transparent_55%)]" />
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <p className="text-xs uppercase tracking-[0.22em] text-raw-gold/60">Current Balance</p>
+            <p className="mt-1 font-display text-4xl tracking-wide text-raw-text">{balance}</p>
+            <p className="mt-1 text-xs text-raw-silver/40">tokens</p>
+          </div>
+          <Coins className="h-10 w-10 text-raw-gold/20" />
+        </div>
+      </section>
+
+      {/* Packages */}
+      <section>
+        <p className="mb-4 text-xs uppercase tracking-[0.2em] text-raw-silver/40">Choose a package</p>
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          {PACKAGES.map((pkg) => {
+            const Icon = pkg.icon;
+            const isSelected = selected === pkg.id;
+            return (
+              <button
+                key={pkg.id}
+                onClick={() => setSelected(pkg.id)}
+                className={`group relative overflow-hidden rounded-2xl border p-5 text-left transition-all ${
+                  isSelected
+                    ? "border-raw-gold/60 shadow-[0_0_24px_rgba(241,196,45,0.2)]"
+                    : pkg.highlight
+                      ? "border-raw-gold/35 hover:border-raw-gold/55"
+                      : "border-raw-border/40 hover:border-raw-border/70"
+                }`}
+              >
+                <div className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${pkg.accent}`} />
+                <div className="pointer-events-none absolute inset-0 opacity-20 [background-image:radial-gradient(rgba(255,255,255,0.12)_0.6px,transparent_0.6px)] [background-size:8px_8px]" />
+
+                {pkg.highlight && (
+                  <div className="relative mb-3 inline-block rounded-full border border-raw-gold/35 bg-raw-gold/15 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-raw-gold">
+                    {pkg.label}
+                  </div>
+                )}
+                {!pkg.highlight && (
+                  <div className="relative mb-3 inline-block rounded-full border border-raw-border/35 bg-raw-surface/30 px-2.5 py-0.5 text-[10px] uppercase tracking-wider text-raw-silver/50">
+                    {pkg.label}
+                  </div>
+                )}
+
+                <div className="relative flex items-center gap-2">
+                  <Icon className="h-4 w-4 text-raw-gold/60" />
+                  <span className="font-display text-2xl text-raw-text">{pkg.tokens.toLocaleString()}</span>
+                  <span className="text-sm text-raw-silver/50">tokens</span>
+                </div>
+
+                <div className="relative mt-3 flex items-end justify-between">
+                  <div>
+                    <p className="font-display text-xl text-raw-text">${pkg.price}</p>
+                    <p className="text-[11px] text-raw-silver/40">{pkg.perToken}</p>
+                  </div>
+                  {isSelected && (
+                    <CheckCircle2 className="h-5 w-5 text-raw-gold" />
+                  )}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* Buy button */}
+      <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
+        <button
+          disabled={!selected}
+          className="rounded-xl bg-raw-gold px-8 py-3 text-sm font-semibold text-raw-ink transition hover:bg-raw-gold/90 disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          {selected
+            ? `Buy ${PACKAGES.find((p) => p.id === selected)?.tokens.toLocaleString()} tokens — $${PACKAGES.find((p) => p.id === selected)?.price}`
+            : "Select a package to continue"}
+        </button>
+        <p className="text-xs text-raw-silver/35">Payments powered by Stripe. Tokens never expire.</p>
+      </div>
+    </div>
+  );
+}
