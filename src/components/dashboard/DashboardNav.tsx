@@ -65,17 +65,21 @@ export function DashboardNav({ username, avatarLevel, showAdminLink = false, onP
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 border-b border-raw-border/50 bg-raw-black/90 backdrop-blur-xl">
-      <div className="flex h-14 items-center justify-between px-6">
+      <div className="flex h-14 items-center justify-between px-4 sm:px-6">
         {/* Logo */}
-        <a href="/" className="font-display text-lg tracking-[0.3em] text-raw-text shrink-0">
+        <a href="/" className="font-display text-base tracking-[0.3em] text-raw-text shrink-0 sm:text-lg">
           ra<span className="text-raw-gold">W</span>
         </a>
 
         {/* Right: bell + avatar */}
-        <div className="flex items-center gap-3 shrink-0">
-          <button className="relative text-raw-silver/40 hover:text-raw-silver/70 transition-colors">
-            <Bell className="h-[18px] w-[18px]" />
-            <div className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-raw-gold" />
+        <div className="flex shrink-0 items-center gap-1.5 sm:gap-3">
+          <button
+            type="button"
+            className="relative flex h-10 w-10 items-center justify-center rounded-full text-raw-silver/60 transition-colors hover:bg-raw-surface/40 hover:text-raw-silver"
+            aria-label="Notifications"
+          >
+            <Bell className="h-5 w-5" />
+            <div className="absolute right-2.5 top-2.5 h-2 w-2 rounded-full bg-raw-gold" />
           </button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -95,6 +99,7 @@ export function DashboardNav({ username, avatarLevel, showAdminLink = false, onP
             <DropdownMenuContent
               align="end"
               sideOffset={10}
+              collisionPadding={12}
               className={cn(
                 "w-[285px] max-w-[calc(100vw-1rem)] rounded-2xl p-2 text-raw-text",
                 isEffectiveLight
@@ -140,6 +145,7 @@ export function DashboardNav({ username, avatarLevel, showAdminLink = false, onP
                   Appearance
                 </DropdownMenuSubTrigger>
                 <DropdownMenuSubContent
+                  collisionPadding={12}
                   className={cn(
                     "w-[300px] max-w-[calc(100vw-1rem)] rounded-2xl p-3 text-raw-text",
                     isEffectiveLight
@@ -157,12 +163,14 @@ export function DashboardNav({ username, avatarLevel, showAdminLink = false, onP
                       <button
                         onMouseEnter={() => setHoveredMode("dark")}
                         onMouseLeave={() => setHoveredMode(null)}
+                        onFocus={() => setHoveredMode("dark")}
+                        onBlur={() => setHoveredMode(null)}
                         onClick={() => {
                           setMode("dark");
                           setHoveredMode(null);
                         }}
                         className={cn(
-                          "flex-1 rounded-md px-2 py-1.5 text-xs font-medium transition-colors",
+                          "flex min-h-[36px] flex-1 items-center justify-center rounded-md px-2 py-2 text-xs font-medium transition-colors",
                           !isEffectiveLight
                             ? "bg-raw-gold/15 text-raw-gold"
                             : "text-slate-500 hover:text-slate-900",
@@ -176,12 +184,14 @@ export function DashboardNav({ username, avatarLevel, showAdminLink = false, onP
                       <button
                         onMouseEnter={() => setHoveredMode("light")}
                         onMouseLeave={() => setHoveredMode(null)}
+                        onFocus={() => setHoveredMode("light")}
+                        onBlur={() => setHoveredMode(null)}
                         onClick={() => {
                           setMode("light");
                           setHoveredMode(null);
                         }}
                         className={cn(
-                          "flex-1 rounded-md px-2 py-1.5 text-xs font-medium transition-colors",
+                          "flex min-h-[36px] flex-1 items-center justify-center rounded-md px-2 py-2 text-xs font-medium transition-colors",
                           isEffectiveLight
                             ? "bg-raw-gold/15 text-raw-gold"
                             : "text-raw-silver/60 hover:text-raw-text",
@@ -205,12 +215,14 @@ export function DashboardNav({ username, avatarLevel, showAdminLink = false, onP
                               key={preset.id}
                               onMouseEnter={() => setHoveredAccent(preset.id)}
                               onMouseLeave={() => setHoveredAccent(null)}
+                              onFocus={() => setHoveredAccent(preset.id)}
+                              onBlur={() => setHoveredAccent(null)}
                               onClick={() => {
                                 setAccent(preset.id);
                                 setHoveredAccent(null);
                               }}
                               className={cn(
-                                "relative h-9 rounded-lg border transition-all",
+                                "relative h-10 rounded-lg border transition-all",
                                 selected
                                   ? "border-raw-text shadow-[0_0_0_1px_rgb(var(--raw-text)/0.3)]"
                                   : "border-raw-border/35 hover:border-raw-silver/35",

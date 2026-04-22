@@ -51,14 +51,14 @@ export function WhyAnonymity() {
   return (
     <section ref={sectionRef as React.RefObject<HTMLElement>} className="relative py-14 px-4 sm:py-20 sm:px-6 md:py-28 bg-black/60">
       <div className="w-full">
-        <h2 className="mb-12 text-center font-display text-2xl tracking-wide text-raw-text sm:text-3xl">
+        <h2 className="mb-8 text-center font-display text-xl tracking-wide text-raw-text sm:mb-12 sm:text-2xl md:text-3xl">
           No real names. Better honesty. Better matching.
         </h2>
 
-        <div className="grid gap-6 md:grid-cols-3">
+        <div className="grid gap-4 sm:gap-6 md:grid-cols-3">
           {cards.map((card, i) => (
             <GlareCard key={card.title}>
-              <div className="rounded-2xl border border-raw-border/40 bg-raw-surface/30 p-7 text-center">
+              <div className="rounded-2xl border border-raw-border/40 bg-raw-surface/30 p-5 text-center sm:p-7">
                 <h3
                   className="inline-block font-display text-sm tracking-wide text-raw-gold animate-heartbeat will-change-transform"
                   style={{ animationDelay: `${i * 0.18}s` }}
@@ -72,8 +72,8 @@ export function WhyAnonymity() {
         </div>
 
         {/* Testimonials marquee */}
-        <div className="mt-16">
-          <p className="mb-6 text-center font-display text-[10px] tracking-[0.3em] uppercase text-raw-silver/40">
+        <div className="mt-12 sm:mt-16">
+          <p className="mb-5 text-center font-display text-[10px] tracking-[0.3em] uppercase text-raw-silver/40 sm:mb-6">
             From the community
           </p>
           <InfiniteMovingCards

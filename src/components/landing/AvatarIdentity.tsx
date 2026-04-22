@@ -29,7 +29,7 @@ export function AvatarIdentity({ avatarLevel, onLevelChange }: AvatarIdentityPro
           <h2 className="font-display text-3xl tracking-wide text-raw-text sm:text-4xl">
             Your avatar is your identity.
           </h2>
-          <p className="mx-auto mt-4 max-w-xl text-base text-raw-silver/50">
+          <p className="mx-auto mt-3 max-w-xl text-sm text-raw-silver/50 sm:mt-4 sm:text-base">
             Hover or tap any rank to preview it live on your phone — your avatar becomes your app icon.
           </p>
         </div>

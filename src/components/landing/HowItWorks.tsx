@@ -38,10 +38,10 @@ export function HowItWorks() {
       className="relative px-4 py-14 sm:px-6 sm:py-20 md:py-28 bg-black/40"
     >
       <div className="w-full">
-        <h2 className="mb-4 text-center font-display text-2xl tracking-wide text-raw-text sm:text-3xl">
+        <h2 className="mb-3 text-center font-display text-xl tracking-wide text-raw-text sm:mb-4 sm:text-2xl md:text-3xl">
           How it works
         </h2>
-        <p className="mx-auto mb-14 max-w-2xl text-center text-sm leading-relaxed text-raw-silver/40">
+        <p className="mx-auto mb-10 max-w-2xl text-center text-sm leading-relaxed text-raw-silver/40 sm:mb-14">
           raW learns through honest participation. This shell now walks people in the same order
           the real product will.
         </p>

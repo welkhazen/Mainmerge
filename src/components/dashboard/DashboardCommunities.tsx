@@ -433,11 +433,11 @@ export function DashboardCommunities({
     };
 
     const renderDirectoryView = () => (
-      <div className="space-y-8">
+      <div className="space-y-6 sm:space-y-8">
         <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-          <div>
-            <h1 className="font-display text-2xl tracking-wide text-raw-text">Communities</h1>
-            <p className="mt-2 text-sm text-raw-silver/40">
+          <div className="min-w-0">
+            <h1 className="font-display text-xl tracking-wide text-raw-text sm:text-2xl">Communities</h1>
+            <p className="mt-2 text-xs text-raw-silver/40 sm:text-sm">
               Join any room from here to start chatting with like minded peers. Don't see a community that fits? Request a new one and we'll review it for you.
             </p>
             {(warningCount > 0 || isUserBanned) && (
@@ -454,7 +454,7 @@ export function DashboardCommunities({
 
           <Button
             onClick={() => setRequestFormOpen(true)}
-            className="h-11 rounded-xl bg-raw-gold px-4 text-sm font-semibold text-raw-ink hover:bg-raw-gold/90"
+            className="h-11 w-full shrink-0 rounded-xl bg-raw-gold px-4 text-sm font-semibold text-raw-ink hover:bg-raw-gold/90 md:w-auto"
           >
             <Plus className="h-4 w-4" /> Request a Community
           </Button>
@@ -477,7 +477,7 @@ export function DashboardCommunities({
           </div>
         )}
 
-        <div className="grid gap-5 lg:grid-cols-2 xl:grid-cols-3 items-stretch">
+        <div className="grid grid-cols-1 items-stretch gap-4 sm:gap-5 lg:grid-cols-2 xl:grid-cols-3">
           {directoryCommunities.map((community) => {
             const joined = community.members.some((member) => member.userId === user.id);
             const communityUnreadCount = joined ? countUnreadMessages(community, user.id) : 0;
@@ -700,12 +700,14 @@ export function DashboardCommunities({
                           <div className="mt-2 flex justify-end">
                             <button
                               onClick={() => {
+                                if (alreadyLiked) return;
                                 likeCommunityMessage(selectedCommunity.id, message.id, user.id);
                                 reloadChatData();
                               }}
+                              disabled={alreadyLiked}
                               className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] transition-colors ${
                                 alreadyLiked
-                                  ? "border-raw-gold/45 bg-raw-gold/10 text-raw-gold"
+                                  ? "border-raw-gold/45 bg-raw-gold/10 text-raw-gold cursor-default"
                                   : "border-raw-border/20 text-raw-silver/50 hover:border-raw-gold/30 hover:text-raw-gold/70"
                               }`}
                             >
@@ -740,29 +742,29 @@ export function DashboardCommunities({
                 Chat posting is disabled for this account. An admin has marked it as banned after review.
               </div>
             )}
-            <div className="w-full flex rounded-b-2xl border-x border-b border-raw-border/40 bg-white/10 backdrop-blur-md shadow-lg" style={{marginTop: '-1px'}}>
-              <div className="flex w-full rounded-2xl border border-raw-border/60 bg-white/10 backdrop-blur-md shadow-lg">
-                <input
-                  value={messageDraft}
-                  onChange={(event) => setMessageDraft(event.target.value)}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter") {
-                      handleSendMessage();
-                    }
-                  }}
-                  placeholder="Type your message..."
-                  disabled={isUserBanned}
-                  className="flex-1 px-4 py-3 text-sm text-raw-text placeholder:text-raw-silver/25 bg-transparent focus:outline-none disabled:cursor-not-allowed disabled:opacity-60 rounded-l-2xl border-none"
-                />
-                <button
-                  onClick={handleSendMessage}
-                  disabled={isUserBanned}
-                  className="flex items-center gap-2 bg-raw-gold px-6 py-3 text-sm font-semibold text-raw-ink disabled:cursor-not-allowed disabled:opacity-60 rounded-r-2xl border-none"
-                  style={{ marginLeft: 0 }}
-                >
-                  <Send className="h-4 w-4" /> Send
-                </button>
-              </div>
+            <label className="mb-2 block text-[11px] uppercase tracking-[0.16em] text-raw-silver/35">
+              {`Say something real in ${selectedCommunity.title}`}
+            </label>
+            <div className="flex gap-3">
+              <input
+                value={messageDraft}
+                onChange={(event) => setMessageDraft(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    handleSendMessage();
+                  }
+                }}
+                placeholder="Type your message..."
+                disabled={isUserBanned}
+                className="flex-1 rounded-xl border border-raw-border/30 bg-raw-surface/30 px-4 py-3 text-sm text-raw-text placeholder:text-raw-silver/25 focus:border-raw-gold/25 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+              />
+              <button
+                onClick={handleSendMessage}
+                disabled={isUserBanned}
+                className="flex items-center gap-2 rounded-xl bg-raw-gold px-4 py-3 text-sm font-semibold text-raw-ink disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                <Send className="h-4 w-4" /> Send
+              </button>
             </div>
             <p className="mt-3 text-[11px] text-raw-silver/35">Messages in this community: {activeMessages.length}</p>
           </div>

@@ -150,13 +150,13 @@ export function DashboardDailySpin({ userId, isAdmin = false }: DashboardDailySp
   const forcedPrizeId = isAdmin && adminSelectedRewardId !== "random" ? adminSelectedRewardId : null;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       <div className="text-center">
-        <p className="mb-3 font-display text-[10px] uppercase tracking-[0.3em] text-raw-gold/50">
+        <p className="mb-2 font-display text-[10px] uppercase tracking-[0.28em] text-raw-gold/50 sm:mb-3 sm:tracking-[0.3em]">
           Daily Reward
         </p>
-        <h1 className="font-display text-2xl tracking-wide text-raw-text sm:text-3xl">Wheel of Fortune</h1>
-        <p className="mx-auto mt-3 max-w-md text-sm text-raw-silver/40">
+        <h1 className="font-display text-xl tracking-wide text-raw-text sm:text-2xl md:text-3xl">Wheel of Fortune</h1>
+        <p className="mx-auto mt-2 max-w-md text-xs text-raw-silver/40 sm:mt-3 sm:text-sm">
           Spin once daily for a chance to earn XP, avatar themes, streak shields, and more.
         </p>
       </div>

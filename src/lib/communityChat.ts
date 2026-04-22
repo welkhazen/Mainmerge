@@ -307,10 +307,8 @@ export function likeCommunityMessage(communityId: string, messageId: string, use
       messages: community.messages.map((message) => {
         if (message.id !== messageId || message.deletedAt) return message;
         const likedBy = message.likedBy ?? [];
-        const nextLikedBy = likedBy.includes(userId)
-          ? likedBy.filter((id) => id !== userId)
-          : [...likedBy, userId];
-        return { ...message, likedBy: nextLikedBy };
+        if (likedBy.includes(userId)) return message;
+        return { ...message, likedBy: [...likedBy, userId] };
       }),
     };
   });
