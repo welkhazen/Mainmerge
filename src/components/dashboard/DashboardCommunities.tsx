@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import lntCoverVideo from "@/assets/2026-04-18 10_10_00.MP4";
-import { AlertTriangle, ArrowLeft, Bell, BellOff, Clock3, Heart, ImagePlus, MessageCircle, Plus, Reply, Search, Send, Trash2, Users, X } from "lucide-react";
+import { AlertTriangle, ArrowLeft, Bell, BellOff, Heart, ImagePlus, Plus, Search, Send, Users, X } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -571,23 +571,20 @@ export function DashboardCommunities({
       }
 
       return (
-        <div className="space-y-6">
-          <div className="flex flex-wrap items-start justify-between gap-3 rounded-2xl border border-raw-border/30 bg-raw-surface/25 p-4 sm:rounded-3xl sm:gap-4 sm:p-5">
-            <div className="flex min-w-0 flex-1 items-start gap-3 sm:gap-4">
+        <div className="space-y-3">
+          <div className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-raw-border/30 bg-raw-surface/25 p-3">
+            <div className="flex min-w-0 flex-1 items-center gap-3">
               <button
                 onClick={() => onBackToCommunities?.()}
-                className="mt-1 shrink-0 rounded-full border border-raw-border/30 p-2 text-raw-silver/55 transition-colors hover:border-raw-gold/20 hover:text-raw-gold"
+                className="shrink-0 rounded-full border border-raw-border/30 p-2 text-raw-silver/55 transition-colors hover:border-raw-gold/20 hover:text-raw-gold"
               >
                 <ArrowLeft className="h-4 w-4" />
               </button>
               <CommunityBadge abbr={selectedCommunity.abbr} title={selectedCommunity.title} logoUrl={selectedCommunity.logoUrl} />
               <div className="min-w-0">
-                <h1 className="font-display text-xl tracking-wide text-raw-text sm:text-2xl">{selectedCommunity.title}</h1>
-                <p className="mt-2 text-sm text-raw-silver/45">{selectedCommunity.description}</p>
-                <p className="mt-2 text-xs text-raw-silver/35">Topic prompt: {selectedCommunity.topic}</p>
-                <p className="mt-2 text-xs text-raw-silver/35">
-                  Members: {selectedCommunity.members.length} · {visibleMembers.map((member) => `@${member.username}`).join(", ")}
-                  {selectedCommunity.members.length > visibleMembers.length ? ` +${selectedCommunity.members.length - visibleMembers.length} more` : ""}
+                <h1 className="font-display text-lg tracking-wide text-raw-text">{selectedCommunity.title}</h1>
+                <p className="mt-0.5 text-[11px] text-raw-silver/35">
+                  {selectedCommunity.members.length} members
                 </p>
               </div>
             </div>
@@ -652,7 +649,7 @@ export function DashboardCommunities({
             </div>
           )}
 
-          <div ref={messagesContainerRef} className="max-h-[50vh] min-h-[200px] space-y-3 overflow-y-auto rounded-2xl border border-raw-border/20 bg-raw-black/35 p-3 sm:max-h-[560px] sm:p-4">
+          <div ref={messagesContainerRef} className="h-[calc(100vh-320px)] min-h-[200px] space-y-3 overflow-y-auto rounded-2xl border border-raw-border/20 bg-raw-black/35 p-3 sm:p-4">
             <div className="flex items-center gap-3 rounded-2xl border border-raw-border/20 bg-raw-black/35 px-4 py-3">
               <Search className="h-4 w-4 text-raw-silver/35" />
               <input
@@ -709,14 +706,12 @@ export function DashboardCommunities({
                           <div className="mt-2 flex justify-end">
                             <button
                               onClick={() => {
-                                if (alreadyLiked) return;
                                 likeCommunityMessage(selectedCommunity.id, message.id, user.id);
                                 reloadChatData();
                               }}
-                              disabled={alreadyLiked}
                               className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] transition-colors ${
                                 alreadyLiked
-                                  ? "border-raw-gold/45 bg-raw-gold/10 text-raw-gold cursor-default"
+                                  ? "border-raw-gold/45 bg-raw-gold/10 text-raw-gold"
                                   : "border-raw-border/20 text-raw-silver/50 hover:border-raw-gold/30 hover:text-raw-gold/70"
                               }`}
                             >
@@ -745,22 +740,13 @@ export function DashboardCommunities({
             )}
           </div>
 
-          <div className="flex flex-wrap items-center gap-3 text-[11px] text-raw-silver/35">
-            <span className="flex items-center gap-1">
-              <Clock3 className="h-3.5 w-3.5" /> Latest activity: {latestMessage ? formatChatTimestamp(latestMessage.createdAt) : "No activity yet"}
-            </span>
-            <span className="flex items-center gap-1">
-              <MessageCircle className="h-3.5 w-3.5" /> Dedicated community chat page
-            </span>
-          </div>
-
-          <div className="rounded-2xl border border-raw-border/20 bg-raw-black/40 p-4">
+          <div className="rounded-2xl border border-raw-border/20 bg-raw-black/40 p-3">
             {isUserBanned && (
               <div className="mb-4 rounded-xl border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm text-red-100">
                 Chat posting is disabled for this account. An admin has marked it as banned after review.
               </div>
             )}
-            <label className="mb-2 block text-[11px] uppercase tracking-[0.16em] text-raw-silver/35">
+            <label className="mb-1.5 block text-[11px] uppercase tracking-[0.16em] text-raw-silver/35">
               {`Say something real in ${selectedCommunity.title}`}
             </label>
             <div className="flex gap-3">
