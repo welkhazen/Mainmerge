@@ -1,6 +1,4 @@
-import { useRef } from "react";
 import { GlareCard } from "@/components/ui/glare-card";
-import { track } from "@/lib/analytics";
 import { useTrackSectionView } from "@/lib/analytics/useTrackSectionView";
 
 const communities = [
@@ -31,16 +29,6 @@ interface CommunitiesProps {
 
 export function Communities({ onSignupClick }: CommunitiesProps) {
   const sectionRef = useTrackSectionView("communities");
-  const videoPlayFiredRef = useRef(false);
-
-  const handleVideoPlay = () => {
-    if (videoPlayFiredRef.current) return;
-    videoPlayFiredRef.current = true;
-    track("demo_video_played", {
-      video_id: "brain_heart",
-      watched_pct: 0,
-    });
-  };
 
   return (
     <section
@@ -100,20 +88,12 @@ export function Communities({ onSignupClick }: CommunitiesProps) {
                   "radial-gradient(ellipse at center, black 42%, rgba(0,0,0,0.75) 62%, transparent 88%)",
               }}
             >
-              <video
-                src="/0416.webm"
-                autoPlay
-                loop
-                muted
-                playsInline
-                poster="/brain-heart.gif"
-                onPlay={handleVideoPlay}
+              <img
+                src="/brain-heart-gold.png"
+                alt="Golden brain and heart connected by branching neural pathways"
                 className="h-full w-full object-cover"
                 style={{ mixBlendMode: "screen" }}
-              >
-                <source src="/0416.webm" type="video/webm" />
-                <source src="/brain-heart.mp4" type="video/mp4" />
-              </video>
+              />
               {/* Inner vignette so the video blends softly into the background */}
               <div
                 className="pointer-events-none absolute inset-0"
