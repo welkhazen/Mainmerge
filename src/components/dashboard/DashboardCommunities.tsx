@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import lntCoverVideo from "@/assets/2026-04-18 10_10_00.MP4";
-import { AlertTriangle, ArrowLeft, Bell, BellOff, Clock3, Heart, ImagePlus, MessageCircle, Plus, Search, Send, Users, X } from "lucide-react";
+import { AlertTriangle, ArrowLeft, Bell, BellOff, Clock3, Heart, ImagePlus, MessageCircle, Plus, Reply, Search, Send, Trash2, Users, X } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
