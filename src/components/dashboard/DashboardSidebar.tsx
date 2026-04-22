@@ -2,17 +2,16 @@ import { useEffect, useMemo, useState } from "react";
 import {
   Home,
   MessageCircle,
-  Dices,
   Target,
   Trophy,
+  Wallet,
   Settings,
   HelpCircle,
   Flame,
   LogOut,
 } from "lucide-react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AvatarFigure } from "@/components/ui/avatar-figure";
-import { FloatingDock } from "@/components/ui/floating-dock";
 import { CommunityBadge } from "@/components/dashboard/CommunityBadge";
 import { countUnreadMessages, readCommunityChats, type PersistedCommunityRecord } from "@/lib/communityChat";
 import type { DashboardTab } from "./DashboardNav";
@@ -31,10 +30,10 @@ interface DashboardSidebarProps {
 
 const navItems: { icon: typeof Home; label: string; tab: DashboardTab | "home" }[] = [
   { icon: Home, label: "Home", tab: "home" },
+  { icon: MessageCircle, label: "Communities", tab: "communities" },
   { icon: Target, label: "Polls", tab: "polls" },
   { icon: Trophy, label: "Challenges", tab: "challenges" },
-  { icon: Dices, label: "Daily Spin", tab: "daily-spin" },
-  { icon: MessageCircle, label: "Communities", tab: "communities" },
+  { icon: Wallet, label: "Wallet", tab: "wallet" },
 ];
 
 // Avatar colors now come from AvatarFigure component
@@ -107,28 +106,6 @@ export function DashboardSidebar({
     return sorted.filter((community) => community.members.some((member) => member.userId === userId)).slice(0, 4);
   }, [communities, userId]);
 
-  const dockItems = navItems.map((item) => {
-    const isActive =
-      (item.tab === "home" && isHome) ||
-      (item.tab !== "home" && activeTab === item.tab && !isHome);
-    const Icon = item.icon;
-
-    return {
-      title: item.label,
-      href: "#",
-      active: isActive,
-      onClick: () => {
-        if (item.tab === "home") {
-          onHomeClick();
-          return;
-        }
-
-        onTabChange(item.tab as DashboardTab);
-      },
-      icon: <Icon className="h-full w-full" />,
-    };
-  });
-
   useEffect(() => {
     const unread = communities.reduce((sum, community) => {
       const isJoined = community.members.some((member) => member.userId === userId);
@@ -159,12 +136,31 @@ export function DashboardSidebar({
 
       {/* Nav items */}
       <nav className="flex-1 px-3 py-2">
-        <FloatingDock
-          items={dockItems}
-          orientation="vertical"
-          desktopClassName="w-14 gap-3 rounded-3xl bg-transparent border-none px-0 py-1 shadow-none"
-          mobileClassName="hidden"
-        />
+        <div className="flex flex-col gap-1">
+          {navItems.map((item) => {
+            const isActive =
+              (item.tab === "home" && isHome) ||
+              (item.tab !== "home" && activeTab === item.tab && !isHome);
+            const Icon = item.icon;
+            return (
+              <button
+                key={item.tab}
+                onClick={() => {
+                  if (item.tab === "home") { onHomeClick(); return; }
+                  onTabChange(item.tab as DashboardTab);
+                }}
+                className={`flex w-full items-center gap-3 rounded-xl px-3 py-2 text-xs transition-colors ${
+                  isActive
+                    ? "bg-raw-gold/15 text-raw-gold border border-raw-gold/30"
+                    : "text-raw-silver/55 hover:bg-raw-surface/40 hover:text-raw-text border border-transparent"
+                }`}
+              >
+                <Icon className="h-4 w-4 shrink-0" />
+                <span className="truncate">{item.label}</span>
+              </button>
+            );
+          })}
+        </div>
 
         <div className="mt-16 rounded-2xl border border-raw-border/20 bg-raw-surface/20 p-3">
           <div className="flex items-center justify-between gap-2 px-1 pb-2">
@@ -234,13 +230,13 @@ export function DashboardSidebar({
       {/* Bottom */}
       <div className="border-t border-raw-border/20 p-3 space-y-0.5">
         {showAdminLink && (
-          <a
-            href="/admin"
+          <Link
+            to="/admin"
             className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-xs text-raw-gold/75 transition-colors hover:bg-raw-gold/[0.06] hover:text-raw-gold"
           >
             <Settings className="h-3.5 w-3.5" />
             <span>Admin</span>
-          </a>
+          </Link>
         )}
         <button className="w-full flex items-center gap-3 rounded-xl px-3 py-2 text-xs text-raw-silver/35 hover:text-raw-silver/60 transition-colors">
           <Settings className="h-3.5 w-3.5" />

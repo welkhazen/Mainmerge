@@ -28,7 +28,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-export type DashboardTab = "home" | "polls" | "challenges" | "daily-spin" | "communities" | "profile";
+export type DashboardTab = "home" | "polls" | "challenges" | "daily-spin" | "communities" | "profile" | "wallet";
 
 interface DashboardNavProps {
   username: string;
@@ -76,15 +76,6 @@ export function DashboardNav({ username, avatarLevel, showAdminLink = false, onP
 
         {/* Right: bell + avatar */}
         <div className="flex items-center gap-3 shrink-0">
-          {showAdminLink && (
-            <a
-              href="/admin"
-              className="hidden rounded-full border border-raw-gold/25 bg-raw-gold/[0.06] px-3 py-1.5 text-xs font-medium text-raw-gold transition-colors hover:bg-raw-gold/[0.12] md:inline-flex"
-            >
-              Admin
-            </a>
-          )}
-          <span className="hidden text-sm text-raw-silver/60 md:inline">@{username}</span>
           <button className="relative text-raw-silver/40 hover:text-raw-silver/70 transition-colors">
             <Bell className="h-[18px] w-[18px]" />
             <div className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-raw-gold" />
@@ -126,7 +117,7 @@ export function DashboardNav({ username, avatarLevel, showAdminLink = false, onP
                 <AvatarFigure level={avatarLevel} size="sm" selected />
                 <div className="min-w-0">
                   <p className="truncate text-sm font-semibold text-raw-text">View Profile</p>
-                  <p className={cn("truncate text-xs", isEffectiveLight ? "text-slate-600" : "text-raw-silver/50")}>u/{username}</p>
+                  <p className={cn("truncate text-xs", isEffectiveLight ? "text-slate-600" : "text-raw-silver/50")}>@{username}</p>
                 </div>
               </button>
 

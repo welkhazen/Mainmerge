@@ -1,18 +1,22 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
-import { ArrowLeft, Ban, BellRing, CheckCircle2, Flag, Shield, Users, XCircle } from "lucide-react";
+import { ArrowLeft, Ban, BellRing, CheckCircle2, Flag, Plus, Shield, Trash2, Users, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 import { useRawStore } from "@/store/useRawStore";
 import { track } from "@/lib/analytics";
 import {
+  createAdminPoll,
+  deleteAdminPoll,
   formatAdminTimestamp,
+  readAdminPolls,
   readChatReports,
   readCommunityRequests,
   readPersistedUsers,
   updateUserModerationStatus,
   writeChatReports,
   writeCommunityRequests,
+  type AdminPollRecord,
   type ChatReportRecord,
   type CommunityRequestRecord,
   type PersistedUserRecord,
@@ -34,11 +38,15 @@ export default function Admin() {
   const [users, setUsers] = useState<PersistedUserRecord[]>([]);
   const [communityRequests, setCommunityRequests] = useState<CommunityRequestRecord[]>([]);
   const [chatReports, setChatReports] = useState<ChatReportRecord[]>([]);
+  const [adminPolls, setAdminPolls] = useState<AdminPollRecord[]>([]);
+  const [pollQuestion, setPollQuestion] = useState("");
+  const [pollOptions, setPollOptions] = useState(["", ""]);
 
   const refreshAdminData = useCallback(() => {
     setUsers(readPersistedUsers());
     setCommunityRequests(readCommunityRequests());
     setChatReports(readChatReports());
+    setAdminPolls(readAdminPolls());
   }, []);
 
   useEffect(() => {
@@ -157,6 +165,25 @@ export default function Admin() {
       title: action === "dismissed" ? "Report dismissed" : action === "warned" ? "User warned" : "User banned",
       description: `${targetReport.reportedUsername} has been reviewed by admin.`,
     });
+  };
+
+  const handleCreatePoll = () => {
+    const filledOptions = pollOptions.filter((o) => o.trim().length > 0);
+    if (!pollQuestion.trim() || filledOptions.length < 2) {
+      toast({ title: "Fill in the question and at least 2 options." });
+      return;
+    }
+    createAdminPoll(pollQuestion, filledOptions);
+    setAdminPolls(readAdminPolls());
+    setPollQuestion("");
+    setPollOptions(["", ""]);
+    toast({ title: "Poll created", description: "It will appear in the daily poll feed." });
+  };
+
+  const handleDeletePoll = (pollId: string) => {
+    deleteAdminPoll(pollId);
+    setAdminPolls(readAdminPolls());
+    toast({ title: "Poll deleted" });
   };
 
   return (
@@ -294,6 +321,77 @@ export default function Admin() {
               ))
             )}
           </div>
+        </section>
+
+        <section className="rounded-3xl border border-raw-border/30 bg-raw-surface/20 p-6">
+          <div className="flex items-center gap-3">
+            <Plus className="h-5 w-5 text-raw-gold/70" />
+            <div>
+              <h2 className="font-display text-xl tracking-wide">Create poll</h2>
+              <p className="mt-1 text-sm text-raw-silver/45">Add a new poll with its answer options. It will show up in the daily feed.</p>
+            </div>
+          </div>
+
+          <div className="mt-5 space-y-3">
+            <input
+              type="text"
+              placeholder="Poll question"
+              value={pollQuestion}
+              onChange={(e) => setPollQuestion(e.target.value)}
+              className="w-full rounded-xl border border-raw-border/30 bg-raw-black/50 px-4 py-3 text-sm text-raw-text placeholder-raw-silver/30 outline-none focus:border-raw-gold/40"
+            />
+            {pollOptions.map((option, i) => (
+              <div key={i} className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder={i === 0 ? "No" : i === 1 ? "Yes" : `Option ${i + 1}`}
+                  value={option}
+                  onChange={(e) => {
+                    const next = [...pollOptions];
+                    next[i] = e.target.value;
+                    setPollOptions(next);
+                  }}
+                  className="flex-1 rounded-xl border border-raw-border/30 bg-raw-black/50 px-4 py-3 text-sm text-raw-text placeholder-raw-silver/30 outline-none focus:border-raw-gold/40"
+                />
+                {pollOptions.length > 2 && (
+                  <button
+                    onClick={() => setPollOptions(pollOptions.filter((_, j) => j !== i))}
+                    className="rounded-xl border border-raw-border/30 px-3 text-raw-silver/40 hover:text-red-400"
+                  >
+                    <XCircle className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
+            ))}
+            <div className="flex gap-3">
+              <button
+                onClick={() => setPollOptions([...pollOptions, ""])}
+                className="text-xs text-raw-silver/40 hover:text-raw-silver/70"
+              >
+                + Add option
+              </button>
+            </div>
+            <Button onClick={handleCreatePoll} className="rounded-xl bg-raw-gold px-5 text-raw-ink hover:bg-raw-gold/90">
+              <Plus className="h-4 w-4" /> Create poll
+            </Button>
+          </div>
+
+          {adminPolls.length > 0 && (
+            <div className="mt-6 space-y-3">
+              <p className="text-[11px] uppercase tracking-[0.15em] text-raw-silver/35">Existing polls</p>
+              {adminPolls.map((poll) => (
+                <div key={poll.id} className="flex items-start justify-between gap-4 rounded-2xl border border-raw-border/20 bg-raw-black/35 p-4">
+                  <div>
+                    <p className="text-sm text-raw-text">{poll.question}</p>
+                    <p className="mt-1 text-xs text-raw-silver/40">{poll.options.map((o) => o.text).join(" · ")} · {formatAdminTimestamp(poll.createdAt)}</p>
+                  </div>
+                  <button onClick={() => handleDeletePoll(poll.id)} className="shrink-0 text-raw-silver/30 hover:text-red-400">
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </section>
 
         <section className="rounded-3xl border border-raw-border/30 bg-raw-surface/20 p-6">

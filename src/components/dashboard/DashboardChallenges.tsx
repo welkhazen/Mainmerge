@@ -9,8 +9,11 @@ import {
   Trophy,
   UserPlus,
 } from "lucide-react";
+import { DashboardDailySpin } from "@/components/dashboard/DashboardDailySpin";
 
 interface DashboardChallengesProps {
+  userId: string;
+  isAdmin?: boolean;
   avatarLevel: number;
   pollsAnswered: number;
   dailyAnsweredCount: number;
@@ -85,6 +88,8 @@ const challengeDefinitions = [
 ];
 
 export function DashboardChallenges({
+  userId,
+  isAdmin = false,
   avatarLevel,
   pollsAnswered,
   dailyAnsweredCount,
@@ -107,6 +112,8 @@ export function DashboardChallenges({
 
   return (
     <div className="space-y-5">
+      <DashboardDailySpin userId={userId} isAdmin={isAdmin} />
+
       <header className="space-y-2">
         <h1 className="font-display text-2xl tracking-wide text-raw-text">Challenges</h1>
         <p className="text-sm text-raw-silver/45">

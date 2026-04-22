@@ -36,7 +36,7 @@ export function SwipeablePollCard({
   const [updatedComments, setUpdatedComments] = useState<Comment[]>(comments);
   const [hasSeenSwipeGuide, setHasSeenSwipeGuide] = useState(false);
   const pointerStartXRef = useRef<number | null>(null);
-  const guideStorageKey = `raw.onboarding.swipe-guide-seen.${id}`;
+  const guideStorageKey = "raw.onboarding.swipe-guide-seen";
 
   useEffect(() => {
     setUpdatedComments(comments);

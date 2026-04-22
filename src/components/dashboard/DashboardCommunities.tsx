@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import lntCoverVideo from "@/assets/2026-04-18 10_10_00.MP4";
 import { AlertTriangle, ArrowLeft, Bell, BellOff, Clock3, Heart, MessageCircle, Plus, Reply, Search, Send, Trash2, Users, X } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -88,9 +89,12 @@ const INITIAL_COMMUNITY_SETTINGS_DRAFT: CommunitySettingsDraft = {
 const FEATURED_DIRECTORY_COMMUNITY_IDS = ["lnt", "sic", "mw"] as const;
 
 const COMMUNITY_COVER_IMAGES: Record<string, string> = {
-  lnt: "https://images.unsplash.com/photo-1518895949257-7621c3c786d7?auto=format&fit=crop&w=1200&q=80",
   sic: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=1200&q=80",
   mw: "https://images.unsplash.com/photo-1493836512294-502baa1986e2?auto=format&fit=crop&w=1200&q=80",
+};
+
+const COMMUNITY_COVER_VIDEOS: Record<string, string> = {
+  lnt: lntCoverVideo,
 };
 
 export function DashboardCommunities({
@@ -102,6 +106,7 @@ export function DashboardCommunities({
   const [communities, setCommunities] = useState<PersistedCommunityRecord[]>(() => readCommunityChats());
   const [messageDraft, setMessageDraft] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [expandedDescs, setExpandedDescs] = useState<Set<string>>(new Set());
   const [requestFormOpen, setRequestFormOpen] = useState(false);
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
   const [logoDialogOpen, setLogoDialogOpen] = useState(false);
@@ -469,10 +474,7 @@ export function DashboardCommunities({
           <div>
             <h1 className="font-display text-2xl tracking-wide text-raw-text">Communities</h1>
             <p className="mt-2 text-sm text-raw-silver/40">
-              Join any room from here, then the full chat opens on its own page instead of sharing this directory screen.
-            </p>
-            <p className="mt-2 text-sm text-raw-silver/35">
-              Sidebar shortcuts now double as fast join links, and each community can add its own logo.
+              Join any room from here to start chatting with like minded peers. Don't see a community that fits? Request a new one and we'll review it for you.
             </p>
             {(warningCount > 0 || isUserBanned) && (
               <div className={`mt-4 inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs ${
@@ -511,78 +513,83 @@ export function DashboardCommunities({
           </div>
         )}
 
-        <div className="grid gap-5 lg:grid-cols-2 xl:grid-cols-3">
+        <div className="grid gap-5 lg:grid-cols-2 xl:grid-cols-3 items-stretch">
           {directoryCommunities.map((community) => {
             const joined = community.members.some((member) => member.userId === user.id);
-            const previewMessage = community.messages.at(-1);
             const communityUnreadCount = joined ? countUnreadMessages(community, user.id) : 0;
             const coverImage = COMMUNITY_COVER_IMAGES[community.id] ?? community.logoUrl;
+            const coverVideo = COMMUNITY_COVER_VIDEOS[community.id];
+            const isExpanded = expandedDescs.has(community.id);
+            const descLong = community.description.length > 120;
 
             return (
-              <div key={community.id} className="overflow-hidden rounded-3xl border border-raw-border/30 bg-raw-surface/35 shadow-[0_16px_36px_rgba(0,0,0,0.28)]">
-                <div className="relative h-28 overflow-hidden border-b border-raw-border/25">
-                  {coverImage ? (
+              <div key={community.id} className="flex flex-col overflow-hidden rounded-3xl border border-raw-border/30 bg-raw-surface/35 shadow-[0_16px_36px_rgba(0,0,0,0.28)]">
+                <div className="relative h-44 shrink-0 overflow-hidden border-b border-raw-border/25">
+                  {coverVideo ? (
+                    <video src={coverVideo} className="h-full w-full object-cover" autoPlay loop muted playsInline />
+                  ) : coverImage ? (
                     <img src={coverImage} alt={`${community.title} cover`} className="h-full w-full object-cover" loading="lazy" />
                   ) : (
                     <div className="h-full w-full bg-gradient-to-br from-raw-gold/12 via-raw-surface/30 to-raw-black/70" />
                   )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-raw-black/85 via-raw-black/30 to-transparent" />
+                  {!coverVideo && <div className="absolute inset-0 bg-gradient-to-t from-raw-black/85 via-raw-black/30 to-transparent" />}
                   <div className="absolute bottom-3 right-3 rounded-full border border-raw-border/40 bg-raw-black/60 px-2.5 py-1 text-[10px] text-raw-silver/70 backdrop-blur-sm">
                     {joined ? "Joined" : "Not joined"}
                   </div>
                 </div>
 
-                <div className="p-5">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex items-center gap-3">
-                    <CommunityBadge abbr={community.abbr} title={community.title} logoUrl={community.logoUrl} />
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <p className="font-display text-base tracking-wide text-raw-text">{community.title}</p>
-                        {communityUnreadCount > 0 && (
-                          <span className="rounded-full bg-raw-gold px-2 py-0.5 text-[10px] font-semibold text-raw-ink">
-                            {communityUnreadCount}
-                          </span>
-                        )}
+                <div className="flex flex-1 flex-col p-5">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <CommunityBadge abbr={community.abbr} title={community.title} logoUrl={community.logoUrl} />
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <p className="font-display text-base tracking-wide text-raw-text">{community.title}</p>
+                          {communityUnreadCount > 0 && (
+                            <span className="rounded-full bg-raw-gold px-2 py-0.5 text-[10px] font-semibold text-raw-ink">
+                              {communityUnreadCount}
+                            </span>
+                          )}
+                        </div>
+                        <p className="mt-1 text-[10px] uppercase tracking-[0.16em] text-raw-gold/65">{community.status}</p>
                       </div>
-                      <p className="mt-1 text-[10px] uppercase tracking-[0.16em] text-raw-gold/65">{community.status}</p>
                     </div>
                   </div>
-                </div>
 
-                <p className="mt-4 text-sm leading-relaxed text-raw-silver/50">{community.description}</p>
-                <p className="mt-3 text-xs text-raw-silver/35">Topic prompt: {community.topic}</p>
+                  <div className="mt-4">
+                    <p className={`text-sm leading-relaxed text-raw-silver/50 ${!isExpanded && descLong ? "line-clamp-3" : ""}`}>
+                      {community.description}
+                    </p>
+                    {descLong && (
+                      <button
+                        onClick={() => setExpandedDescs((prev) => {
+                          const next = new Set(prev);
+                          isExpanded ? next.delete(community.id) : next.add(community.id);
+                          return next;
+                        })}
+                        className="mt-1 text-xs text-raw-gold/60 hover:text-raw-gold"
+                      >
+                        {isExpanded ? "Show less" : "Show more"}
+                      </button>
+                    )}
+                  </div>
 
-                <div className="mt-4 flex items-center gap-4 text-[11px] text-raw-silver/35">
-                  <span className="flex items-center gap-1">
-                    <Users className="h-3.5 w-3.5" /> {community.members.length} members
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <div className="h-1.5 w-1.5 rounded-full bg-emerald-400/70" /> {countOnlineMembers(community)} online
-                  </span>
-                </div>
-
-                <div className="mt-4 rounded-2xl border border-raw-border/20 bg-raw-black/35 px-4 py-3 text-sm text-raw-silver/45">
-                  {previewMessage ? `${previewMessage.senderName}: ${previewMessage.text}` : "No messages yet."}
-                </div>
-
-                <div className="mt-5 flex flex-wrap gap-3">
-                  <Button
-                    onClick={() => onOpenCommunity(community.id)}
-                    className="rounded-xl bg-raw-gold px-4 text-raw-ink hover:bg-raw-gold/90"
-                  >
-                    Open Chat Page
-                  </Button>
-                  {!joined && (
+                  <div className="mt-auto pt-4 space-y-3">
+                    <div className="flex items-center gap-4 text-[11px] text-raw-silver/35">
+                      <span className="flex items-center gap-1">
+                        <Users className="h-3.5 w-3.5" /> {community.members.length} members
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <div className="h-1.5 w-1.5 rounded-full bg-emerald-400/70" /> {countOnlineMembers(community)} online
+                      </span>
+                    </div>
                     <Button
-                      variant="outline"
-                      onClick={() => handleJoinCommunity(community.id, true)}
-                      className="rounded-xl border-raw-gold/25 bg-transparent text-raw-gold hover:bg-raw-gold/[0.08] hover:text-raw-gold"
+                      onClick={() => onOpenCommunity(community.id)}
+                      className="rounded-xl bg-raw-gold px-4 text-raw-ink hover:bg-raw-gold/90"
                     >
-                      Fast Join
+                      Open Chat Page
                     </Button>
-                  )}
-                </div>
+                  </div>
                 </div>
               </div>
             );
