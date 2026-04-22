@@ -264,14 +264,6 @@ export function DashboardCommunities({
         return;
       }
 
-      if (!isJoined) {
-        toast({
-          title: "Join the group first",
-          description: `Enter ${selectedCommunity.title} before sending messages.`,
-        });
-        return;
-      }
-
       if (isUserBanned) {
         toast({
           title: "Chat access restricted",
@@ -283,6 +275,11 @@ export function DashboardCommunities({
       const trimmedMessage = messageDraft.trim();
       if (!trimmedMessage) {
         return;
+      }
+
+      if (!isJoined) {
+        joinCommunityChat(selectedCommunity.id, { userId: user.id, username: user.username });
+        lastTouchedCommunityRef.current = `${selectedCommunity.id}:${user.id}`;
       }
 
       sendCommunityMessage(selectedCommunity.id, {
@@ -804,13 +801,8 @@ export function DashboardCommunities({
                 Chat posting is disabled for this account. An admin has marked it as banned after review.
               </div>
             )}
-            {!isJoined && (
-              <div className="mb-4 rounded-xl border border-raw-gold/20 bg-raw-gold/[0.07] px-4 py-3 text-sm text-raw-gold/85">
-                Join this community first. Once you are in, you can chat, like messages, and stay synced with the group.
-              </div>
-            )}
             <label className="mb-2 block text-[11px] uppercase tracking-[0.16em] text-raw-silver/35">
-              {isJoined ? `Say something real in ${selectedCommunity.title}` : `Join ${selectedCommunity.title} to start chatting`}
+              {`Say something real in ${selectedCommunity.title}`}
             </label>
             {replyTarget && (
               <div className="mb-3 flex items-start justify-between gap-3 rounded-xl border border-raw-gold/20 bg-raw-gold/[0.06] px-4 py-3 text-sm">
@@ -835,13 +827,13 @@ export function DashboardCommunities({
                     handleSendMessage();
                   }
                 }}
-                placeholder={isJoined ? "Type your message..." : "Join the group to type a message"}
-                disabled={isUserBanned || !isJoined}
+                placeholder="Type your message..."
+                disabled={isUserBanned}
                 className="flex-1 rounded-xl border border-raw-border/30 bg-raw-surface/30 px-4 py-3 text-sm text-raw-text placeholder:text-raw-silver/25 focus:border-raw-gold/25 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
               />
               <button
                 onClick={handleSendMessage}
-                disabled={isUserBanned || !isJoined}
+                disabled={isUserBanned}
                 className="flex items-center gap-2 rounded-xl bg-raw-gold px-4 py-3 text-sm font-semibold text-raw-ink disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <Send className="h-4 w-4" /> Send
