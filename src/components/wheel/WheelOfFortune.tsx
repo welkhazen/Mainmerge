@@ -163,7 +163,7 @@ export function WheelOfFortune({ prizes, onSpinEnd, disabled = false, prizeWeigh
       </div>
 
       <div
-        className={`relative h-[400px] w-[400px] rounded-full p-1.5 shadow-[0_0_45px_rgb(var(--raw-accent)/0.18)] ${
+        className={`relative aspect-square w-full max-w-[min(400px,calc(100vw-3rem))] rounded-full p-1.5 shadow-[0_0_45px_rgb(var(--raw-accent)/0.18)] ${
           isLight
             ? "border border-raw-border/70 bg-[linear-gradient(160deg,rgb(246_249_255),rgb(221_229_241))]"
             : "border border-raw-gold/30 bg-black/30"
@@ -227,7 +227,7 @@ export function WheelOfFortune({ prizes, onSpinEnd, disabled = false, prizeWeigh
       <button
         onClick={handleSpin}
         disabled={isSpinning || disabled}
-        className={`mt-8 relative overflow-hidden rounded-full px-10 py-3.5 font-display text-sm uppercase tracking-[0.2em] transition-all ${
+        className={`mt-5 sm:mt-8 relative overflow-hidden rounded-full px-8 py-3 font-display text-sm uppercase tracking-[0.2em] transition-all sm:px-10 sm:py-3.5 ${
           isSpinning || disabled
             ? "cursor-not-allowed border border-raw-border/30 bg-raw-surface text-raw-silver/30"
             : "bg-raw-gold text-raw-black hover:scale-105 hover:shadow-[0_0_30px_rgb(var(--raw-accent)/0.3)] active:scale-95"

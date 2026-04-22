@@ -35,7 +35,7 @@ export function HowItWorks() {
   return (
     <section
       ref={sectionRef as React.RefObject<HTMLElement>}
-      className="relative px-6 py-28 bg-black/40"
+      className="relative px-4 py-14 sm:px-6 sm:py-20 md:py-28 bg-black/40"
     >
       <div className="w-full">
         <h2 className="mb-4 text-center font-display text-2xl tracking-wide text-raw-text sm:text-3xl">
@@ -46,7 +46,7 @@ export function HowItWorks() {
           the real product will.
         </p>
 
-        <div className="rounded-[2rem] border border-raw-border/40 bg-gradient-to-b from-raw-surface/60 to-raw-black/90 p-4 shadow-[0_30px_120px_rgba(0,0,0,0.35)] sm:p-6">
+        <div className="overflow-x-auto rounded-[2rem] border border-raw-border/40 bg-gradient-to-b from-raw-surface/60 to-raw-black/90 p-4 shadow-[0_30px_120px_rgba(0,0,0,0.35)] sm:p-6">
           <Terminal
             className="max-w-4xl"
             username="raw-world"

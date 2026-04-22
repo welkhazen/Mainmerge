@@ -25,10 +25,10 @@ import { createCommunityFromApprovedRequest } from "@/lib/communityChat";
 
 function SummaryCard({ label, value, hint }: { label: string; value: string | number; hint: string }) {
   return (
-    <div className="rounded-2xl border border-raw-border/30 bg-raw-surface/25 p-5">
-      <p className="text-[11px] uppercase tracking-[0.18em] text-raw-silver/35">{label}</p>
-      <p className="mt-3 font-display text-3xl text-raw-text">{value}</p>
-      <p className="mt-2 text-sm text-raw-silver/45">{hint}</p>
+    <div className="rounded-2xl border border-raw-border/30 bg-raw-surface/25 p-4 sm:p-5">
+      <p className="text-[10px] uppercase tracking-[0.15em] text-raw-silver/35 sm:text-[11px] sm:tracking-[0.18em]">{label}</p>
+      <p className="mt-2 font-display text-2xl text-raw-text sm:mt-3 sm:text-3xl">{value}</p>
+      <p className="mt-1 text-xs text-raw-silver/45 leading-relaxed sm:mt-2 sm:text-sm">{hint}</p>
     </div>
   );
 }
@@ -71,8 +71,8 @@ export default function Admin() {
 
   if (!isAdmin) {
     return (
-      <div className="min-h-screen bg-raw-black px-6 py-10 text-raw-text">
-        <div className="mx-auto max-w-3xl rounded-3xl border border-raw-border/30 bg-raw-surface/20 p-8 text-center">
+      <div className="min-h-screen bg-raw-black px-4 py-8 text-raw-text sm:px-6 sm:py-10">
+        <div className="mx-auto max-w-3xl rounded-3xl border border-raw-border/30 bg-raw-surface/20 p-5 text-center sm:p-8">
           <p className="text-xs uppercase tracking-[0.28em] text-raw-gold/65">Restricted</p>
           <h1 className="mt-4 font-display text-3xl tracking-wide">Admin access only</h1>
           <p className="mt-4 text-sm text-raw-silver/45">
@@ -189,34 +189,34 @@ export default function Admin() {
   return (
     <div className="min-h-screen bg-raw-black text-raw-text">
       <div className="border-b border-raw-border/30 bg-raw-black/90 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+        <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <div>
             <p className="text-xs uppercase tracking-[0.28em] text-raw-gold/65">Hidden admin page</p>
-            <h1 className="mt-2 font-display text-3xl tracking-wide">Moderation dashboard</h1>
+            <h1 className="mt-2 font-display text-2xl tracking-wide sm:text-3xl">Moderation dashboard</h1>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <Link
               to="/dashboard"
-              className="inline-flex items-center gap-2 rounded-xl border border-raw-border/30 px-4 py-2 text-sm text-raw-silver/70 transition-colors hover:text-raw-text"
+              className="inline-flex items-center gap-2 rounded-xl border border-raw-border/30 px-3 py-2 text-sm text-raw-silver/70 transition-colors hover:text-raw-text sm:px-4"
             >
               <ArrowLeft className="h-4 w-4" /> Dashboard
             </Link>
-            <button onClick={logout} className="rounded-xl bg-raw-gold px-4 py-2 text-sm font-semibold text-raw-ink">
+            <button onClick={logout} className="rounded-xl bg-raw-gold px-3 py-2 text-sm font-semibold text-raw-ink sm:px-4">
               Log out
             </button>
           </div>
         </div>
       </div>
 
-      <main className="mx-auto max-w-7xl space-y-8 px-6 py-8">
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <main className="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6 sm:py-8 sm:space-y-8">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
           <SummaryCard label="Users" value={users.length} hint="All locally registered accounts, including admin and reported aliases." />
           <SummaryCard label="Pending Requests" value={pendingRequests.length} hint="Community creation requests waiting for admin approval." />
           <SummaryCard label="Open Reports" value={openReports.length} hint="Chat reports still awaiting a moderation decision." />
           <SummaryCard label="Banned Users" value={bannedUsers.length} hint="Accounts currently blocked from chatting after review." />
         </div>
 
-        <section className="rounded-3xl border border-raw-border/30 bg-raw-surface/20 p-6">
+        <section className="rounded-2xl border border-raw-border/30 bg-raw-surface/20 p-4 sm:rounded-3xl sm:p-6">
           <div className="flex items-center gap-3">
             <Users className="h-5 w-5 text-raw-gold/70" />
             <div>
@@ -230,14 +230,14 @@ export default function Admin() {
               <div className="rounded-2xl border border-raw-border/20 bg-raw-black/35 p-4 text-sm text-raw-silver/45">No users yet.</div>
             ) : (
               users.map((entry) => (
-                <div key={entry.id} className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-raw-border/20 bg-raw-black/35 p-4">
-                  <div>
+                <div key={entry.id} className="flex flex-col gap-2 rounded-2xl border border-raw-border/20 bg-raw-black/35 p-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+                  <div className="min-w-0">
                     <p className="font-display text-base text-raw-text">@{entry.username}</p>
-                    <p className="mt-1 text-xs text-raw-silver/40">
+                    <p className="mt-1 text-xs text-raw-silver/40 leading-relaxed">
                       Role: {entry.role} · Warnings: {entry.warnings} · Last seen {formatAdminTimestamp(entry.lastSeenAt)}
                     </p>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 shrink-0">
                     <span className={`rounded-full border px-3 py-1 text-[11px] uppercase tracking-[0.15em] ${
                       entry.moderationStatus === "active"
                         ? "border-emerald-400/20 bg-emerald-400/[0.08] text-emerald-200"
@@ -308,7 +308,7 @@ export default function Admin() {
                   )}
 
                   {request.status === "pending" && (
-                    <div className="mt-4 flex flex-wrap gap-3">
+                    <div className="mt-4 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:gap-3">
                       <Button onClick={() => handleRequestStatus(request.id, "approved")} className="rounded-xl bg-emerald-400 px-4 text-raw-ink hover:bg-emerald-300">
                         <CheckCircle2 className="h-4 w-4" /> Approve
                       </Button>

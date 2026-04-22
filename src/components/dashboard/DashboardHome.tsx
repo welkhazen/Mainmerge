@@ -118,7 +118,7 @@ export function DashboardHome({
             View All <ChevronRight className="h-3 w-3" />
           </button>
         </div>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {previewCommunities.map((community) => {
             const coverVideo = COMMUNITY_COVER_VIDEOS[community.id];
             const coverImage = COMMUNITY_COVER_IMAGES[community.id] ?? community.logoUrl;
@@ -157,24 +157,24 @@ export function DashboardHome({
       {/* Answer Your Daily Polls */}
       <div>
         <h2 className="font-display text-lg tracking-wide text-raw-text mb-4">Answer Your Daily Polls</h2>
-        <div className="dashboard-activity-card rounded-2xl border border-raw-border/40 bg-raw-surface/30 p-4 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
+        <div className="dashboard-activity-card rounded-2xl border border-raw-border/40 bg-raw-surface/30 p-4 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
             <div className="dashboard-activity-icon h-9 w-9 rounded-xl bg-raw-gold/[0.06] flex items-center justify-center shrink-0">
               <Target className="h-4 w-4 text-raw-gold/50" />
             </div>
             <div>
               <p className="text-sm font-medium text-raw-text">Daily Poll</p>
-              <p className="mt-1 text-xs text-raw-silver/35">Answer today's anonymous question</p>
+              <p className="mt-0.5 text-xs text-raw-silver/35">Answer today's anonymous question</p>
             </div>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 ml-auto">
             <div className="text-right">
               <p className="text-[10px] uppercase tracking-wide text-raw-silver/40">Dailies left</p>
               <p className="text-xl font-bold text-raw-gold/80">{dailyItemsLeft}</p>
             </div>
             <button
               onClick={() => onNavigate("polls")}
-              className="dashboard-activity-action rounded-full border border-raw-gold/25 px-4 py-1.5 text-[11px] font-medium text-raw-gold/70 hover:bg-raw-gold/5 hover:border-raw-gold/40 transition-all"
+              className="dashboard-activity-action rounded-full border border-raw-gold/25 px-4 py-2 text-[11px] font-medium text-raw-gold/70 hover:bg-raw-gold/5 hover:border-raw-gold/40 transition-all min-h-[36px]"
             >
               Answer
             </button>

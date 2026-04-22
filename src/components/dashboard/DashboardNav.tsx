@@ -99,7 +99,7 @@ export function DashboardNav({ username, avatarLevel, showAdminLink = false, onP
               align="end"
               sideOffset={10}
               className={cn(
-                "w-[285px] rounded-2xl p-2 text-raw-text",
+                "w-[285px] max-w-[calc(100vw-1rem)] rounded-2xl p-2 text-raw-text",
                 isEffectiveLight
                   ? "border border-slate-300/80 bg-[linear-gradient(160deg,rgba(255,255,255,0.97),rgba(242,247,255,0.96))] shadow-[0_20px_50px_rgba(28,38,58,0.18)]"
                   : "border border-raw-border/40 bg-[linear-gradient(160deg,rgba(17,17,17,0.96),rgba(9,9,9,0.98))] shadow-[0_20px_50px_rgba(0,0,0,0.55)]",
@@ -156,7 +156,7 @@ export function DashboardNav({ username, avatarLevel, showAdminLink = false, onP
                 </DropdownMenuSubTrigger>
                 <DropdownMenuSubContent
                   className={cn(
-                    "w-[300px] rounded-2xl p-3 text-raw-text",
+                    "w-[300px] max-w-[calc(100vw-1rem)] rounded-2xl p-3 text-raw-text",
                     isEffectiveLight
                       ? "border border-slate-300/80 bg-[linear-gradient(160deg,rgba(255,255,255,0.98),rgba(245,249,255,0.98))] shadow-[0_20px_50px_rgba(28,38,58,0.2)]"
                       : "border border-raw-border/35 bg-[linear-gradient(160deg,rgba(16,16,16,0.98),rgba(8,8,8,0.98))] shadow-[0_20px_50px_rgba(0,0,0,0.55)]",

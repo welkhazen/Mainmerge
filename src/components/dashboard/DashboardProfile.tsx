@@ -83,7 +83,7 @@ export function DashboardProfile({
             </div>
 
             {/* Level selector */}
-            <div className="mt-5 flex items-center gap-1 flex-wrap justify-center">
+            <div className="mt-5 grid grid-cols-5 gap-1 w-full justify-items-center">
               {Array.from({ length: LEVEL_THEMES.length }, (_, i) => i + 1).map((lvl) => (
                 <button
                   key={lvl}

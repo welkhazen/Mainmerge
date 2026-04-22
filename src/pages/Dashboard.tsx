@@ -99,16 +99,6 @@ export default function Dashboard({
     }
 
     switch (activeTab) {
-      case "home":
-        return (
-          <DashboardHome
-            username={user.username}
-            avatarLevel={avatarLevel}
-            polls={polls}
-            votedPolls={votedPolls}
-            onNavigate={handleTabChange}
-          />
-        );
       case "polls":
         return (
           <DashboardPolls
@@ -194,7 +184,7 @@ export default function Dashboard({
       />
 
       {/* Mobile bottom nav */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-raw-border/30 bg-raw-black/95 backdrop-blur-xl px-2 py-2 flex items-center justify-around lg:hidden">
+      <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-raw-border/30 bg-raw-black/95 backdrop-blur-xl px-1 py-1 pb-safe flex items-center justify-around lg:hidden" style={{ paddingBottom: "max(0.5rem, env(safe-area-inset-bottom))" }}>
         <MobileNavBtn label="Home" active={isHome} onClick={handleHomeClick} />
         <MobileNavBtn label="Polls" active={!isHome && activeTab === "polls"} onClick={() => handleTabChange("polls")} />
         <MobileNavBtn label="Challenges" active={!isHome && activeTab === "challenges"} onClick={() => handleTabChange("challenges")} />
@@ -206,8 +196,8 @@ export default function Dashboard({
       </div>
 
       {/* Main content */}
-      <main className="relative z-10 pt-14 pb-20 lg:pl-[200px] lg:pb-8">
-        <div className="dashboard-content-shell mx-auto max-w-4xl px-5 py-8">
+      <main className="relative z-10 pt-14 pb-20 lg:pl-[80px] lg:pb-8">
+        <div className="dashboard-content-shell mx-auto max-w-4xl px-4 py-5 sm:px-5 sm:py-8">
           {renderContent()}
         </div>
       </main>
@@ -225,9 +215,9 @@ function MobileNavLink({
   icon?: React.ReactNode;
 }) {
   return (
-    <a href={href} className="flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg text-raw-gold/80 transition-all hover:text-raw-gold">
+    <a href={href} className="flex min-h-[44px] min-w-[44px] flex-col items-center justify-center gap-0.5 px-2 py-1 rounded-lg text-raw-gold/80 transition-all hover:text-raw-gold">
       {icon}
-      <span className="text-[10px] font-medium">{label}</span>
+      <span className="text-[10px] font-medium leading-none">{label}</span>
     </a>
   );
 }
@@ -246,13 +236,13 @@ function MobileNavBtn({
   return (
     <button
       onClick={onClick}
-      className={`flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg transition-all ${
+      className={`flex min-h-[44px] min-w-[44px] flex-col items-center justify-center gap-0.5 px-2 py-1 rounded-lg transition-all ${
         active ? "text-raw-gold" : "text-raw-silver/35"
       }`}
     >
       {icon}
-      <span className={`text-[10px] font-medium ${active ? "text-raw-gold" : ""}`}>{label}</span>
-      {active && <div className="h-0.5 w-4 rounded-full bg-raw-gold" />}
+      <span className={`text-[10px] font-medium leading-none ${active ? "text-raw-gold" : ""}`}>{label}</span>
+      {active && <div className="mt-0.5 h-0.5 w-4 rounded-full bg-raw-gold" />}
     </button>
   );
 }

@@ -137,8 +137,8 @@ const Index = () => {
 
   if (isMyRawApp) {
     return (
-      <div className="min-h-screen bg-raw-black px-6 py-10">
-        <div className="mx-auto flex min-h-[80vh] max-w-4xl flex-col items-center justify-center rounded-3xl border border-raw-border/40 bg-gradient-to-b from-raw-surface/40 to-raw-black/90 p-8 text-center">
+      <div className="min-h-screen bg-raw-black px-4 py-8 sm:px-6 sm:py-10">
+        <div className="mx-auto flex min-h-[80vh] max-w-4xl flex-col items-center justify-center rounded-3xl border border-raw-border/40 bg-gradient-to-b from-raw-surface/40 to-raw-black/90 p-5 text-center sm:p-8">
           <p className="text-xs uppercase tracking-[0.28em] text-raw-gold/65">myraw.app</p>
           <h1 className="mt-3 font-display text-3xl tracking-wide text-raw-text sm:text-4xl">Sign in to your raW dashboard</h1>
           <p className="mt-4 max-w-xl text-sm text-raw-silver/50">

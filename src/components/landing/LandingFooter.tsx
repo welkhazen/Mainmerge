@@ -8,10 +8,10 @@ export function LandingFooter() {
 
   return (
     <section className="pt-16 sm:pt-20 bg-raw-black relative z-10">
-      <div className="border-t border-raw-border/20 bg-raw-black px-6 py-12 sm:py-16">
+      <div className="border-t border-raw-border/20 bg-raw-black px-4 py-8 sm:px-6 sm:py-12 md:py-16">
         <div className="mx-auto max-w-6xl">
           {/* Main Footer Grid */}
-          <div className="grid grid-cols-2 gap-8 sm:grid-cols-4 md:grid-cols-5 mb-12">
+          <div className="grid grid-cols-2 gap-6 sm:grid-cols-4 sm:gap-8 md:grid-cols-5 mb-8 sm:mb-12">
             {/* Product */}
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.1em] text-raw-gold/75">Product</p>

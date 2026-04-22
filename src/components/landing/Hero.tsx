@@ -53,7 +53,7 @@ export function Hero({ onSignupClick }: HeroProps) {
   return (
     <section
       ref={sectionRef as React.RefObject<HTMLElement>}
-      className="hero-landing relative flex min-h-screen items-center overflow-hidden px-6 pb-16 pt-24 sm:pt-28 bg-black/40"
+      className="hero-landing relative flex min-h-screen items-center overflow-hidden px-4 pb-10 pt-20 sm:px-6 sm:pb-16 sm:pt-24 md:pt-28 bg-black/40"
     >
       <div className="absolute inset-0 z-0 overflow-hidden">
         <div className="hero-landing-overlay absolute inset-0 z-[1] bg-gradient-to-b from-black/20 via-black/20 to-black/40" />
@@ -69,7 +69,7 @@ export function Hero({ onSignupClick }: HeroProps) {
           <Logo3D size={148} className="sm:[width:172px] sm:[height:172px] md:[width:196px] md:[height:196px]" />
         </div>
 
-        <p className="mb-5 font-display text-[10px] uppercase tracking-[0.33em] text-raw-gold/70 sm:text-[11px]">
+        <p className="mb-5 font-display text-[10px] uppercase tracking-[0.2em] text-raw-gold/70 sm:tracking-[0.33em] sm:text-[11px]">
           Anonymous &bull; Community-First &bull; Identity-Driven
         </p>
 
@@ -82,15 +82,15 @@ export function Hero({ onSignupClick }: HeroProps) {
 
         <p className="mt-4 font-display text-lg tracking-wide text-metallic sm:text-2xl">Grow behind your avatar.</p>
 
-        <p className="mt-5 max-w-2xl text-base leading-relaxed text-raw-silver/60 sm:text-lg">
+        <p className="mt-4 max-w-2xl text-sm leading-relaxed text-raw-silver/60 sm:mt-5 sm:text-base md:text-lg">
           Anonymous poll voting. Real conversations. Communities that match who you actually are. No algorithms. No reputation damage.
         </p>
 
-        <div className="mt-9 flex w-full max-w-xl flex-col items-center gap-3 sm:flex-row sm:justify-center sm:gap-4">
+        <div className="mt-7 flex w-full max-w-xs flex-col items-stretch gap-3 sm:max-w-xl sm:flex-row sm:items-center sm:justify-center sm:gap-4">
           <button
             type="button"
             onClick={handleJoinClick}
-            className="w-full rounded-full bg-raw-gold px-8 py-3.5 text-sm font-bold text-raw-black transition-all hover:bg-raw-gold/90 hover:shadow-lg hover:shadow-raw-gold/20 sm:w-auto"
+            className="rounded-full bg-raw-gold px-8 py-3.5 text-sm font-bold text-raw-black transition-all hover:bg-raw-gold/90 hover:shadow-lg hover:shadow-raw-gold/20 sm:w-auto"
           >
             {signupLabel}
           </button>
@@ -98,9 +98,9 @@ export function Hero({ onSignupClick }: HeroProps) {
           <a
             href="#communities"
             onClick={handleExploreClick}
-            className="w-full rounded-full border border-raw-border px-8 py-3.5 text-center text-sm font-medium text-raw-silver/80 transition-all hover:border-raw-silver/30 hover:text-raw-text sm:w-auto"
+            className="rounded-full border border-raw-border px-6 py-3.5 text-center text-sm font-medium text-raw-silver/80 transition-all hover:border-raw-silver/30 hover:text-raw-text sm:w-auto sm:px-8"
           >
-            Explore the 3 Founding Communities
+            Explore Communities
           </a>
         </div>
 
