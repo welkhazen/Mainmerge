@@ -9,7 +9,7 @@ const communities = [
     badge: "Founding Community",
   },
   {
-    title: "Speak Your Turth",
+    title: "Self-Improvement Circle",
     description:
       "For discipline, accountability, momentum, and becoming stronger with others who are trying too.",
     badge: "Opening First",

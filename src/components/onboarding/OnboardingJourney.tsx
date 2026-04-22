@@ -69,43 +69,44 @@ const EXTRA_ONBOARDING_POLLS: OnboardingPoll[] = [
   },
 ];
 
-
-import { readCommunityChats, joinCommunityChat } from "@/lib/communityChat";
-import { useMemo as useMemoReact } from "react";
-
-const ONBOARDING_COMMUNITY_IDS = [
-  "lnt", // Late Night Talks
-  "syt", // Speak Your Turth
-  "mw",  // Mental Support Group
+const ONBOARDING_COMMUNITIES = [
+  {
+    id: "signal-room",
+    title: "Late Night Talks",
+    description: "Unfiltered conversations that only happen after midnight. For night owls and deep thinkers.",
+    members: "13.4k",
+    activeNow: "1.3k active",
+    image:
+      "https://images.unsplash.com/photo-1521119989659-a83eee488004?auto=format&fit=crop&w=900&q=80",
+  },
+  {
+    id: "build-lab",
+    title: "Self-Improvement Circle",
+    description: "Atomic habits, stoicism, and the relentless pursuit of the better self. Peer-driven accountability.",
+    members: "8.7k",
+    activeNow: "843 active",
+    image:
+      "https://images.unsplash.com/photo-1508672019048-805c876b67e2?auto=format&fit=crop&w=900&q=80",
+  },
+  {
+    id: "healing-circle",
+    title: "Healing Circle",
+    description: "Mental wellness, emotional check-ins, and anonymous support with respectful moderation.",
+    members: "9.2k",
+    activeNow: "2.5k active",
+    image:
+      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=900&q=80",
+  },
+  {
+    id: "money-guild",
+    title: "Money Guild",
+    description: "Income, investing, debt, and practical finance in clear language with no flex culture.",
+    members: "11.1k",
+    activeNow: "1.1k active",
+    image:
+      "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=900&q=80",
+  },
 ];
-
-const ONBOARDING_IMAGE_MAP = {
-  lnt: "/late-night-talks.jpg",
-  syt: "/speak-your-truth.jpg",
-  mw: "/assets/mental-health-image.png",
-};
-
-function getOnboardingCommunities(user) {
-  const allCommunities = readCommunityChats();
-  return ONBOARDING_COMMUNITY_IDS.map((id) => {
-    const community = allCommunities.find((c) => c.id === id || c.title.replace(/ /g, "-").toLowerCase() === id);
-    if (!community) return null;
-    const isMember = community.members.some((m) => m.userId === user.id);
-    return {
-      id: community.id,
-      title: community.title,
-      description: community.description,
-      members: community.members.length,
-      activeNow: `${community.members.filter((m) => {
-        // Consider active if lastSeenAt is within last 10 minutes
-        const lastSeen = new Date(m.lastSeenAt).getTime();
-        return Date.now() - lastSeen < 10 * 60 * 1000;
-      }).length} active`,
-      image: community.logoUrl || ONBOARDING_IMAGE_MAP[community.id] || "",
-      isMember,
-    };
-  }).filter(Boolean);
-}
 
 function toOnboardingPolls(polls: Poll[]): OnboardingPoll[] {
   const core = polls.slice(0, 3).map((poll) => ({

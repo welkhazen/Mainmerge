@@ -26,7 +26,6 @@ export function normalizeMessage(rawMessage: unknown, communityId: string): Comm
     replyToText: typeof candidate.replyToText === "string" ? candidate.replyToText : undefined,
     deletedAt: typeof candidate.deletedAt === "string" ? candidate.deletedAt : undefined,
     deletedByUserId: typeof candidate.deletedByUserId === "string" ? candidate.deletedByUserId : undefined,
-    likedBy: Array.isArray(candidate.likedBy) ? (candidate.likedBy as string[]).filter((id) => typeof id === "string") : undefined,
   };
 }
 
