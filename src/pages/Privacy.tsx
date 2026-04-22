@@ -4,7 +4,7 @@ import { LandingFooter } from "@/components/landing/LandingFooter";
 export default function Privacy() {
   return (
     <div className="min-h-screen bg-raw-black">
-      <header className="border-b border-raw-border/30 bg-raw-black/85 px-6 py-4 backdrop-blur-sm">
+      <header className="border-b border-raw-border/30 bg-raw-black/85 px-4 py-4 backdrop-blur-sm sm:px-6">
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between">
           <Link to="/" className="font-display text-xl tracking-[0.2em] text-raw-text/85">
             ra<span className="text-raw-gold">W</span>
@@ -18,7 +18,7 @@ export default function Privacy() {
         </div>
       </header>
 
-      <section className="px-6 py-16 sm:py-20">
+      <section className="px-4 py-10 sm:px-6 sm:py-16 md:py-20">
         <div className="mx-auto max-w-3xl">
           <p className="text-[11px] uppercase tracking-[0.2em] text-raw-gold/75">Legal</p>
           <h1 className="mt-2 font-display text-3xl tracking-wide text-raw-text sm:text-4xl">Privacy Policy</h1>

@@ -34,10 +34,10 @@ export function Communities({ onSignupClick }: CommunitiesProps) {
     <section
       ref={sectionRef as React.RefObject<HTMLElement>}
       id="communities"
-      className="relative py-28 px-6 bg-black/40"
+      className="relative py-14 px-4 sm:py-20 sm:px-6 md:py-28 bg-black/40"
     >
       <div className="mx-auto w-full max-w-6xl">
-        <div className="mb-14 text-center">
+        <div className="mb-8 text-center sm:mb-14">
           <h2 className="font-display text-3xl tracking-wide text-raw-text sm:text-4xl">
             24/7 communities for real talk.
           </h2>
@@ -49,7 +49,7 @@ export function Communities({ onSignupClick }: CommunitiesProps) {
         <div className="grid gap-6 md:grid-cols-3">
           {communities.map((c) => (
             <GlareCard key={c.title}>
-              <div className="rounded-2xl border border-raw-border/50 bg-raw-surface/50 p-8">
+              <div className="rounded-2xl border border-raw-border/50 bg-raw-surface/50 p-5 sm:p-8">
                 <div className="mb-5 inline-block rounded-full border border-raw-gold/20 bg-raw-gold/5 px-3 py-1">
                   <span className="text-[10px] font-medium tracking-wider text-raw-gold/70 uppercase">
                     {c.badge}
@@ -63,7 +63,7 @@ export function Communities({ onSignupClick }: CommunitiesProps) {
         </div>
 
         {/* Communities worldwide */}
-        <div className="mx-auto mt-16 flex max-w-5xl flex-col items-center gap-8 md:flex-row md:items-center md:gap-10">
+        <div className="mx-auto mt-10 flex max-w-5xl flex-col items-center gap-6 sm:mt-16 sm:gap-8 md:flex-row md:items-center md:gap-10">
           <div className="flex-1 text-center md:text-left">
             <p className="font-display text-[10px] tracking-[0.3em] uppercase text-raw-silver/40">
               Communities worldwide

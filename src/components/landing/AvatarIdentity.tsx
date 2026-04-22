@@ -21,11 +21,11 @@ export function AvatarIdentity({ avatarLevel, onLevelChange }: AvatarIdentityPro
     <section
       ref={sectionRef as React.RefObject<HTMLElement>}
       id="avatar"
-      className="relative px-6 py-28 bg-black/60"
+      className="relative px-4 py-14 sm:px-6 sm:py-20 md:py-28 bg-black/60"
     >
       <div className="mx-auto w-full max-w-5xl">
         {/* Heading */}
-        <div className="mb-12 text-center">
+        <div className="mb-8 text-center sm:mb-12">
           <h2 className="font-display text-3xl tracking-wide text-raw-text sm:text-4xl">
             Your avatar is your identity.
           </h2>
@@ -47,12 +47,12 @@ export function AvatarIdentity({ avatarLevel, onLevelChange }: AvatarIdentityPro
         </div>
 
         {/* Avatar progression row */}
-        <div className="mt-14">
+        <div className="mt-10 sm:mt-14">
           <p className="mb-6 text-center font-display text-xs uppercase tracking-[0.3em] text-raw-silver/50">
             Avatar Progression
           </p>
 
-          <div className="grid grid-cols-5 gap-x-4 gap-y-6 sm:gap-x-6">
+          <div className="grid grid-cols-5 gap-x-2 gap-y-4 sm:gap-x-4 sm:gap-y-6 md:gap-x-6">
             {LEVEL_THEMES.map((t, i) => {
               const level = i + 1;
               const isActive = level === displayLevel;

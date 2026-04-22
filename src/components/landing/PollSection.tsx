@@ -290,12 +290,12 @@ export function PollSection({ polls, votedPolls, isLoggedIn, freeVotesUsed, onVo
     <section
       ref={sectionRef as React.RefObject<HTMLElement>}
       id="polls"
-      className="relative py-28 px-6 bg-black/60"
+      className="relative py-14 px-4 sm:py-20 sm:px-6 md:py-28 bg-black/60"
     >
       <div className="w-full">
-        <div className="mb-14 text-center">
-          <h2 className="font-display text-3xl tracking-wide text-raw-text sm:text-4xl">Start with a question.</h2>
-          <p className="mt-4 text-base text-raw-silver/50 max-w-xl mx-auto">
+        <div className="mb-8 text-center sm:mb-14">
+          <h2 className="font-display text-2xl tracking-wide text-raw-text sm:text-3xl md:text-4xl">Start with a question.</h2>
+          <p className="mt-3 text-sm text-raw-silver/50 max-w-xl mx-auto sm:mt-4 sm:text-base">
             Answer anonymously and see live results instantly.
             {!isLoggedIn && " Answer 3 questions free — then sign up to keep going."}
           </p>
