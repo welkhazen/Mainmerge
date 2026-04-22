@@ -22,6 +22,7 @@ export interface CommunityChatMessageRecord {
   replyToText?: string;
   deletedAt?: string;
   deletedByUserId?: string;
+  likedBy?: string[];
 }
 
 export interface PersistedCommunityRecord {
