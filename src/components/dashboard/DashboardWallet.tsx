@@ -49,31 +49,31 @@ export function DashboardWallet() {
   const [selected, setSelected] = useState<string | null>(null);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       <header className="space-y-1">
-        <h1 className="font-display text-2xl tracking-wide text-raw-text">Wallet</h1>
-        <p className="text-sm text-raw-silver/45">
+        <h1 className="font-display text-xl tracking-wide text-raw-text sm:text-2xl">Wallet</h1>
+        <p className="text-xs text-raw-silver/45 sm:text-sm">
           Purchase tokens to unlock features, boost rewards, and access premium content.
         </p>
       </header>
 
       {/* Balance */}
-      <section className="relative overflow-hidden rounded-2xl border border-raw-gold/25 bg-raw-black/50 p-5">
+      <section className="relative overflow-hidden rounded-2xl border border-raw-gold/25 bg-raw-black/50 p-4 sm:p-5">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_10%_-20%,rgba(241,196,45,0.18),transparent_55%)]" />
         <div className="flex items-center justify-between gap-4">
-          <div>
+          <div className="min-w-0">
             <p className="text-xs uppercase tracking-[0.22em] text-raw-gold/60">Current Balance</p>
-            <p className="mt-1 font-display text-4xl tracking-wide text-raw-text">{balance}</p>
+            <p className="mt-1 font-display text-3xl tracking-wide text-raw-text sm:text-4xl">{balance}</p>
             <p className="mt-1 text-xs text-raw-silver/40">tokens</p>
           </div>
-          <Coins className="h-10 w-10 text-raw-gold/20" />
+          <Coins className="h-8 w-8 shrink-0 text-raw-gold/20 sm:h-10 sm:w-10" />
         </div>
       </section>
 
       {/* Packages */}
       <section>
         <p className="mb-4 text-xs uppercase tracking-[0.2em] text-raw-silver/40">Choose a package</p>
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 xl:grid-cols-4">
           {PACKAGES.map((pkg) => {
             const Icon = pkg.icon;
             const isSelected = selected === pkg.id;
@@ -125,10 +125,10 @@ export function DashboardWallet() {
       </section>
 
       {/* Buy button */}
-      <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
+      <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center">
         <button
           disabled={!selected}
-          className="rounded-xl bg-raw-gold px-8 py-3 text-sm font-semibold text-raw-ink transition hover:bg-raw-gold/90 disabled:cursor-not-allowed disabled:opacity-40"
+          className="w-full rounded-xl bg-raw-gold px-6 py-3 text-sm font-semibold leading-tight text-raw-ink transition hover:bg-raw-gold/90 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto sm:px-8"
         >
           {selected
             ? `Buy ${PACKAGES.find((p) => p.id === selected)?.tokens.toLocaleString()} tokens — $${PACKAGES.find((p) => p.id === selected)?.price}`

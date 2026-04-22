@@ -48,15 +48,15 @@ export function WheelReward({ onLevelChange, onSignupClick }: WheelRewardProps) 
       className="relative px-4 py-12 sm:px-6 sm:py-20 md:py-24 bg-black/40"
     >
       <div className="mx-auto w-full max-w-3xl">
-        <div className="mb-10 text-center">
-          <div className="mb-4 flex items-center justify-center gap-2">
-            <div className="h-px w-8 bg-raw-gold/30" />
-            <p className="font-display text-[10px] uppercase tracking-[0.3em] text-raw-gold/60">
+        <div className="mb-8 text-center sm:mb-10">
+          <div className="mb-3 flex items-center justify-center gap-2 sm:mb-4">
+            <div className="h-px w-6 bg-raw-gold/30 sm:w-8" />
+            <p className="font-display text-[10px] uppercase tracking-[0.28em] text-raw-gold/60 sm:tracking-[0.3em]">
               Early Access Reward
             </p>
-            <div className="h-px w-8 bg-raw-gold/30" />
+            <div className="h-px w-6 bg-raw-gold/30 sm:w-8" />
           </div>
-          <h2 className="font-display text-2xl tracking-wide text-raw-text sm:text-3xl">
+          <h2 className="font-display text-xl tracking-wide text-raw-text sm:text-2xl md:text-3xl">
             Spin the wheel to land your rank.
           </h2>
           <p className="mx-auto mt-3 max-w-lg text-sm text-raw-silver/50">
@@ -68,7 +68,7 @@ export function WheelReward({ onLevelChange, onSignupClick }: WheelRewardProps) 
           <WheelOfFortune prizes={RANK_PRIZES} onSpinEnd={handleSpinEnd} disabled={hasSpun} />
 
           {landedLevel && (
-            <div className="w-full max-w-md rounded-2xl border border-raw-gold/30 bg-gradient-to-b from-raw-gold/[0.08] to-raw-gold/[0.02] p-5 text-center transition-all duration-500">
+            <div className="w-full max-w-md rounded-2xl border border-raw-gold/30 bg-gradient-to-b from-raw-gold/[0.08] to-raw-gold/[0.02] p-4 text-center transition-all duration-500 sm:p-5">
               <div className="mb-2 flex items-center justify-center gap-2">
                 <AvatarFigure level={landedLevel} size="sm" selected />
                 <Sparkles className="h-4 w-4 text-raw-gold" />

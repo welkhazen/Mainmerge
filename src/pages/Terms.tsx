@@ -11,7 +11,7 @@ export default function Terms() {
           </Link>
           <Link
             to="/"
-            className="rounded-lg border border-raw-border/40 bg-raw-black/35 px-3 py-1.5 text-xs uppercase tracking-[0.14em] text-raw-silver/75 transition hover:border-raw-gold/35 hover:text-raw-gold"
+            className="shrink-0 rounded-lg border border-raw-border/40 bg-raw-black/35 px-3 py-2 text-[10px] uppercase tracking-[0.14em] text-raw-silver/75 transition hover:border-raw-gold/35 hover:text-raw-gold sm:text-xs"
           >
             Back to Home
           </Link>
@@ -21,9 +21,9 @@ export default function Terms() {
       <section className="px-4 py-10 sm:px-6 sm:py-16 md:py-20">
         <div className="mx-auto max-w-3xl">
           <p className="text-[11px] uppercase tracking-[0.2em] text-raw-gold/75">Legal</p>
-          <h1 className="mt-2 font-display text-3xl tracking-wide text-raw-text sm:text-4xl">Terms of Service</h1>
+          <h1 className="mt-2 font-display text-2xl tracking-wide text-raw-text sm:text-3xl md:text-4xl">Terms of Service</h1>
 
-          <div className="mt-8 space-y-6 text-raw-silver/75">
+          <div className="mt-6 space-y-5 text-raw-silver/75 sm:mt-8 sm:space-y-6">
             <section>
               <h2 className="text-lg font-semibold text-raw-text">1. Acceptance of Terms</h2>
               <p className="mt-2 text-sm leading-relaxed">

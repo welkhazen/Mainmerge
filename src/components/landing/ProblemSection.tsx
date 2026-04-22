@@ -13,11 +13,11 @@ export function ProblemSection() {
           <span className="text-raw-gold">not authenticity</span>.
         </h2>
 
-        <p className="mt-6 text-sm leading-relaxed text-raw-silver/65 sm:text-base">
+        <p className="mt-5 text-sm leading-relaxed text-raw-silver/65 sm:mt-6 sm:text-base">
           Your real opinions, questions, and perspectives stay hidden. Algorithms amplify outrage. Communities demand allegiance. You self-censor because your reputation is on the line.
         </p>
 
-        <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-3">
+        <div className="mt-8 grid grid-cols-1 gap-4 sm:mt-10 sm:grid-cols-3 sm:gap-6">
           {[
             { icon: "🎭", label: "Persona Management", desc: "Curating a polished image" },
             { icon: "⚖️", label: "Social Risk", desc: "Fear of judgment or backlash" },

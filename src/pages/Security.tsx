@@ -39,7 +39,7 @@ const Security = () => {
           </Link>
           <Link
             to="/"
-            className="rounded-lg border border-raw-border/40 bg-raw-black/35 px-3 py-1.5 text-xs uppercase tracking-[0.14em] text-raw-silver/75 transition hover:border-raw-gold/35 hover:text-raw-gold"
+            className="shrink-0 rounded-lg border border-raw-border/40 bg-raw-black/35 px-3 py-2 text-[10px] uppercase tracking-[0.14em] text-raw-silver/75 transition hover:border-raw-gold/35 hover:text-raw-gold sm:text-xs"
           >
             Back to Home
           </Link>
@@ -50,13 +50,13 @@ const Security = () => {
         <div className="mx-auto max-w-6xl rounded-[2rem] border border-raw-gold/15 bg-[linear-gradient(160deg,rgba(18,18,18,0.96),rgba(8,8,8,0.98))] p-6 shadow-[0_20px_50px_rgba(0,0,0,0.45)] sm:p-8">
           <div className="mb-8 flex flex-col gap-2">
             <p className="text-[11px] uppercase tracking-[0.2em] text-raw-gold/75">Security & Privacy</p>
-            <h1 className="font-display text-3xl tracking-wide text-raw-text sm:text-4xl">How We Protect Users</h1>
+            <h1 className="font-display text-2xl tracking-wide text-raw-text sm:text-3xl md:text-4xl">How We Protect Users</h1>
             <p className="text-sm text-raw-silver/55">
               Security and privacy controls are built into product design, moderation workflows, and data operations.
             </p>
           </div>
 
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 xl:grid-cols-3">
             {SECURITY_ITEMS.map((item) => (
               <article key={item.title} className="rounded-2xl border border-raw-border/35 bg-raw-black/35 p-4">
                 <h2 className="text-base font-semibold text-raw-text">{item.title}</h2>

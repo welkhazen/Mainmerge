@@ -65,25 +65,25 @@ export function Hero({ onSignupClick, showDottedSurface = true }: HeroProps) {
         </Suspense>
       </div>
 
-      <div className="absolute left-1/2 top-[28%] z-[1] h-[62vw] max-h-[620px] w-[62vw] max-w-[620px] -translate-x-1/2 rounded-full bg-raw-gold/[0.035] blur-[120px]" />
+      <div className="pointer-events-none absolute left-1/2 top-[28%] z-[1] h-[80vw] max-h-[400px] w-[80vw] max-w-[400px] -translate-x-1/2 rounded-full bg-raw-gold/[0.035] blur-[100px] sm:h-[62vw] sm:max-h-[620px] sm:w-[62vw] sm:max-w-[620px] sm:blur-[120px]" />
 
       <div className="relative z-10 flex w-full flex-col items-center text-center">
-        <div className="mb-7 sm:mb-8">
-          <Logo3D size={148} className="sm:[width:172px] sm:[height:172px] md:[width:196px] md:[height:196px]" />
+        <div className="mb-5 sm:mb-8">
+          <Logo3D size={104} className="sm:[width:148px] sm:[height:148px] md:[width:172px] md:[height:172px] lg:[width:196px] lg:[height:196px]" />
         </div>
 
         <p className="mb-5 font-display text-[10px] uppercase tracking-[0.2em] text-raw-gold/70 sm:tracking-[0.33em] sm:text-[11px]">
           Anonymous &bull; Community-First &bull; Identity-Driven
         </p>
 
-        <Suspense fallback={<h1 className="font-display text-[2rem] leading-[1.15] tracking-wide text-raw-text sm:text-[2.7rem] md:text-[3.25rem]">Find your people.</h1>}>
+        <Suspense fallback={<h1 className="font-display text-[1.75rem] leading-[1.12] tracking-wide text-raw-text sm:text-[2.7rem] md:text-[3.25rem]">Find your people.</h1>}>
           <TypewriterEffectLazy
             words={words}
-            className="!text-center !font-display !text-[2rem] !leading-[1.15] !tracking-wide sm:!text-[2.7rem] md:!text-[3.25rem]"
+            className="!text-center !font-display !text-[1.75rem] !leading-[1.12] !tracking-wide sm:!text-[2.7rem] md:!text-[3.25rem]"
           />
         </Suspense>
 
-        <p className="mt-4 font-display text-lg tracking-wide text-metallic sm:text-2xl">Grow behind your avatar.</p>
+        <p className="mt-3 font-display text-base tracking-wide text-metallic sm:mt-4 sm:text-2xl">Grow behind your avatar.</p>
 
         <p className="mt-4 max-w-2xl text-sm leading-relaxed text-raw-silver/60 sm:mt-5 sm:text-base md:text-lg">
           Anonymous poll voting. Real conversations. Communities that match who you actually are. No algorithms. No reputation damage.
@@ -107,7 +107,7 @@ export function Hero({ onSignupClick, showDottedSurface = true }: HeroProps) {
           </a>
         </div>
 
-        <p className="mt-5 text-xs text-raw-silver/40">Username + password only.</p>
+        <p className="mt-4 text-xs text-raw-silver/40 sm:mt-5">Username + password only.</p>
       </div>
     </section>
   );

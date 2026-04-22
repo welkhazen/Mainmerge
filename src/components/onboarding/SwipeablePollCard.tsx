@@ -189,7 +189,7 @@ export function SwipeablePollCard({
   return (
     <div className="space-y-6">
       <div
-        className="relative mx-auto w-full max-w-[760px] rounded-[2rem] border border-raw-border/40 bg-[radial-gradient(circle_at_20%_0%,rgba(255,255,255,0.1),rgba(0,0,0,0.06)_35%,rgba(0,0,0,0.6)_100%)] p-5 shadow-[0_20px_45px_rgba(0,0,0,0.4)] sm:p-6"
+        className="relative mx-auto w-full max-w-[760px] rounded-2xl border border-raw-border/40 bg-[radial-gradient(circle_at_20%_0%,rgba(255,255,255,0.1),rgba(0,0,0,0.06)_35%,rgba(0,0,0,0.6)_100%)] p-3 shadow-[0_20px_45px_rgba(0,0,0,0.4)] sm:rounded-[2rem] sm:p-6"
       >
         <div className="mb-4 flex items-center justify-between text-xs text-raw-silver/45">
           <span>Question for you</span>
@@ -197,7 +197,7 @@ export function SwipeablePollCard({
         </div>
 
         <div
-          className="relative rounded-[1.7rem] border border-white/10 bg-black/65 p-5 sm:p-6"
+          className="relative rounded-2xl border border-white/10 bg-black/65 p-4 sm:rounded-[1.7rem] sm:p-6"
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
@@ -234,12 +234,12 @@ export function SwipeablePollCard({
             </div>
           )}
 
-          <h2 className="text-center font-display text-2xl leading-tight text-white sm:text-[2rem]">
+          <h2 className="text-center font-display text-lg leading-snug text-white sm:text-2xl md:text-[2rem] md:leading-tight">
             {question}
           </h2>
 
-          <div className="mt-6 space-y-3">
-            <div className={`grid gap-3 ${orderedOptions.length === 2 ? "grid-cols-2" : "grid-cols-1"}`}>
+          <div className="mt-5 space-y-3 sm:mt-6">
+            <div className={`grid gap-2 sm:gap-3 ${orderedOptions.length === 2 ? "grid-cols-2" : "grid-cols-1"}`}>
               {orderedOptions.map((option, index) => {
                 const isSelected = isAnswered && selectedOption === option;
                 const isRightSide = orderedOptions.length === 2 && index === 1;
@@ -257,7 +257,7 @@ export function SwipeablePollCard({
                       setSwipeOffsetX(0);
                     }}
                     disabled={isAnswered}
-                    className={`rounded-2xl border px-4 py-3 text-base font-medium transition disabled:cursor-not-allowed ${
+                    className={`min-h-[52px] rounded-2xl border px-3 py-3 text-sm font-medium transition disabled:cursor-not-allowed sm:px-4 sm:text-base ${
                       isRightSide ? "text-right" : "text-left"
                     } ${
                       isSelected

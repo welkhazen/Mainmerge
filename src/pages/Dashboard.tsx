@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { LogOut, Shield } from "lucide-react";
+import { Home as HomeIcon, MessageCircle, Target, User as UserIcon, Wallet } from "lucide-react";
 import { matchPath, useLocation, useNavigate } from "react-router-dom";
 import { DashboardNav, type DashboardTab } from "@/components/dashboard/DashboardNav";
 import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
@@ -235,10 +235,12 @@ function MobileNavBtn({
 }) {
   return (
     <button
+      type="button"
       onClick={onClick}
       className={`flex min-h-[44px] min-w-[44px] flex-col items-center justify-center gap-0.5 px-2 py-1 rounded-lg transition-all ${
         active ? "text-raw-gold" : "text-raw-silver/35"
       }`}
+      aria-current={active ? "page" : undefined}
     >
       {icon}
       <span className={`text-[10px] font-medium leading-none ${active ? "text-raw-gold" : ""}`}>{label}</span>

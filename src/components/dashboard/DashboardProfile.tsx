@@ -49,20 +49,20 @@ export function DashboardProfile({
   const xpPct = Math.min(Math.round((currentXp / xpForNext) * 100), 100);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       {/* Header */}
       <div>
-        <h1 className="font-display text-2xl tracking-wide text-raw-text">Profile</h1>
-        <p className="mt-2 text-sm text-raw-silver/40">
+        <h1 className="font-display text-xl tracking-wide text-raw-text sm:text-2xl">Profile</h1>
+        <p className="mt-2 text-xs text-raw-silver/40 sm:text-sm">
           Your anonymous identity. Your progress. Your growth.
         </p>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-5">
+      <div className="grid grid-cols-1 gap-5 sm:gap-6 lg:grid-cols-5">
         {/* Avatar + Phone mockup column */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="space-y-5 sm:space-y-6 lg:col-span-2">
           {/* Avatar card */}
-          <div className="rounded-2xl border border-raw-border/40 bg-raw-surface/40 p-6 flex flex-col items-center text-center">
+          <div className="flex flex-col items-center rounded-2xl border border-raw-border/40 bg-raw-surface/40 p-5 text-center sm:p-6">
             <AvatarFigure level={displayLevel} size="xl" selected />
             <p className="mt-3 font-display text-lg tracking-wide text-raw-text">{username}</p>
             <p className="text-xs text-raw-gold/60 mt-0.5">Level {displayLevel}</p>
@@ -87,10 +87,15 @@ export function DashboardProfile({
               {Array.from({ length: LEVEL_THEMES.length }, (_, i) => i + 1).map((lvl) => (
                 <button
                   key={lvl}
+                  type="button"
                   onClick={() => onLevelChange(lvl)}
                   onMouseEnter={() => setHoveredLevel(lvl)}
                   onMouseLeave={() => setHoveredLevel(null)}
-                  className="flex flex-col items-center group"
+                  onFocus={() => setHoveredLevel(lvl)}
+                  onBlur={() => setHoveredLevel(null)}
+                  className="group flex min-h-11 min-w-11 flex-col items-center justify-center rounded-full p-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-raw-gold/40"
+                  aria-label={`Preview level ${lvl}`}
+                  aria-pressed={lvl === avatarLevel}
                 >
                   <AvatarFigure level={lvl} size="sm" selected={lvl === avatarLevel} />
                 </button>
@@ -101,9 +106,9 @@ export function DashboardProfile({
         </div>
 
         {/* Stats + Badges column */}
-        <div className="lg:col-span-3 space-y-5">
+        <div className="space-y-5 lg:col-span-3">
           {/* Stats grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
             {stats.map((stat) => {
               const Icon = stat.icon;
               return (
