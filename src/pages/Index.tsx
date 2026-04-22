@@ -177,7 +177,7 @@ const Index = () => {
           onSignupClick={() => setShowSignup(true)}
         />
 
-        <Hero onSignupClick={() => setShowSignup(true)} />
+        <Hero onSignupClick={() => setShowSignup(true)} showDottedSurface={!showMatrixIntro} />
         <ProblemSection />
         <HowItWorks />
         <PollSection

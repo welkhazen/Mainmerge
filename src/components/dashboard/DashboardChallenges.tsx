@@ -115,13 +115,13 @@ export function DashboardChallenges({
       <DashboardDailySpin userId={userId} isAdmin={isAdmin} />
 
       <header className="space-y-2">
-        <h1 className="font-display text-2xl tracking-wide text-raw-text">Challenges</h1>
-        <p className="text-sm text-raw-silver/45">
+        <h1 className="font-display text-xl tracking-wide text-raw-text sm:text-2xl">Challenges</h1>
+        <p className="text-xs text-raw-silver/45 sm:text-sm">
           Complete high-impact missions to unlock rewards and level up your identity faster.
         </p>
       </header>
 
-      <section className="relative overflow-hidden rounded-2xl border border-raw-border/40 bg-raw-black/45 p-5">
+      <section className="relative overflow-hidden rounded-2xl border border-raw-border/40 bg-raw-black/45 p-4 sm:p-5">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_-30%,rgba(241,196,45,0.25),transparent_55%)]" />
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>

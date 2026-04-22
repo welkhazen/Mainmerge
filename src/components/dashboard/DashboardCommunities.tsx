@@ -436,11 +436,11 @@ export function DashboardCommunities({
     };
 
     const renderDirectoryView = () => (
-      <div className="space-y-8">
+      <div className="space-y-6 sm:space-y-8">
         <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-          <div>
-            <h1 className="font-display text-2xl tracking-wide text-raw-text">Communities</h1>
-            <p className="mt-2 text-sm text-raw-silver/40">
+          <div className="min-w-0">
+            <h1 className="font-display text-xl tracking-wide text-raw-text sm:text-2xl">Communities</h1>
+            <p className="mt-2 text-xs text-raw-silver/40 sm:text-sm">
               Join any room from here to start chatting with like minded peers. Don't see a community that fits? Request a new one and we'll review it for you.
             </p>
             {(warningCount > 0 || isUserBanned) && (
@@ -457,7 +457,7 @@ export function DashboardCommunities({
 
           <Button
             onClick={() => setRequestFormOpen(true)}
-            className="h-11 rounded-xl bg-raw-gold px-4 text-sm font-semibold text-raw-ink hover:bg-raw-gold/90"
+            className="h-11 w-full shrink-0 rounded-xl bg-raw-gold px-4 text-sm font-semibold text-raw-ink hover:bg-raw-gold/90 md:w-auto"
           >
             <Plus className="h-4 w-4" /> Request a Community
           </Button>
@@ -480,7 +480,7 @@ export function DashboardCommunities({
           </div>
         )}
 
-        <div className="grid gap-5 lg:grid-cols-2 xl:grid-cols-3 items-stretch">
+        <div className="grid grid-cols-1 items-stretch gap-4 sm:gap-5 lg:grid-cols-2 xl:grid-cols-3">
           {directoryCommunities.map((community) => {
             const joined = community.members.some((member) => member.userId === user.id);
             const communityUnreadCount = joined ? countUnreadMessages(community, user.id) : 0;

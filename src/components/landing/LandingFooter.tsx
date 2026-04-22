@@ -70,7 +70,7 @@ export function LandingFooter() {
           </div>
 
           {/* Bottom Bar */}
-          <div className="border-t border-raw-border/20 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex flex-col items-center justify-between gap-3 border-t border-raw-border/20 pt-6 text-center sm:flex-row sm:gap-4 sm:pt-8 sm:text-left">
             <p className="text-xs text-raw-silver/40">
               © 2026 raW (the raw). All rights reserved.
             </p>

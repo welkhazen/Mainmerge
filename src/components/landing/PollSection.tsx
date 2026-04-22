@@ -302,7 +302,7 @@ export function PollSection({ polls, votedPolls, isLoggedIn, freeVotesUsed, onVo
         </div>
 
         <div className="flex items-center justify-center">
-          <div className="relative">
+          <div className="relative w-full max-w-sm sm:w-auto sm:max-w-none">
             {showSignupGate ? (
               <PhoneMockup>
                 <div className="h-[480px] bg-black px-5 py-6 flex flex-col items-center justify-center">

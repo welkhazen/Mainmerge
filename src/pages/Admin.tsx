@@ -254,7 +254,7 @@ export default function Admin() {
           </div>
         </section>
 
-        <section className="rounded-3xl border border-raw-border/30 bg-raw-surface/20 p-6">
+        <section className="rounded-2xl border border-raw-border/30 bg-raw-surface/20 p-4 sm:rounded-3xl sm:p-6">
           <div className="flex items-center gap-3">
             <Shield className="h-5 w-5 text-raw-gold/70" />
             <div>
@@ -323,7 +323,7 @@ export default function Admin() {
           </div>
         </section>
 
-        <section className="rounded-3xl border border-raw-border/30 bg-raw-surface/20 p-6">
+        <section className="rounded-2xl border border-raw-border/30 bg-raw-surface/20 p-4 sm:rounded-3xl sm:p-6">
           <div className="flex items-center gap-3">
             <Plus className="h-5 w-5 text-raw-gold/70" />
             <div>
@@ -394,7 +394,7 @@ export default function Admin() {
           )}
         </section>
 
-        <section className="rounded-3xl border border-raw-border/30 bg-raw-surface/20 p-6">
+        <section className="rounded-2xl border border-raw-border/30 bg-raw-surface/20 p-4 sm:rounded-3xl sm:p-6">
           <div className="flex items-center gap-3">
             <Flag className="h-5 w-5 text-raw-gold/70" />
             <div>
