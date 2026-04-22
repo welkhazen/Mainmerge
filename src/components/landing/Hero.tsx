@@ -3,6 +3,7 @@ import { Logo3D } from "@/components/ui/logo-3d";
 import { track } from "@/lib/analytics";
 import { useTrackSectionView } from "@/lib/analytics/useTrackSectionView";
 import { useFeatureExperiments } from "@/hooks/useFeatureExperiments";
+import { DottedSurface } from "@/components/ui/dotted-surface";
 
 const BoxesLazy = lazy(() => import("@/components/ui/background-boxes").then((module) => ({ default: module.Boxes })));
 const TypewriterEffectLazy = lazy(() =>
@@ -56,6 +57,7 @@ export function Hero({ onSignupClick }: HeroProps) {
       className="hero-landing relative flex min-h-screen items-center overflow-hidden px-4 pb-10 pt-20 sm:px-6 sm:pb-16 sm:pt-24 md:pt-28 bg-black/40"
     >
       <div className="absolute inset-0 z-0 overflow-hidden">
+        <DottedSurface className="absolute inset-0 z-0" />
         <div className="hero-landing-overlay absolute inset-0 z-[1] bg-gradient-to-b from-black/20 via-black/20 to-black/40" />
         <Suspense fallback={null}>
           <BoxesLazy className="opacity-30" />
