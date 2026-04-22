@@ -12,9 +12,10 @@ const TypewriterEffectLazy = lazy(() =>
 
 interface HeroProps {
   onSignupClick: () => void;
+  showDottedSurface?: boolean;
 }
 
-export function Hero({ onSignupClick }: HeroProps) {
+export function Hero({ onSignupClick, showDottedSurface = true }: HeroProps) {
   const sectionRef = useTrackSectionView("hero");
   const { heroCopy, signupCta } = useFeatureExperiments();
 
