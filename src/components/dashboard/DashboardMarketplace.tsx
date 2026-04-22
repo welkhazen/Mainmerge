@@ -89,34 +89,34 @@ const rarityBadge = {
 
 export function DashboardMarketplace({ avatarLevel }: { avatarLevel: number }) {
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       {/* Header */}
       <div>
-        <h1 className="font-display text-2xl tracking-wide text-raw-text">Marketplace</h1>
-        <p className="mt-2 text-sm text-raw-silver/40">
+        <h1 className="font-display text-xl tracking-wide text-raw-text sm:text-2xl">Marketplace</h1>
+        <p className="mt-2 text-xs text-raw-silver/40 sm:text-sm">
           Earn XP through participation. Spend it on avatar themes, badges, and cosmetics.
         </p>
       </div>
 
       {/* XP Balance */}
-      <div className="rounded-2xl border border-raw-gold/15 bg-gradient-to-r from-raw-gold/[0.04] to-transparent p-5 flex items-center justify-between">
-        <div>
+      <div className="flex items-center justify-between gap-3 rounded-2xl border border-raw-gold/15 bg-gradient-to-r from-raw-gold/[0.04] to-transparent p-4 sm:p-5">
+        <div className="min-w-0">
           <p className="text-xs text-raw-silver/40">Your Balance</p>
-          <p className="text-2xl font-bold text-raw-gold mt-0.5">1,850 <span className="text-sm font-normal text-raw-gold/60">XP</span></p>
+          <p className="mt-0.5 text-xl font-bold text-raw-gold sm:text-2xl">1,850 <span className="text-sm font-normal text-raw-gold/60">XP</span></p>
         </div>
         <div className="text-right">
           <p className="text-xs text-raw-silver/40">Current Level</p>
-          <p className="text-2xl font-bold text-raw-text mt-0.5">{avatarLevel}</p>
+          <p className="mt-0.5 text-xl font-bold text-raw-text sm:text-2xl">{avatarLevel}</p>
         </div>
       </div>
 
       {/* Items grid */}
-      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
         {items.map((item) => {
           const Icon = item.icon;
           return (
             <GlareCard key={item.id}>
-              <div className={`rounded-2xl border bg-raw-surface/40 p-6 h-full relative ${
+              <div className={`relative h-full rounded-2xl border bg-raw-surface/40 p-4 sm:p-6 ${
                 item.locked ? "border-raw-border/20" : "border-raw-border/40"
               }`}>
                 {item.locked && (

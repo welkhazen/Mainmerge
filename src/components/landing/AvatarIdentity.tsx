@@ -21,15 +21,15 @@ export function AvatarIdentity({ avatarLevel, onLevelChange }: AvatarIdentityPro
     <section
       ref={sectionRef as React.RefObject<HTMLElement>}
       id="avatar"
-      className="relative px-6 py-28 bg-black/60"
+      className="relative bg-black/60 px-4 py-16 sm:px-6 sm:py-24 lg:py-28"
     >
       <div className="mx-auto w-full max-w-5xl">
         {/* Heading */}
-        <div className="mb-12 text-center">
-          <h2 className="font-display text-3xl tracking-wide text-raw-text sm:text-4xl">
+        <div className="mb-8 text-center sm:mb-12">
+          <h2 className="font-display text-2xl tracking-wide text-raw-text sm:text-3xl md:text-4xl">
             Your avatar is your identity.
           </h2>
-          <p className="mx-auto mt-4 max-w-xl text-base text-raw-silver/50">
+          <p className="mx-auto mt-3 max-w-xl text-sm text-raw-silver/50 sm:mt-4 sm:text-base">
             Hover or tap any rank to preview it live on your phone — your avatar becomes your app icon.
           </p>
         </div>
@@ -47,12 +47,12 @@ export function AvatarIdentity({ avatarLevel, onLevelChange }: AvatarIdentityPro
         </div>
 
         {/* Avatar progression row */}
-        <div className="mt-14">
-          <p className="mb-6 text-center font-display text-xs uppercase tracking-[0.3em] text-raw-silver/50">
+        <div className="mt-10 sm:mt-14">
+          <p className="mb-5 text-center font-display text-[10px] uppercase tracking-[0.3em] text-raw-silver/50 sm:mb-6 sm:text-xs">
             Avatar Progression
           </p>
 
-          <div className="grid grid-cols-5 gap-x-4 gap-y-6 sm:gap-x-6">
+          <div className="mx-auto grid max-w-md grid-cols-5 gap-x-2 gap-y-5 sm:max-w-none sm:gap-x-6 sm:gap-y-6">
             {LEVEL_THEMES.map((t, i) => {
               const level = i + 1;
               const isActive = level === displayLevel;

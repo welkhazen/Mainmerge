@@ -36,15 +36,15 @@ export function FAQSection() {
   };
 
   return (
-    <section id="faq" className="px-6 py-16 sm:py-20">
-      <div className="mx-auto max-w-6xl rounded-[2rem] border border-raw-gold/15 bg-[linear-gradient(160deg,rgba(18,18,18,0.96),rgba(8,8,8,0.98))] p-6 shadow-[0_20px_50px_rgba(0,0,0,0.45)] sm:p-8">
-        <div className="mb-8 flex flex-col gap-2">
+    <section id="faq" className="px-4 py-12 sm:px-6 sm:py-20">
+      <div className="mx-auto max-w-6xl rounded-3xl border border-raw-gold/15 bg-[linear-gradient(160deg,rgba(18,18,18,0.96),rgba(8,8,8,0.98))] p-4 shadow-[0_20px_50px_rgba(0,0,0,0.45)] sm:rounded-[2rem] sm:p-8">
+        <div className="mb-6 flex flex-col gap-2 sm:mb-8">
           <p className="text-[11px] uppercase tracking-[0.2em] text-raw-gold/75">FAQ</p>
-          <h2 className="font-display text-3xl tracking-wide text-raw-text sm:text-4xl">Frequently Asked Questions</h2>
+          <h2 className="font-display text-2xl tracking-wide text-raw-text sm:text-3xl md:text-4xl">Frequently Asked Questions</h2>
           <p className="text-sm text-raw-silver/55">Quick answers, plus a place to ask your own question.</p>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-3 sm:gap-4 md:grid-cols-3">
           {FAQ_ITEMS.map((item) => (
             <article key={item.question} className="rounded-2xl border border-raw-border/35 bg-raw-black/35 p-4">
               <h3 className="text-base font-semibold text-raw-text">{item.question}</h3>
@@ -53,7 +53,7 @@ export function FAQSection() {
           ))}
         </div>
 
-        <div id="faq-ask" className="mt-8 rounded-2xl border border-raw-border/35 bg-raw-black/35 p-4 sm:p-5">
+        <div id="faq-ask" className="mt-6 rounded-2xl border border-raw-border/35 bg-raw-black/35 p-4 sm:mt-8 sm:p-5">
           <p className="text-xs uppercase tracking-[0.16em] text-raw-gold/75">Ask a Question</p>
           <form onSubmit={handleSubmit} className="mt-3 space-y-3">
             <input
@@ -72,7 +72,7 @@ export function FAQSection() {
             />
             <button
               type="submit"
-              className="rounded-xl border border-raw-gold/45 bg-raw-gold/15 px-4 py-2 text-sm font-semibold text-raw-gold transition hover:bg-raw-gold/25"
+              className="w-full rounded-xl border border-raw-gold/45 bg-raw-gold/15 px-4 py-2.5 text-sm font-semibold text-raw-gold transition hover:bg-raw-gold/25 sm:w-auto"
             >
               Submit Question
             </button>

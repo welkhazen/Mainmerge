@@ -35,18 +35,18 @@ export function HowItWorks() {
   return (
     <section
       ref={sectionRef as React.RefObject<HTMLElement>}
-      className="relative px-6 py-28 bg-black/40"
+      className="relative bg-black/40 px-4 py-16 sm:px-6 sm:py-24 md:py-28"
     >
       <div className="w-full">
-        <h2 className="mb-4 text-center font-display text-2xl tracking-wide text-raw-text sm:text-3xl">
+        <h2 className="mb-3 text-center font-display text-xl tracking-wide text-raw-text sm:mb-4 sm:text-2xl md:text-3xl">
           How it works
         </h2>
-        <p className="mx-auto mb-14 max-w-2xl text-center text-sm leading-relaxed text-raw-silver/40">
+        <p className="mx-auto mb-10 max-w-2xl text-center text-sm leading-relaxed text-raw-silver/40 sm:mb-14">
           raW learns through honest participation. This shell now walks people in the same order
           the real product will.
         </p>
 
-        <div className="rounded-[2rem] border border-raw-border/40 bg-gradient-to-b from-raw-surface/60 to-raw-black/90 p-4 shadow-[0_30px_120px_rgba(0,0,0,0.35)] sm:p-6">
+        <div className="rounded-3xl border border-raw-border/40 bg-gradient-to-b from-raw-surface/60 to-raw-black/90 p-3 shadow-[0_30px_120px_rgba(0,0,0,0.35)] sm:rounded-[2rem] sm:p-6">
           <Terminal
             className="max-w-4xl"
             username="raw-world"

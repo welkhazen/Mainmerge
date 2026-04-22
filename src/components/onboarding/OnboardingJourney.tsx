@@ -217,21 +217,21 @@ export function OnboardingJourney({
   const currentStepIndex = STEP_ORDER.indexOf(onboardingStep);
   return (
     <div className="min-h-screen bg-raw-black">
-      <div className="mx-auto flex min-h-screen w-full max-w-5xl flex-col px-6 py-8 sm:py-10">
-        <div className="mb-8 flex items-start justify-between gap-4">
-          <div>
-            <p className="font-display text-xs uppercase tracking-[0.35em] text-raw-gold/60">Welcome to raW</p>
-            <h1 className="mt-3 font-display text-2xl tracking-wide text-raw-text sm:text-3xl">
-              Complete your identity path, {user.username}
+      <div className="mx-auto flex min-h-screen w-full max-w-5xl flex-col px-4 py-6 sm:px-6 sm:py-10">
+        <div className="mb-6 flex items-start justify-between gap-3 sm:mb-8 sm:gap-4">
+          <div className="min-w-0 flex-1">
+            <p className="font-display text-[10px] uppercase tracking-[0.3em] text-raw-gold/60 sm:text-xs sm:tracking-[0.35em]">Welcome to raW</p>
+            <h1 className="mt-2 font-display text-xl tracking-wide text-raw-text sm:mt-3 sm:text-2xl md:text-3xl">
+              Complete your path, {user.username}
             </h1>
-            <p className="mt-2 max-w-2xl text-sm text-raw-silver/50">
+            <p className="mt-2 max-w-2xl text-xs text-raw-silver/50 sm:text-sm">
               One flow. No skipping. Finish the sequence to unlock full dashboard access.
             </p>
           </div>
 
           <button
             onClick={onLogout}
-            className="rounded-xl border border-raw-border/50 px-4 py-2 text-xs uppercase tracking-[0.16em] text-raw-silver/55 transition-colors hover:border-raw-border hover:text-raw-silver"
+            className="shrink-0 rounded-xl border border-raw-border/50 px-3 py-2 text-[10px] uppercase tracking-[0.14em] text-raw-silver/55 transition-colors hover:border-raw-border hover:text-raw-silver sm:px-4 sm:text-xs sm:tracking-[0.16em]"
           >
             Log out
           </button>
@@ -248,26 +248,35 @@ export function OnboardingJourney({
           ))}
         </div>
 
-        <div className="rounded-3xl border border-raw-border/40 bg-gradient-to-b from-raw-surface/40 to-raw-black/90 p-6 sm:p-8">
+        <div className="rounded-2xl border border-raw-border/40 bg-gradient-to-b from-raw-surface/40 to-raw-black/90 p-4 sm:rounded-3xl sm:p-6 md:p-8">
           {onboardingStep === "avatar" && (
             <section>
-              <h2 className="font-display text-xl tracking-wide text-raw-text">1. Choose your avatar</h2>
-              <p className="mt-2 text-sm text-raw-silver/45">
+              <h2 className="font-display text-lg tracking-wide text-raw-text sm:text-xl">1. Choose your avatar</h2>
+              <p className="mt-2 text-xs text-raw-silver/45 sm:text-sm">
                 Your avatar is your public signal. You can evolve it later, but choose your starting form now.
               </p>
 
-              <div className="mt-8 grid gap-8 grid-cols-2 items-center">
-                {/* Left: Avatar Selector Grid */}
-                <div className="flex flex-col items-center justify-center min-w-0">
-                  <div className="grid grid-cols-5 gap-4">
+              <div className="mt-6 grid grid-cols-1 items-center gap-6 sm:mt-8 md:grid-cols-2 md:gap-8">
+                {/* Phone Mockup — first on mobile so user sees the live preview */}
+                <div className="flex flex-col items-center justify-center md:order-2">
+                  <PhoneMockup>
+                    <AvatarPhoneHomeScreen displayLevel={avatarLevel} />
+                  </PhoneMockup>
+                </div>
+
+                {/* Avatar Selector Grid */}
+                <div className="flex min-w-0 flex-col items-center justify-center md:order-1">
+                  <div className="mx-auto grid w-full max-w-xs grid-cols-5 gap-2 sm:max-w-sm sm:gap-3 md:gap-4">
                     {Array.from({ length: LEVEL_THEMES.length }, (_, i) => i + 1).map((lvl) => (
                       <button
                         key={lvl}
                         onClick={() => { track("onboarding_avatar_selected", { avatar_level: lvl, attempts: 1 }); onAvatarLevelChange(lvl); }}
-                        className="flex flex-col items-center gap-2 group transition-transform hover:scale-105"
+                        className="group flex flex-col items-center gap-1.5 transition-transform hover:scale-105 sm:gap-2"
+                        aria-label={`Select avatar level ${lvl}`}
+                        aria-pressed={lvl === avatarLevel}
                       >
                         <div
-                          className={`rounded-full p-1 transition-all ${
+                          className={`rounded-full p-0.5 transition-all sm:p-1 ${
                             lvl === avatarLevel
                               ? "border-2 border-raw-gold ring-2 ring-raw-gold/30"
                               : "border-2 border-raw-border hover:border-raw-gold/50"
@@ -279,20 +288,13 @@ export function OnboardingJourney({
                     ))}
                   </div>
                 </div>
-
-                {/* Right: Phone Mockup */}
-                <div className="flex flex-col items-center justify-center">
-                  <PhoneMockup>
-                    <AvatarPhoneHomeScreen displayLevel={avatarLevel} />
-                  </PhoneMockup>
-                </div>
               </div>
 
-              <div className="mt-8 flex justify-end">
+              <div className="mt-6 flex justify-end sm:mt-8">
                 <button
                   onClick={goToNextStep}
                   disabled={!canContinueFromAvatar}
-                  className="rounded-xl bg-raw-gold px-5 py-2.5 text-sm font-semibold text-raw-ink transition-opacity disabled:cursor-not-allowed disabled:opacity-40"
+                  className="w-full rounded-xl bg-raw-gold px-5 py-3 text-sm font-semibold text-raw-ink transition-opacity disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto sm:py-2.5"
                 >
                   Next: Polls
                 </button>
@@ -302,20 +304,20 @@ export function OnboardingJourney({
 
           {onboardingStep === "polls" && (
             <section>
-              <div className="flex flex-wrap items-end justify-between gap-4">
-                <div>
-                  <h2 className="font-display text-xl tracking-wide text-raw-text">2. Answer 5 launch polls</h2>
-                  <p className="mt-2 text-sm text-raw-silver/45">
+              <div className="flex flex-wrap items-start justify-between gap-3 sm:items-end sm:gap-4">
+                <div className="min-w-0 flex-1">
+                  <h2 className="font-display text-lg tracking-wide text-raw-text sm:text-xl">2. Answer 5 launch polls</h2>
+                  <p className="mt-2 text-xs text-raw-silver/45 sm:text-sm">
                     One question at a time. Swipe or use buttons to navigate through all 5 polls.
                   </p>
                 </div>
-                <p className="rounded-full border border-raw-border/40 px-3 py-1 text-xs text-raw-gold/75">
+                <p className="shrink-0 rounded-full border border-raw-border/40 px-3 py-1 text-xs text-raw-gold/75">
                   {answeredCount}/{onboardingPolls.length} completed
                 </p>
               </div>
 
               {/* Single Poll Card */}
-              <div className="mt-8">
+              <div className="mt-6 sm:mt-8">
                 {onboardingPolls.length > 0 && (
                   <div className="w-full">
                     {(() => {
@@ -440,15 +442,15 @@ export function OnboardingJourney({
 
           {onboardingStep === "communities" && (
             <section>
-              <h2 className="font-display text-xl tracking-wide text-raw-text">3. Pick 2 communities to unlock first</h2>
-              <p className="mt-2 text-sm text-raw-silver/45">
+              <h2 className="font-display text-lg tracking-wide text-raw-text sm:text-xl">3. Pick 2 communities to unlock first</h2>
+              <p className="mt-2 text-xs text-raw-silver/45 sm:text-sm">
                 Choose the 2 communities you'd love first access to as a new member. You can join more after onboarding.
               </p>
               <p className="mt-3 inline-flex rounded-full border border-raw-border/40 px-3 py-1 text-xs text-raw-gold/75">
                 {selectedCommunityIds.length}/2 selected
               </p>
 
-              <div className="mt-7 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+              <div className="mt-6 grid grid-cols-1 gap-4 sm:mt-7 sm:grid-cols-2 sm:gap-5 xl:grid-cols-4">
                 {ONBOARDING_COMMUNITIES.map((community) => {
                   const isSelected = selectedCommunityIds.includes(community.id);
                   const selectionLimitReached = selectedCommunityIds.length >= 2;
@@ -474,7 +476,7 @@ export function OnboardingJourney({
                           : "border-raw-border/35 bg-raw-surface/65 hover:-translate-y-0.5 hover:border-raw-gold/35 hover:shadow-[0_14px_28px_rgba(0,0,0,0.35)]"
                       }`}
                     >
-                      <div className="relative h-48 overflow-hidden">
+                      <div className="relative h-40 overflow-hidden sm:h-48">
                         <img
                           src={community.image}
                           alt={community.title}
@@ -491,10 +493,10 @@ export function OnboardingJourney({
                       </div>
 
                       <div className="p-4">
-                        <p className="font-display text-[30px] leading-[1.06] text-raw-text">{community.title}</p>
-                        <p className="mt-3 text-[13px] leading-relaxed text-raw-silver/58">{community.description}</p>
+                        <p className="font-display text-[22px] leading-[1.1] text-raw-text sm:text-[26px] md:text-[30px] md:leading-[1.06]">{community.title}</p>
+                        <p className="mt-2 text-[13px] leading-relaxed text-raw-silver/58 sm:mt-3">{community.description}</p>
 
-                        <div className="mt-5">
+                        <div className="mt-4 sm:mt-5">
                           <span
                             className={`inline-flex rounded-full border px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.16em] transition-colors ${
                               isSelected
@@ -515,7 +517,7 @@ export function OnboardingJourney({
                 })}
               </div>
 
-              <div className="mt-8 flex justify-end">
+              <div className="mt-6 flex justify-end sm:mt-8">
                 <button
                   onClick={() => {
                     track("onboarding_completed", {
@@ -526,7 +528,7 @@ export function OnboardingJourney({
                     onCompleteOnboarding();
                   }}
                   disabled={!canContinueFromCommunities}
-                  className="rounded-xl bg-raw-gold px-5 py-2.5 text-sm font-semibold text-raw-ink transition-opacity disabled:cursor-not-allowed disabled:opacity-40"
+                  className="w-full rounded-xl bg-raw-gold px-5 py-3 text-sm font-semibold text-raw-ink transition-opacity disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto sm:py-2.5"
                 >
                   Complete onboarding
                 </button>

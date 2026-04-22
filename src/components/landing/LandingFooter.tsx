@@ -7,11 +7,11 @@ export function LandingFooter() {
   const whatsAppHref = `https://wa.me/${supportWhatsAppNumber.replace(/\D/g, "")}`;
 
   return (
-    <section className="pt-16 sm:pt-20 bg-raw-black relative z-10">
-      <div className="border-t border-raw-border/20 bg-raw-black px-6 py-12 sm:py-16">
+    <section className="pt-12 sm:pt-20 bg-raw-black relative z-10">
+      <div className="border-t border-raw-border/20 bg-raw-black px-4 py-10 sm:px-6 sm:py-16">
         <div className="mx-auto max-w-6xl">
           {/* Main Footer Grid */}
-          <div className="grid grid-cols-2 gap-8 sm:grid-cols-4 md:grid-cols-5 mb-12">
+          <div className="mb-10 grid grid-cols-2 gap-6 sm:mb-12 sm:grid-cols-4 sm:gap-8 md:grid-cols-5">
             {/* Product */}
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.1em] text-raw-gold/75">Product</p>
@@ -70,7 +70,7 @@ export function LandingFooter() {
           </div>
 
           {/* Bottom Bar */}
-          <div className="border-t border-raw-border/20 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex flex-col items-center justify-between gap-3 border-t border-raw-border/20 pt-6 text-center sm:flex-row sm:gap-4 sm:pt-8 sm:text-left">
             <p className="text-xs text-raw-silver/40">
               © 2026 raW (the raw). All rights reserved.
             </p>

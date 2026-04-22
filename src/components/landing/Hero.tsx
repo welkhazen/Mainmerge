@@ -53,7 +53,7 @@ export function Hero({ onSignupClick }: HeroProps) {
   return (
     <section
       ref={sectionRef as React.RefObject<HTMLElement>}
-      className="hero-landing relative flex min-h-screen items-center overflow-hidden px-6 pb-16 pt-24 sm:pt-28 bg-black/40"
+      className="hero-landing relative flex min-h-[100svh] items-center overflow-hidden bg-black/40 px-4 pb-12 pt-20 sm:px-6 sm:pb-16 sm:pt-28"
     >
       <div className="absolute inset-0 z-0 overflow-hidden">
         <div className="hero-landing-overlay absolute inset-0 z-[1] bg-gradient-to-b from-black/20 via-black/20 to-black/40" />
@@ -62,35 +62,35 @@ export function Hero({ onSignupClick }: HeroProps) {
         </Suspense>
       </div>
 
-      <div className="absolute left-1/2 top-[28%] z-[1] h-[62vw] max-h-[620px] w-[62vw] max-w-[620px] -translate-x-1/2 rounded-full bg-raw-gold/[0.035] blur-[120px]" />
+      <div className="pointer-events-none absolute left-1/2 top-[28%] z-[1] h-[80vw] max-h-[400px] w-[80vw] max-w-[400px] -translate-x-1/2 rounded-full bg-raw-gold/[0.035] blur-[100px] sm:h-[62vw] sm:max-h-[620px] sm:w-[62vw] sm:max-w-[620px] sm:blur-[120px]" />
 
       <div className="relative z-10 flex w-full flex-col items-center text-center">
-        <div className="mb-7 sm:mb-8">
-          <Logo3D size={148} className="sm:[width:172px] sm:[height:172px] md:[width:196px] md:[height:196px]" />
+        <div className="mb-5 sm:mb-8">
+          <Logo3D size={104} className="sm:[width:148px] sm:[height:148px] md:[width:172px] md:[height:172px] lg:[width:196px] lg:[height:196px]" />
         </div>
 
-        <p className="mb-5 font-display text-[10px] uppercase tracking-[0.33em] text-raw-gold/70 sm:text-[11px]">
+        <p className="mb-4 font-display text-[10px] uppercase tracking-[0.28em] text-raw-gold/70 sm:mb-5 sm:tracking-[0.33em] sm:text-[11px]">
           Anonymous &bull; Community-First &bull; Identity-Driven
         </p>
 
-        <Suspense fallback={<h1 className="font-display text-[2rem] leading-[1.15] tracking-wide text-raw-text sm:text-[2.7rem] md:text-[3.25rem]">Find your people.</h1>}>
+        <Suspense fallback={<h1 className="font-display text-[1.75rem] leading-[1.12] tracking-wide text-raw-text sm:text-[2.7rem] md:text-[3.25rem]">Find your people.</h1>}>
           <TypewriterEffectLazy
             words={words}
-            className="!text-center !font-display !text-[2rem] !leading-[1.15] !tracking-wide sm:!text-[2.7rem] md:!text-[3.25rem]"
+            className="!text-center !font-display !text-[1.75rem] !leading-[1.12] !tracking-wide sm:!text-[2.7rem] md:!text-[3.25rem]"
           />
         </Suspense>
 
-        <p className="mt-4 font-display text-lg tracking-wide text-metallic sm:text-2xl">Grow behind your avatar.</p>
+        <p className="mt-3 font-display text-base tracking-wide text-metallic sm:mt-4 sm:text-2xl">Grow behind your avatar.</p>
 
-        <p className="mt-5 max-w-2xl text-base leading-relaxed text-raw-silver/60 sm:text-lg">
+        <p className="mt-4 max-w-2xl text-sm leading-relaxed text-raw-silver/60 sm:mt-5 sm:text-lg">
           Anonymous poll voting. Real conversations. Communities that match who you actually are. No algorithms. No reputation damage.
         </p>
 
-        <div className="mt-9 flex w-full max-w-xl flex-col items-center gap-3 sm:flex-row sm:justify-center sm:gap-4">
+        <div className="mt-7 flex w-full max-w-xl flex-col items-stretch gap-3 sm:mt-9 sm:flex-row sm:items-center sm:justify-center sm:gap-4">
           <button
             type="button"
             onClick={handleJoinClick}
-            className="w-full rounded-full bg-raw-gold px-8 py-3.5 text-sm font-bold text-raw-black transition-all hover:bg-raw-gold/90 hover:shadow-lg hover:shadow-raw-gold/20 sm:w-auto"
+            className="w-full whitespace-nowrap rounded-full bg-raw-gold px-6 py-3.5 text-sm font-bold text-raw-black transition-all hover:bg-raw-gold/90 hover:shadow-lg hover:shadow-raw-gold/20 sm:w-auto sm:px-8"
           >
             {signupLabel}
           </button>
@@ -98,13 +98,14 @@ export function Hero({ onSignupClick }: HeroProps) {
           <a
             href="#communities"
             onClick={handleExploreClick}
-            className="w-full rounded-full border border-raw-border px-8 py-3.5 text-center text-sm font-medium text-raw-silver/80 transition-all hover:border-raw-silver/30 hover:text-raw-text sm:w-auto"
+            className="w-full rounded-full border border-raw-border px-4 py-3.5 text-center text-sm font-medium leading-snug text-raw-silver/80 transition-all hover:border-raw-silver/30 hover:text-raw-text sm:w-auto sm:px-8"
           >
-            Explore the 3 Founding Communities
+            <span className="sm:hidden">Explore the 3 Communities</span>
+            <span className="hidden sm:inline">Explore the 3 Founding Communities</span>
           </a>
         </div>
 
-        <p className="mt-5 text-xs text-raw-silver/40">Username + password only.</p>
+        <p className="mt-4 text-xs text-raw-silver/40 sm:mt-5">Username + password only.</p>
       </div>
     </section>
   );

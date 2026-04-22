@@ -377,26 +377,26 @@ export function DashboardPolls({
   const showMorePollsPaywall = dailyPollLimit > 0 && dailyAnsweredCount >= dailyPollLimit;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       <header>
-        <h1 className="font-display text-2xl tracking-wide text-raw-text">Polls</h1>
-        <p className="mt-2 text-sm text-raw-silver/45">
+        <h1 className="font-display text-xl tracking-wide text-raw-text sm:text-2xl">Polls</h1>
+        <p className="mt-2 text-xs text-raw-silver/45 sm:text-sm">
           Anonymous voting, live percentages, and reflections from the community.
         </p>
       </header>
 
-      <section className="grid gap-3 sm:grid-cols-3">
-        <div className="rounded-xl border border-raw-border/35 bg-raw-surface/25 p-4 text-center">
+      <section className="grid grid-cols-3 gap-2 sm:gap-3">
+        <div className="rounded-xl border border-raw-border/35 bg-raw-surface/25 p-3 text-center sm:p-4">
           <BarChart3 className="mx-auto mb-2 h-4 w-4 text-raw-gold/45" />
           <p className="text-lg font-semibold text-raw-text">{polls.length}</p>
           <p className="text-[10px] uppercase tracking-[0.16em] text-raw-silver/35">Live Polls</p>
         </div>
-        <div className="rounded-xl border border-raw-border/35 bg-raw-surface/25 p-4 text-center">
+        <div className="rounded-xl border border-raw-border/35 bg-raw-surface/25 p-3 text-center sm:p-4">
           <Users className="mx-auto mb-2 h-4 w-4 text-raw-gold/45" />
           <p className="text-lg font-semibold text-raw-text">{totalResponses.toLocaleString()}</p>
           <p className="text-[10px] uppercase tracking-[0.16em] text-raw-silver/35">Total Votes</p>
         </div>
-        <div className="rounded-xl border border-raw-border/35 bg-raw-surface/25 p-4 text-center">
+        <div className="rounded-xl border border-raw-border/35 bg-raw-surface/25 p-3 text-center sm:p-4">
           <MessageCircle className="mx-auto mb-2 h-4 w-4 text-raw-gold/45" />
           <p className="text-lg font-semibold text-raw-text">{dailyAnsweredCount}/{dailyPollLimit}</p>
           <p className="text-[10px] uppercase tracking-[0.16em] text-raw-silver/35">Daily Progress</p>
@@ -404,20 +404,20 @@ export function DashboardPolls({
       </section>
 
       {showMorePollsPaywall && (
-        <section className="rounded-2xl border border-raw-gold/35 bg-gradient-to-r from-raw-gold/12 via-raw-black/60 to-raw-black/60 p-5">
+        <section className="rounded-2xl border border-raw-gold/35 bg-gradient-to-r from-raw-gold/12 via-raw-black/60 to-raw-black/60 p-4 sm:p-5">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
+            <div className="min-w-0">
               <p className="text-[11px] uppercase tracking-[0.16em] text-raw-gold/80">Daily Limit Reached</p>
-              <h3 className="mt-1 font-display text-xl text-raw-text">You completed {dailyAnsweredCount}/{dailyPollLimit} polls today.</h3>
-              <p className="mt-1 text-sm text-raw-silver/50">
+              <h3 className="mt-1 font-display text-lg text-raw-text sm:text-xl">You completed {dailyAnsweredCount}/{dailyPollLimit} polls today.</h3>
+              <p className="mt-1 text-xs text-raw-silver/50 sm:text-sm">
                 Want to solve more right now? Upgrade to unlock extra polls instantly.
               </p>
             </div>
-            <div className="flex items-center gap-2">
-              <button className="rounded-xl border border-raw-border/45 bg-raw-black/35 px-4 py-2 text-xs text-raw-silver/75 hover:border-raw-gold/35 hover:text-raw-gold">
+            <div className="flex items-stretch gap-2 sm:items-center">
+              <button className="flex-1 rounded-xl border border-raw-border/45 bg-raw-black/35 px-4 py-2.5 text-xs text-raw-silver/75 hover:border-raw-gold/35 hover:text-raw-gold sm:flex-none">
                 Maybe Later
               </button>
-              <button className="rounded-xl border border-raw-gold/65 bg-raw-gold/90 px-4 py-2 text-xs font-semibold text-raw-ink hover:bg-raw-gold">
+              <button className="flex-1 rounded-xl border border-raw-gold/65 bg-raw-gold/90 px-4 py-2.5 text-xs font-semibold text-raw-ink hover:bg-raw-gold sm:flex-none">
                 Solve More - Pay
               </button>
             </div>
@@ -452,7 +452,7 @@ export function DashboardPolls({
           <ChevronRight className="h-4 w-4" />
         </button>
 
-        <div className="rounded-[2rem] border border-raw-border/40 bg-[radial-gradient(circle_at_20%_0%,rgba(255,255,255,0.12),rgba(0,0,0,0.05)_35%,rgba(0,0,0,0.6)_100%)] p-5 shadow-[0_20px_45px_rgba(0,0,0,0.4)] sm:p-6">
+        <div className="rounded-2xl border border-raw-border/40 bg-[radial-gradient(circle_at_20%_0%,rgba(255,255,255,0.12),rgba(0,0,0,0.05)_35%,rgba(0,0,0,0.6)_100%)] p-3 shadow-[0_20px_45px_rgba(0,0,0,0.4)] sm:rounded-[2rem] sm:p-6">
           <div className="mb-4 flex items-center justify-between text-xs text-raw-silver/45">
             <span>
               {currentPollIndex + 1}/{polls.length} today
@@ -474,7 +474,7 @@ export function DashboardPolls({
           </div>
 
           <div
-            className="relative rounded-[1.7rem] border border-raw-border/45 bg-raw-black/55 p-5 sm:p-6"
+            className="relative rounded-2xl border border-raw-border/45 bg-raw-black/55 p-4 sm:rounded-[1.7rem] sm:p-6"
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}

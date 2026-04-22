@@ -469,11 +469,11 @@ export function DashboardCommunities({
     };
 
     const renderDirectoryView = () => (
-      <div className="space-y-8">
+      <div className="space-y-6 sm:space-y-8">
         <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-          <div>
-            <h1 className="font-display text-2xl tracking-wide text-raw-text">Communities</h1>
-            <p className="mt-2 text-sm text-raw-silver/40">
+          <div className="min-w-0">
+            <h1 className="font-display text-xl tracking-wide text-raw-text sm:text-2xl">Communities</h1>
+            <p className="mt-2 text-xs text-raw-silver/40 sm:text-sm">
               Join any room from here to start chatting with like minded peers. Don't see a community that fits? Request a new one and we'll review it for you.
             </p>
             {(warningCount > 0 || isUserBanned) && (
@@ -490,7 +490,7 @@ export function DashboardCommunities({
 
           <Button
             onClick={() => setRequestFormOpen(true)}
-            className="h-11 rounded-xl bg-raw-gold px-4 text-sm font-semibold text-raw-ink hover:bg-raw-gold/90"
+            className="h-11 w-full shrink-0 rounded-xl bg-raw-gold px-4 text-sm font-semibold text-raw-ink hover:bg-raw-gold/90 md:w-auto"
           >
             <Plus className="h-4 w-4" /> Request a Community
           </Button>
@@ -513,7 +513,7 @@ export function DashboardCommunities({
           </div>
         )}
 
-        <div className="grid gap-5 lg:grid-cols-2 xl:grid-cols-3 items-stretch">
+        <div className="grid grid-cols-1 items-stretch gap-4 sm:gap-5 lg:grid-cols-2 xl:grid-cols-3">
           {directoryCommunities.map((community) => {
             const joined = community.members.some((member) => member.userId === user.id);
             const communityUnreadCount = joined ? countUnreadMessages(community, user.id) : 0;
@@ -604,19 +604,20 @@ export function DashboardCommunities({
       }
 
       return (
-        <div className="space-y-6">
-          <div className="flex flex-wrap items-start justify-between gap-4 rounded-3xl border border-raw-border/30 bg-raw-surface/25 p-5">
-            <div className="flex items-start gap-4">
+        <div className="space-y-5 sm:space-y-6">
+          <div className="flex flex-col gap-4 rounded-2xl border border-raw-border/30 bg-raw-surface/25 p-4 sm:rounded-3xl sm:p-5 md:flex-row md:flex-wrap md:items-start md:justify-between">
+            <div className="flex items-start gap-3 sm:gap-4">
               <button
                 onClick={() => onBackToCommunities?.()}
-                className="mt-1 rounded-full border border-raw-border/30 p-2 text-raw-silver/55 transition-colors hover:border-raw-gold/20 hover:text-raw-gold"
+                className="mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-raw-border/30 text-raw-silver/55 transition-colors hover:border-raw-gold/20 hover:text-raw-gold"
+                aria-label="Back to communities"
               >
                 <ArrowLeft className="h-4 w-4" />
               </button>
               <CommunityBadge abbr={selectedCommunity.abbr} title={selectedCommunity.title} logoUrl={selectedCommunity.logoUrl} />
-              <div>
-                <h1 className="font-display text-2xl tracking-wide text-raw-text">{selectedCommunity.title}</h1>
-                <p className="mt-2 text-sm text-raw-silver/45">{selectedCommunity.description}</p>
+              <div className="min-w-0 flex-1">
+                <h1 className="font-display text-lg tracking-wide text-raw-text sm:text-xl md:text-2xl">{selectedCommunity.title}</h1>
+                <p className="mt-2 text-xs text-raw-silver/45 sm:text-sm">{selectedCommunity.description}</p>
                 <p className="mt-2 text-xs text-raw-silver/35">Topic prompt: {selectedCommunity.topic}</p>
                 <p className="mt-2 text-xs text-raw-silver/35">
                   Members: {selectedCommunity.members.length} · {visibleMembers.map((member) => `@${member.username}`).join(", ")}
@@ -685,7 +686,7 @@ export function DashboardCommunities({
             </div>
           )}
 
-          <div ref={messagesContainerRef} className="max-h-[560px] space-y-3 overflow-y-auto rounded-2xl border border-raw-border/20 bg-raw-black/35 p-4">
+          <div ref={messagesContainerRef} className="max-h-[60vh] space-y-3 overflow-y-auto rounded-2xl border border-raw-border/20 bg-raw-black/35 p-3 sm:max-h-[560px] sm:p-4">
             <div className="flex items-center gap-3 rounded-2xl border border-raw-border/20 bg-raw-black/35 px-4 py-3">
               <Search className="h-4 w-4 text-raw-silver/35" />
               <input

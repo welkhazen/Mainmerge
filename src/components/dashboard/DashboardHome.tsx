@@ -54,19 +54,19 @@ function ActivityCard({
 }: ActivityCardProps) {
   return (
     <div className="dashboard-activity-card flex-1 rounded-2xl border border-raw-border/40 bg-raw-surface/30 p-4">
-      <div className="flex h-full items-start justify-between gap-4">
-        <div className="flex items-start gap-4">
-          <div className="dashboard-activity-icon h-9 w-9 rounded-xl bg-raw-gold/[0.06] flex items-center justify-center shrink-0">
+      <div className="flex h-full items-start justify-between gap-3 sm:gap-4">
+        <div className="flex min-w-0 items-start gap-3 sm:gap-4">
+          <div className="dashboard-activity-icon flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-raw-gold/[0.06]">
             <Icon className="h-4 w-4 text-raw-gold/50" />
           </div>
-          <div>
-            <p className="text-sm font-medium text-raw-text leading-snug">{title}</p>
-            <p className="mt-1 text-xs text-raw-silver/35 leading-snug">{desc}</p>
+          <div className="min-w-0">
+            <p className="text-sm font-medium leading-snug text-raw-text">{title}</p>
+            <p className="mt-1 text-xs leading-snug text-raw-silver/35">{desc}</p>
           </div>
         </div>
         <button
           onClick={() => onNavigate(tab)}
-          className="dashboard-activity-action rounded-full border border-raw-gold/25 px-4 py-1.5 text-[11px] font-medium text-raw-gold/70 hover:bg-raw-gold/5 hover:border-raw-gold/40 transition-all"
+          className="dashboard-activity-action shrink-0 rounded-full border border-raw-gold/25 px-3 py-2 text-[11px] font-medium text-raw-gold/70 transition-all hover:border-raw-gold/40 hover:bg-raw-gold/5 sm:px-4"
         >
           {action}
         </button>
@@ -90,18 +90,18 @@ export function DashboardHome({
   );
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-8 sm:space-y-10">
       {/* Welcome Hero */}
       <div>
-        <div className="flex items-center gap-4 flex-wrap">
-          <h1 className="font-display text-3xl tracking-wide text-raw-text sm:text-4xl">
+        <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+          <h1 className="font-display text-2xl tracking-wide text-raw-text sm:text-3xl md:text-4xl">
             Stay
           </h1>
           <Suspense fallback={null}>
             <ContainerTextFlipLazy
               words={["anonymous", "connected", "growing", "raW"]}
               interval={2800}
-              className="!text-2xl sm:!text-3xl"
+              className="!text-xl sm:!text-2xl md:!text-3xl"
             />
           </Suspense>
         </div>
@@ -109,16 +109,16 @@ export function DashboardHome({
 
       {/* Explore Communities */}
       <div>
-        <div className="flex items-center justify-between mb-5">
-          <h2 className="font-display text-lg tracking-wide text-raw-text">Explore Communities</h2>
+        <div className="mb-4 flex items-center justify-between sm:mb-5">
+          <h2 className="font-display text-base tracking-wide text-raw-text sm:text-lg">Explore Communities</h2>
           <button
             onClick={() => onNavigate("communities")}
-            className="flex items-center gap-1 text-xs text-raw-gold/60 hover:text-raw-gold transition-colors"
+            className="flex items-center gap-1 text-xs text-raw-gold/60 transition-colors hover:text-raw-gold"
           >
             View All <ChevronRight className="h-3 w-3" />
           </button>
         </div>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
           {previewCommunities.map((community) => {
             const coverVideo = COMMUNITY_COVER_VIDEOS[community.id];
             const coverImage = COMMUNITY_COVER_IMAGES[community.id] ?? community.logoUrl;
@@ -156,25 +156,25 @@ export function DashboardHome({
 
       {/* Answer Your Daily Polls */}
       <div>
-        <h2 className="font-display text-lg tracking-wide text-raw-text mb-4">Answer Your Daily Polls</h2>
-        <div className="dashboard-activity-card rounded-2xl border border-raw-border/40 bg-raw-surface/30 p-4 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div className="dashboard-activity-icon h-9 w-9 rounded-xl bg-raw-gold/[0.06] flex items-center justify-center shrink-0">
+        <h2 className="mb-4 font-display text-base tracking-wide text-raw-text sm:text-lg">Answer Your Daily Polls</h2>
+        <div className="dashboard-activity-card flex flex-col gap-4 rounded-2xl border border-raw-border/40 bg-raw-surface/30 p-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className="dashboard-activity-icon flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-raw-gold/[0.06]">
               <Target className="h-4 w-4 text-raw-gold/50" />
             </div>
-            <div>
+            <div className="min-w-0">
               <p className="text-sm font-medium text-raw-text">Daily Poll</p>
               <p className="mt-1 text-xs text-raw-silver/35">Answer today's anonymous question</p>
             </div>
           </div>
-          <div className="flex items-center gap-4">
-            <div className="text-right">
+          <div className="flex items-center justify-between gap-4 sm:justify-start">
+            <div className="sm:text-right">
               <p className="text-[10px] uppercase tracking-wide text-raw-silver/40">Dailies left</p>
               <p className="text-xl font-bold text-raw-gold/80">{dailyItemsLeft}</p>
             </div>
             <button
               onClick={() => onNavigate("polls")}
-              className="dashboard-activity-action rounded-full border border-raw-gold/25 px-4 py-1.5 text-[11px] font-medium text-raw-gold/70 hover:bg-raw-gold/5 hover:border-raw-gold/40 transition-all"
+              className="dashboard-activity-action rounded-full border border-raw-gold/25 px-4 py-2 text-[11px] font-medium text-raw-gold/70 transition-all hover:border-raw-gold/40 hover:bg-raw-gold/5"
             >
               Answer
             </button>
@@ -184,7 +184,7 @@ export function DashboardHome({
 
       {/* Earn More By Completing The Challenges */}
       <div>
-        <h2 className="font-display text-lg tracking-wide text-raw-text mb-4">Earn More By Completing The Challenges</h2>
+        <h2 className="mb-4 font-display text-base tracking-wide text-raw-text sm:text-lg">Earn More By Completing The Challenges</h2>
         <div className="flex flex-col gap-3 sm:flex-row">
           <ActivityCard
             title="Daily Spin"

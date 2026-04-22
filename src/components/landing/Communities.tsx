@@ -34,22 +34,22 @@ export function Communities({ onSignupClick }: CommunitiesProps) {
     <section
       ref={sectionRef as React.RefObject<HTMLElement>}
       id="communities"
-      className="relative py-28 px-6 bg-black/40"
+      className="relative bg-black/40 px-4 py-16 sm:px-6 sm:py-24 md:py-28"
     >
       <div className="mx-auto w-full max-w-6xl">
-        <div className="mb-14 text-center">
-          <h2 className="font-display text-3xl tracking-wide text-raw-text sm:text-4xl">
+        <div className="mb-10 text-center sm:mb-14">
+          <h2 className="font-display text-2xl tracking-wide text-raw-text sm:text-3xl md:text-4xl">
             24/7 communities for real talk.
           </h2>
-          <p className="mt-4 text-base text-raw-silver/50 max-w-xl mx-auto">
+          <p className="mx-auto mt-3 max-w-xl text-sm text-raw-silver/50 sm:mt-4 sm:text-base">
             Start with 3 founding categories. Smaller micro-communities unlock as raW grows.
           </p>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-3">
+        <div className="grid gap-4 sm:gap-6 md:grid-cols-3">
           {communities.map((c) => (
             <GlareCard key={c.title}>
-              <div className="rounded-2xl border border-raw-border/50 bg-raw-surface/50 p-8">
+              <div className="rounded-2xl border border-raw-border/50 bg-raw-surface/50 p-5 sm:p-8">
                 <div className="mb-5 inline-block rounded-full border border-raw-gold/20 bg-raw-gold/5 px-3 py-1">
                   <span className="text-[10px] font-medium tracking-wider text-raw-gold/70 uppercase">
                     {c.badge}
@@ -63,25 +63,25 @@ export function Communities({ onSignupClick }: CommunitiesProps) {
         </div>
 
         {/* Communities worldwide */}
-        <div className="mx-auto mt-16 flex max-w-5xl flex-col items-center gap-8 md:flex-row md:items-center md:gap-10">
+        <div className="mx-auto mt-12 flex max-w-5xl flex-col items-center gap-6 sm:mt-16 sm:gap-8 md:flex-row md:items-center md:gap-10">
           <div className="flex-1 text-center md:text-left">
             <p className="font-display text-[10px] tracking-[0.3em] uppercase text-raw-silver/40">
               Communities worldwide
             </p>
-            <h3 className="mt-3 font-display text-2xl tracking-wide text-raw-text sm:text-3xl">
+            <h3 className="mt-3 font-display text-xl tracking-wide text-raw-text sm:text-2xl md:text-3xl">
               Where mind meets heart.
             </h3>
-            <p className="mt-3 max-w-md text-sm leading-relaxed text-raw-silver/50">
+            <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-raw-silver/50 md:mx-0">
               Real connection starts when intellect and emotion align. raW communities
               are built for people who think deeply and feel deeply — worldwide, 24/7.
             </p>
           </div>
-          <div className="flex-shrink-0 relative">
+          <div className="relative w-full max-w-sm flex-shrink-0 md:max-w-none md:w-auto">
             <div
               className="relative overflow-hidden"
               style={{
                 width: "min(100%, 460px)",
-                height: "clamp(260px, 34vw, 400px)",
+                height: "clamp(220px, 70vw, 400px)",
                 WebkitMaskImage:
                   "radial-gradient(ellipse at center, black 42%, rgba(0,0,0,0.75) 62%, transparent 88%)",
                 maskImage:
