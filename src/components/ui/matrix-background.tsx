@@ -47,9 +47,8 @@ const MatrixBackground = memo(() => {
     if (!ctx) return;
 
     const resizeCanvas = () => {
-      const parent = canvas.parentElement;
-      canvas.width = parent?.clientWidth ?? window.innerWidth;
-      canvas.height = parent?.clientHeight ?? window.innerHeight;
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
       ctx.font = `${FONT_SIZE}px monospace`;
     };
 
@@ -155,7 +154,7 @@ const MatrixBackground = memo(() => {
   return (
     <canvas
       ref={canvasRef}
-      className="absolute inset-0 pointer-events-none z-[1]"
+      className="fixed inset-0 pointer-events-none z-[1]"
       style={{ background: 'transparent', opacity: 0 }}
     />
   );

@@ -1,4 +1,4 @@
-import { Suspense, lazy, useState } from "react";
+import { Suspense, lazy } from "react";
 import { Logo3D } from "@/components/ui/logo-3d";
 import { track } from "@/lib/analytics";
 import { useTrackSectionView } from "@/lib/analytics/useTrackSectionView";
@@ -18,7 +18,6 @@ interface HeroProps {
 export function Hero({ onSignupClick, showDottedSurface = true }: HeroProps) {
   const sectionRef = useTrackSectionView("hero");
   const { heroCopy, signupCta } = useFeatureExperiments();
-  const [showMatrixIntro, setShowMatrixIntro] = useState(true);
 
   const words = [
     ...(heroCopy === "identity-first"

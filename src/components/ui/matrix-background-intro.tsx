@@ -79,9 +79,8 @@ const MatrixBackgroundIntro = memo(function MatrixBackgroundIntro({
     };
 
     const resizeCanvas = () => {
-      const parent = canvas.parentElement;
-      canvas.width = parent?.clientWidth ?? window.innerWidth;
-      canvas.height = parent?.clientHeight ?? window.innerHeight;
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
       context.font = `${FONT_SIZE}px monospace`;
       createDrops();
     };
@@ -150,7 +149,7 @@ const MatrixBackgroundIntro = memo(function MatrixBackgroundIntro({
   return (
     <canvas
       ref={canvasRef}
-      className={`matrix-intro-canvas pointer-events-none absolute inset-0 z-[2] ${className}`}
+      className={`matrix-intro-canvas pointer-events-none fixed inset-0 z-[2] ${className}`}
       style={{ opacity: 0 }}
       aria-hidden="true"
     />

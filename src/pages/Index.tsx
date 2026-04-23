@@ -1,4 +1,4 @@
-import { Suspense, lazy, useEffect } from "react";
+import { Suspense, lazy, useEffect, useState } from "react";
 import { Navbar } from "@/components/landing/Navbar";
 import { ProblemSection } from "@/components/landing/ProblemSection";
 import { Hero } from "@/components/landing/Hero";
@@ -10,7 +10,9 @@ import { WheelReward } from "@/components/landing/WheelReward";
 import { WhyAnonymity } from "@/components/landing/WhyAnonymity";
 import { LandingFooter } from "@/components/landing/LandingFooter";
 import { OnboardingJourney } from "@/components/onboarding/OnboardingJourney";
+import MatrixBackgroundIntro from "@/components/ui/matrix-background-intro";
 import PerforatedBackground from "@/components/ui/perforated-background";
+import MatrixBackground from "@/components/ui/matrix-background";
 import { useHostMode } from "@/hooks/use-host-mode";
 import Dashboard from "@/pages/Dashboard";
 import { useRawStore } from "@/store/useRawStore";
@@ -20,6 +22,7 @@ const SignupModalLazy = lazy(() =>
 );
 
 const Index = () => {
+  const [showMatrixIntro, setShowMatrixIntro] = useState(true);
   const {
     user,
     isLoggedIn,
@@ -171,6 +174,9 @@ const Index = () => {
     <div className="min-h-screen bg-raw-black">
       <div className="relative">
         <PerforatedBackground />
+        <MatrixBackground />
+        {showMatrixIntro ? <MatrixBackgroundIntro onComplete={() => setShowMatrixIntro(false)} /> : null}
+
         <Navbar
           isLoggedIn={isLoggedIn}
           username={user?.username}
