@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import lntCoverVideo from "@/assets/2026-04-18 10_10_00.MP4";
-import { AlertTriangle, ArrowLeft, Bell, BellOff, Clock3, Heart, ImagePlus, MessageCircle, Plus, Reply, Search, Send, Trash2, Users, X } from "lucide-react";
+import { AlertTriangle, ArrowLeft, Bell, BellOff, Clock3, Heart, ImagePlus, Lock, MessageCircle, Plus, Reply, Search, Send, Trash2, Users, X } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,10 +12,13 @@ import {
   formatAdminTimestamp,
   getPersistedUserById,
   readChatReports,
+  readCommunityJoinRequests,
   readCommunityRequests,
   writeChatReports,
+  writeCommunityJoinRequests,
   writeCommunityRequests,
   type ChatReportRecord,
+  type CommunityJoinRequestRecord,
   type CommunityRequestRecord,
 } from "@/lib/adminData";
 import {
@@ -86,11 +89,12 @@ const INITIAL_COMMUNITY_SETTINGS_DRAFT: CommunitySettingsDraft = {
   logoUrl: "",
 };
 
-const FEATURED_DIRECTORY_COMMUNITY_IDS = ["lnt", "sic", "mw"] as const;
+const FEATURED_DIRECTORY_COMMUNITY_IDS = new Set(["lnt", "syt", "iijm", "li"]);
 
 const COMMUNITY_COVER_IMAGES: Record<string, string> = {
-  sic: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=1200&q=80",
-  mw: "https://images.unsplash.com/photo-1493836512294-502baa1986e2?auto=format&fit=crop&w=1200&q=80",
+  syt: "https://images.unsplash.com/photo-1534131707746-25d604851a1f?auto=format&fit=crop&w=1200&q=80",
+  iijm: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1200&q=80",
+  li: "https://images.unsplash.com/photo-1549895885-2e9af1a79571?auto=format&fit=crop&w=1200&q=80",
 };
 
 const COMMUNITY_COVER_VIDEOS: Record<string, string> = {
@@ -117,6 +121,7 @@ export function DashboardCommunities({
   const [reportTarget, setReportTarget] = useState<ReportTarget | null>(null);
   const [communityRequests, setCommunityRequests] = useState<CommunityRequestRecord[]>([]);
   const [chatReports, setChatReports] = useState<ChatReportRecord[]>([]);
+  const [communityJoinRequests, setCommunityJoinRequests] = useState<CommunityJoinRequestRecord[]>([]);
   const lastTouchedCommunityRef = useRef<string>("");
   const messagesContainerRef = useRef<HTMLDivElement | null>(null);
 
@@ -124,6 +129,7 @@ export function DashboardCommunities({
       setCommunities(readCommunityChats());
       setCommunityRequests(readCommunityRequests());
       setChatReports(readChatReports());
+      setCommunityJoinRequests(readCommunityJoinRequests());
     }, []);
 
     const selectedCommunity = useMemo(
@@ -179,8 +185,7 @@ export function DashboardCommunities({
     }, [filteredMessages]);
 
     const directoryCommunities = useMemo(() => {
-      const featuredSet = new Set(FEATURED_DIRECTORY_COMMUNITY_IDS);
-      return communities.filter((community) => featuredSet.has(community.id as (typeof FEATURED_DIRECTORY_COMMUNITY_IDS)[number]));
+      return communities.filter((community) => FEATURED_DIRECTORY_COMMUNITY_IDS.has(community.id) || community.id.startsWith("request-"));
     }, [communities]);
 
     useEffect(() => {
@@ -254,6 +259,34 @@ export function DashboardCommunities({
       if (shouldOpenPage) {
         onOpenCommunity(communityId);
       }
+    };
+
+    const handleRequestJoinCommunity = (community: PersistedCommunityRecord) => {
+      const existing = communityJoinRequests.find(
+        (r) => r.communityId === community.id && r.requesterId === user.id,
+      );
+      if (existing) {
+        toast({ title: "Request already sent", description: "Admin will review your access request." });
+        return;
+      }
+      const newRequest: CommunityJoinRequestRecord = {
+        id: `join-request-${Date.now()}`,
+        communityId: community.id,
+        communityTitle: community.title,
+        requesterId: user.id,
+        requesterName: user.username,
+        submittedAt: new Date().toISOString(),
+        status: "pending",
+      };
+      setCommunityJoinRequests((prev) => {
+        const next = [newRequest, ...prev];
+        writeCommunityJoinRequests(next);
+        return next;
+      });
+      toast({
+        title: "Access request sent",
+        description: `Admin will review your request to join ${community.title}.`,
+      });
     };
 
     const handleSendMessage = () => {
@@ -501,7 +534,7 @@ export function DashboardCommunities({
                   )}
                   {!coverVideo && <div className="absolute inset-0 bg-gradient-to-t from-raw-black/85 via-raw-black/30 to-transparent" />}
                   <div className="absolute bottom-3 right-3 rounded-full border border-raw-border/40 bg-raw-black/60 px-2.5 py-1 text-[10px] text-raw-silver/70 backdrop-blur-sm">
-                    {joined ? "Joined" : "Not joined"}
+                    {joined ? "Joined" : community.locked ? "Locked" : "Not joined"}
                   </div>
                 </div>
 
@@ -546,16 +579,43 @@ export function DashboardCommunities({
                       <span className="flex items-center gap-1">
                         <Users className="h-3.5 w-3.5" /> {community.members.length} members
                       </span>
-                      <span className="flex items-center gap-1">
-                        <div className="h-1.5 w-1.5 rounded-full bg-emerald-400/70" /> {countOnlineMembers(community)} online
-                      </span>
+                      {community.locked ? (
+                        <span className="flex items-center gap-1 text-raw-gold/60">
+                          <Lock className="h-3.5 w-3.5" /> Members only
+                        </span>
+                      ) : (
+                        <span className="flex items-center gap-1">
+                          <div className="h-1.5 w-1.5 rounded-full bg-emerald-400/70" /> {countOnlineMembers(community)} online
+                        </span>
+                      )}
                     </div>
-                    <Button
-                      onClick={() => onOpenCommunity(community.id)}
-                      className="rounded-xl bg-raw-gold px-4 text-raw-ink hover:bg-raw-gold/90"
-                    >
-                      Open Chat Page
-                    </Button>
+                    {community.locked && !joined ? (() => {
+                      const joinReq = communityJoinRequests.find(
+                        (r) => r.communityId === community.id && r.requesterId === user.id,
+                      );
+                      if (joinReq) {
+                        return (
+                          <div className="rounded-xl border border-amber-400/20 bg-amber-400/[0.06] px-4 py-2.5 text-[11px] text-amber-200/80 text-center">
+                            {joinReq.status === "pending" ? "Access request pending" : joinReq.status === "rejected" ? "Request rejected by admin" : "Approved"}
+                          </div>
+                        );
+                      }
+                      return (
+                        <Button
+                          onClick={() => handleRequestJoinCommunity(community)}
+                          className="rounded-xl border border-raw-gold/30 bg-transparent px-4 text-raw-gold hover:bg-raw-gold/10"
+                        >
+                          <Lock className="h-3.5 w-3.5" /> Request to Join
+                        </Button>
+                      );
+                    })() : (
+                      <Button
+                        onClick={() => onOpenCommunity(community.id)}
+                        className="rounded-xl bg-raw-gold px-4 text-raw-ink hover:bg-raw-gold/90"
+                      >
+                        Open Chat Page
+                      </Button>
+                    )}
                   </div>
                 </div>
               </div>
@@ -601,7 +661,7 @@ export function DashboardCommunities({
                   {unreadCount} unread
                 </div>
               )}
-              {!isJoined && (
+              {!isJoined && !selectedCommunity.locked && (
                 <button
                   onClick={() => handleJoinCommunity(selectedCommunity.id)}
                   className="flex items-center gap-2 rounded-full bg-raw-gold px-3 py-1.5 text-[11px] font-semibold text-raw-ink transition-colors hover:bg-raw-gold/90"
@@ -609,6 +669,23 @@ export function DashboardCommunities({
                   Join Group
                 </button>
               )}
+              {!isJoined && selectedCommunity.locked && (() => {
+                const joinReq = communityJoinRequests.find(
+                  (r) => r.communityId === selectedCommunity.id && r.requesterId === user.id,
+                );
+                return joinReq ? (
+                  <div className="rounded-full border border-amber-400/20 bg-amber-400/[0.06] px-3 py-1 text-[11px] text-amber-200/80">
+                    {joinReq.status === "pending" ? "Access request pending" : joinReq.status === "rejected" ? "Rejected by admin" : "Approved"}
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => handleRequestJoinCommunity(selectedCommunity)}
+                    className="flex items-center gap-2 rounded-full border border-raw-gold/30 bg-transparent px-3 py-1.5 text-[11px] text-raw-gold transition-colors hover:bg-raw-gold/10"
+                  >
+                    <Lock className="h-3.5 w-3.5" /> Request to Join
+                  </button>
+                );
+              })()}
               {canEditSelectedCommunity && (
                 <button
                   onClick={() => {
@@ -652,6 +729,36 @@ export function DashboardCommunities({
             </div>
           )}
 
+          {selectedCommunity.locked && !isJoined && (() => {
+            const joinReq = communityJoinRequests.find(
+              (r) => r.communityId === selectedCommunity.id && r.requesterId === user.id,
+            );
+            return (
+              <div className="flex flex-col items-center justify-center gap-4 rounded-2xl border border-raw-border/20 bg-raw-black/35 py-16 text-center">
+                <Lock className="h-8 w-8 text-raw-gold/40" />
+                <div>
+                  <p className="font-display text-base text-raw-text">Members only</p>
+                  <p className="mt-2 max-w-sm text-sm text-raw-silver/45">
+                    {joinReq?.status === "pending"
+                      ? "Your request is pending admin review. You'll be added once approved."
+                      : joinReq?.status === "rejected"
+                        ? "Your join request was not approved. Contact admin for more info."
+                        : "This community requires admin approval to join."}
+                  </p>
+                </div>
+                {!joinReq && (
+                  <button
+                    onClick={() => handleRequestJoinCommunity(selectedCommunity)}
+                    className="flex items-center gap-2 rounded-xl border border-raw-gold/30 bg-transparent px-5 py-2.5 text-sm text-raw-gold transition-colors hover:bg-raw-gold/10"
+                  >
+                    <Lock className="h-4 w-4" /> Request to Join
+                  </button>
+                )}
+              </div>
+            );
+          })()}
+
+          {(!selectedCommunity.locked || isJoined) && <>
           <div ref={messagesContainerRef} className="max-h-[50vh] min-h-[200px] space-y-3 overflow-y-auto rounded-2xl border border-raw-border/20 bg-raw-black/35 p-3 sm:max-h-[560px] sm:p-4">
             <div className="flex items-center gap-3 rounded-2xl border border-raw-border/20 bg-raw-black/35 px-4 py-3">
               <Search className="h-4 w-4 text-raw-silver/35" />
@@ -786,6 +893,7 @@ export function DashboardCommunities({
             </div>
             <p className="mt-3 text-[11px] text-raw-silver/35">Messages in this community: {activeMessages.length}</p>
           </div>
+          </>}
         </div>
       );
     };
