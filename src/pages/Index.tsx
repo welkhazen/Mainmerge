@@ -16,6 +16,7 @@ import MatrixBackground from "@/components/ui/matrix-background";
 import { useHostMode } from "@/hooks/use-host-mode";
 import Dashboard from "@/pages/Dashboard";
 import { useRawStore } from "@/store/useRawStore";
+import { joinCommunityChat } from "@/lib/communityChat";
 
 const SignupModalLazy = lazy(() =>
   import("@/components/landing/SignupModal").then((module) => ({ default: module.SignupModal }))
@@ -113,7 +114,12 @@ const Index = () => {
               return [...previous, communityId];
             });
           }}
-          onCompleteOnboarding={completeOnboarding}
+          onCompleteOnboarding={() => {
+            onboardingSelectedCommunityIds.forEach((communityId) => {
+              joinCommunityChat(communityId, { userId: user.id, username: user.username });
+            });
+            completeOnboarding();
+          }}
           onLogout={logout}
         />
       );

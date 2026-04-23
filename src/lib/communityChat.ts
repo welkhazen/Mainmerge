@@ -20,7 +20,7 @@ function mergeWithDefaults(storedCommunities: PersistedCommunityRecord[]): Persi
   return [...storedCommunities, ...defaultCommunities.filter((community) => !knownIds.has(community.id))];
 }
 
-const RETIRED_COMMUNITY_IDS = new Set(["sg"]);
+const RETIRED_COMMUNITY_IDS = new Set(["sg", "sic", "mw"]);
 
 export function readCommunityChats(): PersistedCommunityRecord[] {
   const storedCommunities = readStoredCommunities();
@@ -313,6 +313,10 @@ export function likeCommunityMessage(communityId: string, messageId: string, use
     };
   });
   writeCommunityChats(nextCommunities);
+}
+
+export function approveCommunityJoinRequest(communityId: string, userId: string, username: string): PersistedCommunityRecord | null {
+  return joinCommunityChat(communityId, { userId, username });
 }
 
 export type { PersistedCommunityRecord, CommunityChatMessageRecord, CommunityChatMemberRecord, CommunityStatus } from "./communityChat.types";

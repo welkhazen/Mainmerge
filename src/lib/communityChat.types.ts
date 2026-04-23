@@ -33,6 +33,7 @@ export interface PersistedCommunityRecord {
   description: string;
   topic: string;
   status: CommunityStatus;
+  locked?: boolean;
   createdAt: string;
   createdBy?: string;
   members: CommunityChatMemberRecord[];
