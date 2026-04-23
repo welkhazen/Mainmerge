@@ -4,21 +4,26 @@ interface Logo3DProps {
   size?: number;
   className?: string;
   interactive?: boolean;
+  colorScheme?: "gold" | "white";
 }
 
-function GoldMark({ size }: { size: number }) {
+function LogoMark({ size, colorScheme }: { size: number; colorScheme: "gold" | "white" }) {
+  const isWhite = colorScheme === "white";
+
   return (
     <div
       className="font-display tracking-[0.01em] leading-none select-none"
       style={{
         fontSize: size * 0.44,
-        background:
-          "linear-gradient(135deg, #F6D454 0%, #F1C42D 40%, #B8941E 65%, #F1C42D 100%)",
+        background: isWhite
+          ? "linear-gradient(135deg, #FFFFFF 0%, #F4F4F4 50%, #DCDCDC 100%)"
+          : "linear-gradient(135deg, #F6D454 0%, #F1C42D 40%, #B8941E 65%, #F1C42D 100%)",
         WebkitBackgroundClip: "text",
         WebkitTextFillColor: "transparent",
         backgroundClip: "text",
-        filter:
-          "drop-shadow(0 0 18px rgba(241,196,45,0.45)) drop-shadow(0 0 32px rgba(241,196,45,0.2))",
+        filter: isWhite
+          ? "drop-shadow(0 0 18px rgba(255,255,255,0.45)) drop-shadow(0 0 32px rgba(255,255,255,0.2))"
+          : "drop-shadow(0 0 18px rgba(241,196,45,0.45)) drop-shadow(0 0 32px rgba(241,196,45,0.2))",
       }}
     >
       raW
@@ -26,7 +31,7 @@ function GoldMark({ size }: { size: number }) {
   );
 }
 
-export function Logo3D({ size = 132, className = "" }: Logo3DProps) {
+export function Logo3D({ size = 132, className = "", colorScheme = "gold" }: Logo3DProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [videoOk, setVideoOk] = useState(true);
 
@@ -59,13 +64,15 @@ export function Logo3D({ size = 132, className = "" }: Logo3DProps) {
         className="pointer-events-none absolute inset-[-30%] rounded-full"
         style={{
           background:
-            "radial-gradient(circle, rgba(241,196,45,0.16) 0%, rgba(241,196,45,0.05) 40%, transparent 70%)",
+            colorScheme === "white"
+              ? "radial-gradient(circle, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0.05) 40%, transparent 70%)"
+              : "radial-gradient(circle, rgba(241,196,45,0.16) 0%, rgba(241,196,45,0.05) 40%, transparent 70%)",
         }}
       />
 
       {/* Always-present fallback text — visible until/unless the video paints */}
       <div className="absolute inset-0 flex items-center justify-center">
-        <GoldMark size={size} />
+        <LogoMark size={size} colorScheme={colorScheme} />
       </div>
 
       {videoOk && (

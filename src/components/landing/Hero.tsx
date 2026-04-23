@@ -69,7 +69,11 @@ export function Hero({ onSignupClick, showDottedSurface = true }: HeroProps) {
 
       <div className="relative z-10 flex w-full flex-col items-center text-center">
         <div className="mb-5 sm:mb-8">
-          <Logo3D size={104} className="sm:[width:148px] sm:[height:148px] md:[width:172px] md:[height:172px] lg:[width:196px] lg:[height:196px]" />
+          <Logo3D
+            size={104}
+            colorScheme="white"
+            className="sm:[width:148px] sm:[height:148px] md:[width:172px] md:[height:172px] lg:[width:196px] lg:[height:196px]"
+          />
         </div>
 
         <p className="mb-5 font-display text-[10px] uppercase tracking-[0.2em] text-raw-gold/70 sm:tracking-[0.33em] sm:text-[11px]">
