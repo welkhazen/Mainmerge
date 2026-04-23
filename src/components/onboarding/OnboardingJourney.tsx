@@ -71,40 +71,31 @@ const EXTRA_ONBOARDING_POLLS: OnboardingPoll[] = [
 
 const ONBOARDING_COMMUNITIES = [
   {
-    id: "signal-room",
-    title: "Late Night Talks",
-    description: "Unfiltered conversations that only happen after midnight. For night owls and deep thinkers.",
-    members: "13.4k",
-    activeNow: "1.3k active",
+    id: "lnt",
+    title: "Late Night Talk",
+    description: "Honest conversation when the world gets quiet and people finally say what they actually mean.",
+    members: "3",
+    activeNow: "1 active",
     image:
       "https://images.unsplash.com/photo-1521119989659-a83eee488004?auto=format&fit=crop&w=900&q=80",
   },
   {
-    id: "build-lab",
-    title: "Self-Improvement Circle",
-    description: "Atomic habits, stoicism, and the relentless pursuit of the better self. Peer-driven accountability.",
-    members: "8.7k",
-    activeNow: "843 active",
+    id: "syt",
+    title: "Speak Your Truth",
+    description: "A space to say what you've been holding back. No filters, no judgment — just real voices sharing real experiences.",
+    members: "3",
+    activeNow: "1 active",
     image:
-      "https://images.unsplash.com/photo-1508672019048-805c876b67e2?auto=format&fit=crop&w=900&q=80",
+      "https://images.unsplash.com/photo-1534131707746-25d604851a1f?auto=format&fit=crop&w=900&q=80",
   },
   {
-    id: "healing-circle",
-    title: "Healing Circle",
-    description: "Mental wellness, emotional check-ins, and anonymous support with respectful moderation.",
-    members: "9.2k",
-    activeNow: "2.5k active",
+    id: "iijm",
+    title: "Is It Just Me",
+    description: "Relatable moments, shared observations, and the quiet comfort of realizing you're not the only one.",
+    members: "3",
+    activeNow: "1 active",
     image:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=900&q=80",
-  },
-  {
-    id: "money-guild",
-    title: "Money Guild",
-    description: "Income, investing, debt, and practical finance in clear language with no flex culture.",
-    members: "11.1k",
-    activeNow: "1.1k active",
-    image:
-      "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=900&q=80",
+      "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=900&q=80",
   },
 ];
 

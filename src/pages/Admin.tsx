@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
-import { ArrowLeft, Ban, BellRing, CheckCircle2, Flag, Plus, Shield, Trash2, Users, XCircle } from "lucide-react";
+import { ArrowLeft, Ban, BellRing, CheckCircle2, Flag, Lock, Plus, Shield, Trash2, Users, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 import { useRawStore } from "@/store/useRawStore";
@@ -11,17 +11,20 @@ import {
   formatAdminTimestamp,
   readAdminPolls,
   readChatReports,
+  readCommunityJoinRequests,
   readCommunityRequests,
   readPersistedUsers,
   updateUserModerationStatus,
   writeChatReports,
+  writeCommunityJoinRequests,
   writeCommunityRequests,
   type AdminPollRecord,
   type ChatReportRecord,
+  type CommunityJoinRequestRecord,
   type CommunityRequestRecord,
   type PersistedUserRecord,
 } from "@/lib/adminData";
-import { createCommunityFromApprovedRequest } from "@/lib/communityChat";
+import { approveCommunityJoinRequest, createCommunityFromApprovedRequest } from "@/lib/communityChat";
 
 function SummaryCard({ label, value, hint }: { label: string; value: string | number; hint: string }) {
   return (
@@ -38,6 +41,7 @@ export default function Admin() {
   const [users, setUsers] = useState<PersistedUserRecord[]>([]);
   const [communityRequests, setCommunityRequests] = useState<CommunityRequestRecord[]>([]);
   const [chatReports, setChatReports] = useState<ChatReportRecord[]>([]);
+  const [communityJoinRequests, setCommunityJoinRequests] = useState<CommunityJoinRequestRecord[]>([]);
   const [adminPolls, setAdminPolls] = useState<AdminPollRecord[]>([]);
   const [pollQuestion, setPollQuestion] = useState("");
   const [pollOptions, setPollOptions] = useState(["", ""]);
@@ -47,6 +51,7 @@ export default function Admin() {
     setCommunityRequests(readCommunityRequests());
     setChatReports(readChatReports());
     setAdminPolls(readAdminPolls());
+    setCommunityJoinRequests(readCommunityJoinRequests());
   }, []);
 
   useEffect(() => {
@@ -62,6 +67,10 @@ export default function Admin() {
   const pendingRequests = useMemo(
     () => communityRequests.filter((request) => request.status === "pending"),
     [communityRequests]
+  );
+  const pendingJoinRequests = useMemo(
+    () => communityJoinRequests.filter((r) => r.status === "pending"),
+    [communityJoinRequests]
   );
   const bannedUsers = useMemo(() => users.filter((entry) => entry.moderationStatus === "banned"), [users]);
 
@@ -124,6 +133,33 @@ export default function Admin() {
       description: status === "approved"
         ? "The request has been approved and is now live in Communities as a group chat."
         : `The request has been ${status} and removed from the pending queue.`,
+    });
+  };
+
+  const handleJoinRequestStatus = (requestId: string, status: "approved" | "rejected") => {
+    const target = communityJoinRequests.find((r) => r.id === requestId);
+    if (!target) return;
+
+    const nextRequests = communityJoinRequests.map((r) =>
+      r.id === requestId
+        ? { ...r, status, reviewedAt: new Date().toISOString(), reviewedBy: user.username }
+        : r,
+    );
+    setCommunityJoinRequests(nextRequests);
+    writeCommunityJoinRequests(nextRequests);
+
+    if (status === "approved") {
+      approveCommunityJoinRequest(target.communityId, target.requesterId, target.requesterName);
+      track("admin_action_performed", { action: "approve_join_request", resource_id: requestId });
+    } else {
+      track("admin_action_performed", { action: "reject_join_request", resource_id: requestId });
+    }
+
+    toast({
+      title: status === "approved" ? "Access granted" : "Request rejected",
+      description: status === "approved"
+        ? `@${target.requesterName} has been added to ${target.communityTitle}.`
+        : `@${target.requesterName}'s request to join ${target.communityTitle} was rejected.`,
     });
   };
 
@@ -212,6 +248,7 @@ export default function Admin() {
         <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
           <SummaryCard label="Users" value={users.length} hint="All locally registered accounts, including admin and reported aliases." />
           <SummaryCard label="Pending Requests" value={pendingRequests.length} hint="Community creation requests waiting for admin approval." />
+          <SummaryCard label="Join Requests" value={pendingJoinRequests.length} hint="Pending requests to join locked communities." />
           <SummaryCard label="Open Reports" value={openReports.length} hint="Chat reports still awaiting a moderation decision." />
           <SummaryCard label="Banned Users" value={bannedUsers.length} hint="Accounts currently blocked from chatting after review." />
         </div>
@@ -316,6 +353,59 @@ export default function Admin() {
                         <XCircle className="h-4 w-4" /> Reject
                       </Button>
                     </div>
+                  )}
+                </div>
+              ))
+            )}
+          </div>
+        </section>
+
+        <section className="rounded-2xl border border-raw-border/30 bg-raw-surface/20 p-4 sm:rounded-3xl sm:p-6">
+          <div className="flex items-center gap-3">
+            <Lock className="h-5 w-5 text-raw-gold/70" />
+            <div>
+              <h2 className="font-display text-xl tracking-wide">Join requests</h2>
+              <p className="mt-1 text-sm text-raw-silver/45">Approve or reject user requests to join locked communities.</p>
+            </div>
+          </div>
+
+          <div className="mt-5 space-y-3">
+            {communityJoinRequests.length === 0 ? (
+              <div className="rounded-2xl border border-raw-border/20 bg-raw-black/35 p-4 text-sm text-raw-silver/45">No join requests yet.</div>
+            ) : (
+              communityJoinRequests.map((request) => (
+                <div key={request.id} className="rounded-2xl border border-raw-border/20 bg-raw-black/35 p-5">
+                  <div className="flex flex-wrap items-start justify-between gap-4">
+                    <div>
+                      <p className="font-display text-lg text-raw-text">{request.communityTitle}</p>
+                      <p className="mt-1 text-sm text-raw-silver/45">
+                        Requested by @{request.requesterName} · {formatAdminTimestamp(request.submittedAt)}
+                      </p>
+                    </div>
+                    <span className={`rounded-full border px-3 py-1 text-[11px] uppercase tracking-[0.15em] ${
+                      request.status === "pending"
+                        ? "border-amber-400/20 bg-amber-400/[0.08] text-amber-200"
+                        : request.status === "approved"
+                          ? "border-emerald-400/20 bg-emerald-400/[0.08] text-emerald-200"
+                          : "border-red-400/20 bg-red-500/10 text-red-200"
+                    }`}>
+                      {request.status}
+                    </span>
+                  </div>
+                  {request.status === "pending" && (
+                    <div className="mt-4 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:gap-3">
+                      <Button onClick={() => handleJoinRequestStatus(request.id, "approved")} className="rounded-xl bg-emerald-400 px-4 text-raw-ink hover:bg-emerald-300">
+                        <CheckCircle2 className="h-4 w-4" /> Approve
+                      </Button>
+                      <Button onClick={() => handleJoinRequestStatus(request.id, "rejected")} className="rounded-xl bg-red-400 px-4 text-raw-ink hover:bg-red-300">
+                        <XCircle className="h-4 w-4" /> Reject
+                      </Button>
+                    </div>
+                  )}
+                  {request.status !== "pending" && (
+                    <p className="mt-3 text-xs text-raw-silver/40">
+                      Reviewed by @{request.reviewedBy ?? "admin"}{request.reviewedAt ? ` · ${formatAdminTimestamp(request.reviewedAt)}` : ""}
+                    </p>
                   )}
                 </div>
               ))
