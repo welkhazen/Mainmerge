@@ -1,5 +1,5 @@
 import { GlareCard } from "@/components/ui/glare-card";
-import { Palette, Crown, Sparkles, Shield, Lock } from "lucide-react";
+import { Palette, Crown, Sparkles, Shield, Lock, Gem } from "lucide-react";
 
 interface MarketplaceItem {
   id: string;
@@ -13,6 +13,16 @@ interface MarketplaceItem {
 }
 
 const items: MarketplaceItem[] = [
+  {
+    id: "token-golden",
+    title: "Golden Geometric Token",
+    description: "Exclusive digital collectible. A fractal-patterned golden sphere representing raW's core essence.",
+    price: "$12.99",
+    icon: Gem,
+    rarity: "legendary",
+    locked: false,
+    levelRequired: 1,
+  },
   {
     id: "theme-obsidian",
     title: "Obsidian Pack",

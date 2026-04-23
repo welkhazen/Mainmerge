@@ -21,7 +21,7 @@ const COMMUNITY_COVER_VIDEOS: Record<string, string> = {
   lnt: lntCoverVideo,
 };
 
-const PREVIEW_IDS = ["lnt", "sic", "mw", "sg"];
+const PREVIEW_IDS = ["lnt", "syt", "iijm", "li"];
 
 const ContainerTextFlipLazy = lazy(() =>
   import("@/components/ui/container-text-flip").then((module) => ({ default: module.ContainerTextFlip }))
