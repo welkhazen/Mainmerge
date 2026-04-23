@@ -1,6 +1,7 @@
 import { motion } from "motion/react";
 import { ArrowRight, Zap } from "lucide-react";
 import { DotGlobeHero } from "@/components/ui/globe-hero";
+import { LiquidButton } from "@/components/ui/liquid-glass-button";
 import { track } from "@/lib/analytics";
 import { useTrackSectionView } from "@/lib/analytics/useTrackSectionView";
 import { useFeatureExperiments } from "@/hooks/useFeatureExperiments";
@@ -120,45 +121,29 @@ export function Hero({ onSignupClick }: HeroProps) {
             transition={{ duration: 0.8, delay: 1 }}
             className="flex flex-col sm:flex-row gap-6 justify-center items-center pt-4"
           >
-            <motion.button
+            <LiquidButton
               type="button"
               onClick={handleJoinClick}
-              whileHover={{
-                scale: 1.05,
-                boxShadow: "0 20px 40px rgba(0,0,0,0.2), 0 0 25px hsl(var(--primary) / 0.3)",
-                y: -2,
-              }}
-              whileTap={{ scale: 0.98 }}
-              className="group relative inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-primary via-primary to-primary/90 text-primary-foreground rounded-xl font-semibold text-lg shadow-xl hover:shadow-primary/30 transition-all duration-500 overflow-hidden border border-primary/20"
+              size="xl"
+              className="rounded-full text-base font-semibold tracking-wide text-primary"
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-white/20 via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
-                initial={{ x: "-100%" }}
-                whileHover={{ x: "100%" }}
-                transition={{ duration: 0.8 }}
-              />
-              <span className="relative z-10 tracking-wide">{signupLabel}</span>
-              <ArrowRight className="relative z-10 w-5 h-5 group-hover:translate-x-2 transition-transform duration-300" />
-            </motion.button>
+              <span className="relative z-10 inline-flex items-center gap-2">
+                {signupLabel}
+                <ArrowRight className="w-5 h-5" />
+              </span>
+            </LiquidButton>
 
-            <motion.button
+            <LiquidButton
               type="button"
               onClick={handleExploreClick}
-              whileHover={{
-                scale: 1.05,
-                backgroundColor: "hsl(var(--accent))",
-                borderColor: "hsl(var(--primary))",
-                boxShadow: "0 15px 30px rgba(0,0,0,0.1), 0 0 15px hsl(var(--primary) / 0.1)",
-                y: -2,
-              }}
-              whileTap={{ scale: 0.98 }}
-              className="group relative inline-flex items-center gap-3 px-8 py-4 border-2 border-border/40 rounded-xl font-semibold text-lg hover:border-primary/40 transition-all duration-500 backdrop-blur-xl bg-background/60 hover:bg-background/90 shadow-lg overflow-hidden"
+              size="xl"
+              className="rounded-full text-base font-semibold tracking-wide text-foreground"
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <Zap className="relative z-10 w-5 h-5 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300" />
-              <span className="relative z-10 tracking-wide">Explore Communities</span>
-            </motion.button>
+              <span className="relative z-10 inline-flex items-center gap-2">
+                <Zap className="w-5 h-5" />
+                Explore Communities
+              </span>
+            </LiquidButton>
           </motion.div>
 
           <p className="text-xs text-muted-foreground/60 pt-2">Username + password only.</p>
