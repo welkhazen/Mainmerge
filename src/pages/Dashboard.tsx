@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Home as HomeIcon, MessageCircle, Target, User as UserIcon, Wallet } from "lucide-react";
+import { Home as HomeIcon, MessageCircle, Target, User as UserIcon, Wallet, LogOut, Shield } from "lucide-react";
 import { matchPath, useLocation, useNavigate } from "react-router-dom";
 import { DashboardNav, type DashboardTab } from "@/components/dashboard/DashboardNav";
 import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
