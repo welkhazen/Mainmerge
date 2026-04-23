@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { ThemeCustomizer } from "@/components/theme/ThemeCustomizer";
+import { LiquidButton } from "@/components/ui/liquid-glass-button";
 import { track } from "@/lib/analytics";
 
 interface NavbarProps {
@@ -59,12 +60,13 @@ export function Navbar({ isLoggedIn, username, onSignupClick }: NavbarProps) {
           ) : (
             <>
               <ThemeCustomizer placement="inline" className="shrink-0" />
-              <button
+              <LiquidButton
                 onClick={handleSignupClick}
-                className="rounded-full bg-raw-gold px-4 py-2 text-sm font-semibold text-raw-black transition-all hover:bg-raw-gold/90 hover:shadow-lg hover:shadow-raw-gold/20 sm:px-5"
+                size="sm"
+                className="rounded-full text-sm font-semibold text-primary"
               >
-                Join Free
-              </button>
+                <span className="relative z-10">Join Free</span>
+              </LiquidButton>
             </>
           )}
 

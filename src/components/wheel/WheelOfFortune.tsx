@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { useTheme } from "@/providers/ThemeProvider";
+import { LiquidButton } from "@/components/ui/liquid-glass-button";
+import { cn } from "@/lib/utils";
 
 export interface WheelPrize {
   id: string;
@@ -224,17 +226,19 @@ export function WheelOfFortune({ prizes, onSpinEnd, disabled = false, prizeWeigh
         </svg>
       </div>
 
-      <button
+      <LiquidButton
         onClick={handleSpin}
         disabled={isSpinning || disabled}
-        className={`mt-5 sm:mt-8 relative overflow-hidden rounded-full px-8 py-3 font-display text-sm uppercase tracking-[0.2em] transition-all sm:px-10 sm:py-3.5 ${
-          isSpinning || disabled
-            ? "cursor-not-allowed border border-raw-border/30 bg-raw-surface text-raw-silver/30"
-            : "bg-raw-gold text-raw-black hover:scale-105 hover:shadow-[0_0_30px_rgb(var(--raw-accent)/0.3)] active:scale-95"
-        }`}
+        size="lg"
+        className={cn(
+          "mt-5 sm:mt-8 rounded-full font-display text-sm uppercase tracking-[0.2em]",
+          isSpinning || disabled ? "text-raw-silver/30" : "text-primary"
+        )}
       >
-        {isSpinning ? "Spinning..." : disabled ? "Come Back Tomorrow" : "Spin"}
-      </button>
+        <span className="relative z-10">
+          {isSpinning ? "Spinning..." : disabled ? "Come Back Tomorrow" : "Spin"}
+        </span>
+      </LiquidButton>
     </div>
   );
 }
