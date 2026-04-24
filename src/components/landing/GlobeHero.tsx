@@ -152,7 +152,7 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
           </motion.button>
 
           <motion.a
-            href="#hero"
+            href="#communities"
             onClick={handleSecondaryClick}
             whileHover={{
               scale: 1.05,
