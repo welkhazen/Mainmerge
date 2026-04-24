@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
 
 interface TypewriterStackProps {
@@ -62,10 +63,17 @@ export function TypewriterStack({
       ))}
       <span className={cn("inline-flex items-center", lineClassName)}>
         <span aria-live="polite">{text}</span>
-        <span
+        <motion.span
           aria-hidden="true"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{
+            duration: 0.8,
+            repeat: Infinity,
+            repeatType: "reverse",
+          }}
           className={cn(
-            "ml-[0.08em] inline-block w-[0.08em] h-[0.9em] animate-pulse bg-primary",
+            "ml-2 inline-block rounded-sm w-[4px] h-4 sm:h-6 md:h-8 lg:h-10 xl:h-12 bg-primary",
             cursorClassName
           )}
         />
@@ -73,3 +81,4 @@ export function TypewriterStack({
     </span>
   );
 }
+
