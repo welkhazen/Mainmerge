@@ -80,7 +80,7 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
                   }}
                 >
                   <TypewriterStack
-                    words={["Your Place", "Your People", "Yourself", "Be raW"]}
+                    words={["Your Place", "Your People", "Yourself...", "raW"]}
                     cursorClassName="bg-primary"
                   />
                 </span>
