@@ -100,13 +100,13 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
               className="text-xl md:text-2xl text-muted-foreground leading-relaxed font-medium"
               style={{ fontFamily: "Inter, system-ui, sans-serif" }}
             >
-              Experience real-time global connectivity with our{" "}
+              The first 24/7 living and growing ecosystem{" "}
               <span className="text-foreground font-semibold bg-gradient-to-r from-primary/20 to-primary/10 px-2 py-1 rounded-md">
-                distributed network infrastructure
+                personalised for you, by you.
               </span>
             </p>
             <p className="text-lg text-muted-foreground/80 leading-relaxed">
-              Monitor data flows, track performance, and scale across continents with unprecedented reliability.
+              Real Conversations. Real People. Real Connections.
             </p>
           </motion.div>
         </motion.div>
