@@ -79,31 +79,9 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
                       "drop-shadow(0 0 24px hsl(var(--primary) / 0.45)) drop-shadow(0 0 48px hsl(var(--primary) / 0.25))",
                   }}
                 >
-                  <GlobeHeroTypewriterSequence
-                    lines={[
-                      {
-                        words: [{ text: "Your Place", className: "text-[#F1C42D]" }],
-                        className: "!text-[1.95rem] sm:!text-[2.6rem] md:!text-[3.3rem] lg:!text-[4.15rem]",
-                      },
-                      {
-                        words: [{ text: "Your People", className: "text-[#F1C42D]" }],
-                        className: "!text-[2.15rem] sm:!text-[2.9rem] md:!text-[3.75rem] lg:!text-[4.7rem]",
-                      },
-                      {
-                        words: [{ text: "Your Self", className: "text-[#F1C42D]" }],
-                        className: "!text-[2.35rem] sm:!text-[3.2rem] md:!text-[4.1rem] lg:!text-[5.1rem]",
-                      },
-                      {
-                        words: [
-                          { text: "Be", className: "text-[#F1C42D]" },
-                          { text: "ra", className: "text-white", noSpaceAfter: true },
-                          { text: "W", className: "text-[#F1C42D]" },
-                        ],
-                        className: "!mt-3 !text-[2.55rem] sm:!text-[3.4rem] md:!text-[4.45rem] lg:!text-[5.45rem]",
-                      },
-                    ]}
-                    charDelay={0.16}
-                    pauseBetweenLinesMs={560}
+                  <TypewriterStack
+                    words={["Your Place", "Your People", "Your Self", "Be raW"]}
+                    textClassName="bg-gradient-to-br from-primary via-primary to-primary/60 bg-clip-text text-transparent font-black"
                     cursorClassName="bg-primary"
                   />
                 </span>
@@ -175,7 +153,7 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
           </motion.button>
 
           <motion.a
-            href="#hero"
+            href="#communities"
             onClick={handleSecondaryClick}
             whileHover={{
               scale: 1.05,

@@ -32,7 +32,7 @@ const Globe: React.FC<{
       <mesh>
         <sphereGeometry args={[radius, 64, 64]} />
         <meshBasicMaterial
-          color="hsl(var(--foreground))"
+          color="#F5F5F5"
           transparent
           opacity={0.15}
           wireframe
@@ -41,8 +41,6 @@ const Globe: React.FC<{
     </group>
   );
 };
-
-
 
 const DotGlobeHero = React.forwardRef<
   HTMLDivElement,
@@ -58,7 +56,7 @@ const DotGlobeHero = React.forwardRef<
     <div
       ref={ref}
       className={cn(
-        "relative w-full h-screen bg-background overflow-hidden",
+        "relative w-full h-[75vh] bg-background overflow-hidden",
         className
       )}
       {...props}

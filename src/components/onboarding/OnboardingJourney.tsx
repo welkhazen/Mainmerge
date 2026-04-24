@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import isItJustMeVideo from "@/assets/itisjustme.mp4";
+import speakYourTruthVideo from "@/assets/speakyourheart.mp4";
 import { AvatarFigure } from "@/components/ui/avatar-figure";
 import { LEVEL_THEMES } from "@/lib/avatar-theme";
 import { AvatarPhoneHomeScreen } from "@/components/ui/avatar-phone-home-screen";
@@ -85,8 +87,8 @@ const ONBOARDING_COMMUNITIES = [
     description: "A space to say what you've been holding back. No filters, no judgment — just real voices sharing real experiences.",
     members: "3",
     activeNow: "1 active",
-    image:
-      "https://images.unsplash.com/photo-1534131707746-25d604851a1f?auto=format&fit=crop&w=900&q=80",
+    video: speakYourTruthVideo,
+    image: undefined,
   },
   {
     id: "iijm",
@@ -94,8 +96,8 @@ const ONBOARDING_COMMUNITIES = [
     description: "Relatable moments, shared observations, and the quiet comfort of realizing you're not the only one.",
     members: "3",
     activeNow: "1 active",
-    image:
-      "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=900&q=80",
+    video: isItJustMeVideo,
+    image: undefined,
   },
 ];
 
@@ -461,11 +463,22 @@ export function OnboardingJourney({
                       }`}
                     >
                       <div className="relative h-40 overflow-hidden sm:h-48">
-                        <img
-                          src={community.image}
-                          alt={community.title}
-                          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                        />
+                        {community.video ? (
+                          <video
+                            src={community.video}
+                            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105 rounded-xl"
+                            autoPlay
+                            loop
+                            muted
+                            playsInline
+                          />
+                        ) : (
+                          <img
+                            src={community.image}
+                            alt={community.title}
+                            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                          />
+                        )}
                         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/35 to-transparent" />
 
                         <div className="absolute bottom-3 left-3 rounded-full border border-raw-border/60 bg-black/55 px-2.5 py-1 backdrop-blur-sm">
