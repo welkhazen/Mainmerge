@@ -135,7 +135,7 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
               whileHover={{ x: "100%" }}
               transition={{ duration: 0.8 }}
             />
-            <span className="relative z-10 tracking-wide">Start Exploring</span>
+            <span className="relative z-10 tracking-wide">Join Now</span>
             <ArrowRight className="relative z-10 w-5 h-5 group-hover:translate-x-2 transition-transform duration-300" />
           </motion.button>
 
@@ -154,7 +154,7 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
           >
             <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             <Zap className="relative z-10 w-5 h-5 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300" />
-            <span className="relative z-10 tracking-wide">View Live Demo</span>
+            <span className="relative z-10 tracking-wide">Learn More</span>
           </motion.a>
         </motion.div>
       </div>
