@@ -107,7 +107,7 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
               Y𝗼𝘂𝗿 𝗻𝗲𝘄 𝟮𝟰/𝟳 𝗹𝗶𝘃𝗶𝗻𝗴 𝗮𝗻𝗱 𝗲𝘃𝗲𝗿-𝗴𝗿𝗼𝘄𝗶𝗻𝗴 𝗻𝗲𝘄 𝘄𝗼𝗿𝗹𝗱
             </p>
             <p className="text-base md:text-lg font-medium leading-relaxed">
-              <span className="text-foreground/60 bg-gradient-to-r from-primary/10 to-primary/5 px-2 py-1 rounded-md">
+              <span className="text-foreground/60 font-semibold bg-gradient-to-r from-primary/10 to-primary/5 px-2 py-1 rounded-md">
                 prioritizing genuine connections, a sense of belonging, and a safe space to allow discovering oneself and others.
               </span>
             </p>
