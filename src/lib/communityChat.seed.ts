@@ -1,5 +1,7 @@
 import { toUserId } from "@/lib/adminData";
 import type { CommunityChatMemberRecord, CommunityChatMessageRecord, PersistedCommunityRecord } from "./communityChat.types";
+import LNTLogo from "@/assets/LNT.png";
+import SYTLogo from "@/assets/logospeak.png";
 
 function createSeedMessage(
   communityId: string,
@@ -36,6 +38,7 @@ export function buildDefaultCommunities(): PersistedCommunityRecord[] {
     {
       id: "lnt",
       abbr: "LNT",
+      logoUrl: LNTLogo,
       title: "Late Night Talk",
       description: "Honest conversation when the world gets quiet and people finally say what they actually mean.",
       topic: "What thought has been following you all week?",
@@ -55,6 +58,7 @@ export function buildDefaultCommunities(): PersistedCommunityRecord[] {
     {
       id: "syt",
       abbr: "SYT",
+      logoUrl: SYTLogo,
       title: "Speak Your Truth",
       description: "A space to say what you've been holding back. No filters, no judgment — just real voices sharing real experiences.",
       topic: "What's something you've been afraid to say out loud?",

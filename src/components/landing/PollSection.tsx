@@ -100,87 +100,64 @@ function PollPhoneContent({
   }, [commentsOpen]);
 
   return (
-    <div className="relative h-[480px] bg-black px-5 py-4 pointer-events-auto overflow-hidden">
-      <div className="flex h-full flex-col">
-        <div className="text-center mb-1">
+    <div className="relative h-[480px] bg-black px-5 py-4 pointer-events-auto overflow-hidden select-none" style={{ userSelect: 'none' }}>
+      <div className="flex h-full flex-col select-none" style={{ userSelect: 'none' }}>
+        <div className="text-center mb-1 select-none" style={{ userSelect: 'none' }}>
           <p className="font-display text-[9px] tracking-[0.2em] uppercase text-white/30">Anonymous Poll</p>
-          <div className="mt-1 flex items-center justify-center gap-3">
-            <span className="text-[9px] text-white/25 flex items-center gap-1">
+          <div className="mt-1 flex items-center justify-center gap-3" style={{ userSelect: 'none' }}>
+            <span className="text-[9px] text-white/25 flex items-center gap-1 select-none" style={{ userSelect: 'none' }}>
               <ThumbsUp className="h-2.5 w-2.5" /> {totalVotes}
             </span>
             <button
               type="button"
               onClick={() => hasVoted && comments.length > 0 && setCommentsOpen((prev) => !prev)}
               disabled={!hasVoted || comments.length === 0}
-              className={`text-[9px] flex items-center gap-1 rounded-full px-2 py-1 transition-all ${
+              className={`text-[9px] flex items-center gap-1 rounded-full px-2 py-1 transition-all select-none ${
                 hasVoted && comments.length > 0 ? "text-white/60 hover:bg-white/10" : "text-white/20 cursor-default"
               }`}
+              style={{ userSelect: 'none' }}
             >
               <MessageCircle className="h-2.5 w-2.5" /> {comments.length}
             </button>
           </div>
         </div>
 
-        <div className="flex items-center justify-center gap-1.5 mt-2 mb-3">
+        <div className="flex items-center justify-center gap-1.5 mt-2 mb-3 select-none" style={{ userSelect: 'none' }}>
           {Array.from({ length: totalPolls }, (_, i) => (
-            <div key={i} className={`h-1 rounded-full transition-all ${i === pollIndex ? "w-4 bg-white" : "w-1 bg-white/20"}`} />
+            <div key={i} className={`h-1 rounded-full transition-all pointer-events-none ${i === pollIndex ? "w-4 bg-white" : "w-1 bg-white/20"}`} />
           ))}
         </div>
 
-        <div className="rounded-3xl bg-[#111] border border-white/10 p-6 flex-1 flex flex-col justify-center">
-          <p className="font-display text-[17px] tracking-wide text-white text-center leading-relaxed font-medium">{poll.question}</p>
+        <div className="rounded-3xl bg-[#111] border border-white/10 p-6 flex-1 flex flex-col justify-center select-none" style={{ userSelect: 'none' }}>
+          <p className="font-display text-[17px] tracking-wide text-white text-center leading-relaxed font-medium select-none" style={{ userSelect: 'none' }}>{poll.question}</p>
 
-          {!hasVoted ? (
-            <>
-              <div className="flex gap-3">
-                {yesOption && (
-                  <button
-                    type="button"
-                    onClick={() => onVote(yesOption.id)}
-                    className="flex-1 rounded-2xl bg-raw-gold py-3.5 text-base font-bold text-raw-black transition-all hover:bg-raw-gold/90 active:scale-95"
-                  >
-                    Yes
-                  </button>
-                )}
-                {noOption && (
-                  <button
-                    type="button"
-                    onClick={() => onVote(noOption.id)}
-                    className="flex-1 rounded-2xl bg-white py-3.5 text-base font-bold text-black transition-all hover:bg-white/90 active:scale-95"
-                  >
-                    No
-                  </button>
-                )}
-              </div>
-            </>
-          ) : (
+          {hasVoted && (
             <div className="mt-5 space-y-3">
               <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-black/60">
                 <div className="absolute inset-y-0 left-0 bg-raw-gold/15 transition-all duration-700" style={{ width: `${yesPct}%` }} />
-                <div className="relative flex items-center justify-between px-5 py-3.5">
-                  <span className="text-sm font-semibold text-white">Yes</span>
+                <div className="relative flex items-center justify-end px-5 py-3.5" style={{ userSelect: 'none' }}>
                   <span className="text-sm font-bold text-raw-gold">{yesPct}%</span>
                 </div>
               </div>
               <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-black/60">
                 <div className="absolute inset-y-0 left-0 bg-white/10 transition-all duration-700" style={{ width: `${noPct}%` }} />
-                <div className="relative flex items-center justify-between px-5 py-3.5">
-                  <span className="text-sm font-semibold text-white">No</span>
+                <div className="relative flex items-center justify-end px-5 py-3.5" style={{ userSelect: 'none' }}>
                   <span className="text-sm font-bold text-white/70">{noPct}%</span>
                 </div>
               </div>
-              <p className="text-[9px] text-white/20 text-center pt-1">{totalVotes.toLocaleString()} anonymous responses</p>
+              <p className="text-[9px] text-white/20 text-center pt-1 select-none" style={{ userSelect: 'none' }}>{totalVotes.toLocaleString()} anonymous responses</p>
             </div>
           )}
         </div>
 
         {hasVoted && (
-        <div className="mt-3 flex gap-2">
+        <div className="mt-3 flex gap-2" style={{ userSelect: 'none' }}>
           {canGoPrev && (
             <button
               type="button"
               onClick={onPrev}
-              className="flex-1 rounded-xl border border-white/15 py-2.5 text-[11px] font-medium text-white/50 hover:border-white/30 hover:text-white/70 transition-all flex items-center justify-center gap-1"
+              className="flex-1 rounded-xl border border-white/15 py-2.5 text-[11px] font-medium text-white/50 hover:border-white/30 hover:text-white/70 transition-all flex items-center justify-center gap-1 select-none"
+              style={{ userSelect: 'none' }}
             >
               <ChevronLeft className="h-3.5 w-3.5" /> Previous
             </button>
@@ -189,7 +166,8 @@ function PollPhoneContent({
             <button
               type="button"
               onClick={onNext}
-              className="flex-1 rounded-xl border border-white/15 bg-white/5 py-2.5 text-[11px] font-medium text-white/70 hover:bg-white/10 hover:text-white transition-all flex items-center justify-center gap-1"
+              className="flex-1 rounded-xl border border-white/15 bg-white/5 py-2.5 text-[11px] font-medium text-white/70 hover:bg-white/10 hover:text-white transition-all flex items-center justify-center gap-1 select-none"
+              style={{ userSelect: 'none' }}
             >
               Next Question <ChevronRight className="h-3.5 w-3.5" />
             </button>
@@ -199,40 +177,43 @@ function PollPhoneContent({
       </div>
 
       {hasVoted && comments.length > 0 && commentsOpen && (
-        <div className="absolute inset-0 z-20 flex items-end justify-center bg-black/15 px-3 pb-14">
+        <div className="absolute inset-0 z-20 flex items-end justify-center bg-black/15 px-3 pb-14" style={{ userSelect: 'none' }}>
           <div
             ref={commentsPopupRef}
-            className="w-full rounded-2xl border border-white/12 bg-[#0f0f11]/95 p-3 shadow-2xl shadow-black/70 backdrop-blur-md animate-in fade-in slide-in-from-bottom-3 duration-200"
+            className="w-full rounded-2xl border border-white/12 bg-[#0f0f11]/95 p-3 shadow-2xl shadow-black/70 backdrop-blur-md animate-in fade-in slide-in-from-bottom-3 duration-200 select-none"
+            style={{ userSelect: 'none' }}
           >
-            <div className="mb-2 flex items-center justify-between">
-              <p className="text-[10px] uppercase tracking-[0.18em] text-white/45">Comments</p>
+            <div className="mb-2 flex items-center justify-between select-none" style={{ userSelect: 'none' }}>
+              <p className="text-[10px] uppercase tracking-[0.18em] text-white/45 select-none" style={{ userSelect: 'none' }}>Comments</p>
               <button
                 type="button"
                 onClick={() => setCommentsOpen(false)}
-                className="rounded-full p-1 text-white/45 hover:bg-white/10 hover:text-white/70"
+                className="rounded-full p-1 text-white/45 hover:bg-white/10 hover:text-white/70 select-none"
+                style={{ userSelect: 'none' }}
               >
                 <X className="h-3.5 w-3.5" />
               </button>
             </div>
 
-            <div className="mb-2 flex items-center gap-2 rounded-xl bg-[#111] border border-white/10 px-3 py-2">
+            <div className="mb-2 flex items-center gap-2 rounded-xl bg-[#111] border border-white/10 px-3 py-2 select-none" style={{ userSelect: 'none' }}>
               <input
                 type="text"
                 placeholder="Add a comment..."
-                className="flex-1 bg-transparent text-[11px] text-white placeholder:text-white/20 outline-none"
+                className="flex-1 bg-transparent text-[11px] text-white placeholder:text-white/20 outline-none select-none"
                 readOnly
+                style={{ userSelect: 'none' }}
               />
               <Send className="h-3.5 w-3.5 text-white/20" />
             </div>
 
-            <div className="max-h-[170px] space-y-1.5 overflow-y-auto pr-1">
+            <div className="max-h-[170px] space-y-1.5 overflow-y-auto pr-1 select-none" style={{ userSelect: 'none' }}>
               {comments.map((comment, i) => (
-                <div key={i} className="rounded-xl bg-[#111] border border-white/8 px-3 py-2">
-                  <p className="text-[10px] text-white/50 leading-relaxed">{comment.text}</p>
-                  <div className="mt-1 flex items-center gap-2">
-                    <span className="text-[8px] font-medium text-white/30">@{comment.user}</span>
-                    <span className="text-[8px] text-white/15">{comment.time}</span>
-                    <span className="text-[8px] text-white/20">↑ {comment.likes}</span>
+                <div key={i} className="rounded-xl bg-[#111] border border-white/8 px-3 py-2 select-none" style={{ userSelect: 'none' }}>
+                  <p className="text-[10px] text-white/50 leading-relaxed select-none" style={{ userSelect: 'none' }}>{comment.text}</p>
+                  <div className="mt-1 flex items-center gap-2 select-none" style={{ userSelect: 'none' }}>
+                    <span className="text-[8px] font-medium text-white/30 select-none" style={{ userSelect: 'none' }}>@{comment.user}</span>
+                    <span className="text-[8px] text-white/15 select-none" style={{ userSelect: 'none' }}>{comment.time}</span>
+                    <span className="text-[8px] text-white/20 select-none" style={{ userSelect: 'none' }}>↑ {comment.likes}</span>
                   </div>
                 </div>
               ))}
