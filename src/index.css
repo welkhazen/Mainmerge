@@ -321,6 +321,10 @@ html.theme-light .dashboard-enhanced-bg [class*="text-raw-silver/"] {
   background: rgb(var(--raw-black));
 }
 
+.landing-scaled {
+  zoom: 0.75;
+}
+
 .hero-landing {
   background: #050505;
 }
