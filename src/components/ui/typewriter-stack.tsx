@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
-import { motion } from "motion/react";
 
 interface TypewriterStackProps {
   words: string[];
