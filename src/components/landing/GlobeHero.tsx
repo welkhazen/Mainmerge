@@ -106,7 +106,7 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
               </span>
             </p>
             <p className="text-lg text-muted-foreground/80 leading-relaxed">
-              Real Conversations. Real People. Real Connections.
+              Your Username. Your Password. Your raW Self.
             </p>
           </motion.div>
         </motion.div>
