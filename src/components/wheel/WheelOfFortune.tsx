@@ -169,6 +169,18 @@ export function WheelOfFortune({ prizes, onSpinEnd, disabled = false, prizeWeigh
             : "border border-raw-gold/30 bg-black/30"
         }`}
       >
+        {/* Center SPIN button — mobile only, sits inside the SVG center circle */}
+        <button
+          onClick={handleSpin}
+          disabled={isSpinning || disabled}
+          className={`sm:hidden absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2 rounded-full px-4 py-1.5 font-display text-[10px] uppercase tracking-[0.18em] transition-all whitespace-nowrap ${
+            isSpinning || disabled
+              ? "cursor-not-allowed bg-raw-surface/90 text-raw-silver/40"
+              : "bg-raw-gold text-raw-black active:scale-95 shadow-[0_0_16px_rgb(var(--raw-accent)/0.5)]"
+          }`}
+        >
+          {isSpinning ? "···" : disabled ? "Done" : "Spin"}
+        </button>
         <svg
           viewBox={`0 0 ${size} ${size}`}
           className="block h-full w-full"
@@ -209,8 +221,8 @@ export function WheelOfFortune({ prizes, onSpinEnd, disabled = false, prizeWeigh
             );
           })}
 
-          <circle cx={radius} cy={radius} r={radius * 0.15} fill={isLight ? "#edf2fa" : "#080808"} stroke={accentColor} strokeWidth="2" />
-          <circle cx={radius} cy={radius} r={radius * 0.12} fill={isLight ? "#d9e2f0" : "#0c0c0c"} stroke={accentColor} strokeWidth="0.5" />
+          <circle cx={radius} cy={radius} r={radius * 0.28} fill={isLight ? "#edf2fa" : "#080808"} stroke={accentColor} strokeWidth="2" />
+          <circle cx={radius} cy={radius} r={radius * 0.24} fill={isLight ? "#d9e2f0" : "#0c0c0c"} stroke={accentColor} strokeWidth="0.5" />
 
           {prizes.map((_, index) => {
             const angle = (index * 360) / total - 90;
@@ -227,7 +239,7 @@ export function WheelOfFortune({ prizes, onSpinEnd, disabled = false, prizeWeigh
       <button
         onClick={handleSpin}
         disabled={isSpinning || disabled}
-        className={`mt-5 sm:mt-8 relative overflow-hidden rounded-full px-8 py-3 font-display text-sm uppercase tracking-[0.2em] transition-all sm:px-10 sm:py-3.5 ${
+        className={`hidden sm:block mt-8 relative overflow-hidden rounded-full px-10 py-3.5 font-display text-sm uppercase tracking-[0.2em] transition-all ${
           isSpinning || disabled
             ? "cursor-not-allowed border border-raw-border/30 bg-raw-surface text-raw-silver/30"
             : "bg-raw-gold text-raw-black hover:scale-105 hover:shadow-[0_0_30px_rgb(var(--raw-accent)/0.3)] active:scale-95"

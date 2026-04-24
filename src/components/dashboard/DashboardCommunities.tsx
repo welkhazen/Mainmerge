@@ -622,7 +622,7 @@ export function DashboardCommunities({
                           onClick={() => handleRequestJoinCommunity(community)}
                           className="rounded-xl border border-raw-gold/30 bg-transparent px-4 text-raw-gold hover:bg-raw-gold/10"
                         >
-                          <Lock className="h-3.5 w-3.5" /> Request to Join
+                          <Lock className="h-3.5 w-3.5" /> Join Waiting List
                         </Button>
                       );
                     })() : (
@@ -694,7 +694,7 @@ export function DashboardCommunities({
                     onClick={() => handleRequestJoinCommunity(selectedCommunity)}
                     className="flex items-center gap-2 rounded-full border border-raw-gold/30 bg-transparent px-3 py-1.5 text-[11px] text-raw-gold transition-colors hover:bg-raw-gold/10"
                   >
-                    <Lock className="h-3.5 w-3.5" /> Request to Join
+                    <Lock className="h-3.5 w-3.5" /> Join Waiting List
                   </button>
                 );
               })()}
@@ -763,7 +763,7 @@ export function DashboardCommunities({
                     onClick={() => handleRequestJoinCommunity(selectedCommunity)}
                     className="flex items-center gap-2 rounded-xl border border-raw-gold/30 bg-transparent px-5 py-2.5 text-sm text-raw-gold transition-colors hover:bg-raw-gold/10"
                   >
-                    <Lock className="h-4 w-4" /> Request to Join
+                    <Lock className="h-4 w-4" /> Join Waiting List
                   </button>
                 )}
               </div>

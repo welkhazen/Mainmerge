@@ -72,6 +72,8 @@ function PollPhoneContent({
 }) {
   const [commentsOpen, setCommentsOpen] = useState(false);
   const commentsPopupRef = useRef<HTMLDivElement | null>(null);
+  const touchStartX = useRef<number | null>(null);
+  const [swipeHint, setSwipeHint] = useState<"yes" | "no" | null>(null);
 
   const totalVotes = poll.options.reduce((sum, o) => sum + o.votes, 0);
   const comments = mockComments[poll.id] || [];
@@ -82,7 +84,30 @@ function PollPhoneContent({
 
   useEffect(() => {
     setCommentsOpen(false);
+    setSwipeHint(null);
   }, [poll.id, hasVoted]);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (hasVoted) return;
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (hasVoted || touchStartX.current === null) return;
+    const delta = e.touches[0].clientX - touchStartX.current;
+    if (Math.abs(delta) > 20) setSwipeHint(delta > 0 ? "yes" : "no");
+    else setSwipeHint(null);
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (hasVoted || touchStartX.current === null) return;
+    const delta = e.changedTouches[0].clientX - touchStartX.current;
+    touchStartX.current = null;
+    setSwipeHint(null);
+    if (Math.abs(delta) < 50) return;
+    if (delta > 0 && yesOption) onVote(yesOption.id);
+    else if (delta < 0 && noOption) onVote(noOption.id);
+  };
 
   useEffect(() => {
     if (!commentsOpen) return;
@@ -128,24 +153,69 @@ function PollPhoneContent({
           ))}
         </div>
 
-        <div className="rounded-3xl bg-[#111] border border-white/10 p-6 flex-1 flex flex-col justify-center select-none" style={{ userSelect: 'none' }}>
-          <p className="font-display text-[17px] tracking-wide text-white text-center leading-relaxed font-medium select-none" style={{ userSelect: 'none' }}>{poll.question}</p>
+        <div
+          className={`relative rounded-3xl border p-6 flex-1 flex flex-col justify-center select-none transition-colors duration-150 ${
+            swipeHint === "yes"
+              ? "bg-emerald-900/30 border-emerald-400/30"
+              : swipeHint === "no"
+              ? "bg-rose-900/30 border-rose-400/30"
+              : "bg-[#111] border-white/10"
+          }`}
+          style={{ userSelect: "none", touchAction: hasVoted ? "auto" : "pan-y" }}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        >
+          {pollIndex === 0 && !hasVoted && (
+            <div className="absolute inset-x-4 top-3 z-10 rounded-xl border border-white/10 bg-black/80 px-3 py-2 text-center backdrop-blur-sm">
+              <div className="flex items-center justify-center gap-4">
+                <span className="text-xs text-rose-300">👈 No</span>
+                <div className="h-4 w-px bg-white/10" />
+                <span className="text-xs text-emerald-300">Yes 👉</span>
+              </div>
+            </div>
+          )}
+
+          <p className={`font-display text-[17px] tracking-wide text-white text-center leading-relaxed font-medium select-none ${pollIndex === 0 && !hasVoted ? "mt-8" : ""}`} style={{ userSelect: "none" }}>
+            {poll.question}
+          </p>
+
+          {!hasVoted && (
+            <div className="mt-5 flex gap-3">
+              <button
+                type="button"
+                onClick={() => noOption && onVote(noOption.id)}
+                className="flex-1 rounded-2xl border border-rose-500/30 bg-rose-500/10 py-3 text-sm font-semibold text-rose-300 transition-all active:scale-95 hover:bg-rose-500/20"
+              >
+                No
+              </button>
+              <button
+                type="button"
+                onClick={() => yesOption && onVote(yesOption.id)}
+                className="flex-1 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 py-3 text-sm font-semibold text-emerald-300 transition-all active:scale-95 hover:bg-emerald-500/20"
+              >
+                Yes
+              </button>
+            </div>
+          )}
 
           {hasVoted && (
             <div className="mt-5 space-y-3">
               <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-black/60">
                 <div className="absolute inset-y-0 left-0 bg-raw-gold/15 transition-all duration-700" style={{ width: `${yesPct}%` }} />
-                <div className="relative flex items-center justify-end px-5 py-3.5" style={{ userSelect: 'none' }}>
+                <div className="relative flex items-center justify-between px-5 py-3.5" style={{ userSelect: "none" }}>
+                  <span className="text-xs text-white/40">Yes</span>
                   <span className="text-sm font-bold text-raw-gold">{yesPct}%</span>
                 </div>
               </div>
               <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-black/60">
                 <div className="absolute inset-y-0 left-0 bg-white/10 transition-all duration-700" style={{ width: `${noPct}%` }} />
-                <div className="relative flex items-center justify-end px-5 py-3.5" style={{ userSelect: 'none' }}>
+                <div className="relative flex items-center justify-between px-5 py-3.5" style={{ userSelect: "none" }}>
+                  <span className="text-xs text-white/40">No</span>
                   <span className="text-sm font-bold text-white/70">{noPct}%</span>
                 </div>
               </div>
-              <p className="text-[9px] text-white/20 text-center pt-1 select-none" style={{ userSelect: 'none' }}>{totalVotes.toLocaleString()} anonymous responses</p>
+              <p className="text-[9px] text-white/20 text-center pt-1 select-none" style={{ userSelect: "none" }}>{totalVotes.toLocaleString()} anonymous responses</p>
             </div>
           )}
         </div>

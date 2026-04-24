@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import isItJustMeVideo from "@/assets/itisjustme.mp4";
 import speakYourTruthVideo from "@/assets/speakyourheart.mp4";
+import lntVideo from "@/assets/2026-04-18 10_10_00.MP4";
 import { AvatarFigure } from "@/components/ui/avatar-figure";
 import { LEVEL_THEMES } from "@/lib/avatar-theme";
 import { AvatarPhoneHomeScreen } from "@/components/ui/avatar-phone-home-screen";
@@ -78,8 +79,8 @@ const ONBOARDING_COMMUNITIES = [
     description: "Honest conversation when the world gets quiet and people finally say what they actually mean.",
     members: "3",
     activeNow: "1 active",
-    image:
-      "https://images.unsplash.com/photo-1521119989659-a83eee488004?auto=format&fit=crop&w=900&q=80",
+    video: lntVideo,
+    image: undefined,
   },
   {
     id: "syt",
@@ -98,6 +99,14 @@ const ONBOARDING_COMMUNITIES = [
     activeNow: "1 active",
     video: isItJustMeVideo,
     image: undefined,
+  },
+  {
+    id: "li",
+    title: "Lebanese Initiatives",
+    description: "A space for Lebanese change-makers, community builders, and people driving impact inside Lebanon and across the diaspora.",
+    members: "0",
+    activeNow: "Early Access",
+    image: "https://images.unsplash.com/photo-1549895885-2e9af1a79571?auto=format&fit=crop&w=900&q=80",
   },
 ];
 

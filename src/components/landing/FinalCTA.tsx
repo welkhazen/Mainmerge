@@ -196,7 +196,7 @@ export function FinalCTA({ onSignupClick }: FinalCTAProps) {
             onClick={handleAnonAccountClick}
             className="rounded-full border border-raw-border px-6 py-3.5 text-sm font-medium text-raw-silver/80 transition-all hover:border-raw-silver/30 hover:text-raw-text sm:px-8"
           >
-            Or create an anonymous account
+            Sign Up Free
           </button>
           <a
             href="#communities"

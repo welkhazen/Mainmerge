@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { AvatarFigure } from "@/components/ui/avatar-figure";
 import { PhoneMockup } from "@/components/ui/phone-mockup";
 import { AvatarPhoneHomeScreen } from "@/components/ui/avatar-phone-home-screen";
@@ -12,10 +12,21 @@ interface AvatarIdentityProps {
 
 export function AvatarIdentity({ avatarLevel, onLevelChange }: AvatarIdentityProps) {
   const sectionRef = useTrackSectionView("avatar");
+  const phoneRef = useRef<HTMLDivElement>(null);
   const [hoveredLevel, setHoveredLevel] = useState<number | null>(null);
 
   const displayLevel = hoveredLevel ?? avatarLevel;
   const theme = getAvatarTheme(displayLevel);
+
+  const handleLevelClick = (level: number) => {
+    if (level === 1) {
+      onLevelChange(level);
+      return;
+    }
+    // Locked level: preview in phone and scroll up to show it
+    setHoveredLevel(level);
+    phoneRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+  };
 
   return (
     <section
@@ -35,7 +46,7 @@ export function AvatarIdentity({ avatarLevel, onLevelChange }: AvatarIdentityPro
         </div>
 
         {/* Phone preview */}
-        <div className="flex flex-col items-center">
+        <div ref={phoneRef} className="flex flex-col items-center">
           <PhoneMockup>
             <AvatarPhoneHomeScreen displayLevel={displayLevel} />
           </PhoneMockup>
@@ -57,30 +68,39 @@ export function AvatarIdentity({ avatarLevel, onLevelChange }: AvatarIdentityPro
               const level = i + 1;
               const isActive = level === displayLevel;
               const isSelected = level === avatarLevel;
+              const isLocked = level > 1;
               return (
                 <button
                   key={level}
                   type="button"
-                  onClick={() => onLevelChange(level)}
+                  onClick={() => handleLevelClick(level)}
                   onMouseEnter={() => setHoveredLevel(level)}
                   onMouseLeave={() => setHoveredLevel(null)}
                   onFocus={() => setHoveredLevel(level)}
                   onBlur={() => setHoveredLevel(null)}
-                  className="group flex flex-col items-center gap-2 focus:outline-none"
-                  aria-label={`Preview rank ${level} — ${t.name}`}
+                  className="group flex flex-col items-center gap-1.5 focus:outline-none"
+                  aria-label={`Preview rank ${level} — ${t.name}${isLocked ? " (locked)" : ""}`}
                   aria-pressed={isSelected}
                 >
-                  <div
-                    className={`rounded-full transition-all duration-300 ${
-                      isActive
-                        ? "scale-110"
-                        : "opacity-80 group-hover:opacity-100 group-focus-visible:opacity-100"
-                    }`}
-                  >
-                    <AvatarFigure level={level} size="lg" selected={isSelected || isActive} />
+                  <div className="relative">
+                    <div
+                      className={`rounded-full transition-all duration-300 ${
+                        isActive ? "scale-110" : "opacity-80 group-hover:opacity-100 group-focus-visible:opacity-100"
+                      } ${isLocked ? "sm:opacity-80 opacity-40" : ""}`}
+                    >
+                      <AvatarFigure level={level} size="sm" selected={isSelected || isActive} className="sm:hidden" />
+                      <AvatarFigure level={level} size="lg" selected={isSelected || isActive} className="hidden sm:block" />
+                    </div>
+                    {isLocked && (
+                      <div className="absolute inset-0 flex items-center justify-center sm:hidden">
+                        <div className="flex h-4 w-4 items-center justify-center rounded-full bg-black/70">
+                          <span className="text-[8px] leading-none">🔒</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
                   <span
-                    className={`font-display text-[11px] font-bold tracking-[0.2em] transition-colors ${
+                    className={`font-display text-[9px] sm:text-[11px] font-bold tracking-[0.2em] transition-colors ${
                       isActive ? "text-raw-text" : "text-raw-silver/50 group-hover:text-raw-silver/80"
                     }`}
                   >

@@ -1,47 +1,12 @@
 import { useState } from "react";
-import { CheckCircle2, Coins, Sparkles, Zap } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
+import TokenImage from "@/assets/tokens.png";
 
 const PACKAGES = [
-  {
-    id: "tokens-100",
-    tokens: 100,
-    price: 10,
-    label: "Starter",
-    highlight: false,
-    accent: "from-sky-500/20 via-blue-500/10 to-transparent",
-    icon: Coins,
-    perToken: "10¢ / token",
-  },
-  {
-    id: "tokens-200",
-    tokens: 200,
-    price: 20,
-    label: "Popular",
-    highlight: false,
-    accent: "from-violet-500/20 via-fuchsia-500/10 to-transparent",
-    icon: Zap,
-    perToken: "10¢ / token",
-  },
-  {
-    id: "tokens-500",
-    tokens: 500,
-    price: 40,
-    label: "Best Value",
-    highlight: true,
-    accent: "from-raw-gold/25 via-amber-500/10 to-transparent",
-    icon: Sparkles,
-    perToken: "8¢ / token",
-  },
-  {
-    id: "tokens-1000",
-    tokens: 1000,
-    price: 80,
-    label: "Power User",
-    highlight: false,
-    accent: "from-emerald-500/20 via-teal-500/10 to-transparent",
-    icon: CheckCircle2,
-    perToken: "8¢ / token",
-  },
+  { id: "tokens-100",  tokens: 100,  price: 10, label: "Starter",    highlight: false, accent: "from-sky-500/20 via-blue-500/10 to-transparent",       perToken: "10¢ / token" },
+  { id: "tokens-200",  tokens: 200,  price: 20, label: "Popular",    highlight: false, accent: "from-violet-500/20 via-fuchsia-500/10 to-transparent",  perToken: "10¢ / token" },
+  { id: "tokens-500",  tokens: 500,  price: 40, label: "Best Value", highlight: true,  accent: "from-raw-gold/25 via-amber-500/10 to-transparent",      perToken: "8¢ / token"  },
+  { id: "tokens-1000", tokens: 1000, price: 80, label: "Power User", highlight: false, accent: "from-emerald-500/20 via-teal-500/10 to-transparent",    perToken: "8¢ / token"  },
 ] as const;
 
 export function DashboardWallet() {
@@ -66,7 +31,7 @@ export function DashboardWallet() {
             <p className="mt-1 font-display text-3xl tracking-wide text-raw-text sm:text-4xl">{balance}</p>
             <p className="mt-1 text-xs text-raw-silver/40">tokens</p>
           </div>
-          <Coins className="h-8 w-8 shrink-0 text-raw-gold/20 sm:h-10 sm:w-10" />
+          <img src={TokenImage} alt="Token" className="h-12 w-12 shrink-0 object-contain sm:h-14 sm:w-14" />
         </div>
       </section>
 
@@ -75,7 +40,6 @@ export function DashboardWallet() {
         <p className="mb-4 text-xs uppercase tracking-[0.2em] text-raw-silver/40">Choose a package</p>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 xl:grid-cols-4">
           {PACKAGES.map((pkg) => {
-            const Icon = pkg.icon;
             const isSelected = selected === pkg.id;
             return (
               <button
@@ -104,7 +68,7 @@ export function DashboardWallet() {
                 )}
 
                 <div className="relative flex items-center gap-2">
-                  <Icon className="h-4 w-4 text-raw-gold/60" />
+                  <img src={TokenImage} alt="Token" className="h-5 w-5 object-contain" />
                   <span className="font-display text-2xl text-raw-text">{pkg.tokens.toLocaleString()}</span>
                   <span className="text-sm text-raw-silver/50">tokens</span>
                 </div>

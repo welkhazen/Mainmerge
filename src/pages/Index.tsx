@@ -5,10 +5,10 @@ import { Hero } from "@/components/landing/Hero";
 import { GlobeHero } from "@/components/landing/GlobeHero";
 import { HowItWorks } from "@/components/landing/HowItWorks";
 import { PollSection } from "@/components/landing/PollSection";
-import { Communities } from "@/components/landing/Communities";
 import { AvatarIdentity } from "@/components/landing/AvatarIdentity";
 import { WheelReward } from "@/components/landing/WheelReward";
 import { WhyAnonymity } from "@/components/landing/WhyAnonymity";
+import { AnonQuestionSection } from "@/components/landing/AnonQuestionSection";
 import { LandingFooter } from "@/components/landing/LandingFooter";
 import { OnboardingJourney } from "@/components/onboarding/OnboardingJourney";
 import MatrixBackgroundIntro from "@/components/ui/matrix-background-intro";
@@ -178,8 +178,8 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen bg-raw-black">
-      <div className="relative">
+    <div className="min-h-screen overflow-x-hidden bg-raw-black">
+      <div className="relative overflow-x-hidden">
         <PerforatedBackground />
         <MatrixBackground />
         {showMatrixIntro ? <MatrixBackgroundIntro onComplete={() => setShowMatrixIntro(false)} /> : null}
@@ -202,8 +202,7 @@ const Index = () => {
           onVote={vote}
           onSignupClick={() => setShowSignup(true)}
         />
-        <Communities onSignupClick={() => setShowSignup(true)} />
-        <AvatarIdentity
+<AvatarIdentity
           avatarLevel={avatarLevel}
           onLevelChange={setAvatarLevel}
         />
@@ -211,6 +210,7 @@ const Index = () => {
           onLevelChange={setAvatarLevel}
           onSignupClick={() => setShowSignup(true)}
         />
+        <AnonQuestionSection />
         <WhyAnonymity />
       </div>
       <LandingFooter />

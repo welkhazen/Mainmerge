@@ -29,19 +29,19 @@ const BUILT_IN_LOGOS: Record<string, string> = {
   syt: SYTLogo,
 };
 
-function applyBuiltInLogos(communities: PersistedCommunityRecord[]): PersistedCommunityRecord[] {
+const ALWAYS_LOCKED_IDS = new Set(["li"]);
+
+function applyBuiltInOverrides(communities: PersistedCommunityRecord[]): PersistedCommunityRecord[] {
   return communities.map((community) => {
-    const builtIn = BUILT_IN_LOGOS[community.id];
-    if (builtIn && !community.logoUrl) {
-      return { ...community, logoUrl: builtIn };
-    }
-    return community;
+    const logoUrl = BUILT_IN_LOGOS[community.id] && !community.logoUrl ? BUILT_IN_LOGOS[community.id] : community.logoUrl;
+    const locked = ALWAYS_LOCKED_IDS.has(community.id) ? true : community.locked;
+    return { ...community, logoUrl, locked };
   });
 }
 
 export function readCommunityChats(): PersistedCommunityRecord[] {
   const storedCommunities = readStoredCommunities();
-  const communities = applyBuiltInLogos(
+  const communities = applyBuiltInOverrides(
     (storedCommunities.length > 0 ? mergeWithDefaults(storedCommunities) : buildDefaultCommunities())
       .filter((community) => !RETIRED_COMMUNITY_IDS.has(community.id))
   );
