@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { track } from "@/lib/analytics";
+import { readCommunityChats } from "@/lib/communityChat";
 import {
   Bell,
   Check,
@@ -39,6 +40,34 @@ export function DashboardNav({ username, avatarLevel, showAdminLink = false, onP
   const { mode, accent, accentPresets, setMode, setAccent } = useTheme();
   const [hoveredMode, setHoveredMode] = useState<ThemeMode | null>(null);
   const [hoveredAccent, setHoveredAccent] = useState<AccentPresetId | null>(null);
+  const [notifOpen, setNotifOpen] = useState(false);
+  const notifRef = useRef<HTMLDivElement>(null);
+
+  const notifications = useMemo(() => {
+    const communities = readCommunityChats();
+    const tag = `@${username}`.toLowerCase();
+    const results: { type: "mention" | "like"; communityTitle: string; senderName: string; text: string; createdAt: string; likeCount?: number }[] = [];
+    for (const community of communities) {
+      for (const msg of community.messages) {
+        if (msg.text.toLowerCase().includes(tag) && msg.senderName !== username) {
+          results.push({ type: "mention", communityTitle: community.title, senderName: msg.senderName, text: msg.text, createdAt: msg.createdAt });
+        }
+        if ((msg.senderId === username || msg.senderName === username) && (msg.likedBy?.length ?? 0) > 0) {
+          results.push({ type: "like", communityTitle: community.title, senderName: msg.senderName, text: msg.text, createdAt: msg.createdAt, likeCount: msg.likedBy?.length });
+        }
+      }
+    }
+    return results.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  }, [username, notifOpen]);
+
+  useEffect(() => {
+    if (!notifOpen) return;
+    const handler = (e: MouseEvent) => {
+      if (notifRef.current && !notifRef.current.contains(e.target as Node)) setNotifOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [notifOpen]);
   const effectiveMode = hoveredMode ?? mode;
   const effectiveAccent = hoveredAccent ?? accent;
   const isEffectiveLight = effectiveMode === "light";
@@ -73,14 +102,45 @@ export function DashboardNav({ username, avatarLevel, showAdminLink = false, onP
 
         {/* Right: bell + avatar */}
         <div className="flex shrink-0 items-center gap-1.5 sm:gap-3">
-          <button
-            type="button"
-            className="relative flex h-10 w-10 items-center justify-center rounded-full text-raw-silver/60 transition-colors hover:bg-raw-surface/40 hover:text-raw-silver"
-            aria-label="Notifications"
-          >
-            <Bell className="h-5 w-5" />
-            <div className="absolute right-2.5 top-2.5 h-2 w-2 rounded-full bg-raw-gold" />
-          </button>
+          <div className="relative" ref={notifRef}>
+            <button
+              type="button"
+              onClick={() => setNotifOpen((p) => !p)}
+              className="relative flex h-10 w-10 items-center justify-center rounded-full text-raw-silver/60 transition-colors hover:bg-raw-surface/40 hover:text-raw-silver"
+              aria-label="Notifications"
+            >
+              <Bell className="h-5 w-5" />
+              {notifications.length > 0 && (
+                <div className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-raw-gold px-1 text-[9px] font-bold text-raw-ink">
+                  {notifications.length > 99 ? "99+" : notifications.length}
+                </div>
+              )}
+            </button>
+            {notifOpen && (
+              <div className="absolute right-0 top-12 z-50 w-80 rounded-2xl border border-raw-border/40 bg-raw-black/95 shadow-2xl backdrop-blur-xl">
+                <div className="border-b border-raw-border/20 px-4 py-3 flex items-center justify-between">
+                  <p className="text-[11px] uppercase tracking-[0.18em] text-raw-silver/40">Notifications</p>
+                  {notifications.length > 0 && <span className="text-[10px] text-raw-silver/30">{notifications.length} total</span>}
+                </div>
+                <div className="max-h-80 overflow-y-auto">
+                  {notifications.length === 0 ? (
+                    <p className="px-4 py-6 text-center text-sm text-raw-silver/35">No notifications yet</p>
+                  ) : notifications.map((n, i) => (
+                    <div key={i} className="border-b border-raw-border/15 px-4 py-3 last:border-0">
+                      <div className="flex items-center gap-2">
+                        <span className={`text-[9px] uppercase tracking-wider font-semibold rounded-full px-2 py-0.5 ${n.type === "like" ? "bg-raw-gold/15 text-raw-gold" : "bg-raw-silver/10 text-raw-silver/60"}`}>
+                          {n.type === "like" ? `♥ ${n.likeCount} like${(n.likeCount ?? 0) > 1 ? "s" : ""}` : "@ mention"}
+                        </span>
+                        <p className="text-[10px] text-raw-silver/40">{n.communityTitle}</p>
+                      </div>
+                      {n.type === "mention" && <p className="mt-1 text-xs text-raw-silver/60">from @{n.senderName}</p>}
+                      <p className="mt-1 text-sm leading-relaxed text-raw-text/80 line-clamp-2">{n.text}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button

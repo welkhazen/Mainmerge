@@ -1,7 +1,6 @@
 import { Suspense, lazy, useEffect, useState } from "react";
 import { Navbar } from "@/components/landing/Navbar";
 import { ProblemSection } from "@/components/landing/ProblemSection";
-import { Hero } from "@/components/landing/Hero";
 import { GlobeHero } from "@/components/landing/GlobeHero";
 import { HowItWorks } from "@/components/landing/HowItWorks";
 import { PollSection } from "@/components/landing/PollSection";
@@ -178,7 +177,7 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen bg-raw-black">
+    <div className="min-h-screen bg-raw-black landing-scaled">
       <div className="relative">
         <PerforatedBackground />
         <MatrixBackground />
@@ -191,7 +190,6 @@ const Index = () => {
         />
 
         <GlobeHero onSignupClick={() => setShowSignup(true)} />
-        <Hero onSignupClick={() => setShowSignup(true)} showDottedSurface={!showMatrixIntro} />
         <ProblemSection />
         <HowItWorks />
         <PollSection

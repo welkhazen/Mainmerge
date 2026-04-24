@@ -732,47 +732,31 @@ export function DashboardPolls({
           {insightsProgress.map((item) => (
             <article
               key={item.id}
-              className="rounded-2xl border border-raw-border/35 bg-raw-surface/25 p-4"
+              className="relative overflow-hidden rounded-2xl border border-raw-border/35 bg-raw-surface/25 p-4"
             >
-              <div className="flex items-center justify-between">
-                <p className="font-display text-base text-raw-text">{item.name}</p>
-                <span
-                  className={`rounded-full border px-2.5 py-1 text-[10px] uppercase tracking-[0.1em] ${
+              <p className="font-display text-base text-raw-text">{item.name}</p>
+
+              <div className={!item.unlocked ? "pointer-events-none select-none blur-sm" : undefined}>
+                <p className="mt-2 text-xs leading-relaxed text-raw-silver/55">{item.description}</p>
+                <button
+                  disabled={!item.unlocked}
+                  className={`mt-4 w-full rounded-xl border px-3 py-2 text-xs transition ${
                     item.unlocked
-                      ? "border-emerald-400/35 bg-emerald-500/10 text-emerald-200"
-                      : "border-raw-border/45 bg-raw-black/40 text-raw-silver/50"
+                      ? "border-emerald-400/35 bg-emerald-500/12 text-emerald-100 hover:bg-emerald-500/20"
+                      : "cursor-not-allowed border-raw-border/40 bg-raw-black/35 text-raw-silver/45"
                   }`}
                 >
-                  {item.unlocked ? "Unlocked" : "Locked"}
-                </span>
+                  {item.unlocked ? "View Report" : item.lockedAction}
+                </button>
               </div>
 
-              <p className="mt-2 text-xs leading-relaxed text-raw-silver/55">{item.description}</p>
-
               {!item.unlocked && (
-                <div className="mt-3 rounded-xl border border-raw-border/35 bg-raw-black/35 p-3">
-                  <p className="text-[10px] uppercase tracking-[0.12em] text-raw-silver/40">Unlock To-Do</p>
-                  <div className="mt-2 space-y-1.5 text-xs text-raw-silver/60">
-                    {item.unlockRequirements.map((requirement) => (
-                      <p key={`${item.id}-${requirement}`}>{requirement}</p>
-                    ))}
-                    {item.unlockRequirements.some((requirement) => /polls/i.test(requirement)) && (
-                      <p className="text-raw-silver/45">{pollsAnswered} polls answered</p>
-                    )}
-                  </div>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="rounded-full border border-raw-border/45 bg-raw-black/70 px-4 py-1.5 text-[11px] uppercase tracking-[0.18em] text-raw-silver/60 backdrop-blur-sm">
+                    Locked
+                  </span>
                 </div>
               )}
-
-              <button
-                disabled={!item.unlocked}
-                className={`mt-4 w-full rounded-xl border px-3 py-2 text-xs transition ${
-                  item.unlocked
-                    ? "border-emerald-400/35 bg-emerald-500/12 text-emerald-100 hover:bg-emerald-500/20"
-                    : "cursor-not-allowed border-raw-border/40 bg-raw-black/35 text-raw-silver/45"
-                }`}
-              >
-                {item.unlocked ? "View Report" : item.lockedAction}
-              </button>
             </article>
           ))}
         </div>

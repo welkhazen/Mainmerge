@@ -1,4 +1,6 @@
 import { toUserId, type CommunityRequestRecord } from "@/lib/adminData";
+import LNTLogo from "@/assets/LNT.png";
+import SYTLogo from "@/assets/logospeak.png";
 import type {
   JoinCommunityInput,
   PersistedCommunityRecord,
@@ -22,10 +24,27 @@ function mergeWithDefaults(storedCommunities: PersistedCommunityRecord[]): Persi
 
 const RETIRED_COMMUNITY_IDS = new Set(["sg", "sic", "mw"]);
 
+const BUILT_IN_LOGOS: Record<string, string> = {
+  lnt: LNTLogo,
+  syt: SYTLogo,
+};
+
+function applyBuiltInLogos(communities: PersistedCommunityRecord[]): PersistedCommunityRecord[] {
+  return communities.map((community) => {
+    const builtIn = BUILT_IN_LOGOS[community.id];
+    if (builtIn && !community.logoUrl) {
+      return { ...community, logoUrl: builtIn };
+    }
+    return community;
+  });
+}
+
 export function readCommunityChats(): PersistedCommunityRecord[] {
   const storedCommunities = readStoredCommunities();
-  const communities = (storedCommunities.length > 0 ? mergeWithDefaults(storedCommunities) : buildDefaultCommunities())
-    .filter((community) => !RETIRED_COMMUNITY_IDS.has(community.id));
+  const communities = applyBuiltInLogos(
+    (storedCommunities.length > 0 ? mergeWithDefaults(storedCommunities) : buildDefaultCommunities())
+      .filter((community) => !RETIRED_COMMUNITY_IDS.has(community.id))
+  );
 
   writeCommunityChats(communities);
 

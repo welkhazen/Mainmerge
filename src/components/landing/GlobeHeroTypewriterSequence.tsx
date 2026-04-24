@@ -27,43 +27,29 @@ export function GlobeHeroTypewriterSequence({
   pauseBetweenLinesMs = 440,
   cursorClassName = "bg-primary",
 }: GlobeHeroTypewriterSequenceProps) {
-  const safeLines = useMemo(
-    () => lines.filter((line) => Array.isArray(line?.words) && line.words.length > 0),
-    [lines]
-  );
-
-  const [visibleCount, setVisibleCount] = useState(safeLines.length > 0 ? 1 : 0);
+  const [visibleCount, setVisibleCount] = useState(lines.length > 0 ? 1 : 0);
 
   const lineDurations = useMemo(
     () =>
-      safeLines.map((line) => {
+      lines.map((line) => {
         const chars = line.words.reduce((count, word) => count + word.text.replace(/\s/g, "").length, 0);
         return Math.max(520, Math.round(chars * charDelay * 1000 + pauseBetweenLinesMs));
       }),
-    [safeLines, charDelay, pauseBetweenLinesMs]
+    [lines, charDelay, pauseBetweenLinesMs]
   );
 
   useEffect(() => {
-    if (safeLines.length === 0) {
-      setVisibleCount(0);
-      return;
-    }
-    if (visibleCount <= 0) {
-      setVisibleCount(1);
-      return;
-    }
-    if (visibleCount >= safeLines.length) return;
-
+    if (visibleCount >= lines.length) return;
     const timer = setTimeout(() => {
       setVisibleCount((count) => count + 1);
     }, lineDurations[visibleCount - 1]);
 
     return () => clearTimeout(timer);
-  }, [visibleCount, safeLines.length, lineDurations]);
+  }, [visibleCount, lines.length, lineDurations]);
 
   return (
     <div className="flex flex-col items-center leading-[0.92]">
-      {safeLines.slice(0, visibleCount).map((line, index) => (
+      {lines.slice(0, visibleCount).map((line, index) => (
         <div key={`line-${index}`} className="block">
           <TypewriterEffect
             words={line.words}
