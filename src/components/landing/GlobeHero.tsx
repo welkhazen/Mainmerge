@@ -52,7 +52,7 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
           >
             <div className="absolute inset-0 rounded-full bg-gradient-to-r from-primary/10 via-transparent to-primary/10 animate-pulse" />
             <div className="w-2 h-2 bg-primary rounded-full animate-ping" />
-            <span className="relative z-10 text-sm font-bold text-primary tracking-wider uppercase">Anonymous • Community-First • Identity-Driven</span>
+            <span className="relative z-10 text-sm font-bold text-primary tracking-wider uppercase">Fully Anonymous • Community Driven • Identity Based</span>
             <div
               className="w-2 h-2 bg-primary rounded-full animate-ping"
               style={{ animationDelay: "0.5s" }}
