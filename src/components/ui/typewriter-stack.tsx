@@ -1,14 +1,17 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
 
 interface TypewriterStackProps {
   words: string[];
   typeSpeed?: number;
   pauseAfterWord?: number;
+  nextWordDelay?: number;
   className?: string;
   lineClassName?: string;
+  textClassName?: string;
   cursorClassName?: string;
 }
 
@@ -18,8 +21,10 @@ export function TypewriterStack({
   words,
   typeSpeed = 85,
   pauseAfterWord = 450,
+  nextWordDelay = 220,
   className,
   lineClassName,
+  textClassName,
   cursorClassName,
 }: TypewriterStackProps) {
   const [wordIndex, setWordIndex] = useState(0);
@@ -47,29 +52,49 @@ export function TypewriterStack({
         setWordIndex((i) => i + 1);
         setText("");
         setPhase("typing");
-      }, 0);
+      }, nextWordDelay);
     }
 
     return () => clearTimeout(timer);
-  }, [text, phase, wordIndex, words, typeSpeed, pauseAfterWord]);
+  }, [text, phase, wordIndex, words, typeSpeed, pauseAfterWord, nextWordDelay]);
 
   return (
     <span className={cn("flex flex-col items-center", className)}>
       {words.slice(0, wordIndex).map((w, i) => (
-        <span key={`done-${i}`} className={cn("block", lineClassName)}>
+        <motion.span
+          key={`done-${i}`}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.32, ease: "easeOut" }}
+          className={cn("block will-change-transform", lineClassName, textClassName)}
+        >
           {w}
-        </span>
+        </motion.span>
       ))}
-      <span className={cn("inline-flex items-center", lineClassName)}>
-        <span aria-live="polite">{text}</span>
-        <span
+      <motion.span
+        key={`typing-${wordIndex}`}
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.32, ease: "easeOut" }}
+        className={cn("inline-flex items-center will-change-transform", lineClassName)}
+      >
+        <span aria-live="polite" className={textClassName}>{text}</span>
+        <motion.span
           aria-hidden="true"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{
+            duration: 0.8,
+            repeat: Infinity,
+            repeatType: "reverse",
+          }}
           className={cn(
-            "ml-[0.08em] inline-block w-[0.08em] h-[0.9em] animate-pulse bg-primary",
+            "ml-2 inline-block rounded-sm w-[4px] h-4 sm:h-6 md:h-8 lg:h-10 xl:h-12 bg-primary",
             cursorClassName
           )}
         />
-      </span>
+      </motion.span>
     </span>
   );
 }
+

@@ -22,11 +22,7 @@ export function Navbar({ isLoggedIn, username, onSignupClick }: NavbarProps) {
     onSignupClick();
   };
 
-  const navLinks = [
-    { href: "#communities", label: "Communities" },
-    { href: "#polls", label: "Polls" },
-    { href: "#avatar", label: "Avatar" },
-  ];
+  const navLinks: { href: string; label: string }[] = [];
 
   return (
     <nav className="landing-navbar fixed top-0 left-0 right-0 z-50 border-b border-raw-border/50 bg-raw-black/80 backdrop-blur-xl">
@@ -68,19 +64,25 @@ export function Navbar({ isLoggedIn, username, onSignupClick }: NavbarProps) {
             </>
           )}
 
-          {/* Mobile hamburger */}
-          <button
-            className="flex h-9 w-9 items-center justify-center rounded-lg border border-raw-border/40 text-raw-silver/60 transition-colors hover:text-raw-text md:hidden"
-            onClick={() => setMenuOpen((o) => !o)}
-            aria-label={menuOpen ? "Close menu" : "Open menu"}
-          >
-            {menuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-          </button>
+          {/* Mobile hamburger — only shown when there are nav links */}
+          {navLinks.length > 0 && (
+            <button
+              className={`flex h-9 w-9 items-center justify-center rounded-lg border transition-colors md:hidden ${
+                menuOpen
+                  ? "border-raw-gold/50 bg-raw-gold/10 text-raw-gold"
+                  : "border-raw-border/40 text-raw-silver/60 hover:text-raw-text"
+              }`}
+              onClick={() => setMenuOpen((o) => !o)}
+              aria-label={menuOpen ? "Close menu" : "Open menu"}
+            >
+              {menuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+            </button>
+          )}
         </div>
       </div>
 
       {/* Mobile dropdown menu */}
-      {menuOpen && (
+      {menuOpen && navLinks.length > 0 && (
         <div className="border-t border-raw-border/30 bg-raw-black/95 px-4 py-3 md:hidden">
           {navLinks.map((link) => (
             <a

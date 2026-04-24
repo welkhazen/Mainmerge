@@ -56,7 +56,7 @@ const DotGlobeHero = React.forwardRef<
     <div
       ref={ref}
       className={cn(
-        "relative w-full h-screen bg-background overflow-hidden",
+        "relative w-full h-[75vh] bg-background overflow-hidden",
         className
       )}
       {...props}
@@ -83,4 +83,4 @@ const DotGlobeHero = React.forwardRef<
 
 DotGlobeHero.displayName = "DotGlobeHero";
 
-export { DotGlobeHero, type DotGlobeHeroProps };
+export { DotGlobeHero, Globe };
