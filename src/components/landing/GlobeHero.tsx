@@ -14,7 +14,7 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
   const handlePrimaryClick = () => {
     track("landing_cta_clicked", {
       cta_id: "globe_hero_start_exploring",
-      cta_text: "Start Exploring",
+      cta_text: "Join Now",
       source_section: "globe_hero",
     });
     onSignupClick();
@@ -23,7 +23,7 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
   const handleSecondaryClick = () => {
     track("landing_cta_clicked", {
       cta_id: "globe_hero_view_demo",
-      cta_text: "View Live Demo",
+      cta_text: "Learn More",
       source_section: "globe_hero",
     });
   };
@@ -52,7 +52,7 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
           >
             <div className="absolute inset-0 rounded-full bg-gradient-to-r from-primary/10 via-transparent to-primary/10 animate-pulse" />
             <div className="w-2 h-2 bg-primary rounded-full animate-ping" />
-            <span className="relative z-10 text-sm font-bold text-primary tracking-wider uppercase">GLOBAL NETWORK</span>
+            <span className="relative z-10 text-sm font-bold text-primary tracking-wider uppercase">Anonymous • Community-First • Identity-Driven</span>
             <div
               className="w-2 h-2 bg-primary rounded-full animate-ping"
               style={{ animationDelay: "0.5s" }}
