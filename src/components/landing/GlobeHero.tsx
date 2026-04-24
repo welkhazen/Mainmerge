@@ -3,9 +3,9 @@
 import React from "react";
 import { motion } from "motion/react";
 import { DotGlobeHero } from "@/components/ui/globe-hero";
-import { TypewriterStack } from "@/components/ui/typewriter-stack";
 import { ArrowRight, Zap } from "lucide-react";
 import { track } from "@/lib/analytics";
+import { GlobeHeroTypewriterSequence } from "@/components/landing/GlobeHeroTypewriterSequence";
 
 interface GlobeHeroProps {
   onSignupClick: () => void;
@@ -65,22 +65,45 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 0.3 }}
-              className="text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-[0.85] select-none"
+              className="text-[2.55rem] md:text-[3.825rem] lg:text-[5.1rem] xl:text-[6.8rem] font-black tracking-tighter leading-[0.85] select-none"
               style={{ fontFamily: "Inter, system-ui, sans-serif" }}
             >
-              <span className="block font-light text-foreground/70 mb-3 text-4xl md:text-6xl lg:text-7xl">
+              <span className="block font-light text-foreground/70 mb-3 text-[1.91rem] md:text-[3.19rem] lg:text-[3.83rem]">
                 Find
               </span>
               <span className="block relative">
                 <span
-                  className="bg-gradient-to-br from-primary via-primary to-primary/60 bg-clip-text text-transparent font-black relative z-10 block"
+                  className="font-black relative z-10 block"
                   style={{
                     filter:
                       "drop-shadow(0 0 24px hsl(var(--primary) / 0.45)) drop-shadow(0 0 48px hsl(var(--primary) / 0.25))",
                   }}
                 >
-                  <TypewriterStack
-                    words={["Your Place", "Your People", "Yourself", "Be raW"]}
+                  <GlobeHeroTypewriterSequence
+                    lines={[
+                      {
+                        words: [{ text: "Your Place", className: "text-[#F1C42D]" }],
+                        className: "!text-[1.95rem] sm:!text-[2.6rem] md:!text-[3.3rem] lg:!text-[4.15rem]",
+                      },
+                      {
+                        words: [{ text: "Your People", className: "text-[#F1C42D]" }],
+                        className: "!text-[2.15rem] sm:!text-[2.9rem] md:!text-[3.75rem] lg:!text-[4.7rem]",
+                      },
+                      {
+                        words: [{ text: "Your Self", className: "text-[#F1C42D]" }],
+                        className: "!text-[2.35rem] sm:!text-[3.2rem] md:!text-[4.1rem] lg:!text-[5.1rem]",
+                      },
+                      {
+                        words: [
+                          { text: "Be", className: "text-[#F1C42D]" },
+                          { text: "ra", className: "text-white", noSpaceAfter: true },
+                          { text: "W", className: "text-[#F1C42D]" },
+                        ],
+                        className: "!mt-3 !text-[2.55rem] sm:!text-[3.4rem] md:!text-[4.45rem] lg:!text-[5.45rem]",
+                      },
+                    ]}
+                    charDelay={0.16}
+                    pauseBetweenLinesMs={560}
                     cursorClassName="bg-primary"
                   />
                 </span>
