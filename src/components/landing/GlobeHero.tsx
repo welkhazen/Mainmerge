@@ -68,7 +68,7 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
               style={{ fontFamily: "Inter, system-ui, sans-serif" }}
             >
               <span className="block font-light text-foreground/70 mb-3 text-4xl md:text-6xl lg:text-7xl">
-                Connect
+                Find
               </span>
               <span className="block relative">
                 <span className="bg-gradient-to-br from-primary via-primary to-primary/60 bg-clip-text text-transparent font-black relative z-10">
