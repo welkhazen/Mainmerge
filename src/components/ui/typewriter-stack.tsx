@@ -2,11 +2,13 @@
 
 import React, { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
+import { motion } from "motion/react";
 
 interface TypewriterStackProps {
   words: string[];
   typeSpeed?: number;
   pauseAfterWord?: number;
+  nextWordDelay?: number;
   className?: string;
   lineClassName?: string;
   cursorClassName?: string;
@@ -18,6 +20,7 @@ export function TypewriterStack({
   words,
   typeSpeed = 85,
   pauseAfterWord = 450,
+  nextWordDelay = 220,
   className,
   lineClassName,
   cursorClassName,
@@ -47,20 +50,32 @@ export function TypewriterStack({
         setWordIndex((i) => i + 1);
         setText("");
         setPhase("typing");
-      }, 0);
+      }, nextWordDelay);
     }
 
     return () => clearTimeout(timer);
-  }, [text, phase, wordIndex, words, typeSpeed, pauseAfterWord]);
+  }, [text, phase, wordIndex, words, typeSpeed, pauseAfterWord, nextWordDelay]);
 
   return (
     <span className={cn("flex flex-col items-center", className)}>
       {words.slice(0, wordIndex).map((w, i) => (
-        <span key={`done-${i}`} className={cn("block", lineClassName)}>
+        <motion.span
+          key={`done-${i}`}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.32, ease: "easeOut" }}
+          className={cn("block will-change-transform", lineClassName)}
+        >
           {w}
-        </span>
+        </motion.span>
       ))}
-      <span className={cn("inline-flex items-center", lineClassName)}>
+      <motion.span
+        key={`typing-${wordIndex}`}
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.32, ease: "easeOut" }}
+        className={cn("inline-flex items-center will-change-transform", lineClassName)}
+      >
         <span aria-live="polite">{text}</span>
         <span
           aria-hidden="true"
@@ -69,7 +84,7 @@ export function TypewriterStack({
             cursorClassName
           )}
         />
-      </span>
+      </motion.span>
     </span>
   );
 }

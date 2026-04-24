@@ -3,9 +3,9 @@
 import React from "react";
 import { motion } from "motion/react";
 import { DotGlobeHero } from "@/components/ui/globe-hero";
-import { TypewriterStack } from "@/components/ui/typewriter-stack";
 import { ArrowRight, Zap } from "lucide-react";
 import { track } from "@/lib/analytics";
+import { GlobeHeroTypewriterSequence } from "@/components/landing/GlobeHeroTypewriterSequence";
 
 interface GlobeHeroProps {
   onSignupClick: () => void;
@@ -65,10 +65,10 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 0.3 }}
-              className="text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-[0.85] select-none"
+              className="text-[2.55rem] md:text-[3.825rem] lg:text-[5.1rem] xl:text-[6.8rem] font-black tracking-tighter leading-[0.85] select-none"
               style={{ fontFamily: "Inter, system-ui, sans-serif" }}
             >
-              <span className="block font-light text-foreground/70 mb-3 text-4xl md:text-6xl lg:text-7xl">
+              <span className="block font-light text-foreground/70 mb-3 text-[1.91rem] md:text-[3.19rem] lg:text-[3.83rem]">
                 Find
               </span>
               <span className="block relative">
@@ -79,8 +79,16 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
                       "drop-shadow(0 0 24px hsl(var(--primary) / 0.45)) drop-shadow(0 0 48px hsl(var(--primary) / 0.25))",
                   }}
                 >
-                  <TypewriterStack
+                  <GlobeHeroTypewriterSequence
                     words={["Your Place", "Your People", "Yourself", "Be raW"]}
+                    charDelay={0.16}
+                    pauseBetweenLinesMs={560}
+                    lineClassNames={[
+                      "!text-[2rem] sm:!text-[2.7rem] md:!text-[3.45rem] lg:!text-[4.35rem]",
+                      "!text-[2.2rem] sm:!text-[2.95rem] md:!text-[3.8rem] lg:!text-[4.8rem]",
+                      "!text-[2.4rem] sm:!text-[3.2rem] md:!text-[4.1rem] lg:!text-[5.2rem]",
+                      "!text-[2.6rem] sm:!text-[3.45rem] md:!text-[4.45rem] lg:!text-[5.6rem]",
+                    ]}
                     cursorClassName="bg-primary"
                   />
                 </span>
