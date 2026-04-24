@@ -106,7 +106,7 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
               </span>
             </p>
             <p className="text-lg text-foreground/80 font-semibold leading-relaxed">
-              Your Username. Your Password. Your raW Self.
+             Only Needs - Username. Password. Yourself 
             </p>
           </motion.div>
         </motion.div>
