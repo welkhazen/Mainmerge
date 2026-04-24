@@ -73,7 +73,7 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
               </span>
               <span className="block relative">
                 <span
-                  className="bg-gradient-to-br from-primary via-primary to-primary/60 bg-clip-text text-transparent font-black relative z-10 block"
+                  className="font-black relative z-10 block"
                   style={{
                     filter:
                       "drop-shadow(0 0 24px hsl(var(--primary) / 0.45)) drop-shadow(0 0 48px hsl(var(--primary) / 0.25))",
@@ -81,6 +81,7 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
                 >
                   <TypewriterStack
                     words={["Your Place", "Your People", "Your Self...", "raW"]}
+                    textClassName="bg-gradient-to-br from-primary via-primary to-primary/60 bg-clip-text text-transparent font-black"
                     cursorClassName="bg-primary"
                   />
                 </span>

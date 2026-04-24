@@ -177,7 +177,7 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen bg-raw-black">
+    <div className="min-h-screen bg-raw-black landing-scaled">
       <div className="relative">
         <PerforatedBackground />
         <MatrixBackground />

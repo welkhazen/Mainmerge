@@ -11,6 +11,7 @@ interface TypewriterStackProps {
   nextWordDelay?: number;
   className?: string;
   lineClassName?: string;
+  textClassName?: string;
   cursorClassName?: string;
 }
 
@@ -23,6 +24,7 @@ export function TypewriterStack({
   nextWordDelay = 220,
   className,
   lineClassName,
+  textClassName,
   cursorClassName,
 }: TypewriterStackProps) {
   const [wordIndex, setWordIndex] = useState(0);
@@ -64,7 +66,7 @@ export function TypewriterStack({
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.32, ease: "easeOut" }}
-          className={cn("block will-change-transform", lineClassName)}
+          className={cn("block will-change-transform", lineClassName, textClassName)}
         >
           {w}
         </motion.span>
@@ -76,7 +78,7 @@ export function TypewriterStack({
         transition={{ duration: 0.32, ease: "easeOut" }}
         className={cn("inline-flex items-center will-change-transform", lineClassName)}
       >
-        <span aria-live="polite">{text}</span>
+        <span aria-live="polite" className={textClassName}>{text}</span>
         <motion.span
           aria-hidden="true"
           initial={{ opacity: 0 }}
