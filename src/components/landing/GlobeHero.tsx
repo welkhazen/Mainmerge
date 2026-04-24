@@ -3,9 +3,9 @@
 import React from "react";
 import { motion } from "motion/react";
 import { DotGlobeHero } from "@/components/ui/globe-hero";
-import { TypewriterStack } from "@/components/ui/typewriter-stack";
 import { ArrowRight, Zap } from "lucide-react";
 import { track } from "@/lib/analytics";
+import { GlobeHeroTypewriterSequence } from "@/components/landing/GlobeHeroTypewriterSequence";
 
 interface GlobeHeroProps {
   onSignupClick: () => void;
@@ -79,6 +79,16 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
                       "drop-shadow(0 0 24px hsl(var(--primary) / 0.45)) drop-shadow(0 0 48px hsl(var(--primary) / 0.25))",
                   }}
                 >
+                  <GlobeHeroTypewriterSequence
+                    words={["Your Place", "Your People", "Yourself", "Be raW"]}
+                    charDelay={0.16}
+                    pauseBetweenLinesMs={560}
+                    lineClassNames={[
+                      "!text-[2rem] sm:!text-[2.7rem] md:!text-[3.45rem] lg:!text-[4.35rem]",
+                      "!text-[2.2rem] sm:!text-[2.95rem] md:!text-[3.8rem] lg:!text-[4.8rem]",
+                      "!text-[2.4rem] sm:!text-[3.2rem] md:!text-[4.1rem] lg:!text-[5.2rem]",
+                      "!text-[2.6rem] sm:!text-[3.45rem] md:!text-[4.45rem] lg:!text-[5.6rem]",
+                    ]}
                   <TypewriterStack
                     words={["Your Place", "Your People", "Your Self...", "raW"]}
                     cursorClassName="bg-primary"
