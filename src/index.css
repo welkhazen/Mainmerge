@@ -325,6 +325,10 @@ html.theme-light .dashboard-enhanced-bg [class*="text-raw-silver/"] {
   background: #050505;
 }
 
+.hero-landing :is(h1, h2, h3, h4, h5, h6, p, a, button, label, span) {
+  font-size: calc(1em * 0.85) !important;
+}
+
 .hero-landing-overlay {
   background: linear-gradient(180deg, #050505 0%, #080808 52%, #0d0d0d 100%);
 }
