@@ -89,6 +89,8 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
                       "!text-[2.4rem] sm:!text-[3.2rem] md:!text-[4.1rem] lg:!text-[5.2rem]",
                       "!text-[2.6rem] sm:!text-[3.45rem] md:!text-[4.45rem] lg:!text-[5.6rem]",
                     ]}
+                  <TypewriterStack
+                    words={["Your Place", "Your People", "Your Self...", "raW"]}
                     cursorClassName="bg-primary"
                   />
                 </span>
