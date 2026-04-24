@@ -54,6 +54,7 @@ export function Hero({ onSignupClick, showDottedSurface = true }: HeroProps) {
 
   return (
     <section
+      id="hero"
       ref={sectionRef as React.RefObject<HTMLElement>}
       className="hero-landing relative flex min-h-screen items-center overflow-hidden px-4 pb-10 pt-20 sm:px-6 sm:pb-16 sm:pt-24 md:pt-28 bg-black/40"
     >
