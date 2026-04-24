@@ -23,7 +23,7 @@ export const TypewriterEffect = ({
   const wordsArray = words.map((word) => {
     return {
       ...word,
-      text: word.text.split(""),
+      text: (word.text ?? "").split(""),
     };
   });
   const [scope, animate] = useAnimate();
@@ -115,7 +115,7 @@ export const TypewriterEffectSmooth = ({
   const wordsArray = words.map((word) => {
     return {
       ...word,
-      text: word.text.split(""),
+      text: (word.text ?? "").split(""),
     };
   });
   const renderWords = () => {
