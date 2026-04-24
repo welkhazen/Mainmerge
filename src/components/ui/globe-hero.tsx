@@ -83,4 +83,4 @@ const DotGlobeHero = React.forwardRef<
 
 DotGlobeHero.displayName = "DotGlobeHero";
 
-export { DotGlobeHero, type DotGlobeHeroProps };
+export { DotGlobeHero, Globe };

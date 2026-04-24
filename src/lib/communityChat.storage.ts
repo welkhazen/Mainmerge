@@ -67,6 +67,7 @@ export function normalizeCommunity(rawCommunity: unknown): PersistedCommunityRec
     logoUrl: typeof candidate.logoUrl === "string" ? candidate.logoUrl : undefined,
     description: ensureString(candidate.description, "Group chat"),
     topic: ensureString(candidate.topic, "Say something real."),
+    locked: candidate.locked === true ? true : undefined,
     status: candidate.status === "Active" || candidate.status === "Early Access" ? candidate.status : "Active",
     createdAt: ensureString(candidate.createdAt, new Date().toISOString()),
     createdBy: typeof candidate.createdBy === "string" ? candidate.createdBy : undefined,
