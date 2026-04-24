@@ -6,19 +6,24 @@ export const TypewriterEffect = ({
   words,
   className,
   cursorClassName,
+  charDelay = 0.1,
+  charDuration = 0.3,
 }: {
   words: {
     text: string;
     className?: string;
+    noSpaceAfter?: boolean;
   }[];
   className?: string;
   cursorClassName?: string;
+  charDelay?: number;
+  charDuration?: number;
 }) => {
   // split text inside of words into array of characters
   const wordsArray = words.map((word) => {
     return {
       ...word,
-      text: word.text.split(""),
+      text: (word.text ?? "").split(""),
     };
   });
   const [scope, animate] = useAnimate();
@@ -33,13 +38,13 @@ export const TypewriterEffect = ({
           width: "fit-content",
         },
         {
-          duration: 0.3,
-          delay: stagger(0.1),
+          duration: charDuration,
+          delay: stagger(charDelay),
           ease: "easeInOut",
         }
       );
     }
-  }, [isInView]);
+  }, [animate, charDelay, charDuration, isInView]);
   const renderWords = () => {
     return (
       <motion.div ref={scope} className="inline">
@@ -58,7 +63,7 @@ export const TypewriterEffect = ({
                   {char}
                 </motion.span>
               ))}
-              &nbsp;
+              {!word.noSpaceAfter ? "\u00A0" : null}
             </div>
           );
         })}
@@ -101,6 +106,7 @@ export const TypewriterEffectSmooth = ({
   words: {
     text: string;
     className?: string;
+    noSpaceAfter?: boolean;
   }[];
   className?: string;
   cursorClassName?: string;
@@ -109,7 +115,7 @@ export const TypewriterEffectSmooth = ({
   const wordsArray = words.map((word) => {
     return {
       ...word,
-      text: word.text.split(""),
+      text: (word.text ?? "").split(""),
     };
   });
   const renderWords = () => {
@@ -126,7 +132,7 @@ export const TypewriterEffectSmooth = ({
                   {char}
                 </span>
               ))}
-              &nbsp;
+              {!word.noSpaceAfter ? "\u00A0" : null}
             </div>
           );
         })}
