@@ -1,5 +1,7 @@
 import { lazy, Suspense, useMemo } from "react";
 import lntCoverVideo from "@/assets/2026-04-18 10_10_00.MP4";
+import iijmVideo from "@/assets/itisjustme.mp4";
+import sytVideo from "@/assets/speakyourheart.mp4";
 import { GlareCard } from "@/components/ui/glare-card";
 import {
   Target,
@@ -19,6 +21,8 @@ const COMMUNITY_COVER_IMAGES: Record<string, string> = {
 
 const COMMUNITY_COVER_VIDEOS: Record<string, string> = {
   lnt: lntCoverVideo,
+  iijm: iijmVideo,
+  syt: sytVideo,
 };
 
 const PREVIEW_IDS = ["lnt", "syt", "iijm", "li"];

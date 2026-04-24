@@ -749,19 +749,6 @@ export function DashboardPolls({
 
               <p className="mt-2 text-xs leading-relaxed text-raw-silver/55">{item.description}</p>
 
-              {!item.unlocked && (
-                <div className="mt-3 rounded-xl border border-raw-border/35 bg-raw-black/35 p-3">
-                  <p className="text-[10px] uppercase tracking-[0.12em] text-raw-silver/40">Unlock To-Do</p>
-                  <div className="mt-2 space-y-1.5 text-xs text-raw-silver/60">
-                    {item.unlockRequirements.map((requirement) => (
-                      <p key={`${item.id}-${requirement}`}>{requirement}</p>
-                    ))}
-                    {item.unlockRequirements.some((requirement) => /polls/i.test(requirement)) && (
-                      <p className="text-raw-silver/45">{pollsAnswered} polls answered</p>
-                    )}
-                  </div>
-                </div>
-              )}
 
               <button
                 disabled={!item.unlocked}
