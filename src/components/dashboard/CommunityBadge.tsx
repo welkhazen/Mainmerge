@@ -16,7 +16,7 @@ export function CommunityBadge({ abbr, title, logoUrl, size = "md" }: CommunityB
       <img
         src={logoUrl}
         alt={`${title} logo`}
-        className={`${sizeClasses[size]} border border-raw-border/20 object-cover bg-raw-black/40`}
+        className={`${sizeClasses[size]} object-contain`}
       />
     );
   }
