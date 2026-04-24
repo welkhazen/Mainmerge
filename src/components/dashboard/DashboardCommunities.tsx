@@ -2,6 +2,9 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } fr
 import lntCoverVideo from "@/assets/2026-04-18 10_10_00.MP4";
 import iijmVideo from "@/assets/itisjustme.mp4";
 import sytVideo from "@/assets/speakyourheart.mp4";
+import LNTLogo from "@/assets/LNT.png";
+import SYTLogo from "@/assets/logospeak.png";
+import IIJMLogo from "@/assets/itisjustme.png";
 import { AlertTriangle, ArrowLeft, Bell, BellOff, Heart, ImagePlus, Lock, Plus, Search, Send, Users, X } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -103,6 +106,12 @@ const COMMUNITY_COVER_VIDEOS: Record<string, string> = {
   lnt: lntCoverVideo,
   iijm: iijmVideo,
   syt: sytVideo,
+};
+
+const COMMUNITY_LOGOS: Record<string, string> = {
+  lnt: LNTLogo,
+  syt: SYTLogo,
+  iijm: IIJMLogo,
 };
 
 export function DashboardCommunities({
@@ -549,7 +558,7 @@ export function DashboardCommunities({
                 <div className="flex flex-1 flex-col p-5">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center gap-3">
-                      <CommunityBadge abbr={community.abbr} title={community.title} logoUrl={community.logoUrl} />
+                      <CommunityBadge abbr={community.abbr} title={community.title} logoUrl={COMMUNITY_LOGOS[community.id] ?? community.logoUrl} />
                       <div>
                         <div className="flex items-center gap-2">
                           <p className="font-display text-base tracking-wide text-raw-text">{community.title}</p>
@@ -648,7 +657,7 @@ export function DashboardCommunities({
               >
                 <ArrowLeft className="h-4 w-4" />
               </button>
-              <CommunityBadge abbr={selectedCommunity.abbr} title={selectedCommunity.title} logoUrl={selectedCommunity.logoUrl} />
+              <CommunityBadge abbr={selectedCommunity.abbr} title={selectedCommunity.title} logoUrl={COMMUNITY_LOGOS[selectedCommunity.id] ?? selectedCommunity.logoUrl} />
               <div className="min-w-0">
                 <h1 className="font-display text-xl tracking-wide text-raw-text sm:text-2xl">{selectedCommunity.title}</h1>
                 <p className="mt-2 text-sm text-raw-silver/45">{selectedCommunity.description}</p>
