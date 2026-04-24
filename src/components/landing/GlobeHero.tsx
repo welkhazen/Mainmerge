@@ -3,6 +3,7 @@
 import React from "react";
 import { motion } from "motion/react";
 import { DotGlobeHero } from "@/components/ui/globe-hero";
+import { TypewriterCycle } from "@/components/ui/typewriter-cycle";
 import { ArrowRight, Zap } from "lucide-react";
 import { track } from "@/lib/analytics";
 
@@ -71,15 +72,18 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
                 Find
               </span>
               <span className="block relative">
-                <span className="bg-gradient-to-br from-primary via-primary to-primary/60 bg-clip-text text-transparent font-black relative z-10">
-                  the World
-                </span>
-                <div
-                  className="absolute inset-0 bg-gradient-to-br from-primary via-primary to-primary/60 bg-clip-text text-transparent font-black blur-2xl opacity-50 scale-105"
-                  style={{ fontFamily: "Inter, system-ui, sans-serif" }}
+                <span
+                  className="bg-gradient-to-br from-primary via-primary to-primary/60 bg-clip-text text-transparent font-black relative z-10 inline-flex items-center justify-center"
+                  style={{
+                    filter:
+                      "drop-shadow(0 0 24px hsl(var(--primary) / 0.45)) drop-shadow(0 0 48px hsl(var(--primary) / 0.25))",
+                  }}
                 >
-                  the World
-                </div>
+                  <TypewriterCycle
+                    words={["Your Place", "Your People", "Yourself", "Be raW"]}
+                    cursorClassName="bg-primary"
+                  />
+                </span>
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: "100%" }}
