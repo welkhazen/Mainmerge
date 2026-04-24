@@ -13,7 +13,7 @@ interface GlobeHeroProps {
 export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
   const handlePrimaryClick = () => {
     track("landing_cta_clicked", {
-      cta_id: "globe_hero_start_exploring",
+      cta_id: "globe_hero_join_now",
       cta_text: "Join Now",
       source_section: "globe_hero",
     });
@@ -22,7 +22,7 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
 
   const handleSecondaryClick = () => {
     track("landing_cta_clicked", {
-      cta_id: "globe_hero_view_demo",
+      cta_id: "globe_hero_learn_more",
       cta_text: "Learn More",
       source_section: "globe_hero",
     });
