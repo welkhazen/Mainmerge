@@ -97,12 +97,12 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
             className="max-w-3xl mx-auto space-y-4"
           >
             <p
-              className="text-xl md:text-2xl text-foreground font-semibold leading-relaxed font-medium"
+              className="text-xl md:text-2xl text-foreground font-bold leading-relaxed font-medium"
               style={{ fontFamily: "Inter, system-ui, sans-serif" }}
             >
               Y𝗼𝘂𝗿 𝗻𝗲𝘄 𝟮𝟰/𝟳 𝗹𝗶𝘃𝗶𝗻𝗴 𝗮𝗻𝗱 𝗲𝘃𝗲𝗿-𝗴𝗿𝗼𝘄𝗶𝗻𝗴 𝗻𝗲𝘄 𝘄𝗼𝗿𝗹𝗱{" "}
               <span className="text-foreground font-semibold bg-gradient-to-r from-primary/20 to-primary/10 px-2 py-1 rounded-md">
-                focused on building gennuine connections, a sense of belonging, a safe space for self discovery and understanding.
+                focused on building genuine connections, a sense of belonging, a safe space for self discovery and understanding.
               </span>
             </p>
             <p className="text-lg text-foreground/80 font-semibold leading-relaxed">
