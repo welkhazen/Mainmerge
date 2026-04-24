@@ -105,8 +105,8 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
                 prioritizing genuine connections, a sense of belonging, and a safe space to allow discovering oneself and others.
               </span>
             </p>
-            <p className="text-lg text-foreground/80 font-semibold leading-relaxed">
-             Only Needs A Username And Password
+            <p className="text-lg text-foreground/80 leading-relaxed">
+             Username And Password Only
             </p>
           </motion.div>
         </motion.div>
