@@ -7,6 +7,7 @@ import { ArrowRight, Zap } from "lucide-react";
 import { track } from "@/lib/analytics";
 
 import { GlobeHeroTypewriterSequence } from "@/components/landing/GlobeHeroTypewriterSequence";
+import Example from "@/components/landing/Example";
 import { TypewriterStack } from "@/components/ui/typewriter-stack";
 import { Canvas } from "@react-three/fiber";
 import { PerspectiveCamera } from "@react-three/drei";
@@ -129,6 +130,9 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
             >
               Username And Password Only
             </p>
+            <div className="flex justify-center pt-2">
+              <Example />
+            </div>
           </motion.div>
         </motion.div>
 
