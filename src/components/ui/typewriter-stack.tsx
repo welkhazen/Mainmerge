@@ -12,7 +12,14 @@ interface TypewriterStackProps {
   className?: string;
   lineClassName?: string;
   textClassName?: string;
+  firstWordClassName?: string;
   cursorClassName?: string;
+}
+
+function splitFirstWord(value: string): [string, string] {
+  const spaceIndex = value.indexOf(" ");
+  if (spaceIndex === -1) return [value, ""];
+  return [value.slice(0, spaceIndex), value.slice(spaceIndex)];
 }
 
 type Phase = "typing" | "pausing" | "done";
@@ -25,6 +32,7 @@ export function TypewriterStack({
   className,
   lineClassName,
   textClassName,
+  firstWordClassName,
   cursorClassName,
 }: TypewriterStackProps) {
   const [wordIndex, setWordIndex] = useState(0);
@@ -58,19 +66,27 @@ export function TypewriterStack({
     return () => clearTimeout(timer);
   }, [text, phase, wordIndex, words, typeSpeed, pauseAfterWord, nextWordDelay]);
 
+  const [typingFirst, typingRest] = splitFirstWord(text);
+  const [currentFirst] = splitFirstWord(words[wordIndex] ?? "");
+  const typingFirstDone = text.length >= currentFirst.length;
+
   return (
     <span className={cn("flex flex-col items-center", className)}>
-      {words.slice(0, wordIndex).map((w, i) => (
-        <motion.span
-          key={`done-${i}`}
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.32, ease: "easeOut" }}
-          className={cn("block will-change-transform", lineClassName, textClassName)}
-        >
-          {w}
-        </motion.span>
-      ))}
+      {words.slice(0, wordIndex).map((w, i) => {
+        const [first, rest] = splitFirstWord(w);
+        return (
+          <motion.span
+            key={`done-${i}`}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.32, ease: "easeOut" }}
+            className={cn("block will-change-transform", lineClassName)}
+          >
+            <span className={cn(firstWordClassName ?? textClassName)}>{first}</span>
+            {rest && <span className={textClassName}>{rest}</span>}
+          </motion.span>
+        );
+      })}
       <motion.span
         key={`typing-${wordIndex}`}
         initial={{ opacity: 0, y: 10 }}
@@ -78,7 +94,12 @@ export function TypewriterStack({
         transition={{ duration: 0.32, ease: "easeOut" }}
         className={cn("inline-flex items-center will-change-transform", lineClassName)}
       >
-        <span aria-live="polite" className={textClassName}>{text}</span>
+        <span aria-live="polite">
+          <span className={cn(firstWordClassName ?? textClassName)}>{typingFirst}</span>
+          {typingFirstDone && typingRest && (
+            <span className={textClassName}>{typingRest}</span>
+          )}
+        </span>
         <motion.span
           aria-hidden="true"
           initial={{ opacity: 0 }}

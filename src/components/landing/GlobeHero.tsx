@@ -73,10 +73,10 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 0.3 }}
-              className="text-[2.55rem] md:text-[3.825rem] lg:text-[5.1rem] xl:text-[6.8rem] font-black tracking-tighter leading-[0.85] select-none"
+              className="text-[1.53rem] md:text-[2.295rem] lg:text-[3.06rem] xl:text-[4.08rem] font-black tracking-tighter leading-[0.85] select-none"
               style={{ fontFamily: "Inter, system-ui, sans-serif" }}
             >
-              <span className="block font-light text-foreground/70 mb-3 text-[1.91rem] md:text-[3.19rem] lg:text-[3.83rem]">
+              <span className="block font-light text-foreground/70 mb-3 text-[1.146rem] md:text-[1.914rem] lg:text-[2.298rem]">
                 Find
               </span>
               <span className="block relative">
@@ -90,6 +90,7 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
                   <TypewriterStack
                     words={["Your Place", "Your People", "Your Self", "Be raW"]}
                     textClassName="bg-gradient-to-br from-primary via-primary to-primary/60 bg-clip-text text-transparent font-black"
+                    firstWordClassName="text-metallic font-black"
                     cursorClassName="bg-primary"
                   />
                 </span>
