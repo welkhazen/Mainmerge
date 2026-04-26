@@ -11,6 +11,10 @@ const envSchema = z.object({
   TWILIO_ACCOUNT_SID: z.string().regex(/^AC[a-zA-Z0-9]{32}$/, "TWILIO_ACCOUNT_SID must start with AC and be 34 characters."),
   TWILIO_AUTH_TOKEN: z.string().min(32, "TWILIO_AUTH_TOKEN must be at least 32 characters."),
   TWILIO_VERIFY_SERVICE_SID: z.string().regex(/^VA[a-zA-Z0-9]{32}$/, "TWILIO_VERIFY_SERVICE_SID must start with VA and be 34 characters."),
+  SUPABASE_URL: z.string().url().optional(),
+  SUPABASE_SERVICE_ROLE_KEY: z.string().optional(),
+  POSTHOG_API_KEY: z.string().optional(),
+  POSTHOG_HOST: z.string().url().default("https://app.posthog.com"),
 });
 
 const parsedEnv = envSchema.safeParse(process.env);

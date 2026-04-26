@@ -158,12 +158,14 @@ function toErrorMessage(error: unknown, fallback: string): string {
   return error instanceof Error ? error.message : fallback;
 }
 
+import { posthog } from "../lib/posthog";
+
 export function useRawStore() {
   const [user, setUser] = useState<User | null>(null);
   const [polls, setPolls] = useState<Poll[]>(INITIAL_POLLS);
   const [votedPolls, setVotedPolls] = useState<Set<string>>(new Set());
   const [showSignup, setShowSignup] = useState(false);
-  const [avatarLevel, setAvatarLevel] = useState(1);
+  const [avatarLevel, setAvatarLevelState] = useState(1);
   const [freeVotesUsed, setFreeVotesUsed] = useState(0);
   const [onboardingStep, setOnboardingStep] = useState<OnboardingStep>("avatar");
   const [onboardingAnsweredPollIds, setOnboardingAnsweredPollIds] = useState<Set<string>>(new Set());
@@ -177,11 +179,20 @@ export function useRawStore() {
     setPolls(payload.polls);
     setVotedPolls(new Set(payload.votedPollIds));
     setFreeVotesUsed(payload.freeVotesUsed);
+
+    if (payload.user && posthog) {
+      posthog.identify(payload.user.id, { username: payload.user.username });
+    }
   }, []);
 
   const refreshBootstrap = useCallback(async () => {
-    // Backend disabled — skip bootstrap fetch
-  }, []);
+    try {
+      const data = await apiGet<BootstrapResponse>("bootstrap");
+      syncFromBootstrap(data);
+    } catch (err) {
+      console.error("Failed to bootstrap:", err);
+    }
+  }, [syncFromBootstrap]);
 
   useEffect(() => {
     void refreshBootstrap();
@@ -228,42 +239,77 @@ export function useRawStore() {
   }, [onboardingAnsweredPollIds, onboardingCompleted, onboardingSelectedCommunityId, onboardingStep, user]);
 
   const vote = useCallback(
-    (pollId: string, optionId: string) => {
-      // Backend disabled — update vote state locally
-      setVotedPolls((prev) => new Set([...prev, pollId]));
-      setPolls((prev) =>
-        prev.map((poll) =>
-          poll.id === pollId
-            ? { ...poll, options: poll.options.map((opt) => opt.id === optionId ? { ...opt, votes: opt.votes + 1 } : opt) }
-            : poll
-        )
-      );
+    async (pollId: string, optionId: string) => {
+      try {
+        const data = await apiPost<BootstrapResponse>(`polls/${pollId}/vote`, { optionId });
+        syncFromBootstrap(data);
+
+        if (posthog) {
+          posthog.capture("vote_submitted", { pollId, optionId });
+        }
+      } catch (err) {
+        console.error("Failed to vote:", err);
+      }
     },
-    []
+    [syncFromBootstrap]
   );
 
-  const requestSignupOtp = useCallback(async (username: string, _password: string, _phone: string): Promise<AuthResult> => {
-    // OTP / Twilio disabled — mock signup locally
-    setUser({ id: `local-${Date.now()}`, username });
-    setShowSignup(false);
-    return { ok: true };
+  const requestSignupOtp = useCallback(async (username: string, password: string, phone: string): Promise<AuthResult> => {
+    try {
+      const result = await apiPost<AuthResult>("auth/signup/request-otp", { username, password, phone });
+
+      if (posthog) {
+        posthog.capture("signup_otp_requested", { username });
+      }
+
+      return result;
+    } catch (err) {
+      return { ok: false, error: toErrorMessage(err, "Signup failed.") };
+    }
   }, []);
 
-  const verifySignupOtp = useCallback(async (_code: string): Promise<AuthResult> => {
-    // OTP disabled — no-op
-    return { ok: true };
-  }, []);
+  const verifySignupOtp = useCallback(async (code: string): Promise<AuthResult> => {
+    try {
+      const result = await apiPost<AuthResult>("auth/signup/verify", { code });
+      if (result.ok) {
+        await refreshBootstrap();
+        if (posthog) {
+          posthog.capture("signup_completed");
+        }
+      }
+      return result;
+    } catch (err) {
+      return { ok: false, error: toErrorMessage(err, "Verification failed.") };
+    }
+  }, [refreshBootstrap]);
 
-  const login = useCallback(async (username: string, _password: string): Promise<AuthResult> => {
-    // Backend disabled — mock login locally
-    setUser({ id: `local-${Date.now()}`, username });
-    setShowSignup(false);
-    return { ok: true };
-  }, []);
+  const login = useCallback(async (username: string, password: string): Promise<AuthResult> => {
+    try {
+      const result = await apiPost<AuthResult>("auth/login", { username, password });
+      if (result.ok) {
+        await refreshBootstrap();
+        setShowSignup(false);
+        if (posthog) {
+          posthog.capture("login_success");
+        }
+      }
+      return result;
+    } catch (err) {
+      return { ok: false, error: toErrorMessage(err, "Login failed.") };
+    }
+  }, [refreshBootstrap]);
 
-  const logout = useCallback(() => {
-    // Backend disabled — clear user locally
-    setUser(null);
+  const logout = useCallback(async () => {
+    try {
+      await apiPost("auth/logout");
+      setUser(null);
+      if (posthog) {
+        posthog.capture("logout");
+        posthog.reset();
+      }
+    } catch (err) {
+      console.error("Logout failed:", err);
+    }
   }, []);
 
   const markOnboardingPollAnswered = useCallback((pollId: string) => {
@@ -284,6 +330,31 @@ export function useRawStore() {
   const completeOnboarding = useCallback(() => {
     setOnboardingCompleted(true);
     setOnboardingStep("ready");
+  }, []);
+
+  const joinCommunity = useCallback(async (communityId: string) => {
+    try {
+      await apiPost("communities/join", { communityId });
+      if (posthog) {
+        posthog.capture("community_joined", { communityId });
+      }
+      // Refresh user data if needed
+    } catch (err) {
+      console.error("Failed to join community:", err);
+    }
+  }, []);
+
+  const setAvatarLevel = useCallback(async (level: number) => {
+    try {
+      await apiPost("auth/profile/update-avatar", { level });
+      if (posthog) {
+        posthog.capture("avatar_level_updated", { level });
+      }
+      // We could refresh user here, but the level is managed separately in store state usually
+      // For now, let's just update the local state if the component doesn't
+    } catch (err) {
+      console.error("Failed to update avatar level:", err);
+    }
   }, []);
 
   return {
@@ -310,5 +381,6 @@ export function useRawStore() {
     verifySignupOtp,
     login,
     logout,
+    joinCommunity,
   };
 }

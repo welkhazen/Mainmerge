@@ -1,5 +1,7 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Bell, BellOff, Clock3, MessageCircle, Send, Users } from "lucide-react";
+import { useRawStore } from "@/store/useRawStore";
+import { posthog } from "@/lib/posthog";
 
 type CommunityStatus = "Active" | "Early Access";
 
@@ -89,7 +91,17 @@ const seededMessages: Record<string, ChatMessage[]> = {
 };
 
 export function DashboardCommunities() {
+  const { joinCommunity } = useRawStore();
   const [selectedCommunityId, setSelectedCommunityId] = useState<string>(communities[0].id);
+
+  useEffect(() => {
+    if (selectedCommunityId) {
+      if (posthog) {
+        posthog.capture("community_viewed", { communityId: selectedCommunityId });
+      }
+      joinCommunity(selectedCommunityId);
+    }
+  }, [selectedCommunityId, joinCommunity]);
   const [messageDraft, setMessageDraft] = useState("");
   const [notificationsEnabled, setNotificationsEnabled] = useState<Record<string, boolean>>({
     lnt: true,
@@ -124,6 +136,11 @@ export function DashboardCommunities() {
       ...previous,
       [selectedCommunity.id]: [...(previous[selectedCommunity.id] ?? []), nextMessage],
     }));
+    
+    if (posthog) {
+      posthog.capture("community_message_sent", { communityId: selectedCommunity.id });
+    }
+    
     setMessageDraft("");
   };
 

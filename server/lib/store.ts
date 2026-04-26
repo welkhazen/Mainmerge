@@ -1,86 +1,136 @@
+import { supabase } from './supabase';
 import type { AuthSessionData, BootstrapResponse, Poll, User, UserRecord } from "../types";
 
-const polls: Poll[] = [
-  {
-    id: "poll-1",
-    question: "Do you believe your thoughts shape your reality?",
-    options: [
-      { id: "p1-yes", text: "Yes", votes: 482 },
-      { id: "p1-no", text: "No", votes: 187 },
-    ],
-    locked: false,
-  },
-  {
-    id: "poll-2",
-    question: "Do you think social media does more harm than good?",
-    options: [
-      { id: "p2-yes", text: "Yes", votes: 391 },
-      { id: "p2-no", text: "No", votes: 274 },
-    ],
-    locked: false,
-  },
-  {
-    id: "poll-3",
-    question: "Would you sacrifice comfort for personal growth?",
-    options: [
-      { id: "p3-yes", text: "Yes", votes: 523 },
-      { id: "p3-no", text: "No", votes: 146 },
-    ],
-    locked: false,
-  },
-];
+export async function findUserById(userId: string): Promise<UserRecord | null> {
+  if (!supabase) return null;
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', userId)
+    .single();
 
-const usersById = new Map<string, UserRecord>();
-const userIdByUsername = new Map<string, string>();
-const userIdByPhoneHash = new Map<string, string>();
+  if (error || !data) return null;
+  
+  const { data: votes } = await supabase
+    .from('poll_answers')
+    .select('poll_id')
+    .eq('user_id', data.id);
 
-function normalizeUsername(username: string): string {
-  return username.toLowerCase();
-}
-
-export function findUserById(userId: string): UserRecord | null {
-  return usersById.get(userId) ?? null;
-}
-
-export function findUserByUsername(username: string): UserRecord | null {
-  const userId = userIdByUsername.get(normalizeUsername(username));
-  return userId ? usersById.get(userId) ?? null : null;
-}
-
-export function findUserByPhoneHash(phoneHash: string): UserRecord | null {
-  const userId = userIdByPhoneHash.get(phoneHash);
-  return userId ? usersById.get(userId) ?? null : null;
-}
-
-export function createUser(username: string, passwordHash: string, phoneHash: string): UserRecord {
-  const id = crypto.randomUUID();
-  const user: UserRecord = {
-    id,
-    username,
-    passwordHash,
-    phoneHash,
-    votedPollIds: new Set<string>(),
-    createdAt: Date.now(),
+  return {
+    id: data.id,
+    username: data.username,
+    passwordHash: data.password_hash || '',
+    phoneHash: data.phone_hash || '',
+    votedPollIds: new Set(votes?.map(v => v.poll_id) || []),
+    createdAt: new Date(data.created_at).getTime(),
   };
-
-  usersById.set(id, user);
-  userIdByUsername.set(normalizeUsername(username), id);
-  userIdByPhoneHash.set(phoneHash, id);
-  return user;
 }
 
-export function usernameExists(username: string): boolean {
-  return userIdByUsername.has(normalizeUsername(username));
+export async function findUserByUsername(username: string): Promise<UserRecord | null> {
+  if (!supabase) return null;
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('username', username.toLowerCase())
+    .single();
+
+  if (error || !data) return null;
+  
+  const { data: votes } = await supabase
+    .from('poll_answers')
+    .select('poll_id')
+    .eq('user_id', data.id);
+
+  return {
+    id: data.id,
+    username: data.username,
+    passwordHash: data.password_hash || '',
+    phoneHash: data.phone_hash || '',
+    votedPollIds: new Set(votes?.map(v => v.poll_id) || []),
+    createdAt: new Date(data.created_at).getTime(),
+  };
 }
 
-export function phoneHashExists(phoneHash: string): boolean {
-  return userIdByPhoneHash.has(phoneHash);
+export async function usernameExists(username: string): Promise<boolean> {
+  if (!supabase) return false;
+  const { count, error } = await supabase
+    .from('profiles')
+    .select('*', { count: 'exact', head: true })
+    .eq('username', username.toLowerCase());
+  
+  return !error && count !== null && count > 0;
 }
 
-function clonePolls(): Poll[] {
-  return polls.map((poll) => ({
-    ...poll,
-    options: poll.options.map((option) => ({ ...option })),
+export async function phoneHashExists(phoneHash: string): Promise<boolean> {
+  if (!supabase) return false;
+  const { count, error } = await supabase
+    .from('profiles')
+    .select('*', { count: 'exact', head: true })
+    .eq('phone_hash', phoneHash);
+  
+  return !error && count !== null && count > 0;
+}
+
+export async function createUser(username: string, passwordHash: string, phoneHash: string): Promise<UserRecord> {
+  if (!supabase) throw new Error('Supabase not initialized');
+  
+  const { data, error } = await supabase
+    .from('profiles')
+    .insert({
+      username: username.toLowerCase(),
+      password_hash: passwordHash,
+      phone_hash: phoneHash,
+    })
+    .select()
+    .single();
+
+  if (error) throw error;
+
+  return {
+    id: data.id,
+    username: data.username,
+    passwordHash: data.password_hash,
+    phoneHash: data.phone_hash,
+    votedPollIds: new Set(),
+    createdAt: new Date(data.created_at).getTime(),
+  };
+}
+
+export async function getPolls(): Promise<Poll[]> {
+  if (!supabase) return [];
+  const { data: polls, error: pollError } = await supabase
+    .from('polls')
+    .select(`
+      id,
+      question,
+      poll_options (
+        id,
+        option_text
+      )
+    `);
+
+  if (pollError || !polls) return [];
+
+  const { data: voteCounts, error: voteError } = await supabase
+    .from('poll_answers')
+    .select('option_id');
+
+  if (voteError) return [];
+
+  const countsMap = (voteCounts || []).reduce((acc: Record<string, number>, vote) => {
+    acc[vote.option_id] = (acc[vote.option_id] || 0) + 1;
+    return acc;
+  }, {});
+
+  return polls.map((poll: any) => ({
+    id: poll.id,
+    question: poll.question,
+    options: poll.poll_options.map((opt: any) => ({
+      id: opt.id,
+      text: opt.option_text,
+      votes: countsMap[opt.id] || 0
+    })),
+    locked: false
   }));
 }
 
@@ -88,35 +138,27 @@ export function getAnonymousVotes(sessionData: AuthSessionData): string[] {
   if (!Array.isArray(sessionData.anonymousVotes)) {
     sessionData.anonymousVotes = [];
   }
-
   return sessionData.anonymousVotes;
 }
 
-export function buildBootstrap(user: UserRecord | null, sessionData: AuthSessionData): BootstrapResponse {
-  const votedPollIds = user ? [...user.votedPollIds] : getAnonymousVotes(sessionData);
+export async function buildBootstrap(user: UserRecord | null, sessionData: AuthSessionData): Promise<BootstrapResponse> {
+  const polls = await getPolls();
+  const votedPollIds = user ? Array.from(user.votedPollIds) : getAnonymousVotes(sessionData);
 
   return {
-    user: user ? toPublicUser(user) : null,
+    user: user ? { id: user.id, username: user.username } : null,
     isLoggedIn: Boolean(user),
-    polls: clonePolls(),
+    polls,
     votedPollIds,
     freeVotesUsed: votedPollIds.length,
   };
 }
 
-export function toPublicUser(user: UserRecord): User {
-  return {
-    id: user.id,
-    username: user.username,
-  };
-}
-
-export function canVote(user: UserRecord | null, sessionData: AuthSessionData, pollId: string) {
+export async function canVote(user: UserRecord | null, sessionData: AuthSessionData, pollId: string) {
   if (user) {
     if (user.votedPollIds.has(pollId)) {
       return { ok: false, reason: "already_voted" as const };
     }
-
     return { ok: true as const };
   }
 
@@ -132,24 +174,66 @@ export function canVote(user: UserRecord | null, sessionData: AuthSessionData, p
   return { ok: true as const };
 }
 
-export function applyVote(user: UserRecord | null, sessionData: AuthSessionData, pollId: string, optionId: string): boolean {
-  const poll = polls.find((item) => item.id === pollId);
-  if (!poll) {
-    return false;
-  }
+export async function applyVote(user: UserRecord | null, sessionData: AuthSessionData, pollId: string, optionId: string): Promise<boolean> {
+  if (!supabase) return false;
 
-  const option = poll.options.find((item) => item.id === optionId);
-  if (!option) {
-    return false;
-  }
+  const { error } = await supabase
+    .from('poll_answers')
+    .insert({
+      poll_id: pollId,
+      user_id: user?.id || null,
+      option_id: optionId
+    });
 
-  option.votes += 1;
+  if (error) return false;
 
-  if (user) {
-    user.votedPollIds.add(pollId);
-  } else {
+  if (!user) {
     getAnonymousVotes(sessionData).push(pollId);
+  } else {
+    // Update traits based on vote
+    await updateTraits(user.id, { [`last_vote_${pollId}`]: optionId });
   }
 
   return true;
+}
+
+export async function updateTraits(userId: string, traits: any) {
+  if (!supabase) return;
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('traits')
+    .eq('id', userId)
+    .single();
+
+  const newTraits = { ...(profile?.traits || {}), ...traits };
+
+  await supabase
+    .from('profiles')
+    .update({ traits: newTraits })
+    .eq('id', userId);
+}
+
+export async function trackEvent(userId: string | null, eventName: string, metadata: any = {}) {
+  if (!supabase) return;
+
+  await supabase
+    .from('user_events')
+    .insert({
+      user_id: userId,
+      event_name: eventName,
+      metadata
+    });
+}
+
+export async function joinCommunity(userId: string, communityId: string) {
+  if (!supabase) return;
+
+  await supabase
+    .from('community_memberships')
+    .insert({
+      user_id: userId,
+      community_id: communityId,
+      role: 'member'
+    });
 }

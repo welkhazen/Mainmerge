@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { AvatarFigure, getAvatarTheme } from "@/components/ui/avatar-figure";
 import { PhoneMockup } from "@/components/ui/phone-mockup";
+import { posthog } from "@/lib/posthog";
 import {
   Trophy,
   Target,
@@ -87,7 +88,12 @@ export function DashboardProfile({
               {Array.from({ length: 10 }, (_, i) => i + 1).map((lvl) => (
                 <button
                   key={lvl}
-                  onClick={() => onLevelChange(lvl)}
+                  onClick={() => {
+                    onLevelChange(lvl);
+                    if (posthog) {
+                      posthog.capture("avatar_level_changed", { level: lvl });
+                    }
+                  }}
                   onMouseEnter={() => setHoveredLevel(lvl)}
                   onMouseLeave={() => setHoveredLevel(null)}
                   className="flex flex-col items-center group"

@@ -1,10 +1,11 @@
-﻿import type { Request } from "express";
+import type { Request } from "express";
 import { Router } from "express";
 import rateLimit from "express-rate-limit";
 import { z } from "zod";
 import { audit } from "../lib/audit";
-import { createUser, findUserByUsername, getAnonymousVotes, phoneHashExists, usernameExists } from "../lib/store";
+import { createUser, findUserByUsername, getAnonymousVotes, phoneHashExists, usernameExists, updateTraits } from "../lib/store";
 import { hashPassword, verifyPassword } from "../lib/password";
+import { posthog } from "../lib/posthog";
 import { hashPhone, normalizePhone } from "../lib/phoneHash";
 import { sendOtp, verifyOtp } from "../lib/twilio";
 import type { AuthSessionData } from "../types";
@@ -130,12 +131,12 @@ authRouter.post("/signup/request-otp", signupLimiter, async (req, res) => {
     return res.status(400).json({ error: "Please enter a valid phone number with country code, e.g. +447911123456." });
   }
 
-  if (usernameExists(username)) {
+  if (await usernameExists(username)) {
     return res.status(409).json({ error: "That username already exists." });
   }
 
   const phoneHash = hashPhone(normalizedPhone);
-  if (phoneHashExists(phoneHash)) {
+  if (await phoneHashExists(phoneHash)) {
     return res.status(409).json({ error: "That phone number is already in use." });
   }
 
@@ -179,7 +180,7 @@ authRouter.post("/signup/verify", async (req, res) => {
     return res.status(400).json({ error: "Verification code expired. Please request a new one." });
   }
 
-  if (usernameExists(pendingSignup.username) || phoneHashExists(pendingSignup.phoneHash)) {
+  if (await usernameExists(pendingSignup.username) || await phoneHashExists(pendingSignup.phoneHash)) {
     delete sessionData.pendingSignup;
     return res.status(409).json({ error: "That account can no longer be created. Start signup again." });
   }
@@ -203,12 +204,30 @@ authRouter.post("/signup/verify", async (req, res) => {
   }
 
   const previousAnonymousVotes = getAnonymousVotes(sessionData);
-  const user = createUser(pendingSignup.username, pendingSignup.passwordHash, pendingSignup.phoneHash);
+  const user = await createUser(pendingSignup.username, pendingSignup.passwordHash, pendingSignup.phoneHash);
 
   await regenerateSession(req.session);
   const newSession = getSessionData(req);
   newSession.userId = user.id;
   newSession.anonymousVotes = previousAnonymousVotes;
+
+  if (posthog) {
+    posthog.identify({
+      distinctId: user.id,
+      properties: {
+        username: user.username,
+        phoneHash: user.phoneHash,
+        $set_once: { created_at: new Date() }
+      }
+    });
+    posthog.capture({
+      distinctId: user.id,
+      event: 'user_signed_up',
+      properties: {
+        ip: req.ip
+      }
+    });
+  }
 
   audit("auth.signup.success", { username: user.username, ip: req.ip });
   return res.status(201).json({ ok: true });
@@ -229,7 +248,7 @@ authRouter.post("/login", loginLimiter, async (req, res) => {
     return res.status(429).json({ error: "Too many attempts. Try again later." });
   }
 
-  const user = findUserByUsername(username);
+  const user = await findUserByUsername(username);
   if (!user) {
     registerFailure(key);
     audit("auth.login.failed", { username, ip: req.ip, reason: "missing_user" }, "warn");
@@ -251,6 +270,22 @@ authRouter.post("/login", loginLimiter, async (req, res) => {
   newSession.userId = user.id;
   newSession.anonymousVotes = previousAnonymousVotes;
 
+  if (posthog) {
+    posthog.identify({
+      distinctId: user.id,
+      properties: {
+        username: user.username
+      }
+    });
+    posthog.capture({
+      distinctId: user.id,
+      event: 'user_logged_in',
+      properties: {
+        ip: req.ip
+      }
+    });
+  }
+
   audit("auth.login.success", { username, ip: req.ip });
   return res.status(200).json({ ok: true });
 });
@@ -262,4 +297,28 @@ authRouter.post("/logout", (req, res) => {
     audit("auth.logout", { ip: req.ip });
     return res.status(200).json({ ok: true });
   });
+});
+
+authRouter.post("/profile/update-avatar", async (req, res) => {
+  const sessionData = getSessionData(req);
+  if (!sessionData.userId) {
+    return res.status(401).json({ error: "Unauthorized." });
+  }
+
+  const { level } = req.body;
+  if (typeof level !== 'number') {
+    return res.status(400).json({ error: "Invalid level." });
+  }
+
+  await updateTraits(sessionData.userId, { avatar_level: level });
+  
+  if (posthog) {
+    posthog.capture({
+      distinctId: sessionData.userId,
+      event: 'avatar_level_updated',
+      properties: { level }
+    });
+  }
+
+  return res.status(200).json({ ok: true });
 });
