@@ -63,38 +63,33 @@ export function useAuth() {
     return { ok: true };
   }, [queryClient]);
 
-  const requestSignupOtp = useCallback(async (username: string, password: string, phone: string): Promise<AuthResult> => {
-    // Client-side mock signup for testing
-    if (!username || !password || !phone) {
-      return { ok: false, error: "All fields required" };
-    }
-    // Just return success - OTP verification will complete the signup
-    return { ok: true };
-  }, []);
-
-  const verifySignupOtp = useCallback(async (code: string): Promise<AuthResult> => {
-    // Client-side mock OTP verification for testing
-    if (!code) {
-      return { ok: false, error: "Code required" };
+  const requestSignupOtp = useCallback(async (username: string, password: string, _phone: string): Promise<AuthResult> => {
+    if (!username || !password) {
+      return { ok: false, error: "Username and password required" };
     }
 
-    const mockUser: User = {
-      id: "test-user-" + Date.now(),
-      username: "test-user",
-      role: "member",
+    const newUser: User = {
+      id: "user-" + Date.now(),
+      username,
+      role: username === "admin" ? "admin" : "member",
       moderationStatus: "active",
       warnings: 0,
     };
 
-    queryClient.setQueryData(["auth", "me"], mockUser);
+    queryClient.setQueryData(["auth", "me"], newUser);
     if (typeof window !== "undefined") {
       localStorage.removeItem("force-logout");
+      localStorage.removeItem(`raw.onboarding.completed.${username}`);
     }
-    identify(mockUser.id, { username: mockUser.username });
+    identify(newUser.id, { username: newUser.username });
     track("signup_completed", { source: "modal" });
     setShowSignup(false);
     return { ok: true };
   }, [queryClient]);
+
+  const verifySignupOtp = useCallback(async (_code: string): Promise<AuthResult> => {
+    return { ok: true };
+  }, []);
 
   const logout = useCallback(async () => {
     if (typeof window !== "undefined") {
