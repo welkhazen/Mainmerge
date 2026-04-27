@@ -16,7 +16,7 @@ import { runStreakResetAtUtc, sendStreakAtRiskEmailsUtc } from "./lib/streakCron
 
 const app = express();
 const isProduction = env.NODE_ENV === "production";
-const port = env.API_PORT;
+const port = env.PORT ?? env.API_PORT;
 const corsOrigin = env.CORS_ORIGIN;
 const sessionSecret = env.SESSION_SECRET;
 

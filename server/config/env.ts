@@ -9,6 +9,7 @@ const emptyToUndefined = (value: unknown) =>
 
 const envSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
+  PORT: z.preprocess(emptyToUndefined, z.coerce.number().int().positive().optional()),
   API_PORT: z.coerce.number().int().positive().default(8787),
   CORS_ORIGIN: z.string().url().default("http://localhost:8080"),
   SESSION_SECRET: z.preprocess(
