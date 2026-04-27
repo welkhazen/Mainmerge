@@ -36,7 +36,7 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
   };
 
   return (
-    <div className="relative bg-gradient-to-br from-background via-background/95 to-muted/10 overflow-hidden h-[90vh] min-h-[600px] flex items-center justify-center">
+    <div className="relative flex min-h-[620px] items-center justify-center overflow-hidden bg-gradient-to-br from-background via-background/95 to-muted/10 pb-8 pt-10 sm:min-h-[680px] sm:pt-14">
       {/* Globe behind text, centered and smaller */}
       <div className="absolute inset-0 flex items-center justify-center z-0 pointer-events-none">
         <div className="w-[340px] h-[340px] md:w-[420px] md:h-[420px] lg:w-[520px] lg:h-[520px]">
@@ -46,7 +46,7 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
           </Canvas>
         </div>
       </div>
-      <div className="relative z-10 text-center space-y-12 max-w-5xl mx-auto px-6 py-12 pt-20 sm:pt-12">
+      <div className="relative z-10 mx-auto max-w-5xl space-y-9 px-4 py-10 pt-20 text-center sm:space-y-12 sm:px-6 sm:py-12 sm:pt-14">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -57,11 +57,11 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="relative inline-flex items-center gap-3 px-6 py-3 rounded-full bg-gradient-to-r from-primary/20 via-primary/10 to-primary/20 border border-primary/30 backdrop-blur-xl shadow-2xl w-full max-w-none justify-center"
+            className="relative inline-flex w-full max-w-none items-center justify-center gap-2 rounded-full border border-primary/30 bg-gradient-to-r from-primary/20 via-primary/10 to-primary/20 px-4 py-3 backdrop-blur-xl shadow-2xl sm:gap-3 sm:px-6"
           >
             <div className="absolute inset-0 rounded-full bg-gradient-to-r from-primary/10 via-transparent to-primary/10 animate-pulse" />
             <div className="w-2 h-2 bg-primary rounded-full animate-ping" />
-            <span className="relative z-10 text-sm font-bold text-primary tracking-wider uppercase text-center w-full">Fully Anonymous • Community Driven • Identity Based</span>
+            <span className="landing-type-kicker relative z-10 w-full text-center font-bold uppercase text-primary">Fully Anonymous • Community Driven • Identity Based</span>
             <div
               className="w-2 h-2 bg-primary rounded-full animate-ping"
               style={{ animationDelay: "0.5s" }}
@@ -73,10 +73,9 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 0.3 }}
-              className="text-[2.55rem] md:text-[3.825rem] lg:text-[5.1rem] xl:text-[6.8rem] font-black tracking-tighter leading-[0.85] select-none"
-              style={{ fontFamily: "Inter, system-ui, sans-serif" }}
+              className="landing-type-title select-none font-black lg:text-[5.1rem] xl:text-[6.8rem]"
             >
-              <span className="block font-light text-foreground/70 mb-3 text-[1.91rem] md:text-[3.19rem] lg:text-[3.83rem]">
+              <span className="landing-type-title-lead mb-3 block font-light text-foreground/70 lg:text-[3.83rem]">
                 Find
               </span>
               <span className="block relative">
@@ -111,21 +110,20 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.8 }}
-            className="max-w-3xl mx-auto space-y-4 pt-8"
+            className="mx-auto max-w-3xl space-y-4 pt-6 sm:pt-8"
           >
             <p
-              className="text-xl md:text-2xl text-foreground font-bold leading-relaxed font-medium"
-              style={{ fontFamily: "Inter, system-ui, sans-serif" }}
+              className="landing-type-body-lg font-medium text-foreground md:text-2xl"
             >
               Y𝗼𝘂𝗿 𝗻𝗲𝘄 𝟮𝟰/𝟳 𝗹𝗶𝘃𝗶𝗻𝗴 𝗮𝗻𝗱 𝗲𝘃𝗲𝗿-𝗴𝗿𝗼𝘄𝗶𝗻𝗴 𝗻𝗲𝘄 𝘄𝗼𝗿𝗹𝗱
             </p>
-            <p className="text-base md:text-lg font-medium leading-relaxed">
+            <p className="landing-type-body font-medium md:text-lg">
               <span className="text-foreground/60 font-semibold bg-gradient-to-r from-primary/10 to-primary/5 px-2 py-1 rounded-md">
                 prioritizing genuine connections, a sense of belonging, and a safe space to allow discovering oneself and others.
               </span>
             </p>
             <p
-              className="text-lg font-semibold text-primary leading-relaxed"
+              className="landing-type-body font-semibold text-primary sm:text-lg"
               style={{
                 textShadow:
                   "0 0 12px hsl(var(--primary) / 0.6), 0 0 28px hsl(var(--primary) / 0.35)",
@@ -140,7 +138,7 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 1 }}
-          className="flex flex-col sm:flex-row gap-6 justify-center items-center pt-4"
+          className="flex flex-col items-center justify-center gap-4 pt-2 sm:flex-row sm:gap-6 sm:pt-4"
         >
           <motion.button
             type="button"
@@ -151,7 +149,7 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
               y: -2,
             }}
             whileTap={{ scale: 0.98 }}
-            className="group relative inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-primary via-primary to-primary/90 text-primary-foreground rounded-xl font-semibold text-lg shadow-xl hover:shadow-primary/30 transition-all duration-500 overflow-hidden border border-primary/20"
+            className="group relative inline-flex min-h-11 w-full items-center justify-center gap-3 overflow-hidden rounded-xl border border-primary/20 bg-gradient-to-r from-primary via-primary to-primary/90 px-6 py-3.5 text-base font-semibold text-primary-foreground shadow-xl transition-all duration-500 hover:shadow-primary/30 sm:w-auto sm:px-8 sm:py-4 sm:text-lg"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-white/20 via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             <motion.div
@@ -175,7 +173,7 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
               y: -2,
             }}
             whileTap={{ scale: 0.98 }}
-            className="group relative inline-flex items-center gap-3 px-8 py-4 border-2 border-border/40 rounded-xl font-semibold text-lg hover:border-primary/40 transition-all duration-500 backdrop-blur-xl bg-background/60 hover:bg-background/90 shadow-lg overflow-hidden"
+            className="group relative inline-flex min-h-11 w-full items-center justify-center gap-3 overflow-hidden rounded-xl border-2 border-border/40 bg-background/60 px-6 py-3.5 text-base font-semibold shadow-lg backdrop-blur-xl transition-all duration-500 hover:border-primary/40 hover:bg-background/90 sm:w-auto sm:px-8 sm:py-4 sm:text-lg"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             <Zap className="relative z-10 w-5 h-5 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300" />

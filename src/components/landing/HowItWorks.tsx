@@ -41,12 +41,12 @@ export function HowItWorks() {
         <h2 className="mb-3 text-center font-display text-xl tracking-wide text-raw-text sm:mb-4 sm:text-2xl md:text-3xl">
           How it works
         </h2>
-        <p className="mx-auto mb-10 max-w-2xl text-center text-sm leading-relaxed text-raw-silver/40 sm:mb-14">
+        <p className="landing-type-body mx-auto mb-10 max-w-2xl px-1 text-center text-raw-silver/60 sm:mb-14 sm:text-base">
           raW learns through honest participation. This shell now walks people in the same order
           the real product will.
         </p>
 
-        <div className="overflow-x-auto rounded-[2rem] border border-raw-border/40 bg-gradient-to-b from-raw-surface/60 to-raw-black/90 p-4 shadow-[0_30px_120px_rgba(0,0,0,0.35)] sm:p-6">
+        <div className="overflow-x-auto rounded-[2rem] border border-raw-border/40 bg-gradient-to-b from-raw-surface/60 to-raw-black/90 p-3 shadow-[0_30px_120px_rgba(0,0,0,0.35)] sm:p-6">
           <Terminal
             className="max-w-4xl"
             username="raw-world"
