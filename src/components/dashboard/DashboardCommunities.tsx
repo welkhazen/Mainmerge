@@ -620,7 +620,11 @@ const COMMUNITY_LOGOS: Record<string, string> = {
                       <button
                         onClick={() => setExpandedDescs((prev) => {
                           const next = new Set(prev);
-                          isExpanded ? next.delete(community.id) : next.add(community.id);
+                          if (isExpanded) {
+                            next.delete(community.id);
+                          } else {
+                            next.add(community.id);
+                          }
                           return next;
                         })}
                         className="mt-1 text-xs text-raw-gold/60 hover:text-raw-gold"
