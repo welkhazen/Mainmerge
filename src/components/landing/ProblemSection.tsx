@@ -4,7 +4,7 @@ export function ProblemSection() {
   const sectionRef = useTrackSectionView("problem");
 
   return (
-    <section ref={sectionRef} className="relative bg-black/60 px-4 py-12 sm:px-6 sm:py-20 md:py-28">
+    <section ref={sectionRef} className="landing-section relative px-4 py-12 sm:px-6 sm:py-20 md:py-28">
       <div className="mx-auto max-w-3xl text-center">
         <p className="text-[11px] uppercase tracking-[0.25em] text-raw-gold/75">The Problem</p>
 

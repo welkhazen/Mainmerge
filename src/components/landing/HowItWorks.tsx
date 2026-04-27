@@ -35,7 +35,7 @@ export function HowItWorks() {
   return (
     <section
       ref={sectionRef as React.RefObject<HTMLElement>}
-      className="relative px-4 py-14 sm:px-6 sm:py-20 md:py-28 bg-black/40"
+      className="landing-section relative px-4 py-14 sm:px-6 sm:py-20 md:py-28"
     >
       <div className="w-full">
         <h2 className="mb-3 text-center font-display text-xl tracking-wide text-raw-text sm:mb-4 sm:text-2xl md:text-3xl">

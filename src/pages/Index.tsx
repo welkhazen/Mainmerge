@@ -177,7 +177,7 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-raw-black">
+    <div className="landing-page-shell min-h-screen overflow-x-hidden bg-raw-black">
       <div className="relative overflow-x-hidden">
         <PerforatedBackground />
         <MatrixBackground />

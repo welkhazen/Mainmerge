@@ -32,7 +32,7 @@ export function AvatarIdentity({ avatarLevel, onLevelChange }: AvatarIdentityPro
     <section
       ref={sectionRef as React.RefObject<HTMLElement>}
       id="avatar"
-      className="relative px-4 py-14 sm:px-6 sm:py-20 md:py-28 bg-black/60"
+      className="landing-section relative px-4 py-14 sm:px-6 sm:py-20 md:py-28"
     >
       <div className="mx-auto w-full max-w-5xl">
         {/* Heading */}
