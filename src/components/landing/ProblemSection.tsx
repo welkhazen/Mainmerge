@@ -1,4 +1,5 @@
 import { useTrackSectionView } from "@/lib/analytics/useTrackSectionView";
+import { LandingType } from "@/components/landing/LandingType";
 
 export function ProblemSection() {
   const sectionRef = useTrackSectionView("problem");
@@ -15,7 +16,7 @@ export function ProblemSection() {
 
         <p className="landing-type-body mt-5 text-raw-silver/65 sm:mt-6 sm:text-base">
           Your real opinions, questions, and perspectives stay hidden. Algorithms amplify outrage. Communities demand allegiance. You self-censor because your reputation is on the line.
-        </p>
+        </LandingType>
 
         <div className="mt-8 grid grid-cols-1 gap-4 sm:mt-10 sm:grid-cols-3 sm:gap-6">
           {[
