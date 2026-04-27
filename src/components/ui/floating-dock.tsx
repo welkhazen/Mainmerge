@@ -52,60 +52,32 @@ const FloatingDockMobile = ({
   }[];
   className?: string;
 }) => {
-  const [open, setOpen] = useState(false);
   return (
-    <div className={cn("relative block md:hidden", className)}>
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            layoutId="nav"
-            className="absolute inset-x-0 bottom-full mb-2 flex flex-col gap-2"
-          >
-            {items.map((item, idx) => (
-              <motion.div
-                key={item.title}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{
-                  opacity: 1,
-                  y: 0,
-                }}
-                exit={{
-                  opacity: 0,
-                  y: 10,
-                  transition: {
-                    delay: idx * 0.05,
-                  },
-                }}
-                transition={{ delay: (items.length - 1 - idx) * 0.05 }}
-              >
-                <a
-                  href={item.href}
-                  key={item.title}
-                  onClick={(event) => {
-                    if (item.onClick) {
-                      event.preventDefault();
-                      item.onClick();
-                    }
-                    setOpen(false);
-                  }}
-                  className={cn(
-                    "flex h-10 w-10 items-center justify-center rounded-full border border-raw-border/40 bg-raw-surface text-raw-silver/70",
-                    item.active ? "border-raw-gold/45 bg-raw-gold/15 text-raw-gold" : null,
-                  )}
-                >
-                  <div className="h-4 w-4">{item.icon}</div>
-                </a>
-              </motion.div>
-            ))}
-          </motion.div>
-        )}
-      </AnimatePresence>
-      <button
-        onClick={() => setOpen(!open)}
-        className="flex h-10 w-10 items-center justify-center rounded-full bg-raw-surface"
-      >
-        <IconLayoutNavbarCollapse className="h-5 w-5 text-raw-silver/50" />
-      </button>
+    <div className={cn(
+      "fixed bottom-0 left-0 right-0 z-50 block md:hidden flex flex-row items-center justify-around bg-raw-black/95 shadow-2xl border-t border-raw-border/25 py-2",
+      className
+    )}>
+      {items.map((item) => (
+        <motion.a
+          whileHover={{ scale: 1.18 }}
+          animate={{ scale: item.active ? 1.18 : 1 }}
+          transition={{ type: "spring", stiffness: 300, damping: 18 }}
+          href={item.href}
+          key={item.title}
+          onClick={(event) => {
+            if (item.onClick) {
+              event.preventDefault();
+              item.onClick();
+            }
+          }}
+          className={cn(
+            "flex h-12 w-12 items-center justify-center rounded-full border border-raw-border/40 bg-raw-surface text-raw-silver/70 mx-1 transition-shadow",
+            item.active ? "border-raw-gold/45 bg-raw-gold/15 text-raw-gold shadow-lg" : "shadow",
+          )}
+        >
+          <motion.div className="h-5 w-5" style={{}}>{item.icon}</motion.div>
+        </motion.a>
+      ))}
     </div>
   );
 };
