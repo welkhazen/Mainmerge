@@ -46,7 +46,7 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
           </Canvas>
         </div>
       </div>
-      <div className="relative z-10 text-center space-y-12 max-w-5xl mx-auto px-6 py-12">
+      <div className="relative z-10 text-center space-y-12 max-w-5xl mx-auto px-6 py-12 pt-20 sm:pt-12">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

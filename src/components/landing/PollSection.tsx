@@ -128,7 +128,7 @@ function PollPhoneContent({
     <div className="relative h-[480px] bg-black px-5 py-4 pointer-events-auto overflow-hidden select-none" style={{ userSelect: 'none' }}>
       <div className="flex h-full flex-col select-none" style={{ userSelect: 'none' }}>
         <div className="text-center mb-1 select-none" style={{ userSelect: 'none' }}>
-          <p className="font-display text-[9px] tracking-[0.2em] uppercase text-white/30">Anonymous Poll</p>
+          <p className="font-display text-[9px] tracking-[0.2em] uppercase text-white/55">Anonymous Poll</p>
           <div className="mt-1 flex items-center justify-center gap-3" style={{ userSelect: 'none' }}>
             <span className="text-[9px] text-white/25 flex items-center gap-1 select-none" style={{ userSelect: 'none' }}>
               <ThumbsUp className="h-2.5 w-2.5" /> {totalVotes}
@@ -159,7 +159,7 @@ function PollPhoneContent({
               ? "bg-emerald-900/30 border-emerald-400/30"
               : swipeHint === "no"
               ? "bg-rose-900/30 border-rose-400/30"
-              : "bg-[#111] border-white/10"
+              : "bg-[#1a1a1a] border-white/15"
           }`}
           style={{ userSelect: "none", touchAction: hasVoted ? "auto" : "pan-y" }}
           onTouchStart={handleTouchStart}
@@ -201,21 +201,21 @@ function PollPhoneContent({
 
           {hasVoted && (
             <div className="mt-5 space-y-3">
-              <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-black/60">
-                <div className="absolute inset-y-0 left-0 bg-raw-gold/15 transition-all duration-700" style={{ width: `${yesPct}%` }} />
+              <div className="relative overflow-hidden rounded-2xl border border-white/20 bg-white/[0.06]">
+                <div className="absolute inset-y-0 left-0 bg-raw-gold/25 transition-all duration-700" style={{ width: `${yesPct}%` }} />
                 <div className="relative flex items-center justify-between px-5 py-3.5" style={{ userSelect: "none" }}>
-                  <span className="text-xs text-white/40">Yes</span>
+                  <span className="text-xs text-white/70">Yes</span>
                   <span className="text-sm font-bold text-raw-gold">{yesPct}%</span>
                 </div>
               </div>
-              <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-black/60">
-                <div className="absolute inset-y-0 left-0 bg-white/10 transition-all duration-700" style={{ width: `${noPct}%` }} />
+              <div className="relative overflow-hidden rounded-2xl border border-white/20 bg-white/[0.06]">
+                <div className="absolute inset-y-0 left-0 bg-white/15 transition-all duration-700" style={{ width: `${noPct}%` }} />
                 <div className="relative flex items-center justify-between px-5 py-3.5" style={{ userSelect: "none" }}>
-                  <span className="text-xs text-white/40">No</span>
-                  <span className="text-sm font-bold text-white/70">{noPct}%</span>
+                  <span className="text-xs text-white/70">No</span>
+                  <span className="text-sm font-bold text-white/90">{noPct}%</span>
                 </div>
               </div>
-              <p className="text-[9px] text-white/20 text-center pt-1 select-none" style={{ userSelect: "none" }}>{totalVotes.toLocaleString()} anonymous responses</p>
+              <p className="text-[9px] text-white/40 text-center pt-1 select-none" style={{ userSelect: "none" }}>{totalVotes.toLocaleString()} anonymous responses</p>
             </div>
           )}
         </div>
@@ -341,7 +341,7 @@ export function PollSection({ polls, votedPolls, isLoggedIn, freeVotesUsed, onVo
     <section
       ref={sectionRef as React.RefObject<HTMLElement>}
       id="polls"
-      className="relative py-14 px-4 sm:py-20 sm:px-6 md:py-28 bg-black/60"
+      className="landing-section relative py-14 px-4 sm:py-20 sm:px-6 md:py-28"
     >
       <div className="w-full">
         <div className="mb-8 text-center sm:mb-14">
@@ -394,9 +394,6 @@ export function PollSection({ polls, votedPolls, isLoggedIn, freeVotesUsed, onVo
           </div>
         </div>
 
-        {!isLoggedIn && !showSignupGate && (
-          <p className="text-center text-xs text-raw-silver/30 mt-6">{freeVotesUsed} of 3 free polls answered</p>
-        )}
       </div>
     </section>
   );

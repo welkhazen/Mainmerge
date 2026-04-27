@@ -38,7 +38,7 @@ export function AnonQuestionSection() {
   };
 
   return (
-    <section className="relative px-4 py-14 sm:px-6 sm:py-20">
+    <section className="landing-section relative px-4 py-14 sm:px-6 sm:py-20">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(241,196,45,0.04),transparent_65%)]" />
       <div className="relative mx-auto max-w-xl text-center">
         <p className="text-[11px] uppercase tracking-[0.25em] text-raw-gold/70">Your Voice</p>
