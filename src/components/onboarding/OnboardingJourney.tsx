@@ -340,6 +340,11 @@ export function OnboardingJourney({
 
                       return (
                         <div>
+                          {/* Onboarding tip for first-time poll makers */}
+                          <div className="mb-4 rounded-xl bg-raw-gold/10 border border-raw-gold/30 px-4 py-3 text-sm text-raw-gold font-semibold flex items-center gap-2">
+                            <span role="img" aria-label="tip">💡</span>
+                            Swipe right for YES, left for NO. Your answers help shape the community!
+                          </div>
                           <p className="text-xs text-raw-silver/50 mb-4 font-medium uppercase tracking-[0.12em]">
                             Question {currentPollIndex + 1} of {onboardingPolls.length}
                           </p>
