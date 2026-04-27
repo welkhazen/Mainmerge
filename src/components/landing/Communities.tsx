@@ -18,7 +18,7 @@ const communities = [
     video: speakYourTruthVideo,
   },
   {
-    title: "Is It Just Me",
+    title: "Is It Just Me?",
     description: "Relatable moments, shared observations, and the quiet comfort of realizing you're not the only one.",
     badge: "Active",
     video: isItJustMeVideo,

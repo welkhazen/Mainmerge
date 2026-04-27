@@ -78,7 +78,7 @@ export function buildDefaultCommunities(): PersistedCommunityRecord[] {
     {
       id: "iijm",
       abbr: "IIM",
-      title: "Is It Just Me",
+      title: "Is It Just Me?",
       description: "Relatable moments, shared observations, and the quiet comfort of realizing you're not the only one.",
       topic: "What's something you do or feel that you thought was only you?",
       status: "Active",
