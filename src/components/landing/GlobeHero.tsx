@@ -95,6 +95,8 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
                     endScale={1.15}
                     textClassName="bg-gradient-to-br from-primary via-primary to-primary/60 bg-clip-text text-transparent font-black"
                     cursorClassName="bg-primary"
+                    highlightRawWord
+                    lineClassNamesByIndex={{ 3: "mt-2" }}
                   />
                 </span>
                 <motion.div

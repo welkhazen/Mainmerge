@@ -53,7 +53,7 @@ export function HowItWorks() {
             username="raw-world"
             commands={howItWorksSteps}
             outputs={howItWorksOutputs}
-            typingSpeed={26}
+            typingSpeed={22}
             delayBetweenCommands={950}
             initialDelay={200}
             enableSound={false}
