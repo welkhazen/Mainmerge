@@ -6,7 +6,7 @@ export function ProblemSection() {
   return (
     <section ref={sectionRef} className="landing-section relative px-4 py-12 sm:px-6 sm:py-20 md:py-28">
       <div className="mx-auto max-w-3xl text-center">
-        <p className="landing-type-kicker uppercase text-raw-gold/75">The Problem</p>
+        <p className="text-xs uppercase tracking-[0.22em] text-raw-gold/75 sm:text-[13px]">The Problem</p>
 
         <h2 className="mt-4 font-display text-2xl tracking-wide text-raw-text sm:text-3xl md:text-4xl">
           Online spaces reward conformity,{" "}
@@ -25,8 +25,8 @@ export function ProblemSection() {
           ].map((item) => (
             <div key={item.label} className="rounded-xl border border-raw-border/30 bg-raw-black/40 p-4 sm:p-5">
               <p className="text-2xl">{item.icon}</p>
-              <p className="landing-type-body-muted mt-2 font-semibold uppercase tracking-[0.08em] text-raw-text">{item.label}</p>
-              <p className="landing-type-body-muted mt-1 text-raw-silver/55">{item.desc}</p>
+              <p className="mt-2 text-sm font-semibold uppercase tracking-[0.08em] text-raw-text">{item.label}</p>
+              <p className="mt-1 text-sm text-raw-silver/55">{item.desc}</p>
             </div>
           ))}
         </div>
