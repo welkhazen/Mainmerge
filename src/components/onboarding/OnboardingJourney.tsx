@@ -93,7 +93,7 @@ const ONBOARDING_COMMUNITIES = [
   },
   {
     id: "iijm",
-    title: "Is It Just Me",
+    title: "Is It Just Me?",
     description: "Relatable moments, shared observations, and the quiet comfort of realizing you're not the only one.",
     members: "3",
     activeNow: "1 active",
