@@ -321,6 +321,16 @@ html.theme-light .dashboard-enhanced-bg [class*="text-raw-silver/"] {
 
 .landing-page-shell {
   background: rgb(var(--raw-black));
+  font-family: "Michroma", "Inter", system-ui, sans-serif;
+}
+
+.landing-page-shell :is(p, a, button, label, li, input, textarea, h1, h2, h3, h4, h5, h6) {
+  font-family: inherit;
+}
+
+.landing-page-shell p {
+  letter-spacing: 0.01em;
+  line-height: 1.58;
 }
 
 .landing-scaled {
