@@ -13,6 +13,8 @@ interface TypewriterStackProps {
   lineClassName?: string;
   textClassName?: string;
   cursorClassName?: string;
+  prefix?: string;
+  prefixClassName?: string;
 }
 
 type Phase = "typing" | "pausing" | "done";
@@ -26,6 +28,8 @@ export function TypewriterStack({
   lineClassName,
   textClassName,
   cursorClassName,
+  prefix,
+  prefixClassName,
 }: TypewriterStackProps) {
   const [wordIndex, setWordIndex] = useState(0);
   const [text, setText] = useState("");
@@ -58,19 +62,37 @@ export function TypewriterStack({
     return () => clearTimeout(timer);
   }, [text, phase, wordIndex, words, typeSpeed, pauseAfterWord, nextWordDelay]);
 
+  const prefixMatch = prefix ? `${prefix} ` : null;
+  const splitWord = (full: string, typed: string) => {
+    if (!prefixMatch || !prefix || !full.startsWith(prefixMatch)) {
+      return { head: "", tail: typed };
+    }
+    if (typed.length <= prefix.length) {
+      return { head: typed, tail: "" };
+    }
+    return { head: prefix, tail: typed.slice(prefix.length) };
+  };
+
+  const current = words[wordIndex] ?? "";
+  const typing = splitWord(current, text);
+
   return (
     <span className={cn("flex flex-col items-center", className)}>
-      {words.slice(0, wordIndex).map((w, i) => (
-        <motion.span
-          key={`done-${i}`}
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.32, ease: "easeOut" }}
-          className={cn("block will-change-transform", lineClassName, textClassName)}
-        >
-          {w}
-        </motion.span>
-      ))}
+      {words.slice(0, wordIndex).map((w, i) => {
+        const done = splitWord(w, w);
+        return (
+          <motion.span
+            key={`done-${i}`}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.32, ease: "easeOut" }}
+            className={cn("block will-change-transform", lineClassName)}
+          >
+            {done.head ? <span className={prefixClassName}>{done.head}</span> : null}
+            <span className={textClassName}>{done.tail}</span>
+          </motion.span>
+        );
+      })}
       <motion.span
         key={`typing-${wordIndex}`}
         initial={{ opacity: 0, y: 10 }}
@@ -78,7 +100,10 @@ export function TypewriterStack({
         transition={{ duration: 0.32, ease: "easeOut" }}
         className={cn("inline-flex items-center will-change-transform", lineClassName)}
       >
-        <span aria-live="polite" className={textClassName}>{text}</span>
+        <span aria-live="polite">
+          {typing.head ? <span className={prefixClassName}>{typing.head}</span> : null}
+          <span className={textClassName}>{typing.tail}</span>
+        </span>
         <motion.span
           aria-hidden="true"
           initial={{ opacity: 0 }}
