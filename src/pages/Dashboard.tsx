@@ -250,7 +250,7 @@ export default function Dashboard({
       />
 
       {/* Main content */}
-      <main className="relative z-10 pt-14 pb-20 lg:pl-[80px] lg:pb-8">
+      <main className="relative z-10 pt-0 pb-20 md:pt-14 lg:pl-[80px] lg:pb-8">
         <div className="dashboard-content-shell mx-auto max-w-4xl px-4 py-5 sm:px-5 sm:py-8">
           {renderContent()}
         </div>

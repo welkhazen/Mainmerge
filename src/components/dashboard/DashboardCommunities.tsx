@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/use-toast";
 import { CommunityBadge } from "@/components/dashboard/CommunityBadge";
+
 import {
   ensureUserRecord,
   formatAdminTimestamp,
@@ -23,11 +24,26 @@ import {
   writeChatReports,
   writeCommunityJoinRequests,
   writeCommunityRequests,
-  // ...other imports as needed...
 } from "@/lib/adminData";
-// ...other imports as needed...
+import {
+  canManageCommunity,
+  countUnreadMessages,
+  countOnlineMembers,
+  formatChatDayLabel,
+  formatChatTimestamp,
+  joinCommunityChat,
+  likeCommunityMessage,
+  markCommunityRead,
+  readCommunityChats,
+  sendCommunityMessage,
+  setCommunityNotifications,
+  touchCommunityMemberActivity,
+  updateCommunityPresentation,
+} from "@/lib/communityChat";
 
 export function DashboardCommunities(props) {
+      // Main search query state (fix ReferenceError)
+      const [searchQuery, setSearchQuery] = useState("");
     // Main community state (fix ReferenceError)
     const [communities, setCommunities] = useState([]);
   // Destructure props for clarity and to avoid ReferenceError
@@ -40,6 +56,7 @@ export function DashboardCommunities(props) {
   // --- Floating request button state/hooks ---
   const [showRequestButton, setShowRequestButton] = useState(false);
   const [requestBtnText, setRequestBtnText] = useState("Didn't find your community?");
+  const [mobileRequestExpanded, setMobileRequestExpanded] = useState(false);
 
   // Show button after scrolling 400px
   useEffect(() => {
@@ -53,6 +70,14 @@ export function DashboardCommunities(props) {
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  // Collapse mobile request button when tapping outside
+  useEffect(() => {
+    if (!mobileRequestExpanded) return;
+    const handler = () => setMobileRequestExpanded(false);
+    const timeout = setTimeout(() => document.addEventListener("click", handler), 0);
+    return () => { clearTimeout(timeout); document.removeEventListener("click", handler); };
+  }, [mobileRequestExpanded]);
 
   // Animate text change after 2s
   useEffect(() => {
@@ -150,6 +175,7 @@ const COMMUNITY_LOGOS: Record<string, string> = {
   const [communityJoinRequests, setCommunityJoinRequests] = useState<CommunityJoinRequestRecord[]>([]);
   const [mentionQuery, setMentionQuery] = useState<string | null>(null);
   const [mentionIndex, setMentionIndex] = useState(0);
+  const [expandedDescs, setExpandedDescs] = useState<Set<string>>(new Set());
   const lastTouchedCommunityRef = useRef<string>("");
   const messagesContainerRef = useRef<HTMLDivElement | null>(null);
   const messageInputRef = useRef<HTMLInputElement | null>(null);
@@ -520,7 +546,7 @@ const COMMUNITY_LOGOS: Record<string, string> = {
 
           <Button
             onClick={() => setRequestFormOpen(true)}
-            className="h-11 w-full shrink-0 rounded-xl bg-raw-gold px-4 text-sm font-semibold text-raw-ink hover:bg-raw-gold/90 md:w-auto"
+            className="hidden h-11 w-full shrink-0 rounded-xl bg-raw-gold px-4 text-sm font-semibold text-raw-ink hover:bg-raw-gold/90 md:flex md:w-auto"
           >
             <Plus className="h-4 w-4" /> Request a Community
           </Button>
@@ -962,6 +988,39 @@ const COMMUNITY_LOGOS: Record<string, string> = {
     return (
       <div className="space-y-8">
         {activeCommunityId ? renderChatPage() : renderDirectoryView()}
+
+        {/* Mobile-only request button above dock (near profile) */}
+        {!activeCommunityId && (
+          <motion.button
+            onClick={() => {
+              if (mobileRequestExpanded) {
+                setRequestFormOpen(true);
+                setMobileRequestExpanded(false);
+              } else {
+                setMobileRequestExpanded(true);
+              }
+            }}
+            layout
+            transition={{ type: "spring", stiffness: 400, damping: 28 }}
+            className="fixed bottom-16 right-4 z-50 flex items-center gap-2 rounded-full bg-raw-gold py-3 text-sm font-semibold text-raw-ink shadow-xl hover:bg-raw-gold/90 md:hidden overflow-hidden"
+            style={{ paddingLeft: mobileRequestExpanded ? "1rem" : "0.75rem", paddingRight: mobileRequestExpanded ? "1.25rem" : "0.75rem" }}
+          >
+            <Plus className="h-5 w-5 shrink-0" />
+            <AnimatePresence>
+              {mobileRequestExpanded && (
+                <motion.span
+                  initial={{ opacity: 0, width: 0 }}
+                  animate={{ opacity: 1, width: "auto" }}
+                  exit={{ opacity: 0, width: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="whitespace-nowrap"
+                >
+                  Request a Community
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </motion.button>
+        )}
 
         {/* Animated floating request button (bottom left) */}
         <AnimatePresence>

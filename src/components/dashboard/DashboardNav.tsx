@@ -93,7 +93,7 @@ export function DashboardNav({ username, avatarLevel, showAdminLink = false, onP
   }, [accent, accentPresets, hoveredAccent, hoveredMode, mode]);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 border-b border-raw-border/50 bg-raw-black/90 backdrop-blur-xl">
+    <nav className="fixed top-0 left-0 right-0 z-50 border-b border-raw-border/50 bg-raw-black/90 backdrop-blur-xl hidden md:block">
       <div className="flex h-14 items-center justify-between px-4 sm:px-6">
         {/* Logo */}
         <a href="/" className="font-display text-base tracking-[0.3em] text-raw-text shrink-0 sm:text-lg">
