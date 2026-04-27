@@ -121,7 +121,7 @@ usersRouter.patch("/me", async (req, res) => {
   }
 
   // Development mode: allow unauthenticated access
-  let user = await findAuthenticatedUser(req);
+  const user = await findAuthenticatedUser(req);
   if (!user) {
     // Return success for development without persisting changes
     return res.status(200).json({ user: { id: "dev-user-1", username: "dev-user", displayName: "Development User", bio: "Testing UI/UX", createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), passwordChangedAt: new Date().toISOString() } });
@@ -158,7 +158,7 @@ usersRouter.post("/me/change-password", changePasswordLimiter, async (req, res) 
   }
 
   // Development mode: allow unauthenticated access
-  let user = await findAuthenticatedUser(req);
+  const user = await findAuthenticatedUser(req);
   if (!user) {
     // Return success for development without persisting changes
     return res.status(200).json({ ok: true });
