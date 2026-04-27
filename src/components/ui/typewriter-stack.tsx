@@ -15,6 +15,8 @@ interface TypewriterStackProps {
   cursorClassName?: string;
   prefix?: string;
   prefixClassName?: string;
+  startScale?: number;
+  endScale?: number;
 }
 
 type Phase = "typing" | "pausing" | "done";
@@ -30,6 +32,8 @@ export function TypewriterStack({
   cursorClassName,
   prefix,
   prefixClassName,
+  startScale = 1,
+  endScale = 1,
 }: TypewriterStackProps) {
   const [wordIndex, setWordIndex] = useState(0);
   const [text, setText] = useState("");
@@ -76,6 +80,12 @@ export function TypewriterStack({
   const current = words[wordIndex] ?? "";
   const typing = splitWord(current, text);
 
+  const scaleFor = (i: number) => {
+    if (words.length <= 1) return endScale;
+    const t = i / (words.length - 1);
+    return startScale + (endScale - startScale) * t;
+  };
+
   return (
     <span className={cn("flex flex-col items-center", className)}>
       {words.slice(0, wordIndex).map((w, i) => {
@@ -87,6 +97,7 @@ export function TypewriterStack({
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.32, ease: "easeOut" }}
             className={cn("block will-change-transform", lineClassName)}
+            style={{ fontSize: `${scaleFor(i)}em` }}
           >
             {done.head ? <span className={prefixClassName}>{done.head}</span> : null}
             <span className={textClassName}>{done.tail}</span>
@@ -99,6 +110,7 @@ export function TypewriterStack({
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.32, ease: "easeOut" }}
         className={cn("inline-flex items-center will-change-transform", lineClassName)}
+        style={{ fontSize: `${scaleFor(wordIndex)}em` }}
       >
         <span aria-live="polite">
           {typing.head ? <span className={prefixClassName}>{typing.head}</span> : null}

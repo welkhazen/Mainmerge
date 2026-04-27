@@ -91,6 +91,8 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
                     words={["Your Place", "Your People", "Your Self", "Be raW"]}
                     prefix="Your"
                     prefixClassName="text-foreground font-black"
+                    startScale={0.6}
+                    endScale={1.15}
                     textClassName="bg-gradient-to-br from-primary via-primary to-primary/60 bg-clip-text text-transparent font-black"
                     cursorClassName="bg-primary"
                   />
