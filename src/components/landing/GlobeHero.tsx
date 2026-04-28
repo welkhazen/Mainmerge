@@ -10,7 +10,6 @@ import { GlobeHeroTypewriterSequence } from "@/components/landing/GlobeHeroTypew
 import { TypewriterStack } from "@/components/ui/typewriter-stack";
 import { Canvas } from "@react-three/fiber";
 import { PerspectiveCamera } from "@react-three/drei";
-import { LandingType } from "@/components/landing/LandingType";
 
 import { Globe } from "@/components/ui/globe-hero";
 import { useTheme } from "@/providers/ThemeProvider";
@@ -82,7 +81,7 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
             >
               <span className="mb-3 block text-[1.6rem] font-light text-foreground/70 sm:text-[2rem] md:text-[3.19rem] lg:text-[3.83rem]">
                 Find
-              </LandingType>
+              </span>
               <span className="block relative">
                 <span
                   className="font-black relative z-10 block"
@@ -138,7 +137,7 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
               }}
             >
               Username And Password Only
-            </LandingType>
+            </p>
           </motion.div>
         </motion.div>
 
