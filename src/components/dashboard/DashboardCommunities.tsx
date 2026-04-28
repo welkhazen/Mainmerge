@@ -580,8 +580,9 @@ const COMMUNITY_LOGOS: Record<string, string> = {
             const descLong = community.description.length > 120;
 
             return (
-              <div key={community.id} className="flex flex-col overflow-hidden rounded-3xl border border-raw-border/30 bg-raw-surface/35 shadow-[0_16px_36px_rgba(0,0,0,0.28)]">
-                <div className="relative h-44 shrink-0 overflow-hidden border-b border-raw-border/25">
+              <div key={community.id} className="flex flex-col overflow-hidden rounded-2xl border border-raw-border/30 bg-raw-surface/35 shadow-[0_8px_24px_rgba(0,0,0,0.22)]">
+                {/* Cover image */}
+                <div className="relative h-28 sm:h-44 shrink-0 overflow-hidden border-b border-raw-border/25">
                   {coverVideo ? (
                     <video src={coverVideo} className="h-full w-full object-cover" autoPlay loop muted playsInline />
                   ) : coverImage ? (
@@ -590,91 +591,87 @@ const COMMUNITY_LOGOS: Record<string, string> = {
                     <div className="h-full w-full bg-gradient-to-br from-raw-gold/12 via-raw-surface/30 to-raw-black/70" />
                   )}
                   {!coverVideo && <div className="absolute inset-0 bg-gradient-to-t from-raw-black/85 via-raw-black/30 to-transparent" />}
-                  <div className="absolute bottom-3 right-3 rounded-full border border-raw-border/40 bg-raw-black/60 px-2.5 py-1 text-[10px] text-raw-silver/70 backdrop-blur-sm">
+                  <div className="absolute bottom-2 right-2 rounded-full border border-raw-border/40 bg-raw-black/60 px-2 py-0.5 text-[9px] text-raw-silver/70 backdrop-blur-sm">
                     {joined ? "Joined" : community.locked ? "Locked" : "Not joined"}
                   </div>
                 </div>
 
-                <div className="flex flex-1 flex-col p-5">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex items-center gap-3">
-                      <CommunityBadge abbr={community.abbr} title={community.title} logoUrl={COMMUNITY_LOGOS[community.id] ?? community.logoUrl} />
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <p className="font-display text-base tracking-wide text-raw-text">{community.title}</p>
-                          {communityUnreadCount > 0 && (
-                            <span className="rounded-full bg-raw-gold px-2 py-0.5 text-[10px] font-semibold text-raw-ink">
-                              {communityUnreadCount}
-                            </span>
-                          )}
-                        </div>
-                        <p className="mt-1 text-[10px] uppercase tracking-[0.16em] text-raw-gold/65">{community.status}</p>
+                <div className="flex flex-1 flex-col p-3 sm:p-5">
+                  {/* Title row */}
+                  <div className="flex items-center gap-2">
+                    <CommunityBadge abbr={community.abbr} title={community.title} logoUrl={COMMUNITY_LOGOS[community.id] ?? community.logoUrl} />
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <p className="font-display text-xs sm:text-base tracking-wide text-raw-text leading-tight">{community.title}</p>
+                        {communityUnreadCount > 0 && (
+                          <span className="rounded-full bg-raw-gold px-1.5 py-0.5 text-[9px] font-semibold text-raw-ink">
+                            {communityUnreadCount}
+                          </span>
+                        )}
                       </div>
+                      <p className="text-[9px] uppercase tracking-[0.14em] text-raw-gold/65">{community.status}</p>
                     </div>
                   </div>
 
-                  <div className="mt-4">
-                    <p className={`text-sm leading-relaxed text-raw-silver/50 ${!isExpanded && descLong ? "line-clamp-3" : ""}`}>
+                  {/* Description */}
+                  <div className="mt-2">
+                    <p className={`text-[11px] sm:text-sm leading-relaxed text-raw-silver/50 line-clamp-2 sm:${!isExpanded && descLong ? "line-clamp-3" : ""}`}>
                       {community.description}
                     </p>
                     {descLong && (
                       <button
                         onClick={() => setExpandedDescs((prev) => {
                           const next = new Set(prev);
-                          if (isExpanded) {
-                            next.delete(community.id);
-                          } else {
-                            next.add(community.id);
-                          }
+                          if (isExpanded) next.delete(community.id);
+                          else next.add(community.id);
                           return next;
                         })}
-                        className="mt-1 text-xs text-raw-gold/60 hover:text-raw-gold"
+                        className="mt-0.5 hidden sm:block text-xs text-raw-gold/60 hover:text-raw-gold"
                       >
                         {isExpanded ? "Show less" : "Show more"}
                       </button>
                     )}
                   </div>
 
-                  <div className="mt-auto pt-4 space-y-3">
-                    <div className="flex items-center gap-4 text-[11px] text-raw-silver/35">
+                  {/* Members row */}
+                  <div className="mt-2 sm:mt-4 flex items-center gap-2 text-[10px] text-raw-silver/35">
+                    <span className="flex items-center gap-1">
+                      <Users className="h-3 w-3" /> {community.members.length}
+                    </span>
+                    {!community.locked && (
                       <span className="flex items-center gap-1">
-                        <Users className="h-3.5 w-3.5" /> {community.members.length} members
+                        <div className="h-1.5 w-1.5 rounded-full bg-emerald-400/70" /> {countOnlineMembers(community)}
                       </span>
-                      {community.locked ? (
-                        <span className="flex items-center gap-1 text-raw-gold/60">
-                          <Lock className="h-3.5 w-3.5" /> Members only
-                        </span>
-                      ) : (
-                        <span className="flex items-center gap-1">
-                          <div className="h-1.5 w-1.5 rounded-full bg-emerald-400/70" /> {countOnlineMembers(community)} online
-                        </span>
-                      )}
-                    </div>
+                    )}
+                  </div>
+
+                  {/* Action button */}
+                  <div className="mt-auto pt-3">
                     {community.locked && !joined ? (() => {
                       const joinReq = communityJoinRequests.find(
                         (r) => r.communityId === community.id && r.requesterId === user.id,
                       );
                       if (joinReq) {
                         return (
-                          <div className="rounded-xl border border-amber-400/20 bg-amber-400/[0.06] px-4 py-2.5 text-[11px] text-amber-200/80 text-center">
-                            {joinReq.status === "pending" ? "Access request pending" : joinReq.status === "rejected" ? "Request rejected by admin" : "Approved"}
+                          <div className="rounded-xl border border-amber-400/20 bg-amber-400/[0.06] px-2 py-2 text-[10px] text-amber-200/80 text-center">
+                            {joinReq.status === "pending" ? "Pending" : joinReq.status === "rejected" ? "Rejected" : "Approved"}
                           </div>
                         );
                       }
                       return (
                         <Button
                           onClick={() => handleRequestJoinCommunity(community)}
-                          className="rounded-xl border border-raw-gold/30 bg-transparent px-4 text-raw-gold hover:bg-raw-gold/10"
+                          className="w-full rounded-xl border border-raw-gold/30 bg-transparent px-2 py-2 text-xs text-raw-gold hover:bg-raw-gold/10"
                         >
-                          <Lock className="h-3.5 w-3.5" /> Join Waiting List
+                          <Lock className="h-3 w-3" /> Join
                         </Button>
                       );
                     })() : (
                       <Button
                         onClick={() => onOpenCommunity(community.id)}
-                        className="rounded-xl bg-raw-gold px-4 text-raw-ink hover:bg-raw-gold/90"
+                        className="w-full rounded-xl bg-raw-gold px-2 py-2 text-xs text-raw-ink hover:bg-raw-gold/90"
                       >
-                        Open Chat Page
+                        Open Chat
                       </Button>
                     )}
                   </div>
@@ -1007,8 +1004,12 @@ const COMMUNITY_LOGOS: Record<string, string> = {
             }}
             layout
             transition={{ type: "spring", stiffness: 400, damping: 28 }}
-            className="fixed bottom-16 right-4 z-50 flex items-center gap-2 rounded-full bg-raw-gold py-3 text-sm font-semibold text-raw-ink shadow-xl hover:bg-raw-gold/90 md:hidden overflow-hidden"
-            style={{ paddingLeft: mobileRequestExpanded ? "1rem" : "0.75rem", paddingRight: mobileRequestExpanded ? "1.25rem" : "0.75rem" }}
+            className="fixed right-4 z-50 flex items-center gap-2 rounded-full bg-raw-gold py-3 text-sm font-semibold text-raw-ink shadow-xl hover:bg-raw-gold/90 md:hidden overflow-hidden"
+            style={{
+              bottom: "calc(5rem + env(safe-area-inset-bottom))",
+              paddingLeft: mobileRequestExpanded ? "1rem" : "0.75rem",
+              paddingRight: mobileRequestExpanded ? "1.25rem" : "0.75rem",
+            }}
           >
             <Plus className="h-5 w-5 shrink-0" />
             <AnimatePresence>
@@ -1042,8 +1043,8 @@ const COMMUNITY_LOGOS: Record<string, string> = {
                   description: "Fill out the form to suggest a new community for review.",
                 });
               }}
-              className="fixed left-4 bottom-6 z-50 flex items-center gap-2 rounded-2xl bg-raw-gold px-5 py-3 text-sm font-semibold text-raw-ink shadow-xl hover:bg-raw-gold/90 focus:outline-none"
-              style={{ boxShadow: "0 8px 32px rgba(0,0,0,0.18)" }}
+              className="fixed left-4 z-50 flex items-center gap-2 rounded-2xl bg-raw-gold px-5 py-3 text-sm font-semibold text-raw-ink shadow-xl hover:bg-raw-gold/90 focus:outline-none"
+              style={{ bottom: "calc(5rem + env(safe-area-inset-bottom))", boxShadow: "0 8px 32px rgba(0,0,0,0.18)" }}
             >
               <motion.span
                 key={requestBtnText}
@@ -1107,115 +1108,118 @@ const COMMUNITY_LOGOS: Record<string, string> = {
         </Dialog>
 
         <Dialog open={requestFormOpen} onOpenChange={(open) => { setRequestFormOpen(open); if (!open) setRequestSubmitAttempted(false); }}>
-          <DialogContent className="border border-raw-border/40 bg-raw-black p-0 text-raw-text sm:max-w-2xl sm:rounded-3xl">
-            <div className="border-b border-raw-border/20 bg-gradient-to-br from-raw-gold/[0.08] via-raw-black to-raw-black px-6 py-6">
-              <DialogHeader className="space-y-2 text-left">
-                <DialogTitle className="font-display text-xl tracking-wide text-raw-text">Request a new community</DialogTitle>
-                <DialogDescription className="max-w-xl text-sm leading-relaxed text-raw-silver/45">
-                  This form goes to admin review. Approved requests can become new in-app communities after moderation checks and launch setup.
+          <DialogContent bottomSheet className="flex flex-col bg-raw-black p-0 text-raw-text border-raw-border/40">
+            {/* Header — fixed */}
+            <div className="shrink-0 border-b border-raw-border/20 bg-gradient-to-br from-raw-gold/[0.08] via-raw-black to-raw-black px-5 py-4">
+              <DialogHeader className="space-y-1 text-left">
+                <DialogTitle className="font-display text-lg tracking-wide text-raw-text">Request a new community</DialogTitle>
+                <DialogDescription className="text-xs leading-relaxed text-raw-silver/45">
+                  Goes to admin review. Approved requests become live in-app communities.
                 </DialogDescription>
               </DialogHeader>
             </div>
-            <div className="space-y-5 px-6 py-6">
-              <div className="grid gap-5 sm:grid-cols-2">
-                <div className="space-y-2">
+
+            {/* Scrollable body */}
+            <div className="flex-1 overflow-y-auto space-y-4 px-5 py-5">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-1.5">
                   <label className="text-[11px] uppercase tracking-[0.16em] text-raw-silver/40">
                     Community name <span className="text-primary">*</span>
                   </label>
                   <Input
                     value={requestDraft.communityName}
                     onChange={(event) => updateRequestDraft("communityName", event.target.value)}
-                    placeholder="Example: Creator Burnout Circle"
-                    className={`h-11 rounded-xl bg-raw-surface/30 text-raw-text placeholder:text-raw-silver/25 ${requestSubmitAttempted && !requestDraft.communityName.trim() ? "border-primary/60 focus-visible:ring-primary/30" : "border-raw-border/30"}`}
+                    placeholder="Creator Burnout Circle"
+                    className={`h-10 rounded-xl bg-raw-surface/30 text-raw-text placeholder:text-raw-silver/25 ${requestSubmitAttempted && !requestDraft.communityName.trim() ? "border-primary/60 focus-visible:ring-primary/30" : "border-raw-border/30"}`}
                   />
                   {requestSubmitAttempted && !requestDraft.communityName.trim() && (
-                    <p className="text-[11px] text-primary/80">This field is required</p>
+                    <p className="text-[11px] text-primary/80">Required</p>
                   )}
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   <label className="text-[11px] uppercase tracking-[0.16em] text-raw-silver/40">
                     Focus area <span className="text-primary">*</span>
                   </label>
                   <Input
                     value={requestDraft.focusArea}
                     onChange={(event) => updateRequestDraft("focusArea", event.target.value)}
-                    placeholder="What theme would this room center on?"
-                    className={`h-11 rounded-xl bg-raw-surface/30 text-raw-text placeholder:text-raw-silver/25 ${requestSubmitAttempted && !requestDraft.focusArea.trim() ? "border-primary/60 focus-visible:ring-primary/30" : "border-raw-border/30"}`}
+                    placeholder="Theme this room centers on"
+                    className={`h-10 rounded-xl bg-raw-surface/30 text-raw-text placeholder:text-raw-silver/25 ${requestSubmitAttempted && !requestDraft.focusArea.trim() ? "border-primary/60 focus-visible:ring-primary/30" : "border-raw-border/30"}`}
                   />
                   {requestSubmitAttempted && !requestDraft.focusArea.trim() && (
-                    <p className="text-[11px] text-primary/80">This field is required</p>
+                    <p className="text-[11px] text-primary/80">Required</p>
                   )}
                 </div>
               </div>
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <label className="text-[11px] uppercase tracking-[0.16em] text-raw-silver/40">
                   Who is this for? <span className="text-primary">*</span>
                 </label>
                 <Input
                   value={requestDraft.audience}
                   onChange={(event) => updateRequestDraft("audience", event.target.value)}
-                  placeholder="Who would join and benefit from this community?"
-                  className={`h-11 rounded-xl bg-raw-surface/30 text-raw-text placeholder:text-raw-silver/25 ${requestSubmitAttempted && !requestDraft.audience.trim() ? "border-primary/60 focus-visible:ring-primary/30" : "border-raw-border/30"}`}
+                  placeholder="Who would join and benefit?"
+                  className={`h-10 rounded-xl bg-raw-surface/30 text-raw-text placeholder:text-raw-silver/25 ${requestSubmitAttempted && !requestDraft.audience.trim() ? "border-primary/60 focus-visible:ring-primary/30" : "border-raw-border/30"}`}
                 />
                 {requestSubmitAttempted && !requestDraft.audience.trim() && (
-                  <p className="text-[11px] text-primary/80">This field is required</p>
+                  <p className="text-[11px] text-primary/80">Required</p>
                 )}
               </div>
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <label className="text-[11px] uppercase tracking-[0.16em] text-raw-silver/40">
                   Why should admin approve it? <span className="text-primary">*</span>
                 </label>
                 <Textarea
                   value={requestDraft.whyNow}
                   onChange={(event) => updateRequestDraft("whyNow", event.target.value)}
-                  placeholder="Explain the need, how it adds value, and what kind of conversations it should unlock."
-                  className={`min-h-[130px] rounded-2xl bg-raw-surface/30 text-raw-text placeholder:text-raw-silver/25 ${requestSubmitAttempted && !requestDraft.whyNow.trim() ? "border-primary/60 focus-visible:ring-primary/30" : "border-raw-border/30"}`}
+                  placeholder="Explain the need and what conversations it unlocks."
+                  className={`min-h-[90px] rounded-2xl bg-raw-surface/30 text-raw-text placeholder:text-raw-silver/25 ${requestSubmitAttempted && !requestDraft.whyNow.trim() ? "border-primary/60 focus-visible:ring-primary/30" : "border-raw-border/30"}`}
                 />
                 {requestSubmitAttempted && !requestDraft.whyNow.trim() && (
-                  <p className="text-[11px] text-primary/80">This field is required</p>
+                  <p className="text-[11px] text-primary/80">Required</p>
                 )}
               </div>
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <label className="text-[11px] uppercase tracking-[0.16em] text-raw-silver/40">Sample opening prompt</label>
                 <Textarea
                   value={requestDraft.samplePrompt}
                   onChange={(event) => updateRequestDraft("samplePrompt", event.target.value)}
-                  placeholder="Optional: add the kind of opening topic that would set the tone for the room."
-                  className="min-h-[96px] rounded-2xl border-raw-border/30 bg-raw-surface/30 text-raw-text placeholder:text-raw-silver/25"
+                  placeholder="Optional: opening topic that sets the tone."
+                  className="min-h-[72px] rounded-2xl border-raw-border/30 bg-raw-surface/30 text-raw-text placeholder:text-raw-silver/25"
                 />
               </div>
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <label className="text-[11px] uppercase tracking-[0.16em] text-raw-silver/40">Community image / video</label>
                 <button
                   type="button"
                   disabled
-                  className="flex w-full items-center justify-center gap-3 rounded-2xl border border-dashed border-raw-border/35 bg-raw-surface/20 px-4 py-5 text-sm text-raw-silver/35 cursor-not-allowed"
+                  className="flex w-full items-center justify-center gap-2 rounded-2xl border border-dashed border-raw-border/35 bg-raw-surface/20 px-4 py-4 text-sm text-raw-silver/35 cursor-not-allowed"
                 >
-                  <ImagePlus className="h-5 w-5 shrink-0" />
-                  <span>Upload image or video <span className="text-[10px] uppercase tracking-wider text-raw-silver/25 ml-1">Coming soon</span></span>
+                  <ImagePlus className="h-4 w-4 shrink-0" />
+                  <span>Upload <span className="text-[10px] uppercase tracking-wider text-raw-silver/25 ml-1">Coming soon</span></span>
                 </button>
               </div>
             </div>
-            <DialogFooter className="border-t border-raw-border/20 px-6 py-5 sm:justify-between">
-              <p className="text-xs leading-relaxed text-raw-silver/40">
-                Requesting as @{user.username}. Only one pending request is allowed at a time.
-              </p>
-              <div className="flex items-center gap-3">
+
+            {/* Footer — sticky */}
+            <div className="shrink-0 border-t border-raw-border/20 px-5 py-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-xs text-raw-silver/40">Requesting as @{user.username}.</p>
+              <div className="flex items-center gap-2">
                 <Button
                   variant="outline"
                   onClick={() => { setRequestFormOpen(false); setRequestSubmitAttempted(false); }}
-                  className="rounded-xl border-raw-border/30 bg-transparent text-raw-silver/70 hover:bg-raw-surface/30 hover:text-raw-text"
+                  className="flex-1 sm:flex-none rounded-xl border-raw-border/30 bg-transparent text-raw-silver/70 hover:bg-raw-surface/30 hover:text-raw-text"
                 >
                   Cancel
                 </Button>
                 <Button
                   onClick={handleSubmitCommunityRequest}
-                  className="rounded-xl bg-raw-gold px-4 text-raw-ink hover:bg-raw-gold/90"
+                  className="flex-1 sm:flex-none rounded-xl bg-raw-gold px-4 text-raw-ink hover:bg-raw-gold/90"
                 >
-                  Submit for approval
+                  Submit
                 </Button>
               </div>
-            </DialogFooter>
+            </div>
           </DialogContent>
         </Dialog>
 

@@ -57,24 +57,22 @@ function ActivityCard({
   onNavigate,
 }: ActivityCardProps) {
   return (
-    <div className="dashboard-activity-card flex-1 rounded-2xl border border-raw-border/40 bg-raw-surface/30 p-4">
-      <div className="flex h-full items-start justify-between gap-3 sm:gap-4">
-        <div className="flex min-w-0 items-start gap-3 sm:gap-4">
-          <div className="dashboard-activity-icon flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-raw-gold/[0.06]">
-            <Icon className="h-4 w-4 text-raw-gold/50" />
-          </div>
-          <div className="min-w-0">
-            <p className="text-sm font-medium leading-snug text-raw-text">{title}</p>
-            <p className="mt-1 text-xs leading-snug text-raw-silver/35">{desc}</p>
-          </div>
+    <div className="dashboard-activity-card rounded-2xl border border-raw-border/40 bg-raw-surface/30 p-3 sm:p-4">
+      <div className="flex items-start gap-2.5">
+        <div className="dashboard-activity-icon flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-raw-gold/[0.06]">
+          <Icon className="h-3.5 w-3.5 text-raw-gold/50" />
         </div>
-        <button
-          onClick={() => onNavigate(tab)}
-          className="dashboard-activity-action shrink-0 rounded-full border border-raw-gold/25 px-3 py-2 text-[11px] font-medium text-raw-gold/70 transition-all hover:border-raw-gold/40 hover:bg-raw-gold/5 sm:px-4"
-        >
-          {action}
-        </button>
+        <div className="min-w-0 flex-1">
+          <p className="text-xs font-medium leading-snug text-raw-text">{title}</p>
+          <p className="mt-0.5 text-[11px] leading-snug text-raw-silver/35 line-clamp-2">{desc}</p>
+        </div>
       </div>
+      <button
+        onClick={() => onNavigate(tab)}
+        className="dashboard-activity-action mt-3 w-full rounded-full border border-raw-gold/25 py-1.5 text-[11px] font-medium text-raw-gold/70 transition-all hover:border-raw-gold/40 hover:bg-raw-gold/5"
+      >
+        {action}
+      </button>
     </div>
   );
 }
@@ -188,8 +186,8 @@ export function DashboardHome({
 
       {/* Earn More By Completing The Challenges */}
       <div>
-        <h2 className="mb-4 font-display text-base tracking-wide text-raw-text sm:text-lg">Earn More By Completing The Challenges</h2>
-        <div className="flex flex-col gap-3 sm:flex-row">
+        <h2 className="mb-4 font-display text-base tracking-wide text-raw-text sm:text-lg">Complete Challenges</h2>
+        <div className="grid grid-cols-2 gap-3">
           <ActivityCard
             title="Daily Spin"
             desc="Spin once and claim your reward"
@@ -199,7 +197,7 @@ export function DashboardHome({
             onNavigate={onNavigate}
           />
           <ActivityCard
-            title="Level Up Challenge"
+            title="Level Up"
             desc="Complete 3 interactions to earn XP"
             action="Start"
             tab="challenges"

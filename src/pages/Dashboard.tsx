@@ -212,6 +212,13 @@ export default function Dashboard({
             active: isHome,
           },
           {
+            title: "Communities",
+            icon: <MessageCircle className="h-5 w-5" />,
+            href: "#",
+            onClick: () => handleTabChange("communities"),
+            active: !isHome && activeTab === "communities",
+          },
+          {
             title: "Polls",
             icon: <Target className="h-5 w-5" />,
             href: "#",
@@ -226,31 +233,17 @@ export default function Dashboard({
             active: !isHome && activeTab === "challenges",
           },
           {
-            title: "Spin",
-            icon: <Sparkles className="h-5 w-5" />,
+            title: "Wallet",
+            icon: <Wallet className="h-5 w-5" />,
             href: "#",
-            onClick: () => handleTabChange("daily-spin"),
-            active: !isHome && activeTab === "daily-spin",
-          },
-          {
-            title: "Groups",
-            icon: <MessageCircle className="h-5 w-5" />,
-            href: "#",
-            onClick: () => handleTabChange("communities"),
-            active: !isHome && activeTab === "communities",
-          },
-          {
-            title: "Me",
-            icon: <UserIcon className="h-5 w-5" />,
-            href: "#",
-            onClick: () => handleTabChange("profile"),
-            active: !isHome && activeTab === "profile",
+            onClick: () => handleTabChange("wallet"),
+            active: !isHome && activeTab === "wallet",
           },
         ]}
       />
 
       {/* Main content */}
-      <main className="relative z-10 pt-0 pb-28 md:pt-14 md:pb-8 lg:pl-[80px] lg:pb-8">
+      <main className="relative z-10 pt-14 pb-28 md:pb-8 lg:pl-[80px] lg:pb-8">
         <div className="dashboard-content-shell mx-auto max-w-4xl px-4 py-5 sm:px-5 sm:py-8">
           {renderContent()}
         </div>
