@@ -1,5 +1,6 @@
 import { FloatingDock } from "@/components/ui/floating-dock";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { readCommunityChats } from "@/lib/communityChat";
 import { Home as HomeIcon, MessageCircle, Target, User as UserIcon, Wallet, LogOut, Shield, Trophy, Sparkles } from "lucide-react";
 import { matchPath, useLocation, useNavigate } from "react-router-dom";
 import { DashboardNav, type DashboardTab } from "@/components/dashboard/DashboardNav";
@@ -79,6 +80,11 @@ export default function Dashboard({
     setIsHome(false);
     navigate("/dashboard");
   };
+
+  const activeCommunityTitle = useMemo(() => {
+    if (!activeCommunityId) return undefined;
+    return readCommunityChats().find((c) => c.id === activeCommunityId)?.title;
+  }, [activeCommunityId]);
 
   const handleProfileClick = () => {
     setActiveTab("profile");
@@ -170,6 +176,8 @@ export default function Dashboard({
         showAdminLink={user.role === "admin"}
         onProfileClick={handleProfileClick}
         onLogout={onLogout}
+        communityTitle={activeCommunityTitle}
+        onBack={handleBackToCommunities}
       />
 
       <DashboardSidebar

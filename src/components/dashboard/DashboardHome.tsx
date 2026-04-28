@@ -192,7 +192,7 @@ export function DashboardHome({
             title="Daily Spin"
             desc="Spin once and claim your reward"
             action="Spin"
-            tab="daily-spin"
+            tab="challenges"
             icon={Dices}
             onNavigate={onNavigate}
           />

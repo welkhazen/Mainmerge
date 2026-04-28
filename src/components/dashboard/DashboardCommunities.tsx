@@ -689,9 +689,13 @@ const COMMUNITY_LOGOS: Record<string, string> = {
       }
 
       return (
-        <div className="space-y-6">
-          <div className="flex flex-wrap items-start justify-between gap-3 rounded-2xl border border-raw-border/30 bg-raw-surface/25 p-4 sm:rounded-3xl sm:gap-4 sm:p-5">
-            <div className="flex min-w-0 flex-1 items-start gap-3 sm:gap-4">
+        <div
+          className="fixed inset-x-0 top-14 z-30 flex flex-col overflow-hidden sm:static sm:inset-auto sm:z-auto sm:block sm:h-auto sm:overflow-visible sm:space-y-6"
+          style={{ bottom: "max(72px, calc(56px + env(safe-area-inset-bottom)))" }}
+        >
+          {/* Desktop: full header card */}
+          <div className="hidden sm:flex sm:flex-wrap sm:items-start sm:justify-between sm:gap-4 sm:rounded-3xl sm:border sm:border-raw-border/30 sm:bg-raw-surface/25 sm:p-5">
+            <div className="flex min-w-0 flex-1 items-start gap-4">
               <button
                 onClick={() => onBackToCommunities?.()}
                 className="mt-1 shrink-0 rounded-full border border-raw-border/30 p-2 text-raw-silver/55 transition-colors hover:border-raw-gold/20 hover:text-raw-gold"
@@ -700,11 +704,10 @@ const COMMUNITY_LOGOS: Record<string, string> = {
               </button>
               <CommunityBadge abbr={selectedCommunity.abbr} title={selectedCommunity.title} logoUrl={COMMUNITY_LOGOS[selectedCommunity.id] ?? selectedCommunity.logoUrl} />
               <div className="min-w-0">
-                <h1 className="font-display text-xl tracking-wide text-raw-text sm:text-2xl">{selectedCommunity.title}</h1>
+                <h1 className="font-display text-2xl tracking-wide text-raw-text">{selectedCommunity.title}</h1>
                 <p className="mt-2 text-sm text-raw-silver/45">{selectedCommunity.description}</p>
               </div>
             </div>
-
             <div className="flex flex-wrap items-center gap-3">
               <div className="rounded-full border border-raw-border/30 px-3 py-1 text-[11px] text-raw-silver/40">
                 {onlineNow} online now
@@ -755,10 +758,7 @@ const COMMUNITY_LOGOS: Record<string, string> = {
               )}
               <button
                 onClick={() => {
-                  if (!currentMember) {
-                    return;
-                  }
-
+                  if (!currentMember) return;
                   setCommunityNotifications(selectedCommunity.id, user.id, !currentMember.notificationsEnabled);
                   reloadChatData();
                 }}
@@ -766,7 +766,7 @@ const COMMUNITY_LOGOS: Record<string, string> = {
                 className="flex items-center gap-2 rounded-full border border-raw-gold/20 bg-raw-gold/[0.05] px-3 py-1.5 text-[11px] text-raw-gold/70 transition-colors hover:bg-raw-gold/[0.09] disabled:opacity-60"
               >
                 {currentMember?.notificationsEnabled ? <Bell className="h-3.5 w-3.5" /> : <BellOff className="h-3.5 w-3.5" />}
-                {currentMember?.notificationsEnabled ? "Notifications On" : "Notifications Off"}
+                <span>{currentMember?.notificationsEnabled ? "Notifications On" : "Notifications Off"}</span>
               </button>
             </div>
           </div>
@@ -812,7 +812,7 @@ const COMMUNITY_LOGOS: Record<string, string> = {
           })()}
 
           {(!selectedCommunity.locked || isJoined) && (
-          <div className="flex flex-col overflow-hidden rounded-2xl border border-raw-border/20 bg-raw-black/35" style={{ height: "calc(100vh - 320px)", minHeight: "400px" }}>
+          <div className="flex flex-1 min-h-0 flex-col overflow-hidden sm:rounded-2xl sm:border sm:border-raw-border/20 sm:bg-raw-black/35 sm:flex-none sm:h-[calc(100dvh_-_260px)] sm:min-h-[360px]">
             {/* Search bar */}
             <div className="flex items-center gap-3 border-b border-raw-border/15 px-4 py-2.5">
               <Search className="h-4 w-4 shrink-0 text-raw-silver/35" />
