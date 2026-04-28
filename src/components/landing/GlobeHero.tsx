@@ -91,7 +91,7 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
                   }}
                 >
                   <TypewriterStack
-                    words={["Your Place", "Your People", "Your Self", "Be raW"]}
+                    words={["Your Place", "Your People", "Your Self", "raW"]}
                     prefix="Your"
                     prefixClassName="text-foreground font-black"
                     startScale={0.6}
@@ -100,7 +100,7 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
                     firstWordClassName="text-metallic font-black"
                     cursorClassName="bg-primary"
                     highlightRawWord
-                    lineClassNamesByIndex={{ 3: "mt-2" }}
+                    lineClassNamesByIndex={{ 3: "mt-8" }}
                   />
                 </span>
                 <motion.div
