@@ -34,6 +34,10 @@ capture ERRORED "Click the 'Export' button. Did it throw an error? (y/n)"
 
 capture ERROR_MSG "Paste the error message (or 'none'):"
 
+# Normalize ERROR_MSG for safe parsing: collapse newlines to literal \n, replace empty with "none"
+ERROR_MSG="${ERROR_MSG:-none}"
+ERROR_MSG="${ERROR_MSG//$'\n'/\\n}"
+
 # --- edit above ---------------------------------------------------------
 
 printf '\n--- Captured ---\n'
