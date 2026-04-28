@@ -2,8 +2,8 @@
 import { GlareCard } from "@/components/ui/glare-card";
 import { useTrackSectionView } from "@/lib/analytics/useTrackSectionView";
 import LNTLogo from "@/assets/LNT.png";
-import isItJustMeVideo from "@/assets/itisjustme.mp4";
-import speakYourTruthVideo from "@/assets/speakyourheart.mp4";
+import isItJustMeVideo from "@/assets/itisjustme.webm";
+import speakYourTruthVideo from "@/assets/speakyourheart.webm";
 
 const communities = [
   {
@@ -24,7 +24,7 @@ const communities = [
     video: isItJustMeVideo,
   },
   {
-    title: "Lebanese Initiatives",
+    title: "Lebanon Initiatives",
     description: "Coming soon.",
     badge: "Locked",
     locked: true,
@@ -58,8 +58,11 @@ export function Communities({ onSignupClick }: CommunitiesProps) {
 
         <div className="grid gap-4 sm:gap-6 grid-cols-2 md:grid-cols-4">
           {communities.map((c) => (
-            <GlareCard key={c.title}>
-              <div className="rounded-2xl border border-raw-border/50 bg-raw-surface/50 p-5 sm:p-6 relative overflow-hidden">
+            <GlareCard key={c.title} className={c.video ? 'bg-transparent border-0 shadow-none' : ''}>
+              <div className={
+                `rounded-2xl p-5 sm:p-6 relative overflow-visible ` +
+                (c.video ? 'bg-transparent border-0 shadow-none' : 'border border-raw-border/50 bg-raw-surface/50 overflow-hidden')
+              }>
                 {c.title === "Late Night Talks" ? (
                   <div className="flex h-full items-center justify-center py-8">
                     <img src={LNTLogo} alt="LNT Logo" className="h-16 w-auto" />

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import isItJustMeVideo from "@/assets/itisjustme.mp4";
-import speakYourTruthVideo from "@/assets/speakyourheart.mp4";
-import lntVideo from "@/assets/2026-04-18 10_10_00.MP4";
+import isItJustMeVideo from "@/assets/itisjustme.webm";
+import speakYourTruthVideo from "@/assets/speakyourheart.webm";
+import lntVideo from "@/assets/2026-04-18 10_10_00.webm";
 import { AvatarFigure } from "@/components/ui/avatar-figure";
 import { LEVEL_THEMES } from "@/lib/avatar-theme";
 import { AvatarPhoneHomeScreen } from "@/components/ui/avatar-phone-home-screen";
@@ -102,7 +102,7 @@ const ONBOARDING_COMMUNITIES = [
   },
   {
     id: "li",
-    title: "Lebanese Initiatives",
+    title: "Lebanon Initiatives",
     description: "A space for Lebanese change-makers, community builders, and people driving impact inside Lebanon and across the diaspora.",
     members: "0",
     activeNow: "Early Access",
@@ -184,6 +184,8 @@ export function OnboardingJourney({
       startedFiredRef.current = true;
       track("onboarding_started", {});
     }
+    // Always reset swipe guide so it shows on every fresh onboarding session
+    localStorage.removeItem("raw.onboarding.swipe-guide-seen");
   }, []);
 
   useEffect(() => {
@@ -257,7 +259,7 @@ export function OnboardingJourney({
               <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-8 md:items-center">
                 {/* Left: Avatar Selector Grid */}
                 <div className="flex flex-col items-center justify-center min-w-0">
-                  <div className="grid w-fit grid-cols-5 gap-4 sm:gap-5 md:gap-6">
+                  <div className="grid w-fit grid-cols-5 gap-5 sm:gap-8">
                     {Array.from({ length: LEVEL_THEMES.length }, (_, i) => i + 1).map((lvl) => {
                       const theme = LEVEL_THEMES[lvl - 1];
                       const isActive = lvl === avatarLevel;
@@ -266,7 +268,7 @@ export function OnboardingJourney({
                         <button
                           key={lvl}
                           onClick={() => { if (isLocked) return; track("onboarding_avatar_selected", { avatar_level: lvl, attempts: 1 }); onAvatarLevelChange(lvl); }}
-                          className="group relative flex flex-col items-center gap-2 focus:outline-none"
+                          className="group relative flex flex-col items-center gap-2 p-2 focus:outline-none"
                           aria-label={`Select avatar level ${lvl}${isLocked ? " (locked)" : ""}`}
                           aria-pressed={isActive}
                           disabled={isLocked}
@@ -281,8 +283,8 @@ export function OnboardingJourney({
                           <div className={`relative rounded-full transition-all duration-300 ${
                             isActive ? "scale-115" : isLocked ? "" : "opacity-80 group-hover:opacity-100 group-hover:scale-105"
                           }`}>
-                            <AvatarFigure level={lvl} size="md" selected={isActive} className="sm:hidden" />
-                            <AvatarFigure level={lvl} size="lg" selected={isActive} className="hidden sm:block" />
+                            <AvatarFigure level={lvl} size="sm" selected={isActive} className="sm:hidden" />
+                            <AvatarFigure level={lvl} size="md" selected={isActive} className="hidden sm:block" />
                             {/* frosted lock overlay */}
                             {isLocked && (
                               <div className="absolute inset-0 flex items-center justify-center rounded-full overflow-hidden">
@@ -329,7 +331,7 @@ export function OnboardingJourney({
               </div>
 
               {/* Single Poll Card */}
-              <div className="mt-6 sm:mt-8">
+              <div className="mt-4 sm:mt-6 flex flex-col items-center justify-center min-h-[55vh]">
                 {onboardingPolls.length > 0 && (
                   <div className="w-full">
                     {(() => {
@@ -341,18 +343,19 @@ export function OnboardingJourney({
                       return (
                         <div>
 
-                          <p className="text-xs text-raw-silver/50 mb-4 font-medium uppercase tracking-[0.12em]">
-                            Question {currentPollIndex + 1} of {onboardingPolls.length}
-                          </p>
-                          <div className="relative lg:px-12">
+                          <div className="mx-auto mb-3 flex w-full max-w-md items-center justify-between sm:max-w-xl lg:max-w-2xl">
                             <button
                               onClick={() => setCurrentPollIndex(Math.max(0, currentPollIndex - 1))}
                               disabled={currentPollIndex === 0}
-                              className="absolute left-0 top-1/2 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-raw-border/35 bg-raw-black/45 text-lg text-raw-silver/70 transition-all hover:border-raw-gold/35 hover:text-raw-gold/75 disabled:cursor-not-allowed disabled:opacity-35 lg:flex"
+                              className="flex h-9 w-9 items-center justify-center rounded-full border border-raw-border/35 bg-raw-black/45 text-lg text-raw-silver/70 transition-all hover:border-raw-gold/35 hover:text-raw-gold/75 disabled:cursor-not-allowed disabled:opacity-35"
                               aria-label="Previous poll"
                             >
                               ←
                             </button>
+
+                            <span className="text-[10px] font-medium uppercase tracking-[0.14em] text-raw-silver/35">
+                              {currentPollIndex + 1} / {onboardingPolls.length}
+                            </span>
 
                             <button
                               onClick={() => {
@@ -364,7 +367,7 @@ export function OnboardingJourney({
                                 goToNextStep();
                               }}
                               disabled={currentPollIndex === onboardingPolls.length - 1 && !canContinueFromPolls}
-                              className={`absolute right-0 top-1/2 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border text-lg transition-all disabled:cursor-not-allowed disabled:opacity-35 lg:flex ${
+                              className={`flex h-9 w-9 items-center justify-center rounded-full border text-lg transition-all disabled:cursor-not-allowed disabled:opacity-35 ${
                                 currentPollIndex < onboardingPolls.length - 1
                                   ? "border-raw-border/35 bg-raw-black/45 text-raw-silver/70 hover:border-raw-gold/35 hover:text-raw-gold/75"
                                   : "border-raw-gold/40 bg-raw-gold/15 text-raw-gold hover:bg-raw-gold/25"
@@ -373,7 +376,9 @@ export function OnboardingJourney({
                             >
                               →
                             </button>
+                          </div>
 
+                          <div className="mx-auto w-full max-w-md sm:max-w-xl lg:max-w-2xl lg:px-12">
                             <div>
                               <SwipeablePollCard
                                 id={poll.id}
@@ -419,33 +424,6 @@ export function OnboardingJourney({
                             </div>
                           </div>
 
-                          {/* Navigation Buttons */}
-                          <div className="mt-6 flex gap-3">
-                            <button
-                              onClick={() => setCurrentPollIndex(Math.max(0, currentPollIndex - 1))}
-                              disabled={currentPollIndex === 0}
-                              className="flex-1 rounded-lg border border-raw-border/30 bg-raw-black/20 px-4 py-2.5 text-xs font-medium text-raw-silver/70 transition-all hover:border-raw-gold/35 hover:text-raw-gold/75 disabled:cursor-not-allowed disabled:opacity-40 lg:hidden"
-                            >
-                              ← Previous
-                            </button>
-
-                            {currentPollIndex < onboardingPolls.length - 1 ? (
-                              <button
-                                onClick={() => setCurrentPollIndex(Math.min(onboardingPolls.length - 1, currentPollIndex + 1))}
-                                className="flex-1 rounded-lg border border-raw-border/30 bg-raw-black/20 px-4 py-2.5 text-xs font-medium text-raw-silver/70 transition-all hover:border-raw-gold/35 hover:text-raw-gold/75 lg:hidden"
-                              >
-                                Next →
-                              </button>
-                            ) : (
-                              <button
-                                onClick={goToNextStep}
-                                disabled={!canContinueFromPolls}
-                                className="flex-1 rounded-lg bg-raw-gold px-4 py-2.5 text-xs font-semibold text-raw-ink transition-opacity disabled:cursor-not-allowed disabled:opacity-40 lg:hidden"
-                              >
-                                Complete →
-                              </button>
-                            )}
-                          </div>
                         </div>
                       );
                     })()}

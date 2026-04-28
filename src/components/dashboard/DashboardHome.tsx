@@ -1,7 +1,7 @@
 import { lazy, Suspense, useMemo } from "react";
-import lntCoverVideo from "@/assets/2026-04-18 10_10_00.MP4";
-import iijmVideo from "@/assets/itisjustme.mp4";
-import sytVideo from "@/assets/speakyourheart.mp4";
+import lntCoverVideo from "@/assets/2026-04-18 10_10_00.webm";
+import iijmVideo from "@/assets/itisjustme.webm";
+import sytVideo from "@/assets/speakyourheart.webm";
 import { GlareCard } from "@/components/ui/glare-card";
 import {
   Target,

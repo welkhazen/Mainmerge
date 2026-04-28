@@ -92,8 +92,8 @@ export function Logo3D({ size = 132, className = "", colorScheme = "gold" }: Log
             muted
             playsInline
             preload="auto"
-            className="h-full w-full object-cover"
-            style={{ mixBlendMode: "screen" }}
+            className="h-full w-full object-contain"
+            style={{ mixBlendMode: "screen", objectPosition: "center center" }}
           >
             <source src="/logo.webm" type="video/webm" />
             <source src="/logo.mp4" type="video/mp4" />

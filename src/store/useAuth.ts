@@ -56,6 +56,7 @@ export function useAuth() {
     queryClient.setQueryData(["auth", "me"], mockUser);
     if (typeof window !== "undefined") {
       localStorage.removeItem("force-logout");
+      localStorage.setItem(`raw.onboarding.completed.${username}`, "1");
     }
     identify(mockUser.id, { username: mockUser.username });
     track("login_completed", { method: "username_password" });

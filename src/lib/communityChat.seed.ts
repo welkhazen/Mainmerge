@@ -97,7 +97,7 @@ export function buildDefaultCommunities(): PersistedCommunityRecord[] {
     {
       id: "li",
       abbr: "LI",
-      title: "Lebanese Initiatives",
+      title: "Lebanon Initiatives",
       description: "A space for Lebanese change-makers, community builders, and people driving impact inside Lebanon and across the diaspora.",
       topic: "What initiative or project are you working on right now?",
       status: "Early Access",

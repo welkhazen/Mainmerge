@@ -58,8 +58,8 @@ export function Navbar({ isLoggedIn, username, onSignupClick }: NavbarProps) {
             </div>
           ) : (
             <>
-              <div className="flex min-h-11 items-center gap-2 rounded-full border border-raw-border/45 bg-raw-surface/85 px-3 backdrop-blur-xl">
-                <span className={`text-[10px] uppercase tracking-[0.12em] ${isLightMode ? "text-raw-silver/45" : "text-raw-gold"}`}>
+              <div className="flex min-h-11 items-center gap-1.5 rounded-full border border-raw-border/45 bg-raw-surface/85 px-2.5 backdrop-blur-xl sm:gap-2 sm:px-3">
+                <span className={`hidden text-[10px] uppercase tracking-[0.12em] sm:inline ${isLightMode ? "text-raw-silver/45" : "text-raw-gold"}`}>
                   Dark
                 </span>
                 <Switch
@@ -67,14 +67,14 @@ export function Navbar({ isLoggedIn, username, onSignupClick }: NavbarProps) {
                   onCheckedChange={(checked) => setMode(checked ? "light" : "dark")}
                   aria-label="Toggle light and dark mode"
                 />
-                <span className={`text-[10px] uppercase tracking-[0.12em] ${isLightMode ? "text-raw-gold" : "text-raw-silver/45"}`}>
+                <span className={`hidden text-[10px] uppercase tracking-[0.12em] sm:inline ${isLightMode ? "text-raw-gold" : "text-raw-silver/45"}`}>
                   Light
                 </span>
               </div>
               <ThemeCustomizer placement="inline" triggerStyle="compact" className="shrink-0" />
               <button
                 onClick={handleSignupClick}
-                className="min-h-11 rounded-full bg-raw-gold px-4 py-2.5 text-sm font-semibold text-raw-black transition-all hover:bg-raw-gold/90 hover:shadow-lg hover:shadow-raw-gold/20 sm:px-5"
+                className="min-h-11 rounded-full bg-raw-gold px-3.5 py-2.5 text-sm font-semibold text-raw-black transition-all hover:bg-raw-gold/90 hover:shadow-lg hover:shadow-raw-gold/20 sm:px-5"
               >
                 Join Free
               </button>
