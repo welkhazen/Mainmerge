@@ -1,8 +1,6 @@
-import { lazy, Suspense, useMemo } from "react";
-import lntCoverVideo from "@/assets/2026-04-18 10_10_00.webm";
-import iijmVideo from "@/assets/itisjustme.webm";
-import sytVideo from "@/assets/speakyourheart.webm";
+import { Suspense, useMemo } from "react";
 import { GlareCard } from "@/components/ui/glare-card";
+import { ContainerTextFlipLazy } from "@/components/ui/container-text-flip.lazy";
 import {
   Target,
   ChevronRight,
@@ -13,23 +11,11 @@ import type { LucideIcon } from "lucide-react";
 import type { Poll } from "@/store/useRawStore";
 import type { DashboardTab } from "./DashboardNav";
 import { readCommunityChats } from "@/lib/communityChat";
-
-const COMMUNITY_COVER_IMAGES: Record<string, string> = {
-  sic: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=1200&q=80",
-  mw: "https://images.unsplash.com/photo-1493836512294-502baa1986e2?auto=format&fit=crop&w=1200&q=80",
-};
-
-const COMMUNITY_COVER_VIDEOS: Record<string, string> = {
-  lnt: lntCoverVideo,
-  iijm: iijmVideo,
-  syt: sytVideo,
-};
-
-const PREVIEW_IDS = ["lnt", "syt", "iijm", "li"];
-
-const ContainerTextFlipLazy = lazy(() =>
-  import("@/components/ui/container-text-flip").then((module) => ({ default: module.ContainerTextFlip }))
-);
+import {
+  COMMUNITY_COVER_IMAGES,
+  COMMUNITY_COVER_VIDEOS,
+  FEATURED_COMMUNITY_IDS,
+} from "@/lib/communityConstants";
 
 interface DashboardHomeProps {
   username: string;
@@ -89,7 +75,7 @@ export function DashboardHome({
   const dailyItemsLeft = 3;
   const allCommunities = useMemo(() => readCommunityChats(), []);
   const previewCommunities = useMemo(
-    () => PREVIEW_IDS.map((id) => allCommunities.find((c) => c.id === id)).filter(Boolean) as typeof allCommunities,
+    () => FEATURED_COMMUNITY_IDS.map((id) => allCommunities.find((c) => c.id === id)).filter(Boolean) as typeof allCommunities,
     [allCommunities],
   );
 

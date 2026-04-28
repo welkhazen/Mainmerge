@@ -1,8 +1,5 @@
 import { useEffect, useRef, useState, memo } from 'react';
-
-const CHARS = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ<>{}[]|/\\';
-const CHAR_ARRAY = CHARS.split('');
-const FONT_SIZE = 14;
+import { MATRIX_CHAR_ARRAY, MATRIX_FONT_SIZE } from '@/lib/matrixConstants';
 
 const MatrixBackground = memo(() => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -49,17 +46,17 @@ const MatrixBackground = memo(() => {
     const resizeCanvas = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
-      ctx.font = `${FONT_SIZE}px monospace`;
+      ctx.font = `${MATRIX_FONT_SIZE}px monospace`;
     };
 
     resizeCanvas();
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     window.addEventListener('resize', resizeCanvas);
 
-    const columns = Math.floor(canvas.width / FONT_SIZE);
+    const columns = Math.floor(canvas.width / MATRIX_FONT_SIZE);
     const drops: number[] = Array(columns).fill(1);
     for (let i = 0; i < drops.length; i++) {
-      drops[i] = Math.floor(Math.random() * (canvas.height / FONT_SIZE));
+      drops[i] = Math.floor(Math.random() * (canvas.height / MATRIX_FONT_SIZE));
     }
 
     const matrixColor = (() => {
@@ -111,10 +108,10 @@ const MatrixBackground = memo(() => {
       ctx.fillStyle = matrixColor;
 
       for (let i = 0; i < drops.length; i++) {
-        const char = CHAR_ARRAY[Math.floor(Math.random() * CHAR_ARRAY.length)];
-        ctx.fillText(char, i * FONT_SIZE, drops[i] * FONT_SIZE);
+        const char = MATRIX_CHAR_ARRAY[Math.floor(Math.random() * MATRIX_CHAR_ARRAY.length)];
+        ctx.fillText(char, i * MATRIX_FONT_SIZE, drops[i] * MATRIX_FONT_SIZE);
 
-        if (drops[i] * FONT_SIZE > canvas.height && Math.random() > 0.975) {
+        if (drops[i] * MATRIX_FONT_SIZE > canvas.height && Math.random() > 0.975) {
           drops[i] = 0;
         }
         drops[i]++;

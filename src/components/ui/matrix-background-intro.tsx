@@ -1,13 +1,11 @@
 import { memo, useEffect, useRef } from "react";
+import { MATRIX_CHAR_ARRAY, MATRIX_FONT_SIZE } from "@/lib/matrixConstants";
 
 interface MatrixBackgroundIntroProps {
   onComplete?: () => void;
   className?: string;
 }
 
-const CHARS = "アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ<>{}[]|/\\";
-const CHAR_ARRAY = CHARS.split("");
-const FONT_SIZE = 14;
 const START_INTERVAL = 16;
 const END_INTERVAL = 52;
 const SLOWDOWN_MS = 5000;
@@ -74,14 +72,14 @@ const MatrixBackgroundIntro = memo(function MatrixBackgroundIntro({
     let lastDrawTime = 0;
 
     const createDrops = () => {
-      columns = Math.max(1, Math.floor(canvas.width / FONT_SIZE));
-      drops = Array.from({ length: columns }, () => Math.floor(Math.random() * (canvas.height / FONT_SIZE)));
+      columns = Math.max(1, Math.floor(canvas.width / MATRIX_FONT_SIZE));
+      drops = Array.from({ length: columns }, () => Math.floor(Math.random() * (canvas.height / MATRIX_FONT_SIZE)));
     };
 
     const resizeCanvas = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
-      context.font = `${FONT_SIZE}px monospace`;
+      context.font = `${MATRIX_FONT_SIZE}px monospace`;
       createDrops();
     };
 
@@ -96,10 +94,10 @@ const MatrixBackgroundIntro = memo(function MatrixBackgroundIntro({
       context.fillStyle = palette.glyph;
 
       for (let i = 0; i < drops.length; i += 1) {
-        const glyph = CHAR_ARRAY[Math.floor(Math.random() * CHAR_ARRAY.length)];
-        context.fillText(glyph, i * FONT_SIZE, drops[i] * FONT_SIZE);
+        const glyph = MATRIX_CHAR_ARRAY[Math.floor(Math.random() * MATRIX_CHAR_ARRAY.length)];
+        context.fillText(glyph, i * MATRIX_FONT_SIZE, drops[i] * MATRIX_FONT_SIZE);
 
-        if (drops[i] * FONT_SIZE > canvas.height && Math.random() > 0.975) {
+        if (drops[i] * MATRIX_FONT_SIZE > canvas.height && Math.random() > 0.975) {
           drops[i] = 0;
         }
 

@@ -1,12 +1,9 @@
-import { FormEvent, Suspense, lazy, useState } from "react";
+import { FormEvent, Suspense, useState } from "react";
 import { MinimalFooter } from "@/components/ui/minimal-footer";
 import { track } from "@/lib/analytics";
 import { useTrackSectionView } from "@/lib/analytics/useTrackSectionView";
 import { apiFetch } from "@/lib/http";
-
-const ContainerTextFlipLazy = lazy(() =>
-  import("@/components/ui/container-text-flip").then((module) => ({ default: module.ContainerTextFlip }))
-);
+import { ContainerTextFlipLazy } from "@/components/ui/container-text-flip.lazy";
 
 interface FinalCTAProps {
   onSignupClick: () => void;

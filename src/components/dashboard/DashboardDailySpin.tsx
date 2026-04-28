@@ -9,6 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { getTodayKey } from "@/store/useRawStore.storage";
 
 interface DashboardDailySpinProps {
   userId: string;
@@ -74,11 +75,6 @@ const prizeMessages: Record<string, { title: string; desc: string; icon: typeof 
   "try-2": { title: "Not This Time", desc: "The wheel will turn again tomorrow.", icon: Clock, poolLabel: "Try Again", rarity: "Miss", poolColor: "text-raw-silver/45" },
   "try-3": { title: "Not This Time", desc: "The wheel will turn again tomorrow.", icon: Clock, poolLabel: "Try Again", rarity: "Miss", poolColor: "text-raw-silver/45" },
 };
-
-function getTodayKey() {
-  const now = new Date();
-  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
-}
 
 export function DashboardDailySpin({ userId, isAdmin = false }: DashboardDailySpinProps) {
   const { mode, accent, accentPresets } = useTheme();

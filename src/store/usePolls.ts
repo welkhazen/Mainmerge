@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ApiError, apiRequest } from "@/lib/api/client";
 import { track } from "@/lib/analytics";
 import type { Poll } from "@/store/types";
+import { getTodayKey } from "@/store/useRawStore.storage";
 
 const DAILY_POLL_LIMIT = 7;
 
@@ -35,14 +36,6 @@ const INITIAL_POLLS: Poll[] = [
     locked: false,
   },
 ];
-
-function getTodayKey(): string {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, "0");
-  const day = String(now.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-}
 
 export function usePolls(isLoggedIn: boolean) {
   const queryClient = useQueryClient();
