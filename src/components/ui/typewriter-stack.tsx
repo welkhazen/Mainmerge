@@ -12,6 +12,7 @@ interface TypewriterStackProps {
   className?: string;
   lineClassName?: string;
   textClassName?: string;
+  firstWordClassName?: string;
   cursorClassName?: string;
   prefix?: string;
   prefixClassName?: string;
@@ -20,6 +21,12 @@ interface TypewriterStackProps {
   highlightRawWord?: boolean;
   rawWordBaseClassName?: string;
   lineClassNamesByIndex?: Partial<Record<number, string>>;
+}
+
+function splitFirstWord(value: string): [string, string] {
+  const spaceIndex = value.indexOf(" ");
+  if (spaceIndex === -1) return [value, ""];
+  return [value.slice(0, spaceIndex), value.slice(spaceIndex)];
 }
 
 type Phase = "typing" | "pausing" | "done";
@@ -32,6 +39,7 @@ export function TypewriterStack({
   className,
   lineClassName,
   textClassName,
+  firstWordClassName,
   cursorClassName,
   prefix,
   prefixClassName,

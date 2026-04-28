@@ -16,7 +16,6 @@ export function ThemeCustomizer({ placement = "floating", triggerStyle = "icon",
   const isLightMode = mode === "light";
   const isFloating = placement === "floating";
   const selectedAccent = accentPresets.find((preset) => preset.id === accent);
-  const showModeControls = triggerStyle === "icon";
 
   return (
     <div

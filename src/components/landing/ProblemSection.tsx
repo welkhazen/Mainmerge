@@ -8,6 +8,7 @@ export function ProblemSection() {
     <section ref={sectionRef} className="landing-section relative px-4 py-12 sm:px-6 sm:py-20 md:py-28">
       <div className="mx-auto max-w-3xl text-center">
         <LandingType as="p" token="metaLabel" className="text-raw-gold/75">The Problem</LandingType>
+        <p className="text-xs uppercase tracking-[0.22em] text-raw-gold/75 sm:text-[13px]">The Problem</p>
 
         <h2 className="mt-4 font-display text-2xl tracking-wide text-raw-text sm:text-3xl md:text-4xl">
           Online spaces reward conformity,{" "}
@@ -15,6 +16,7 @@ export function ProblemSection() {
         </h2>
 
         <LandingType as="p" token="sectionBody" className="mt-5 text-raw-silver/65 sm:mt-6 sm:text-base">
+        <p className="landing-type-body mt-5 text-raw-silver/65 sm:mt-6 sm:text-base">
           Your real opinions, questions, and perspectives stay hidden. Algorithms amplify outrage. Communities demand allegiance. You self-censor because your reputation is on the line.
         </LandingType>
 
@@ -28,6 +30,8 @@ export function ProblemSection() {
               <p className="text-2xl">{item.icon}</p>
               <LandingType as="p" token="sectionBodyMuted" className="mt-2 font-semibold uppercase tracking-[0.08em] text-raw-text">{item.label}</LandingType>
               <LandingType as="p" token="sectionBodyMuted" className="mt-1 text-raw-silver/55">{item.desc}</LandingType>
+              <p className="mt-2 text-sm font-semibold uppercase tracking-[0.08em] text-raw-text">{item.label}</p>
+              <p className="mt-1 text-sm text-raw-silver/55">{item.desc}</p>
             </div>
           ))}
         </div>

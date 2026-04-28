@@ -42,7 +42,7 @@ export function HowItWorks() {
         <h2 className="mb-3 text-center font-display text-xl tracking-wide text-raw-text sm:mb-4 sm:text-2xl md:text-3xl">
           How it works
         </h2>
-        <LandingType as="p" token="sectionBody" className="mx-auto mb-10 max-w-2xl px-1 text-center text-raw-silver/60 sm:mb-14 sm:text-base">
+        <p className="mx-auto mb-10 max-w-2xl px-1 text-center text-sm leading-relaxed text-raw-silver/60 sm:mb-14 sm:text-base">
           raW learns through honest participation. This shell now walks people in the same order
           the real product will.
         </LandingType>
@@ -54,6 +54,7 @@ export function HowItWorks() {
             commands={howItWorksSteps}
             outputs={howItWorksOutputs}
             typingSpeed={24}
+            typingSpeed={22}
             delayBetweenCommands={950}
             initialDelay={200}
             enableSound={false}

@@ -13,6 +13,7 @@ import { PerspectiveCamera } from "@react-three/drei";
 import { LandingType } from "@/components/landing/LandingType";
 
 import { Globe } from "@/components/ui/globe-hero";
+import { useTheme } from "@/providers/ThemeProvider";
 
 interface GlobeHeroProps {
   onSignupClick: () => void;
@@ -20,6 +21,8 @@ interface GlobeHeroProps {
 
 export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
   const heroTypeClassName = "font-display font-black";
+  const { mode } = useTheme();
+  const globeColor = mode === "light" ? "#0A0A0A" : "#F5F5F5";
 
   const handlePrimaryClick = () => {
     track("landing_cta_clicked", {
@@ -45,7 +48,7 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
         <div className="w-[340px] h-[340px] md:w-[420px] md:h-[420px] lg:w-[520px] lg:h-[520px]">
           <Canvas>
             <PerspectiveCamera makeDefault position={[0, 0, 3]} fov={75} />
-            <Globe rotationSpeed={0.004} radius={1.1} />
+            <Globe rotationSpeed={0.004} radius={1.1} color={globeColor} />
           </Canvas>
         </div>
       </div>
@@ -71,6 +74,7 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
             >
               Fully Anonymous • Community Driven • Identity Based
             </LandingType>
+            <span className="relative z-10 w-full text-center text-[0.69rem] font-bold uppercase tracking-[0.2em] text-primary sm:text-sm sm:tracking-wider">Fully Anonymous • Community Driven • Identity Based</span>
             <div
               className="w-2 h-2 bg-primary rounded-full animate-ping"
               style={{ animationDelay: "0.5s" }}
@@ -85,6 +89,9 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
               className="landing-type-title select-none lg:text-[5.1rem] xl:text-[6.8rem]"
             >
               <LandingType as="span" token="heroLead" className="mb-3 block text-foreground/70 lg:text-[3.83rem]">
+              className="select-none text-[2.1rem] font-black leading-[0.9] tracking-tight sm:text-[2.6rem] md:text-[3.825rem] lg:text-[5.1rem] xl:text-[6.8rem]"
+            >
+              <span className="mb-3 block text-[1.6rem] font-light text-foreground/70 sm:text-[2rem] md:text-[3.19rem] lg:text-[3.83rem]">
                 Find
               </LandingType>
               <span className="block relative">
@@ -102,6 +109,8 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
                     startScale={0.6}
                     endScale={1.15}
                     textClassName={`${heroTypeClassName} bg-gradient-to-br from-primary via-primary to-primary/60 bg-clip-text text-transparent`}
+                    textClassName="bg-gradient-to-br from-primary via-primary to-primary/60 bg-clip-text text-transparent font-black"
+                    firstWordClassName="text-metallic font-black"
                     cursorClassName="bg-primary"
                     highlightRawWord
                     lineClassNamesByIndex={{ 3: "mt-2" }}
@@ -135,6 +144,18 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
               as="p"
               token="sectionBodyStrong"
               className="text-primary sm:text-lg"
+            <p
+              className="text-lg font-medium leading-relaxed text-foreground sm:text-xl md:text-2xl"
+            >
+              Y𝗼𝘂𝗿 𝗻𝗲𝘄 𝟮𝟰/𝟳 𝗹𝗶𝘃𝗶𝗻𝗴 𝗮𝗻𝗱 𝗲𝘃𝗲𝗿-𝗴𝗿𝗼𝘄𝗶𝗻𝗴 𝗻𝗲𝘄 𝘄𝗼𝗿𝗹𝗱
+            </p>
+            <p className="text-sm font-medium leading-relaxed sm:text-base md:text-lg">
+              <span className="text-foreground/60 font-semibold bg-gradient-to-r from-primary/10 to-primary/5 px-2 py-1 rounded-md">
+                prioritizing genuine connections, a sense of belonging, and a safe space to allow discovering oneself and others.
+              </span>
+            </p>
+            <p
+              className="text-base font-semibold leading-relaxed text-primary sm:text-lg"
               style={{
                 textShadow:
                   "0 0 12px hsl(var(--primary) / 0.6), 0 0 28px hsl(var(--primary) / 0.35)",
