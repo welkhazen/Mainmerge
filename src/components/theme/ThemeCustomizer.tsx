@@ -7,13 +7,16 @@ import { useTheme } from "@/providers/ThemeProvider";
 
 interface ThemeCustomizerProps {
   placement?: "floating" | "inline";
+  triggerStyle?: "icon" | "compact";
   className?: string;
 }
 
-export function ThemeCustomizer({ placement = "floating", className }: ThemeCustomizerProps) {
+export function ThemeCustomizer({ placement = "floating", triggerStyle = "icon", className }: ThemeCustomizerProps) {
   const { mode, accent, accentPresets, setMode, setAccent } = useTheme();
   const isLightMode = mode === "light";
   const isFloating = placement === "floating";
+  const selectedAccent = accentPresets.find((preset) => preset.id === accent);
+  const showModeControls = triggerStyle === "icon";
 
   return (
     <div
@@ -24,40 +27,61 @@ export function ThemeCustomizer({ placement = "floating", className }: ThemeCust
     >
       <Popover>
         <PopoverTrigger asChild>
-          <Button
-            size="icon"
-            className={cn(
-              "rounded-2xl border border-raw-border/40 bg-raw-surface/90 text-raw-gold backdrop-blur-xl hover:bg-raw-surface",
-              isFloating
-                ? "pointer-events-auto h-12 w-12 shadow-[0_18px_45px_rgb(var(--raw-black)/0.22)]"
-                : "h-10 w-10 shadow-[0_10px_24px_rgb(var(--raw-black)/0.2)]",
-            )}
-          >
-            <MonitorCog className="h-5 w-5" />
-          </Button>
+          {triggerStyle === "compact" ? (
+            <button
+              type="button"
+              className={cn(
+                "inline-flex min-h-11 items-center gap-2 rounded-full border border-raw-border/45 bg-raw-surface/90 px-3 text-xs font-semibold uppercase tracking-[0.14em] text-raw-silver/80 backdrop-blur-xl transition-colors hover:bg-raw-surface",
+                isFloating && "pointer-events-auto shadow-[0_18px_45px_rgb(var(--raw-black)/0.22)]",
+              )}
+            >
+              <span>Theme</span>
+              <span
+                className="h-3.5 w-3.5 rounded-full border border-white/40"
+                style={{ backgroundColor: selectedAccent ? `rgb(${selectedAccent.rgb})` : "rgb(var(--raw-accent))" }}
+                aria-hidden="true"
+              />
+            </button>
+          ) : (
+            <Button
+              size="icon"
+              className={cn(
+                "rounded-2xl border border-raw-border/40 bg-raw-surface/90 text-raw-gold backdrop-blur-xl hover:bg-raw-surface",
+                isFloating
+                  ? "pointer-events-auto h-12 w-12 shadow-[0_18px_45px_rgb(var(--raw-black)/0.22)]"
+                  : "h-10 w-10 shadow-[0_10px_24px_rgb(var(--raw-black)/0.2)]",
+              )}
+            >
+              <MonitorCog className="h-5 w-5" />
+            </Button>
+          )}
         </PopoverTrigger>
         <PopoverContent align="end" sideOffset={12} className="w-[320px] rounded-3xl border border-raw-border/40 bg-raw-surface/95 p-0 text-raw-text shadow-2xl backdrop-blur-xl">
           <div className="border-b border-raw-border/25 px-5 py-4">
             <p className="font-display text-sm tracking-[0.18em] text-raw-text">Theme Studio</p>
             <p className="mt-2 text-xs leading-relaxed text-raw-silver/50">
-              Change light or dark mode once and keep the same accent color across every page.
+              {showModeControls
+                ? "Change light or dark mode once and keep the same accent color across every page."
+                : "Choose your accent color for the full landing experience."}
             </p>
           </div>
 
           <div className="space-y-5 px-5 py-5">
-            <div className="rounded-2xl border border-raw-border/25 bg-raw-black/25 p-4">
-              <div className="flex items-center justify-between gap-4">
-                <div>
-                  <p className="text-xs uppercase tracking-[0.18em] text-raw-silver/45">Mode</p>
-                  <p className="mt-1 text-sm text-raw-text">{isLightMode ? "Light mode" : "Dark mode"}</p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Moon className={cn("h-4 w-4", !isLightMode ? "text-raw-gold" : "text-raw-silver/35")} />
-                  <Switch checked={isLightMode} onCheckedChange={(checked) => setMode(checked ? "light" : "dark")} />
-                  <Sun className={cn("h-4 w-4", isLightMode ? "text-raw-gold" : "text-raw-silver/35")} />
+            {showModeControls ? (
+              <div className="rounded-2xl border border-raw-border/25 bg-raw-black/25 p-4">
+                <div className="flex items-center justify-between gap-4">
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.18em] text-raw-silver/45">Mode</p>
+                    <p className="mt-1 text-sm text-raw-text">{isLightMode ? "Light mode" : "Dark mode"}</p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Moon className={cn("h-4 w-4", !isLightMode ? "text-raw-gold" : "text-raw-silver/35")} />
+                    <Switch checked={isLightMode} onCheckedChange={(checked) => setMode(checked ? "light" : "dark")} />
+                    <Sun className={cn("h-4 w-4", isLightMode ? "text-raw-gold" : "text-raw-silver/35")} />
+                  </div>
                 </div>
               </div>
-            </div>
+            ) : null}
 
             <div>
               <div className="flex items-center justify-between gap-3">
