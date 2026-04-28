@@ -220,7 +220,7 @@ export function OnboardingJourney({
 
   const currentStepIndex = STEP_ORDER.indexOf(onboardingStep);
   return (
-    <div className="min-h-screen bg-raw-black">
+    <div className="min-h-screen overflow-x-hidden bg-raw-black">
       <div className="mx-auto flex min-h-screen w-full max-w-5xl flex-col px-4 py-6 sm:px-6 sm:py-8 md:py-10">
         <div className="mb-8">
           <div className="flex items-center justify-between gap-2">
@@ -259,7 +259,7 @@ export function OnboardingJourney({
               <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-8 md:items-center">
                 {/* Left: Avatar Selector Grid */}
                 <div className="flex flex-col items-center justify-center min-w-0">
-                  <div className="grid w-fit grid-cols-5 gap-5 sm:gap-8">
+                  <div className="grid w-fit grid-cols-5 gap-2 sm:gap-8">
                     {Array.from({ length: LEVEL_THEMES.length }, (_, i) => i + 1).map((lvl) => {
                       const theme = LEVEL_THEMES[lvl - 1];
                       const isActive = lvl === avatarLevel;
@@ -268,7 +268,7 @@ export function OnboardingJourney({
                         <button
                           key={lvl}
                           onClick={() => { if (isLocked) return; track("onboarding_avatar_selected", { avatar_level: lvl, attempts: 1 }); onAvatarLevelChange(lvl); }}
-                          className="group relative flex flex-col items-center gap-2 p-2 focus:outline-none"
+                          className="group relative flex flex-col items-center gap-1 p-1 sm:gap-2 sm:p-2 focus:outline-none"
                           aria-label={`Select avatar level ${lvl}${isLocked ? " (locked)" : ""}`}
                           aria-pressed={isActive}
                           disabled={isLocked}
