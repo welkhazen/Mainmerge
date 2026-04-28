@@ -13,12 +13,16 @@ import { PerspectiveCamera } from "@react-three/drei";
 import { LandingType } from "@/components/landing/LandingType";
 
 import { Globe } from "@/components/ui/globe-hero";
+import { useTheme } from "@/providers/ThemeProvider";
 
 interface GlobeHeroProps {
   onSignupClick: () => void;
 }
 
 export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
+  const { mode } = useTheme();
+  const globeColor = mode === "light" ? "#0A0A0A" : "#F5F5F5";
+
   const handlePrimaryClick = () => {
     track("landing_cta_clicked", {
       cta_id: "globe_hero_join_now",
@@ -43,7 +47,7 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
         <div className="w-[340px] h-[340px] md:w-[420px] md:h-[420px] lg:w-[520px] lg:h-[520px]">
           <Canvas>
             <PerspectiveCamera makeDefault position={[0, 0, 3]} fov={75} />
-            <Globe rotationSpeed={0.004} radius={1.1} />
+            <Globe rotationSpeed={0.004} radius={1.1} color={globeColor} />
           </Canvas>
         </div>
       </div>
@@ -94,6 +98,7 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
                     startScale={0.6}
                     endScale={1.15}
                     textClassName="bg-gradient-to-br from-primary via-primary to-primary/60 bg-clip-text text-transparent font-black"
+                    firstWordClassName="text-metallic font-black"
                     cursorClassName="bg-primary"
                     highlightRawWord
                     lineClassNamesByIndex={{ 3: "mt-2" }}

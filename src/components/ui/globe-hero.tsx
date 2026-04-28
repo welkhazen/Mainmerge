@@ -16,7 +16,8 @@ interface DotGlobeHeroProps {
 const Globe: React.FC<{
   rotationSpeed: number;
   radius: number;
-}> = ({ rotationSpeed, radius }) => {
+  color?: string;
+}> = ({ rotationSpeed, radius, color = "#F5F5F5" }) => {
   const groupRef = useRef<THREE.Group>(null!);
 
   useFrame(() => {
@@ -32,7 +33,7 @@ const Globe: React.FC<{
       <mesh>
         <sphereGeometry args={[radius, 64, 64]} />
         <meshBasicMaterial
-          color="#F5F5F5"
+          color={color}
           transparent
           opacity={0.15}
           wireframe
