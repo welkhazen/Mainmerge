@@ -14,6 +14,13 @@ interface TypewriterStackProps {
   textClassName?: string;
   firstWordClassName?: string;
   cursorClassName?: string;
+  prefix?: string;
+  prefixClassName?: string;
+  startScale?: number;
+  endScale?: number;
+  highlightRawWord?: boolean;
+  rawWordBaseClassName?: string;
+  lineClassNamesByIndex?: Partial<Record<number, string>>;
 }
 
 function splitFirstWord(value: string): [string, string] {
@@ -34,6 +41,13 @@ export function TypewriterStack({
   textClassName,
   firstWordClassName,
   cursorClassName,
+  prefix,
+  prefixClassName,
+  startScale = 1,
+  endScale = 1,
+  highlightRawWord = false,
+  rawWordBaseClassName = "text-foreground",
+  lineClassNamesByIndex,
 }: TypewriterStackProps) {
   const [wordIndex, setWordIndex] = useState(0);
   const [text, setText] = useState("");
@@ -66,24 +80,62 @@ export function TypewriterStack({
     return () => clearTimeout(timer);
   }, [text, phase, wordIndex, words, typeSpeed, pauseAfterWord, nextWordDelay]);
 
-  const [typingFirst, typingRest] = splitFirstWord(text);
-  const [currentFirst] = splitFirstWord(words[wordIndex] ?? "");
-  const typingFirstDone = text.length >= currentFirst.length;
+  const prefixMatch = prefix ? `${prefix} ` : null;
+  const splitWord = (full: string, typed: string) => {
+    if (!prefixMatch || !prefix || !full.startsWith(prefixMatch)) {
+      return { head: "", tail: typed };
+    }
+    if (typed.length <= prefix.length) {
+      return { head: typed, tail: "" };
+    }
+    return { head: prefix, tail: typed.slice(prefix.length) };
+  };
+
+  const current = words[wordIndex] ?? "";
+  const typing = splitWord(current, text);
+
+  const scaleFor = (i: number) => {
+    if (words.length <= 1) return endScale;
+    const t = i / (words.length - 1);
+    return startScale + (endScale - startScale) * t;
+  };
+
+  const renderStyledTail = (tail: string) => {
+    if (!highlightRawWord || !tail.includes("raW")) {
+      return <span className={textClassName}>{tail}</span>;
+    }
+
+    const rawIndex = tail.indexOf("raW");
+    const before = tail.slice(0, rawIndex);
+    const ra = tail.slice(rawIndex, rawIndex + 2);
+    const w = tail.slice(rawIndex + 2, rawIndex + 3);
+    const after = tail.slice(rawIndex + 3);
+
+    return (
+      <>
+        {before ? <span className={textClassName}>{before}</span> : null}
+        {ra ? <span className={rawWordBaseClassName}>{ra}</span> : null}
+        {w ? <span className={textClassName}>{w}</span> : null}
+        {after ? <span className={textClassName}>{after}</span> : null}
+      </>
+    );
+  };
 
   return (
     <span className={cn("flex flex-col items-center", className)}>
       {words.slice(0, wordIndex).map((w, i) => {
-        const [first, rest] = splitFirstWord(w);
+        const done = splitWord(w, w);
         return (
           <motion.span
             key={`done-${i}`}
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.32, ease: "easeOut" }}
-            className={cn("block will-change-transform", lineClassName)}
+            className={cn("block will-change-transform", lineClassName, lineClassNamesByIndex?.[i])}
+            style={{ fontSize: `${scaleFor(i)}em` }}
           >
-            <span className={cn(firstWordClassName ?? textClassName)}>{first}</span>
-            {rest && <span className={textClassName}>{rest}</span>}
+            {done.head ? <span className={prefixClassName}>{done.head}</span> : null}
+            {renderStyledTail(done.tail)}
           </motion.span>
         );
       })}
@@ -92,13 +144,12 @@ export function TypewriterStack({
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.32, ease: "easeOut" }}
-        className={cn("inline-flex items-center will-change-transform", lineClassName)}
+        className={cn("inline-flex items-center will-change-transform", lineClassName, lineClassNamesByIndex?.[wordIndex])}
+        style={{ fontSize: `${scaleFor(wordIndex)}em` }}
       >
         <span aria-live="polite">
-          <span className={cn(firstWordClassName ?? textClassName)}>{typingFirst}</span>
-          {typingFirstDone && typingRest && (
-            <span className={textClassName}>{typingRest}</span>
-          )}
+          {typing.head ? <span className={prefixClassName}>{typing.head}</span> : null}
+          {renderStyledTail(typing.tail)}
         </span>
         <motion.span
           aria-hidden="true"
@@ -118,4 +169,3 @@ export function TypewriterStack({
     </span>
   );
 }
-

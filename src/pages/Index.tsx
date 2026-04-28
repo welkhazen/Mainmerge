@@ -17,6 +17,8 @@ import { useHostMode } from "@/hooks/use-host-mode";
 import Dashboard from "@/pages/Dashboard";
 import { useRawStore } from "@/store/useRawStore";
 import { joinCommunityChat } from "@/lib/communityChat";
+import { LandingDensityProvider } from "@/components/landing/LandingType";
+import { useLandingDensity } from "@/hooks/useLandingDensity";
 
 const SignupModalLazy = lazy(() =>
   import("@/components/landing/SignupModal").then((module) => ({ default: module.SignupModal }))
@@ -53,6 +55,7 @@ const Index = () => {
     logout,
   } = useRawStore();
   const { hostname, isMyRawApp, isTheRawMe } = useHostMode();
+  const { density: landingDensity } = useLandingDensity();
 
   useEffect(() => {
     if (!isLoggedIn || !user || !isTheRawMe || typeof window === "undefined") {
@@ -177,39 +180,44 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-raw-black">
+    <div
+      className="landing-page-shell min-h-screen overflow-x-hidden bg-raw-black"
+      data-landing-density={landingDensity}
+    >
       <div className="relative overflow-x-hidden">
-        <PerforatedBackground />
-        <MatrixBackground />
-        {showMatrixIntro ? <MatrixBackgroundIntro onComplete={() => setShowMatrixIntro(false)} /> : null}
+        <LandingDensityProvider density={landingDensity}>
+          <PerforatedBackground />
+          <MatrixBackground />
+          {showMatrixIntro ? <MatrixBackgroundIntro onComplete={() => setShowMatrixIntro(false)} /> : null}
 
-        <Navbar
-          isLoggedIn={isLoggedIn}
-          username={user?.username}
-          onSignupClick={() => setShowSignup(true)}
-        />
+          <Navbar
+            isLoggedIn={isLoggedIn}
+            username={user?.username}
+            onSignupClick={() => setShowSignup(true)}
+          />
 
-        <GlobeHero onSignupClick={() => setShowSignup(true)} />
-        <ProblemSection />
-        <HowItWorks />
-        <PollSection
-          polls={polls}
-          votedPolls={votedPolls}
-          isLoggedIn={isLoggedIn}
-          freeVotesUsed={freeVotesUsed}
-          onVote={vote}
-          onSignupClick={() => setShowSignup(true)}
-        />
-<AvatarIdentity
-          avatarLevel={avatarLevel}
-          onLevelChange={setAvatarLevel}
-        />
-        <WheelReward
-          onLevelChange={setAvatarLevel}
-          onSignupClick={() => setShowSignup(true)}
-        />
-        <AnonQuestionSection />
-        <WhyAnonymity />
+          <GlobeHero onSignupClick={() => setShowSignup(true)} />
+          <ProblemSection />
+          <HowItWorks />
+          <PollSection
+            polls={polls}
+            votedPolls={votedPolls}
+            isLoggedIn={isLoggedIn}
+            freeVotesUsed={freeVotesUsed}
+            onVote={vote}
+            onSignupClick={() => setShowSignup(true)}
+          />
+          <AvatarIdentity
+            avatarLevel={avatarLevel}
+            onLevelChange={setAvatarLevel}
+          />
+          <WheelReward
+            onLevelChange={setAvatarLevel}
+            onSignupClick={() => setShowSignup(true)}
+          />
+          <AnonQuestionSection />
+          <WhyAnonymity />
+        </LandingDensityProvider>
       </div>
       <LandingFooter />
 

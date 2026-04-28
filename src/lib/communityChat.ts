@@ -29,13 +29,18 @@ const BUILT_IN_LOGOS: Record<string, string> = {
   syt: SYTLogo,
 };
 
+const BUILT_IN_TITLES: Record<string, string> = {
+  iijm: "Is It Just Me?",
+};
+
 const ALWAYS_LOCKED_IDS = new Set(["li"]);
 
 function applyBuiltInOverrides(communities: PersistedCommunityRecord[]): PersistedCommunityRecord[] {
   return communities.map((community) => {
     const logoUrl = BUILT_IN_LOGOS[community.id] && !community.logoUrl ? BUILT_IN_LOGOS[community.id] : community.logoUrl;
     const locked = ALWAYS_LOCKED_IDS.has(community.id) ? true : community.locked;
-    return { ...community, logoUrl, locked };
+    const title = BUILT_IN_TITLES[community.id] ?? community.title;
+    return { ...community, logoUrl, locked, title };
   });
 }
 

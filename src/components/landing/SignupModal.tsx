@@ -204,10 +204,10 @@ export function SignupModal({ open, onClose, onRequestSignupOtp, onVerifySignupO
       : "SMS or WhatsApp";
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center overflow-y-auto sm:items-center">
+    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto">
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
 
-      <div className="relative z-10 flex max-h-[92dvh] w-full flex-col overflow-hidden rounded-t-3xl border border-raw-border/50 bg-raw-surface shadow-2xl sm:mx-4 sm:max-h-[90dvh] sm:max-w-sm sm:rounded-2xl">
+      <div className="relative z-10 flex max-h-[92dvh] w-full flex-col overflow-hidden rounded-2xl border border-raw-border/50 bg-raw-surface shadow-2xl mx-4 max-w-sm">
         <button
           onClick={onClose}
           className="absolute right-3 top-3 z-10 flex h-10 w-10 items-center justify-center rounded-full text-raw-silver/60 transition-colors hover:bg-raw-black/30 hover:text-raw-silver sm:right-4 sm:top-4"

@@ -1,5 +1,6 @@
+import { FloatingDock } from "@/components/ui/floating-dock";
 import { useEffect, useState } from "react";
-import { Home as HomeIcon, MessageCircle, Target, User as UserIcon, Wallet, LogOut, Shield } from "lucide-react";
+import { Home as HomeIcon, MessageCircle, Target, User as UserIcon, Wallet, LogOut, Shield, Trophy, Sparkles } from "lucide-react";
 import { matchPath, useLocation, useNavigate } from "react-router-dom";
 import { DashboardNav, type DashboardTab } from "@/components/dashboard/DashboardNav";
 import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
@@ -183,20 +184,73 @@ export default function Dashboard({
         onLogout={onLogout}
       />
 
-      {/* Mobile bottom nav */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-raw-border/30 bg-raw-black/95 backdrop-blur-xl px-1 py-1 pb-safe flex items-center justify-around lg:hidden" style={{ paddingBottom: "max(0.5rem, env(safe-area-inset-bottom))" }}>
-        <MobileNavBtn label="Home" active={isHome} onClick={handleHomeClick} />
-        <MobileNavBtn label="Polls" active={!isHome && activeTab === "polls"} onClick={() => handleTabChange("polls")} />
-        <MobileNavBtn label="Challenges" active={!isHome && activeTab === "challenges"} onClick={() => handleTabChange("challenges")} />
-        <MobileNavBtn label="Spin" active={!isHome && activeTab === "daily-spin"} onClick={() => handleTabChange("daily-spin")} />
-        <MobileNavBtn label="Groups" active={!isHome && activeTab === "communities"} onClick={() => handleTabChange("communities")} />
-        <MobileNavBtn label="Me" active={!isHome && activeTab === "profile"} onClick={() => handleTabChange("profile")} />
-        {user.role === "admin" && <MobileNavLink label="Admin" href="/admin" icon={<Shield className="h-3.5 w-3.5" />} />}
-        <MobileNavBtn label="Logout" active={false} onClick={onLogout} icon={<LogOut className="h-3.5 w-3.5" />} />
-      </div>
+      {/* Mobile bottom nav replaced with FloatingDock */}
+      {/*
+      <nav
+        className="fixed bottom-0 left-0 right-0 z-40 lg:hidden"
+        style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+      >
+        <div className="border-t border-raw-border/25 bg-raw-black/95 backdrop-blur-2xl px-2 pt-1 pb-2 flex items-center justify-around">
+          <MobileNavBtn label="Home"       icon={<HomeIcon className="h-5 w-5" />}       active={isHome}                                    onClick={handleHomeClick} />
+          <MobileNavBtn label="Polls"      icon={<Target className="h-5 w-5" />}          active={!isHome && activeTab === "polls"}           onClick={() => handleTabChange("polls")} />
+          <MobileNavBtn label="Challenges" icon={<Trophy className="h-5 w-5" />}          active={!isHome && activeTab === "challenges"}      onClick={() => handleTabChange("challenges")} />
+          <MobileNavBtn label="Spin"       icon={<Sparkles className="h-5 w-5" />}        active={!isHome && activeTab === "daily-spin"}      onClick={() => handleTabChange("daily-spin")} />
+          <MobileNavBtn label="Groups"     icon={<MessageCircle className="h-5 w-5" />}   active={!isHome && activeTab === "communities"}     onClick={() => handleTabChange("communities")} />
+          <MobileNavBtn label="Me"         icon={<UserIcon className="h-5 w-5" />}        active={!isHome && activeTab === "profile"}         onClick={() => handleTabChange("profile")} />
+        </div>
+      </nav>
+      */}
+
+      {/* FloatingDock for mobile navigation */}
+      <FloatingDock
+        items={[
+          {
+            title: "Home",
+            icon: <HomeIcon className="h-5 w-5" />,
+            href: "#",
+            onClick: handleHomeClick,
+            active: isHome,
+          },
+          {
+            title: "Polls",
+            icon: <Target className="h-5 w-5" />,
+            href: "#",
+            onClick: () => handleTabChange("polls"),
+            active: !isHome && activeTab === "polls",
+          },
+          {
+            title: "Challenges",
+            icon: <Trophy className="h-5 w-5" />,
+            href: "#",
+            onClick: () => handleTabChange("challenges"),
+            active: !isHome && activeTab === "challenges",
+          },
+          {
+            title: "Spin",
+            icon: <Sparkles className="h-5 w-5" />,
+            href: "#",
+            onClick: () => handleTabChange("daily-spin"),
+            active: !isHome && activeTab === "daily-spin",
+          },
+          {
+            title: "Groups",
+            icon: <MessageCircle className="h-5 w-5" />,
+            href: "#",
+            onClick: () => handleTabChange("communities"),
+            active: !isHome && activeTab === "communities",
+          },
+          {
+            title: "Me",
+            icon: <UserIcon className="h-5 w-5" />,
+            href: "#",
+            onClick: () => handleTabChange("profile"),
+            active: !isHome && activeTab === "profile",
+          },
+        ]}
+      />
 
       {/* Main content */}
-      <main className="relative z-10 pt-14 pb-20 lg:pl-[80px] lg:pb-8">
+      <main className="relative z-10 pt-0 pb-20 md:pt-14 lg:pl-[80px] lg:pb-8">
         <div className="dashboard-content-shell mx-auto max-w-4xl px-4 py-5 sm:px-5 sm:py-8">
           {renderContent()}
         </div>
@@ -237,14 +291,16 @@ function MobileNavBtn({
     <button
       type="button"
       onClick={onClick}
-      className={`flex min-h-[44px] min-w-[44px] flex-col items-center justify-center gap-0.5 px-2 py-1 rounded-lg transition-all ${
-        active ? "text-raw-gold" : "text-raw-silver/35"
-      }`}
+      className="flex flex-col items-center justify-center gap-1 px-3 py-1.5 min-w-[48px] transition-all"
       aria-current={active ? "page" : undefined}
     >
-      {icon}
-      <span className={`text-[10px] font-medium leading-none ${active ? "text-raw-gold" : ""}`}>{label}</span>
-      {active && <div className="mt-0.5 h-0.5 w-4 rounded-full bg-raw-gold" />}
+      <div className={`transition-all duration-200 ${active ? "text-raw-gold scale-110" : "text-raw-silver/40"}`}>
+        {icon}
+      </div>
+      <span className={`text-[9px] font-semibold tracking-wide leading-none transition-colors ${active ? "text-raw-gold" : "text-raw-silver/35"}`}>
+        {label}
+      </span>
+      {active && <div className="h-0.5 w-4 rounded-full bg-raw-gold mt-0.5" />}
     </button>
   );
 }

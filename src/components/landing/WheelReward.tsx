@@ -45,7 +45,7 @@ export function WheelReward({ onLevelChange, onSignupClick }: WheelRewardProps) 
     <section
       ref={sectionRef as React.RefObject<HTMLElement>}
       id="wheel"
-      className="relative px-4 py-12 sm:px-6 sm:py-20 md:py-24 bg-black/40"
+      className="landing-section relative px-4 py-12 sm:px-6 sm:py-20 md:py-24"
     >
       <div className="mx-auto w-full max-w-3xl">
         <div className="mb-8 text-center sm:mb-10">

@@ -377,7 +377,7 @@ export function Terminal({
     <div
       ref={containerRef}
       className={cn(
-        "mx-auto w-full max-w-xl px-4 font-mono text-xs",
+        "mx-auto w-full max-w-xl px-4 font-mono text-[0.7875rem]",
         className,
       )}
     >
@@ -390,7 +390,7 @@ export function Terminal({
             <div className="h-3 w-3 rounded-full bg-green-500 transition-colors hover:bg-green-600" />
           </div>
           <div className="flex-1 text-center">
-            <span className="truncate text-xs text-raw-silver/40">
+            <span className="truncate text-[0.7875rem] text-raw-silver/40">
               {username} — bash
             </span>
           </div>

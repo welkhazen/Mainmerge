@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import lntCoverVideo from "@/assets/2026-04-18 10_10_00.MP4";
 import iijmVideo from "@/assets/itisjustme.mp4";
 import sytVideo from "@/assets/speakyourheart.mp4";
@@ -12,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/use-toast";
 import { CommunityBadge } from "@/components/dashboard/CommunityBadge";
+
 import {
   ensureUserRecord,
   formatAdminTimestamp,
@@ -22,9 +24,6 @@ import {
   writeChatReports,
   writeCommunityJoinRequests,
   writeCommunityRequests,
-  type ChatReportRecord,
-  type CommunityJoinRequestRecord,
-  type CommunityRequestRecord,
 } from "@/lib/adminData";
 import {
   canManageCommunity,
@@ -40,10 +39,58 @@ import {
   setCommunityNotifications,
   touchCommunityMemberActivity,
   updateCommunityPresentation,
-  type CommunityChatMessageRecord,
-  type PersistedCommunityRecord,
 } from "@/lib/communityChat";
-import type { User } from "@/store/useRawStore";
+
+export function DashboardCommunities(props) {
+      // Main search query state (fix ReferenceError)
+      const [searchQuery, setSearchQuery] = useState("");
+    // Main community state (fix ReferenceError)
+    const [communities, setCommunities] = useState([]);
+  // Destructure props for clarity and to avoid ReferenceError
+  const {
+    user,
+    activeCommunityId = null,
+    onOpenCommunity,
+    onBackToCommunities,
+  } = props;
+  // --- Floating request button state/hooks ---
+  const [showRequestButton, setShowRequestButton] = useState(false);
+  const [requestBtnText, setRequestBtnText] = useState("Didn't find your community?");
+  const [mobileRequestExpanded, setMobileRequestExpanded] = useState(false);
+
+  // Show button after scrolling 400px
+  useEffect(() => {
+    const onScroll = () => {
+      if (window.scrollY > 400) {
+        setShowRequestButton(true);
+      } else {
+        setShowRequestButton(false);
+      }
+    };
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // Collapse mobile request button when tapping outside
+  useEffect(() => {
+    if (!mobileRequestExpanded) return;
+    const handler = () => setMobileRequestExpanded(false);
+    const timeout = setTimeout(() => document.addEventListener("click", handler), 0);
+    return () => { clearTimeout(timeout); document.removeEventListener("click", handler); };
+  }, [mobileRequestExpanded]);
+
+  // Animate text change after 2s
+  useEffect(() => {
+    if (!showRequestButton) {
+      setRequestBtnText("Didn't find your community?");
+      return;
+    }
+    const timeout = setTimeout(() => {
+      setRequestBtnText("Request to create yours now");
+    }, 2000);
+    return () => clearTimeout(timeout);
+  }, [showRequestButton]);
+// ...existing code...
 
 interface DashboardCommunitiesProps {
   user: User;
@@ -114,16 +161,7 @@ const COMMUNITY_LOGOS: Record<string, string> = {
   iijm: IIJMLogo,
 };
 
-export function DashboardCommunities({
-  user,
-  activeCommunityId = null,
-  onOpenCommunity,
-  onBackToCommunities,
-}: DashboardCommunitiesProps) {
-  const [communities, setCommunities] = useState<PersistedCommunityRecord[]>(() => readCommunityChats());
-  const [messageDraft, setMessageDraft] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [expandedDescs, setExpandedDescs] = useState<Set<string>>(new Set());
+// ...existing code continues inside the function above...
   const [requestFormOpen, setRequestFormOpen] = useState(false);
   const [requestSubmitAttempted, setRequestSubmitAttempted] = useState(false);
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
@@ -137,6 +175,7 @@ export function DashboardCommunities({
   const [communityJoinRequests, setCommunityJoinRequests] = useState<CommunityJoinRequestRecord[]>([]);
   const [mentionQuery, setMentionQuery] = useState<string | null>(null);
   const [mentionIndex, setMentionIndex] = useState(0);
+  const [expandedDescs, setExpandedDescs] = useState<Set<string>>(new Set());
   const lastTouchedCommunityRef = useRef<string>("");
   const messagesContainerRef = useRef<HTMLDivElement | null>(null);
   const messageInputRef = useRef<HTMLInputElement | null>(null);
@@ -507,7 +546,7 @@ export function DashboardCommunities({
 
           <Button
             onClick={() => setRequestFormOpen(true)}
-            className="h-11 w-full shrink-0 rounded-xl bg-raw-gold px-4 text-sm font-semibold text-raw-ink hover:bg-raw-gold/90 md:w-auto"
+            className="hidden h-11 w-full shrink-0 rounded-xl bg-raw-gold px-4 text-sm font-semibold text-raw-ink hover:bg-raw-gold/90 md:flex md:w-auto"
           >
             <Plus className="h-4 w-4" /> Request a Community
           </Button>
@@ -530,7 +569,7 @@ export function DashboardCommunities({
           </div>
         )}
 
-        <div className="grid grid-cols-1 items-stretch gap-4 sm:gap-5 lg:grid-cols-2 xl:grid-cols-3">
+        <div className="grid grid-cols-2 items-stretch gap-4 sm:gap-5 lg:grid-cols-2 xl:grid-cols-3">
           {directoryCommunities.map((community) => {
             const joined = community.members.some((member) => member.userId === user.id);
             const communityUnreadCount = joined ? countUnreadMessages(community, user.id) : 0;
@@ -581,7 +620,11 @@ export function DashboardCommunities({
                       <button
                         onClick={() => setExpandedDescs((prev) => {
                           const next = new Set(prev);
-                          isExpanded ? next.delete(community.id) : next.add(community.id);
+                          if (isExpanded) {
+                            next.delete(community.id);
+                          } else {
+                            next.add(community.id);
+                          }
                           return next;
                         })}
                         className="mt-1 text-xs text-raw-gold/60 hover:text-raw-gold"
@@ -949,6 +992,70 @@ export function DashboardCommunities({
     return (
       <div className="space-y-8">
         {activeCommunityId ? renderChatPage() : renderDirectoryView()}
+
+        {/* Mobile-only request button above dock (near profile) */}
+        {!activeCommunityId && (
+          <motion.button
+            onClick={() => {
+              if (mobileRequestExpanded) {
+                setRequestFormOpen(true);
+                setMobileRequestExpanded(false);
+              } else {
+                setMobileRequestExpanded(true);
+              }
+            }}
+            layout
+            transition={{ type: "spring", stiffness: 400, damping: 28 }}
+            className="fixed bottom-16 right-4 z-50 flex items-center gap-2 rounded-full bg-raw-gold py-3 text-sm font-semibold text-raw-ink shadow-xl hover:bg-raw-gold/90 md:hidden overflow-hidden"
+            style={{ paddingLeft: mobileRequestExpanded ? "1rem" : "0.75rem", paddingRight: mobileRequestExpanded ? "1.25rem" : "0.75rem" }}
+          >
+            <Plus className="h-5 w-5 shrink-0" />
+            <AnimatePresence>
+              {mobileRequestExpanded && (
+                <motion.span
+                  initial={{ opacity: 0, width: 0 }}
+                  animate={{ opacity: 1, width: "auto" }}
+                  exit={{ opacity: 0, width: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="whitespace-nowrap"
+                >
+                  Request a Community
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </motion.button>
+        )}
+
+        {/* Animated floating request button (bottom left) */}
+        <AnimatePresence>
+          {showRequestButton && !activeCommunityId && (
+            <motion.button
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 40 }}
+              transition={{ type: "spring", stiffness: 300, damping: 24 }}
+              onClick={() => {
+                setRequestFormOpen(true);
+                toast({
+                  title: "Request a new community",
+                  description: "Fill out the form to suggest a new community for review.",
+                });
+              }}
+              className="fixed left-4 bottom-6 z-50 flex items-center gap-2 rounded-2xl bg-raw-gold px-5 py-3 text-sm font-semibold text-raw-ink shadow-xl hover:bg-raw-gold/90 focus:outline-none"
+              style={{ boxShadow: "0 8px 32px rgba(0,0,0,0.18)" }}
+            >
+              <motion.span
+                key={requestBtnText}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 10 }}
+                transition={{ duration: 0.4 }}
+              >
+                {requestBtnText}
+              </motion.span>
+            </motion.button>
+          )}
+        </AnimatePresence>
 
         <Dialog open={logoDialogOpen} onOpenChange={setLogoDialogOpen}>
           <DialogContent className="border border-raw-border/40 bg-raw-black p-0 text-raw-text sm:max-w-lg sm:rounded-3xl">

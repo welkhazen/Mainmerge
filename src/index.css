@@ -321,6 +321,16 @@ html.theme-light .dashboard-enhanced-bg [class*="text-raw-silver/"] {
 
 .landing-page-shell {
   background: rgb(var(--raw-black));
+  font-family: "Michroma", "Inter", system-ui, sans-serif;
+}
+
+.landing-page-shell :is(p, a, button, label, li, input, textarea, h1, h2, h3, h4, h5, h6) {
+  font-family: inherit;
+}
+
+.landing-page-shell p {
+  letter-spacing: 0.01em;
+  line-height: 1.58;
 }
 
 .landing-scaled {
@@ -449,7 +459,7 @@ html.theme-light .landing-page-shell .text-raw-text {
   color: rgb(12 16 22 / 0.94) !important;
 }
 
-html.theme-light .landing-page-shell [class*="text-white"] {
+html.theme-light .landing-page-shell :not(.phone-mockup-screen):not(.phone-mockup-screen *)[class*="text-white"] {
   color: rgb(12 16 22 / 0.92) !important;
 }
 
@@ -483,6 +493,27 @@ html.theme-light .flip-pill {
 html.theme-light .landing-page-shell [class*="bg-raw-surface/"] {
   background-color: rgb(232 237 246 / 0.84) !important;
   border-color: rgb(120 132 151 / 0.38) !important;
+}
+
+/* Landing section bands — dark in dark mode, transparent in light mode */
+.landing-section {
+  background-color: rgb(0 0 0 / 0.55);
+}
+
+html.theme-light .landing-section {
+  background-color: #ffffff !important;
+}
+
+/* Cards using bg-raw-black with opacity are near-invisible on white; give them a light surface */
+html.theme-light .landing-page-shell div[class*="bg-raw-black/"],
+html.theme-light .landing-page-shell textarea[class*="bg-raw-black/"] {
+  background-color: rgb(232 237 246 / 0.75) !important;
+}
+
+/* Footer */
+html.theme-light .landing-page-shell footer {
+  background: rgb(243 244 248) !important;
+  border-top: 1px solid rgb(210 213 220) !important;
 }
 
 @keyframes jackpot-screen-flash {
