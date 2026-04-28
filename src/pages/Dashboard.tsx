@@ -112,7 +112,6 @@ export default function Dashboard({
           <DashboardPolls
             polls={polls}
             votedPolls={votedPolls}
-            avatarLevel={avatarLevel}
             userId={user.id}
             username={user.username}
             dailyAnsweredCount={dailyAnsweredCount}
