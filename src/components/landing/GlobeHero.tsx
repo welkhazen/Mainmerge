@@ -120,14 +120,9 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
             className="mx-auto max-w-3xl space-y-4 pt-6 sm:pt-8"
           >
             <p
-              className="text-lg font-medium leading-relaxed text-foreground sm:text-xl md:text-2xl"
+              className="font-display text-lg font-medium leading-relaxed text-foreground sm:text-xl md:text-2xl"
             >
               Y𝗼𝘂𝗿 𝗻𝗲𝘄 𝟮𝟰/𝟳 𝗹𝗶𝘃𝗶𝗻𝗴 𝗮𝗻𝗱 𝗲𝘃𝗲𝗿-𝗴𝗿𝗼𝘄𝗶𝗻𝗴 𝗻𝗲𝘄 𝘄𝗼𝗿𝗹𝗱
-            </p>
-            <p className="text-sm font-medium leading-relaxed sm:text-base md:text-lg">
-              <span className="text-foreground/60 font-semibold bg-gradient-to-r from-primary/10 to-primary/5 px-2 py-1 rounded-md">
-                prioritizing genuine connections, a sense of belonging, and a safe space to allow discovering oneself and others.
-              </span>
             </p>
             <p
               className="text-base font-semibold leading-relaxed text-primary sm:text-lg"
