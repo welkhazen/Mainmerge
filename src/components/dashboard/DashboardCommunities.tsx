@@ -1,8 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import lntCoverVideo from "@/assets/2026-04-18 10_10_00.webm";
-import iijmVideo from "@/assets/itisjustme.webm";
-import sytVideo from "@/assets/speakyourheart.webm";
 import LNTLogo from "@/assets/LNT.png";
 import SYTLogo from "@/assets/logospeak.png";
 import IIJMLogo from "@/assets/itisjustme.png";
@@ -40,6 +37,11 @@ import {
   touchCommunityMemberActivity,
   updateCommunityPresentation,
 } from "@/lib/communityChat";
+import {
+  COMMUNITY_COVER_IMAGES,
+  COMMUNITY_COVER_VIDEOS,
+  FEATURED_COMMUNITY_ID_SET,
+} from "@/lib/communityConstants";
 
 export function DashboardCommunities(props) {
       // Main search query state (fix ReferenceError)
@@ -141,20 +143,6 @@ const INITIAL_COMMUNITY_SETTINGS_DRAFT: CommunitySettingsDraft = {
   logoUrl: "",
 };
 
-const FEATURED_DIRECTORY_COMMUNITY_IDS = new Set(["lnt", "syt", "iijm", "li"]);
-
-const COMMUNITY_COVER_IMAGES: Record<string, string> = {
-  syt: "https://images.unsplash.com/photo-1534131707746-25d604851a1f?auto=format&fit=crop&w=1200&q=80",
-  iijm: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1200&q=80",
-  li: "https://images.unsplash.com/photo-1549895885-2e9af1a79571?auto=format&fit=crop&w=1200&q=80",
-};
-
-const COMMUNITY_COVER_VIDEOS: Record<string, string> = {
-  lnt: lntCoverVideo,
-  iijm: iijmVideo,
-  syt: sytVideo,
-};
-
 const COMMUNITY_LOGOS: Record<string, string> = {
   lnt: LNTLogo,
   syt: SYTLogo,
@@ -241,7 +229,7 @@ const COMMUNITY_LOGOS: Record<string, string> = {
     }, [filteredMessages]);
 
     const directoryCommunities = useMemo(() => {
-      return communities.filter((community) => FEATURED_DIRECTORY_COMMUNITY_IDS.has(community.id));
+      return communities.filter((community) => FEATURED_COMMUNITY_ID_SET.has(community.id));
     }, [communities]);
 
     useEffect(() => {
