@@ -321,6 +321,73 @@ html.theme-light .dashboard-enhanced-bg [class*="text-raw-silver/"] {
 
 .landing-page-shell {
   background: rgb(var(--raw-black));
+  font-family: "Michroma", "Inter", system-ui, sans-serif;
+}
+
+.landing-page-shell :is(p, a, button, label, li, input, textarea, h1, h2, h3, h4, h5, h6) {
+  font-family: inherit;
+}
+
+.landing-page-shell p {
+  letter-spacing: 0.01em;
+  line-height: 1.58;
+}
+
+.landing-type-kicker {
+  font-size: clamp(0.72rem, 0.66rem + 0.32vw, 0.86rem);
+  letter-spacing: clamp(0.16em, 0.14em + 0.18vw, 0.24em);
+  line-height: 1.35;
+}
+
+.landing-type-title {
+  font-size: clamp(1.8rem, 1.38rem + 2.1vw, 3.8rem);
+  line-height: 0.94;
+  letter-spacing: -0.018em;
+}
+
+.landing-type-title-lead {
+  font-size: clamp(1.4rem, 1.12rem + 1.4vw, 3.2rem);
+  line-height: 1.02;
+}
+
+.landing-type-body-lg {
+  font-size: clamp(1rem, 0.9rem + 0.55vw, 1.5rem);
+  line-height: 1.5;
+}
+
+.landing-type-body {
+  font-size: clamp(0.92rem, 0.86rem + 0.32vw, 1.08rem);
+  line-height: 1.6;
+}
+
+.landing-type-body-muted {
+  font-size: clamp(0.84rem, 0.78rem + 0.3vw, 1rem);
+  line-height: 1.55;
+}
+
+.landing-type-kicker-compact {
+  font-size: clamp(0.68rem, 0.64rem + 0.22vw, 0.78rem);
+  letter-spacing: clamp(0.14em, 0.13em + 0.12vw, 0.2em);
+}
+
+.landing-type-title-compact {
+  font-size: clamp(1.62rem, 1.34rem + 1.45vw, 2.35rem);
+}
+
+.landing-type-title-lead-compact {
+  font-size: clamp(1.2rem, 1rem + 1vw, 1.8rem);
+}
+
+.landing-type-body-lg-compact {
+  font-size: clamp(0.92rem, 0.84rem + 0.45vw, 1.2rem);
+}
+
+.landing-type-body-compact {
+  font-size: clamp(0.84rem, 0.79rem + 0.24vw, 0.97rem);
+}
+
+.landing-type-body-muted-compact {
+  font-size: clamp(0.8rem, 0.75rem + 0.2vw, 0.92rem);
 }
 
 .landing-scaled {
