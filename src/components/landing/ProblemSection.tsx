@@ -20,7 +20,7 @@ export function ProblemSection() {
 
         <div className="mt-8 grid grid-cols-1 gap-4 sm:mt-10 sm:grid-cols-3 sm:gap-6">
           {[
-            { icon: "🪞", label: "Persona Management", desc: "Curating a polished image" },
+            { icon: "🪞", label: "Persona", desc: "Curating a polished image" },
             { icon: "👁️", label: "Social Risk", desc: "Fear of judgment or backlash" },
             { icon: "🫧", label: "Echo Chambers", desc: "Talking only to people like you" },
           ].map((item) => (
