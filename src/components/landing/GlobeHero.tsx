@@ -100,7 +100,9 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
                     firstWordClassName="text-metallic font-black"
                     cursorClassName="bg-primary"
                     highlightRawWord
-                    lineClassNamesByIndex={{ 3: "mt-8" }}
+                    rawWordBaseClassName="raw-chrome-metallic font-black"
+                    rawWClassName="raw-chrome-w-3d font-black"
+                    lineClassNamesByIndex={{ 3: "mt-14" }}
                   />
                 </span>
                 <motion.div

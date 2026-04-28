@@ -162,6 +162,55 @@
   background-clip: text;
 }
 
+/* Chrome silver metallic — for "ra" in brand mark */
+.raw-chrome-metallic {
+  background: linear-gradient(
+    160deg,
+    #ffffff  0%,
+    #c0c0c0 18%,
+    #f4f4f4 34%,
+    #707070 52%,
+    #d8d8d8 68%,
+    #a4a4a4 84%,
+    #f2f2f2 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* 3D outlined W — silver chrome fill + thick accent border + gold depth shadows */
+.raw-chrome-w-3d {
+  color: #e0e0e0;
+  -webkit-text-stroke: 14px rgb(var(--raw-accent));
+  paint-order: stroke fill;
+  text-shadow:
+    1px  1px 0   rgb(210, 158,   0),
+    2px  2px 0   rgb(188, 138,   0),
+    3px  3px 0   rgb(162, 115,   0),
+    4px  4px 0   rgb(130,  88,   0),
+    5px  5px 0   rgb( 95,  60,   0),
+    6px  6px 0   rgb( 58,  34,   0),
+    9px  9px 14px rgba(0,   0,   0, 0.65);
+  filter: drop-shadow(0 0 18px rgba(241, 196, 45, 0.4));
+}
+
+html.theme-light .raw-chrome-metallic {
+  background: linear-gradient(
+    160deg,
+    #606060  0%,
+    #181818 18%,
+    #585858 34%,
+    #080808 52%,
+    #3c3c3c 68%,
+    #1c1c1c 84%,
+    #505050 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
 /* Subtle animated gradient border */
 @keyframes gradient-shift {
   0%, 100% { background-position: 0% 50%; }
