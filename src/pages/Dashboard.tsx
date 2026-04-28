@@ -101,6 +101,7 @@ export default function Dashboard({
           polls={polls}
           votedPolls={votedPolls}
           onNavigate={handleTabChange}
+          onOpenCommunity={handleOpenCommunity}
         />
       );
     }
@@ -247,11 +248,18 @@ export default function Dashboard({
             onClick: () => handleTabChange("wallet"),
             active: !isHome && activeTab === "wallet",
           },
+          ...(user.role === "admin" ? [{
+            title: "Admin",
+            icon: <Shield className="h-5 w-5" />,
+            href: "/admin",
+            onClick: () => navigate("/admin"),
+            active: false,
+          }] : []),
         ]}
       />
 
       {/* Main content */}
-      <main className="relative z-10 pt-14 pb-28 md:pb-8 lg:pl-[80px] lg:pb-8">
+      <main className="relative z-10 pt-14 pb-28 lg:pl-[80px] lg:pb-8">
         <div className="dashboard-content-shell mx-auto max-w-4xl px-4 py-5 sm:px-5 sm:py-8">
           {renderContent()}
         </div>

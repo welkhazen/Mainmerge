@@ -55,7 +55,7 @@ const FloatingDockMobile = ({
   return (
     <div
       className={cn(
-        "fixed bottom-0 left-0 right-0 z-50 flex md:hidden flex-row items-center justify-around bg-raw-black/95 shadow-2xl border-t border-raw-border/25 pt-2",
+        "fixed bottom-0 left-0 right-0 z-50 flex lg:hidden flex-row items-center justify-around bg-raw-black/95 shadow-2xl border-t border-raw-border/25 pt-2",
         className
       )}
       style={{ paddingBottom: "max(1rem, env(safe-area-inset-bottom))" }}
