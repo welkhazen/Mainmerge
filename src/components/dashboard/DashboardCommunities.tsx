@@ -173,6 +173,7 @@ const COMMUNITY_LOGOS: Record<string, string> = {
   const [communityRequests, setCommunityRequests] = useState<CommunityRequestRecord[]>([]);
   const [chatReports, setChatReports] = useState<ChatReportRecord[]>([]);
   const [communityJoinRequests, setCommunityJoinRequests] = useState<CommunityJoinRequestRecord[]>([]);
+  const [messageDraft, setMessageDraft] = useState("");
   const [mentionQuery, setMentionQuery] = useState<string | null>(null);
   const [mentionIndex, setMentionIndex] = useState(0);
   const [expandedDescs, setExpandedDescs] = useState<Set<string>>(new Set());
