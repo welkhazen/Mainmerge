@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { track } from "@/lib/analytics";
 import { readCommunityChats } from "@/lib/communityChat";
 import {
+  ArrowLeft,
   Bell,
   Check,
   LogOut,
@@ -32,9 +33,11 @@ interface DashboardNavProps {
   showAdminLink?: boolean;
   onProfileClick: () => void;
   onLogout: () => void;
+  communityTitle?: string;
+  onBack?: () => void;
 }
 
-export function DashboardNav({ username, avatarLevel, showAdminLink = false, onProfileClick, onLogout }: DashboardNavProps) {
+export function DashboardNav({ username, avatarLevel, showAdminLink = false, onProfileClick, onLogout, communityTitle, onBack }: DashboardNavProps) {
   const { mode, accent, accentPresets, setMode, setAccent } = useTheme();
   const [hoveredMode, setHoveredMode] = useState<ThemeMode | null>(null);
   const [hoveredAccent, setHoveredAccent] = useState<AccentPresetId | null>(null);
@@ -94,10 +97,23 @@ export function DashboardNav({ username, avatarLevel, showAdminLink = false, onP
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 border-b border-raw-border/50 bg-raw-black/90 backdrop-blur-xl">
       <div className="flex h-14 items-center justify-between px-4 sm:px-6">
-        {/* Logo */}
-        <a href="/" className="font-display text-base tracking-[0.3em] text-raw-text shrink-0 sm:text-lg">
+        {/* Logo — hidden on mobile when inside a community */}
+        <a href="/" className={`font-display text-base tracking-[0.3em] text-raw-text shrink-0 sm:text-lg ${communityTitle ? "hidden sm:block" : ""}`}>
           ra<span className="text-raw-gold">W</span>
         </a>
+
+        {/* Community name — mobile only, shown instead of logo when in a community */}
+        {communityTitle && (
+          <div className="flex min-w-0 items-center gap-2 sm:hidden">
+            <button
+              onClick={onBack}
+              className="shrink-0 rounded-full border border-raw-border/30 p-1.5 text-raw-silver/55 transition-colors hover:border-raw-gold/20 hover:text-raw-gold"
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </button>
+            <span className="truncate font-display text-sm tracking-wide text-raw-text">{communityTitle}</span>
+          </div>
+        )}
 
         {/* Right: bell + avatar */}
         <div className="flex shrink-0 items-center gap-1.5 sm:gap-3">
