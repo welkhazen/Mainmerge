@@ -20,11 +20,9 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ChevronDown } from "lucide-react";
 
 export type DashboardTab = "home" | "polls" | "challenges" | "daily-spin" | "communities" | "profile" | "wallet";
 
@@ -41,6 +39,7 @@ export function DashboardNav({ username, avatarLevel, showAdminLink = false, onP
   const [hoveredMode, setHoveredMode] = useState<ThemeMode | null>(null);
   const [hoveredAccent, setHoveredAccent] = useState<AccentPresetId | null>(null);
   const [notifOpen, setNotifOpen] = useState(false);
+  const [appearanceOpen, setAppearanceOpen] = useState(false);
   const notifRef = useRef<HTMLDivElement>(null);
 
   const notifications = useMemo(() => {
@@ -141,7 +140,7 @@ export function DashboardNav({ username, avatarLevel, showAdminLink = false, onP
               </div>
             )}
           </div>
-          <DropdownMenu>
+          <DropdownMenu onOpenChange={(open) => { if (!open) setAppearanceOpen(false); }}>
             <DropdownMenuTrigger asChild>
               <button
                 className={cn(
@@ -199,107 +198,80 @@ export function DashboardNav({ username, avatarLevel, showAdminLink = false, onP
                 </DropdownMenuItem>
               ) : null}
 
-              <DropdownMenuSub>
-                <DropdownMenuSubTrigger className={cn("rounded-lg px-3 py-2.5 text-sm focus:text-raw-text data-[state=open]:text-raw-text", isEffectiveLight ? "text-slate-700 focus:bg-slate-100 data-[state=open]:bg-slate-100" : "text-raw-silver/80 focus:bg-raw-surface/80 data-[state=open]:bg-raw-surface/80")}>
-                  <Settings className="mr-3 h-4 w-4" />
+              <button
+                type="button"
+                onClick={() => setAppearanceOpen((o) => !o)}
+                className={cn(
+                  "flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-sm transition-colors",
+                  isEffectiveLight ? "text-slate-700 hover:bg-slate-100" : "text-raw-silver/80 hover:bg-raw-surface/80",
+                )}
+              >
+                <span className="flex items-center gap-3">
+                  <Settings className="h-4 w-4" />
                   Appearance
-                </DropdownMenuSubTrigger>
-                <DropdownMenuSubContent
-                  collisionPadding={12}
-                  className={cn(
-                    "w-[300px] max-w-[calc(100vw-1rem)] rounded-2xl p-3 text-raw-text",
-                    isEffectiveLight
-                      ? "border border-slate-300/80 bg-[linear-gradient(160deg,rgba(255,255,255,0.98),rgba(245,249,255,0.98))] shadow-[0_20px_50px_rgba(28,38,58,0.2)]"
-                      : "border border-raw-border/35 bg-[linear-gradient(160deg,rgba(16,16,16,0.98),rgba(8,8,8,0.98))] shadow-[0_20px_50px_rgba(0,0,0,0.55)]",
-                  )}
-                >
-                  <div className={cn("rounded-xl border p-3", isEffectiveLight ? "border-slate-200 bg-white/85" : "border-raw-border/30 bg-raw-surface/25")}>
-                    <div className={cn("mb-3 flex items-center gap-2 text-xs uppercase tracking-[0.16em]", isEffectiveLight ? "text-slate-500" : "text-raw-silver/45")}>
-                      <Palette className="h-3.5 w-3.5" />
-                      Theme Studio
-                    </div>
+                </span>
+                <ChevronDown className={cn("h-3.5 w-3.5 transition-transform", appearanceOpen && "rotate-180")} />
+              </button>
 
-                    <div className={cn("flex items-center gap-2 rounded-lg border p-1", isEffectiveLight ? "border-slate-200 bg-slate-50" : "border-raw-border/25 bg-raw-black/25")}>
-                      <button
-                        onMouseEnter={() => setHoveredMode("dark")}
-                        onMouseLeave={() => setHoveredMode(null)}
-                        onFocus={() => setHoveredMode("dark")}
-                        onBlur={() => setHoveredMode(null)}
-                        onClick={() => {
-                          setMode("dark");
-                          setHoveredMode(null);
-                        }}
-                        className={cn(
-                          "flex min-h-[36px] flex-1 items-center justify-center rounded-md px-2 py-2 text-xs font-medium transition-colors",
-                          !isEffectiveLight
-                            ? "bg-raw-gold/15 text-raw-gold"
-                            : "text-slate-500 hover:text-slate-900",
-                        )}
-                      >
-                        <span className="inline-flex items-center gap-1.5">
-                          <Moon className="h-3.5 w-3.5" />
-                          Dark
-                        </span>
-                      </button>
-                      <button
-                        onMouseEnter={() => setHoveredMode("light")}
-                        onMouseLeave={() => setHoveredMode(null)}
-                        onFocus={() => setHoveredMode("light")}
-                        onBlur={() => setHoveredMode(null)}
-                        onClick={() => {
-                          setMode("light");
-                          setHoveredMode(null);
-                        }}
-                        className={cn(
-                          "flex min-h-[36px] flex-1 items-center justify-center rounded-md px-2 py-2 text-xs font-medium transition-colors",
-                          isEffectiveLight
-                            ? "bg-raw-gold/15 text-raw-gold"
-                            : "text-raw-silver/60 hover:text-raw-text",
-                        )}
-                      >
-                        <span className="inline-flex items-center gap-1.5">
-                          <Sun className="h-3.5 w-3.5" />
-                          Light
-                        </span>
-                      </button>
-                    </div>
+              {appearanceOpen && (
+                <div className={cn("mx-1 mb-1 rounded-xl border p-3", isEffectiveLight ? "border-slate-200 bg-white/85" : "border-raw-border/30 bg-raw-surface/25")}>
+                  <div className={cn("mb-3 flex items-center gap-2 text-xs uppercase tracking-[0.16em]", isEffectiveLight ? "text-slate-500" : "text-raw-silver/45")}>
+                    <Palette className="h-3.5 w-3.5" />
+                    Theme Studio
+                  </div>
 
-                    <div className="mt-4">
-                      <p className={cn("mb-2 text-[10px] uppercase tracking-[0.16em]", isEffectiveLight ? "text-slate-500" : "text-raw-silver/45")}>Accent</p>
-                      <div className="grid grid-cols-5 gap-2">
-                        {accentPresets.map((preset) => {
-                          const selected = preset.id === effectiveAccent;
+                  <div className={cn("flex items-center gap-2 rounded-lg border p-1", isEffectiveLight ? "border-slate-200 bg-slate-50" : "border-raw-border/25 bg-raw-black/25")}>
+                    <button
+                      onClick={() => { setMode("dark"); setHoveredMode(null); }}
+                      className={cn(
+                        "flex min-h-[36px] flex-1 items-center justify-center rounded-md px-2 py-2 text-xs font-medium transition-colors",
+                        !isEffectiveLight ? "bg-raw-gold/15 text-raw-gold" : "text-slate-500 hover:text-slate-900",
+                      )}
+                    >
+                      <span className="inline-flex items-center gap-1.5">
+                        <Moon className="h-3.5 w-3.5" />
+                        Dark
+                      </span>
+                    </button>
+                    <button
+                      onClick={() => { setMode("light"); setHoveredMode(null); }}
+                      className={cn(
+                        "flex min-h-[36px] flex-1 items-center justify-center rounded-md px-2 py-2 text-xs font-medium transition-colors",
+                        isEffectiveLight ? "bg-raw-gold/15 text-raw-gold" : "text-raw-silver/60 hover:text-raw-text",
+                      )}
+                    >
+                      <span className="inline-flex items-center gap-1.5">
+                        <Sun className="h-3.5 w-3.5" />
+                        Light
+                      </span>
+                    </button>
+                  </div>
 
-                          return (
-                            <button
-                              key={preset.id}
-                              onMouseEnter={() => setHoveredAccent(preset.id)}
-                              onMouseLeave={() => setHoveredAccent(null)}
-                              onFocus={() => setHoveredAccent(preset.id)}
-                              onBlur={() => setHoveredAccent(null)}
-                              onClick={() => {
-                                setAccent(preset.id);
-                                setHoveredAccent(null);
-                              }}
-                              className={cn(
-                                "relative h-10 rounded-lg border transition-all",
-                                selected
-                                  ? "border-raw-text shadow-[0_0_0_1px_rgb(var(--raw-text)/0.3)]"
-                                  : "border-raw-border/35 hover:border-raw-silver/35",
-                              )}
-                              style={{ backgroundColor: `rgb(${preset.rgb})` }}
-                              aria-label={`Use ${preset.label} accent`}
-                              title={preset.label}
-                            >
-                              {selected ? <Check className="mx-auto h-3.5 w-3.5 text-raw-ink" /> : null}
-                            </button>
-                          );
-                        })}
-                      </div>
+                  <div className="mt-3">
+                    <p className={cn("mb-2 text-[10px] uppercase tracking-[0.16em]", isEffectiveLight ? "text-slate-500" : "text-raw-silver/45")}>Accent</p>
+                    <div className="grid grid-cols-5 gap-2">
+                      {accentPresets.map((preset) => {
+                        const selected = preset.id === effectiveAccent;
+                        return (
+                          <button
+                            key={preset.id}
+                            onClick={() => { setAccent(preset.id); setHoveredAccent(null); }}
+                            className={cn(
+                              "relative h-10 rounded-lg border transition-all",
+                              selected ? "border-raw-text shadow-[0_0_0_1px_rgb(var(--raw-text)/0.3)]" : "border-raw-border/35 hover:border-raw-silver/35",
+                            )}
+                            style={{ backgroundColor: `rgb(${preset.rgb})` }}
+                            aria-label={`Use ${preset.label} accent`}
+                            title={preset.label}
+                          >
+                            {selected ? <Check className="mx-auto h-3.5 w-3.5 text-raw-ink" /> : null}
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
-                </DropdownMenuSubContent>
-              </DropdownMenuSub>
+                </div>
+              )}
 
               <DropdownMenuSeparator className={cn("my-2", isEffectiveLight ? "bg-slate-200" : "bg-raw-border/30")} />
 

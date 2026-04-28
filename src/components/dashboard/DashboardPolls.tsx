@@ -430,7 +430,7 @@ export function DashboardPolls({
         <button
           onClick={() => setCurrentPollIndex((previous) => Math.max(0, previous - 1))}
           disabled={currentPollIndex === 0}
-          className={`absolute left-0 top-1/2 z-10 hidden -translate-x-1/2 -translate-y-1/2 rounded-full border p-3 transition disabled:cursor-not-allowed disabled:opacity-35 md:inline-flex ${
+          className={`absolute left-2 top-1/2 z-10 inline-flex -translate-y-1/2 rounded-full border p-2.5 transition disabled:cursor-not-allowed disabled:opacity-35 md:left-0 md:-translate-x-1/2 md:p-3 ${
             isLightMode
               ? "border-slate-300 bg-white/95 text-slate-700 shadow-[0_10px_25px_rgba(15,23,42,0.2)] hover:border-amber-400 hover:text-amber-700"
               : "border-raw-border/55 bg-raw-black/85 text-raw-silver/85 shadow-[0_10px_24px_rgba(0,0,0,0.4)] hover:border-raw-gold/45 hover:text-raw-gold"
@@ -443,7 +443,7 @@ export function DashboardPolls({
         <button
           onClick={() => setCurrentPollIndex((previous) => Math.min(polls.length - 1, previous + 1))}
           disabled={currentPollIndex === polls.length - 1}
-          className={`absolute right-0 top-1/2 z-10 hidden translate-x-1/2 -translate-y-1/2 rounded-full border p-3 transition disabled:cursor-not-allowed disabled:opacity-35 md:inline-flex ${
+          className={`absolute right-2 top-1/2 z-10 inline-flex -translate-y-1/2 rounded-full border p-2.5 transition disabled:cursor-not-allowed disabled:opacity-35 md:right-0 md:translate-x-1/2 md:p-3 ${
             isLightMode
               ? "border-slate-300 bg-white/95 text-slate-700 shadow-[0_10px_25px_rgba(15,23,42,0.2)] hover:border-amber-400 hover:text-amber-700"
               : "border-raw-border/55 bg-raw-black/85 text-raw-silver/85 shadow-[0_10px_24px_rgba(0,0,0,0.4)] hover:border-raw-gold/45 hover:text-raw-gold"
@@ -454,13 +454,6 @@ export function DashboardPolls({
         </button>
 
         <div className="rounded-2xl border border-raw-border/40 bg-[radial-gradient(circle_at_20%_0%,rgba(255,255,255,0.12),rgba(0,0,0,0.05)_35%,rgba(0,0,0,0.6)_100%)] p-3 shadow-[0_20px_45px_rgba(0,0,0,0.4)] sm:rounded-[2rem] sm:p-6">
-          <div className="mb-4 flex items-center justify-between text-xs text-raw-silver/45">
-            <span>
-              {currentPollIndex + 1}/{polls.length} today
-            </span>
-            <span>{new Date().toLocaleDateString()}</span>
-          </div>
-
           <div className="mb-5 flex items-center justify-center gap-1.5">
             {polls.map((poll, index) => (
               <button
@@ -560,18 +553,18 @@ export function DashboardPolls({
                     if (leftOption) handleVote(currentPoll.id, leftOption.id);
                   }}
                   disabled={hasVotedCurrent}
-                  className={`relative rounded-2xl border px-4 py-3 text-left text-base font-medium transition disabled:cursor-not-allowed ${
+                  className={`flex min-h-[72px] flex-col items-start justify-center rounded-2xl border px-3 py-3 text-left font-medium transition disabled:cursor-not-allowed sm:px-4 ${
                     selectedLeft
                       ? "border-raw-gold/65 bg-raw-gold/50 text-black shadow-[0_0_18px_rgba(255,204,77,0.35)]"
                       : "border-raw-gold/30 bg-raw-gold/18 text-raw-text hover:bg-raw-gold/28"
                   } ${hasVotedCurrent ? "opacity-100" : "disabled:opacity-55"}`}
                 >
-                  <span>{leftOption?.text}</span>
-                  {hasVotedCurrent ? (
-                    <span className={`absolute right-4 top-1/2 -translate-y-1/2 text-sm font-semibold ${selectedLeft ? "text-black" : "text-raw-text"}`}>
+                  {hasVotedCurrent && (
+                    <span className={`text-xl font-bold leading-none ${selectedLeft ? "text-black" : "text-raw-text"}`}>
                       {leftPercent}%
                     </span>
-                  ) : null}
+                  )}
+                  <span className={hasVotedCurrent ? "mt-1 text-[11px] leading-snug opacity-70" : "text-sm leading-snug"}>{leftOption?.text}</span>
                 </button>
 
                 <button
@@ -579,18 +572,18 @@ export function DashboardPolls({
                     if (rightOption) handleVote(currentPoll.id, rightOption.id);
                   }}
                   disabled={hasVotedCurrent}
-                  className={`relative rounded-2xl border px-4 py-3 text-right text-base font-medium transition disabled:cursor-not-allowed ${
+                  className={`flex min-h-[72px] flex-col items-end justify-center rounded-2xl border px-3 py-3 text-right font-medium transition disabled:cursor-not-allowed sm:px-4 ${
                     selectedRight
                       ? "border-raw-gold/65 bg-raw-gold/50 text-black shadow-[0_0_18px_rgba(255,204,77,0.35)]"
                       : "border-raw-gold/30 bg-raw-gold/18 text-raw-text hover:bg-raw-gold/28"
                   } ${hasVotedCurrent ? "opacity-100" : "disabled:opacity-55"}`}
                 >
-                  <span>{rightOption?.text}</span>
-                  {hasVotedCurrent ? (
-                    <span className={`absolute left-4 top-1/2 -translate-y-1/2 text-sm font-semibold ${selectedRight ? "text-black" : "text-raw-text"}`}>
+                  {hasVotedCurrent && (
+                    <span className={`text-xl font-bold leading-none ${selectedRight ? "text-black" : "text-raw-text"}`}>
                       {rightPercent}%
                     </span>
-                  ) : null}
+                  )}
+                  <span className={hasVotedCurrent ? "mt-1 text-[11px] leading-snug opacity-70" : "text-sm leading-snug"}>{rightOption?.text}</span>
                 </button>
               </div>
             </div>
@@ -709,22 +702,6 @@ export function DashboardPolls({
             ) : null}
           </div>
 
-          <div className="mt-4 flex gap-3 md:hidden">
-            <button
-              onClick={() => setCurrentPollIndex((previous) => Math.max(0, previous - 1))}
-              disabled={currentPollIndex === 0}
-              className="flex-1 rounded-xl border border-raw-border/35 bg-raw-black/25 px-3 py-2 text-xs text-raw-silver/70 disabled:opacity-35"
-            >
-              Previous
-            </button>
-            <button
-              onClick={() => setCurrentPollIndex((previous) => Math.min(polls.length - 1, previous + 1))}
-              disabled={currentPollIndex === polls.length - 1}
-              className="flex-1 rounded-xl border border-raw-border/35 bg-raw-black/25 px-3 py-2 text-xs text-raw-silver/70 disabled:opacity-35"
-            >
-              Next
-            </button>
-          </div>
         </div>
       </section>
 
