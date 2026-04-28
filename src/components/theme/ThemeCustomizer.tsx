@@ -59,24 +59,28 @@ export function ThemeCustomizer({ placement = "floating", triggerStyle = "icon",
           <div className="border-b border-raw-border/25 px-5 py-4">
             <p className="font-display text-sm tracking-[0.18em] text-raw-text">Theme Studio</p>
             <p className="mt-2 text-xs leading-relaxed text-raw-silver/50">
-              Change light or dark mode once and keep the same accent color across every page.
+              {showModeControls
+                ? "Change light or dark mode once and keep the same accent color across every page."
+                : "Choose your accent color for the full landing experience."}
             </p>
           </div>
 
           <div className="space-y-5 px-5 py-5">
-            <div className="rounded-2xl border border-raw-border/25 bg-raw-black/25 p-4">
-              <div className="flex items-center justify-between gap-4">
-                <div>
-                  <p className="text-xs uppercase tracking-[0.18em] text-raw-silver/45">Mode</p>
-                  <p className="mt-1 text-sm text-raw-text">{isLightMode ? "Light mode" : "Dark mode"}</p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Moon className={cn("h-4 w-4", !isLightMode ? "text-raw-gold" : "text-raw-silver/35")} />
-                  <Switch checked={isLightMode} onCheckedChange={(checked) => setMode(checked ? "light" : "dark")} />
-                  <Sun className={cn("h-4 w-4", isLightMode ? "text-raw-gold" : "text-raw-silver/35")} />
+            {showModeControls ? (
+              <div className="rounded-2xl border border-raw-border/25 bg-raw-black/25 p-4">
+                <div className="flex items-center justify-between gap-4">
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.18em] text-raw-silver/45">Mode</p>
+                    <p className="mt-1 text-sm text-raw-text">{isLightMode ? "Light mode" : "Dark mode"}</p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Moon className={cn("h-4 w-4", !isLightMode ? "text-raw-gold" : "text-raw-silver/35")} />
+                    <Switch checked={isLightMode} onCheckedChange={(checked) => setMode(checked ? "light" : "dark")} />
+                    <Sun className={cn("h-4 w-4", isLightMode ? "text-raw-gold" : "text-raw-silver/35")} />
+                  </div>
                 </div>
               </div>
-            </div>
+            ) : null}
 
             <div>
               <div className="flex items-center justify-between gap-3">

@@ -10,6 +10,7 @@ import { GlobeHeroTypewriterSequence } from "@/components/landing/GlobeHeroTypew
 import { TypewriterStack } from "@/components/ui/typewriter-stack";
 import { Canvas } from "@react-three/fiber";
 import { PerspectiveCamera } from "@react-three/drei";
+import { LandingType } from "@/components/landing/LandingType";
 
 import { Globe } from "@/components/ui/globe-hero";
 import { useTheme } from "@/providers/ThemeProvider";
@@ -19,6 +20,7 @@ interface GlobeHeroProps {
 }
 
 export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
+  const heroTypeClassName = "font-display font-black";
   const { mode } = useTheme();
   const globeColor = mode === "light" ? "#0A0A0A" : "#F5F5F5";
 
@@ -65,6 +67,13 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
           >
             <div className="absolute inset-0 rounded-full bg-gradient-to-r from-primary/10 via-transparent to-primary/10 animate-pulse" />
             <div className="w-2 h-2 bg-primary rounded-full animate-ping" />
+            <LandingType
+              as="span"
+              token="metaLabel"
+              className="relative z-10 w-full text-center font-bold text-primary"
+            >
+              Fully Anonymous • Community Driven • Identity Based
+            </LandingType>
             <span className="relative z-10 w-full text-center text-[0.69rem] font-bold uppercase tracking-[0.2em] text-primary sm:text-sm sm:tracking-wider">Fully Anonymous • Community Driven • Identity Based</span>
             <div
               className="w-2 h-2 bg-primary rounded-full animate-ping"
@@ -77,11 +86,14 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 0.3 }}
+              className="landing-type-title select-none lg:text-[5.1rem] xl:text-[6.8rem]"
+            >
+              <LandingType as="span" token="heroLead" className="mb-3 block text-foreground/70 lg:text-[3.83rem]">
               className="select-none text-[2.1rem] font-black leading-[0.9] tracking-tight sm:text-[2.6rem] md:text-[3.825rem] lg:text-[5.1rem] xl:text-[6.8rem]"
             >
               <span className="mb-3 block text-[1.6rem] font-light text-foreground/70 sm:text-[2rem] md:text-[3.19rem] lg:text-[3.83rem]">
                 Find
-              </span>
+              </LandingType>
               <span className="block relative">
                 <span
                   className="font-black relative z-10 block"
@@ -93,9 +105,10 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
                   <TypewriterStack
                     words={["Your Place", "Your People", "Your Self", "Be raW"]}
                     prefix="Your"
-                    prefixClassName="text-foreground font-black"
+                    prefixClassName={`${heroTypeClassName} text-foreground`}
                     startScale={0.6}
                     endScale={1.15}
+                    textClassName={`${heroTypeClassName} bg-gradient-to-br from-primary via-primary to-primary/60 bg-clip-text text-transparent`}
                     textClassName="bg-gradient-to-br from-primary via-primary to-primary/60 bg-clip-text text-transparent font-black"
                     firstWordClassName="text-metallic font-black"
                     cursorClassName="bg-primary"
@@ -119,6 +132,18 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
             transition={{ duration: 0.8, delay: 0.8 }}
             className="mx-auto max-w-3xl space-y-4 pt-6 sm:pt-8"
           >
+            <LandingType as="p" token="heroBodyStrong" className="text-foreground font-bold md:text-2xl">
+              Y𝗼𝘂𝗿 𝗻𝗲𝘄 𝟮𝟰/𝟳 𝗹𝗶𝘃𝗶𝗻𝗴 𝗮𝗻𝗱 𝗲𝘃𝗲𝗿-𝗴𝗿𝗼𝘄𝗶𝗻𝗴 𝗻𝗲𝘄 𝘄𝗼𝗿𝗹𝗱
+            </LandingType>
+            <LandingType as="p" token="sectionBody" className="font-medium md:text-lg">
+              <span className="text-foreground/60 font-semibold bg-gradient-to-r from-primary/10 to-primary/5 px-2 py-1 rounded-md">
+                prioritizing genuine connections, a sense of belonging, and a safe space to allow discovering oneself and others.
+              </span>
+            </LandingType>
+            <LandingType
+              as="p"
+              token="sectionBodyStrong"
+              className="text-primary sm:text-lg"
             <p
               className="text-lg font-medium leading-relaxed text-foreground sm:text-xl md:text-2xl"
             >
@@ -137,7 +162,7 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
               }}
             >
               Username And Password Only
-            </p>
+            </LandingType>
           </motion.div>
         </motion.div>
 
