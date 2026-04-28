@@ -62,8 +62,11 @@ export function DashboardPolls({
   const [replyDrafts, setReplyDrafts] = useState<Record<string, string>>({});
   const [currentPollIndex, setCurrentPollIndex] = useState(0);
   const pointerStartXRef = useRef<number | null>(null);
+  const pointerStartTimeRef = useRef<number>(0);
   const swipeGuideButtonRef = useRef<HTMLButtonElement | null>(null);
   const [swipeOffsetX, setSwipeOffsetX] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const [showAllComments, setShowAllComments] = useState(false);
   const [hasSeenSwipeGuide, setHasSeenSwipeGuide] = useState(false);
 
   useEffect(() => {
@@ -107,6 +110,7 @@ export function DashboardPolls({
     if (currentPollIndex >= polls.length && polls.length > 0) {
       setCurrentPollIndex(polls.length - 1);
     }
+    setShowAllComments(false);
   }, [currentPollIndex, polls.length]);
 
   const currentPoll = polls[currentPollIndex]
@@ -241,43 +245,40 @@ export function DashboardPolls({
   };
 
   const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (showSwipeGuide) {
-      return;
-    }
-
-    if (isInteractiveTarget(event.target)) {
-      return;
-    }
+    if (showSwipeGuide) return;
+    if (isInteractiveTarget(event.target)) return;
 
     pointerStartXRef.current = event.clientX;
+    pointerStartTimeRef.current = Date.now();
+    setIsDragging(true);
     event.currentTarget.setPointerCapture(event.pointerId);
   };
 
   const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (pointerStartXRef.current === null || hasVotedCurrent) {
-      return;
-    }
+    if (pointerStartXRef.current === null || hasVotedCurrent) return;
 
     const deltaX = event.clientX - pointerStartXRef.current;
-    const limitedDelta = Math.max(-140, Math.min(140, deltaX));
+    const limitedDelta = Math.max(-160, Math.min(160, deltaX));
     setSwipeOffsetX(limitedDelta);
   };
 
   const handlePointerUp = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (pointerStartXRef.current === null) {
-      return;
-    }
+    if (pointerStartXRef.current === null) return;
 
     const deltaX = event.clientX - pointerStartXRef.current;
+    const elapsed = Date.now() - pointerStartTimeRef.current;
+    const velocity = Math.abs(deltaX) / Math.max(elapsed, 1);
+
     pointerStartXRef.current = null;
+    setIsDragging(false);
     setSwipeOffsetX(0);
 
-    const swipeThreshold = 60;
-    if (Math.abs(deltaX) < swipeThreshold) {
-      return;
+    // trigger on distance OR fast flick
+    const swipeThreshold = 55;
+    const velocityThreshold = 0.4;
+    if (Math.abs(deltaX) >= swipeThreshold || (velocity >= velocityThreshold && Math.abs(deltaX) > 20)) {
+      voteFromSwipeDirection(deltaX > 0 ? "right" : "left");
     }
-
-    voteFromSwipeDirection(deltaX > 0 ? "right" : "left");
   };
 
   const handleCommentAdd = () => {
@@ -479,7 +480,13 @@ export function DashboardPolls({
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
             onPointerCancel={handlePointerUp}
-            style={{ transform: `translateX(${swipeOffsetX}px) rotate(${swipeOffsetX * 0.04}deg)` }}
+            style={{
+              transform: `translateX(${swipeOffsetX}px) rotate(${swipeOffsetX * 0.035}deg)`,
+              transition: isDragging ? "none" : "transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+              willChange: "transform",
+              touchAction: "pan-y",
+              userSelect: "none",
+            }}
           >
             {showSwipeGuide && (
               <>
@@ -635,7 +642,7 @@ export function DashboardPolls({
                       No comments yet for this poll. Be the first to comment.
                     </p>
                   ) : (
-                    currentComments.slice(0, 3).map((comment) => (
+                    (showAllComments ? currentComments : currentComments.slice(0, 3)).map((comment) => (
                       <article key={comment.id} className="rounded-2xl border border-raw-border/35 bg-raw-black/50 px-3.5 py-2.5">
                         <div className="flex items-center justify-between text-[11px] text-raw-silver/50">
                           <span>@{comment.author}</span>
@@ -685,6 +692,18 @@ export function DashboardPolls({
                       </article>
                     ))
                   )}
+                  {currentComments.length > 3 && (
+                    <button
+                      onClick={() => setShowAllComments((prev) => !prev)}
+                      className={`w-full rounded-xl border py-2 text-xs font-medium transition ${
+                        isLightMode
+                          ? "border-slate-200 text-slate-500 hover:bg-slate-100"
+                          : "border-raw-border/35 text-raw-silver/55 hover:bg-raw-surface/20"
+                      }`}
+                    >
+                      {showAllComments ? "Show less" : `Show ${currentComments.length - 3} more comment${currentComments.length - 3 === 1 ? "" : "s"}`}
+                    </button>
+                  )}
                 </div>
               </div>
             ) : null}
@@ -716,19 +735,19 @@ export function DashboardPolls({
             Your answers unlock deeper identity reports. Keep participating to reveal your full profile.
           </p>
 
-          <div className="mt-4 grid gap-3 sm:grid-cols-2">
-            <div className="rounded-xl border border-raw-border/30 bg-raw-black/30 p-3.5">
+          <div className="mt-4 grid grid-cols-2 gap-3">
+            <div className="rounded-xl border border-raw-border/30 bg-raw-black/30 p-3">
               <p className="text-[10px] uppercase tracking-[0.14em] text-raw-silver/40">Poll Coverage</p>
-              <p className="mt-1 text-base font-semibold text-raw-text">{pollsAnswered} polls answered</p>
+              <p className="mt-1 text-sm font-semibold text-raw-text">{pollsAnswered} polls answered</p>
             </div>
-            <div className="rounded-xl border border-raw-border/30 bg-raw-black/30 p-3.5">
+            <div className="rounded-xl border border-raw-border/30 bg-raw-black/30 p-3">
               <p className="text-[10px] uppercase tracking-[0.14em] text-raw-silver/40">Unlocked Reports</p>
-              <p className="mt-1 text-base font-semibold text-raw-text">{unlockedReports}/6</p>
+              <p className="mt-1 text-sm font-semibold text-raw-text">{unlockedReports}/6</p>
             </div>
           </div>
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
           {insightsProgress.map((item) => (
             <article
               key={item.id}

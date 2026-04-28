@@ -82,24 +82,24 @@ export function RawInsightsPanel(props: RawInsightsPanelProps) {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-[1.1fr_1.4fr]">
-        <div className="space-y-3">
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-1">
           {insights.map((insight) => {
             const selected = insight.id === activeInsight.id;
             return (
               <button
                 key={insight.id}
                 onClick={() => setActiveInsightId(insight.id)}
-                className={`w-full rounded-xl border bg-gradient-to-br p-4 text-left transition-all ${
+                className={`w-full rounded-xl border bg-gradient-to-br p-3 text-left transition-all ${
                   selected
                     ? `${insight.theme.cardGlow} ${insight.theme.softSurface} border-raw-gold/40`
                     : "border-raw-border/40 from-raw-surface/25 via-transparent to-transparent"
                 }`}
               >
-                <div className="flex items-start justify-between gap-3">
+                <div className="flex flex-col gap-2">
                   <div>
                     <p className="text-[10px] uppercase tracking-[0.2em] text-raw-silver/50">{insight.badge}</p>
-                    <p className="mt-1 font-display text-base text-raw-text">{insight.name}</p>
-                    <p className="mt-1 text-xs text-raw-silver/45">{insight.description}</p>
+                    <p className="mt-1 font-display text-sm text-raw-text">{insight.name}</p>
+                    <p className="mt-1 text-xs text-raw-silver/45 line-clamp-2">{insight.description}</p>
                   </div>
                   <StatusPill insight={insight} />
                 </div>

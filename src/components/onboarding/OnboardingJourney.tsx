@@ -257,11 +257,11 @@ export function OnboardingJourney({
               <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-8 md:items-center">
                 {/* Left: Avatar Selector Grid */}
                 <div className="flex flex-col items-center justify-center min-w-0">
-                  <div className="grid grid-cols-5 gap-3 sm:gap-4 md:gap-5">
+                  <div className="grid w-fit grid-cols-5 gap-4 sm:gap-5 md:gap-6">
                     {Array.from({ length: LEVEL_THEMES.length }, (_, i) => i + 1).map((lvl) => {
                       const theme = LEVEL_THEMES[lvl - 1];
                       const isActive = lvl === avatarLevel;
-                      const isLocked = lvl !== 1 && lvl !== avatarLevel;
+                      const isLocked = false;
                       return (
                         <button
                           key={lvl}
@@ -340,11 +340,7 @@ export function OnboardingJourney({
 
                       return (
                         <div>
-                          {/* Onboarding tip for first-time poll makers */}
-                          <div className="mb-4 rounded-xl bg-raw-gold/10 border border-raw-gold/30 px-4 py-3 text-sm text-raw-gold font-semibold flex items-center gap-2">
-                            <span role="img" aria-label="tip">💡</span>
-                            Swipe right for YES, left for NO. Your answers help shape the community!
-                          </div>
+
                           <p className="text-xs text-raw-silver/50 mb-4 font-medium uppercase tracking-[0.12em]">
                             Question {currentPollIndex + 1} of {onboardingPolls.length}
                           </p>

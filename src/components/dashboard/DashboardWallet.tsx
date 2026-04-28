@@ -38,14 +38,14 @@ export function DashboardWallet() {
       {/* Packages */}
       <section>
         <p className="mb-4 text-xs uppercase tracking-[0.2em] text-raw-silver/40">Choose a package</p>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 xl:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
           {PACKAGES.map((pkg) => {
             const isSelected = selected === pkg.id;
             return (
               <button
                 key={pkg.id}
                 onClick={() => setSelected(pkg.id)}
-                className={`group relative overflow-hidden rounded-2xl border p-5 text-left transition-all ${
+                className={`group relative overflow-hidden rounded-2xl border p-3 sm:p-5 text-left transition-all ${
                   isSelected
                     ? "border-raw-gold/60 shadow-[0_0_24px_rgba(241,196,45,0.2)]"
                     : pkg.highlight
@@ -56,30 +56,27 @@ export function DashboardWallet() {
                 <div className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${pkg.accent}`} />
                 <div className="pointer-events-none absolute inset-0 opacity-20 [background-image:radial-gradient(rgba(255,255,255,0.12)_0.6px,transparent_0.6px)] [background-size:8px_8px]" />
 
-                {pkg.highlight && (
-                  <div className="relative mb-3 inline-block rounded-full border border-raw-gold/35 bg-raw-gold/15 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-raw-gold">
-                    {pkg.label}
-                  </div>
-                )}
-                {!pkg.highlight && (
-                  <div className="relative mb-3 inline-block rounded-full border border-raw-border/35 bg-raw-surface/30 px-2.5 py-0.5 text-[10px] uppercase tracking-wider text-raw-silver/50">
-                    {pkg.label}
-                  </div>
-                )}
-
-                <div className="relative flex items-center gap-2">
-                  <img src={TokenImage} alt="Token" className="h-5 w-5 object-contain" />
-                  <span className="font-display text-2xl text-raw-text">{pkg.tokens.toLocaleString()}</span>
-                  <span className="text-sm text-raw-silver/50">tokens</span>
+                <div className={`relative mb-2 inline-block rounded-full px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider ${
+                  pkg.highlight
+                    ? "border border-raw-gold/35 bg-raw-gold/15 text-raw-gold"
+                    : "border border-raw-border/35 bg-raw-surface/30 text-raw-silver/50"
+                }`}>
+                  {pkg.label}
                 </div>
 
-                <div className="relative mt-3 flex items-end justify-between">
+                <div className="relative flex items-center gap-1.5">
+                  <img src={TokenImage} alt="Token" className="h-4 w-4 object-contain" />
+                  <span className="font-display text-xl sm:text-2xl text-raw-text">{pkg.tokens.toLocaleString()}</span>
+                </div>
+                <p className="relative text-[11px] text-raw-silver/50">tokens</p>
+
+                <div className="relative mt-2 flex items-end justify-between">
                   <div>
-                    <p className="font-display text-xl text-raw-text">${pkg.price}</p>
-                    <p className="text-[11px] text-raw-silver/40">{pkg.perToken}</p>
+                    <p className="font-display text-lg sm:text-xl text-raw-text">${pkg.price}</p>
+                    <p className="text-[10px] text-raw-silver/40">{pkg.perToken}</p>
                   </div>
                   {isSelected && (
-                    <CheckCircle2 className="h-5 w-5 text-raw-gold" />
+                    <CheckCircle2 className="h-4 w-4 text-raw-gold" />
                   )}
                 </div>
               </button>
