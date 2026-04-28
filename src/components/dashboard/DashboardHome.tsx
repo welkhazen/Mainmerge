@@ -37,6 +37,7 @@ interface DashboardHomeProps {
   polls: Poll[];
   votedPolls: Set<string>;
   onNavigate: (tab: DashboardTab) => void;
+  onOpenCommunity: (communityId: string) => void;
 }
 
 interface ActivityCardProps {
@@ -83,6 +84,7 @@ export function DashboardHome({
   polls,
   votedPolls,
   onNavigate,
+  onOpenCommunity,
 }: DashboardHomeProps) {
   const dailyItemsLeft = 3;
   const allCommunities = useMemo(() => readCommunityChats(), []);
@@ -126,7 +128,8 @@ export function DashboardHome({
             const coverImage = COMMUNITY_COVER_IMAGES[community.id] ?? community.logoUrl;
             const isActive = community.status === "active";
             return (
-              <GlareCard key={community.id}>
+              <button key={community.id} onClick={() => onOpenCommunity(community.id)} className="text-left w-full">
+              <GlareCard>
                 <div className="flex flex-col rounded-2xl border border-raw-border/40 bg-raw-surface/40 h-full overflow-hidden">
                   <div className="relative h-32 shrink-0 overflow-hidden">
                     {coverVideo ? (
@@ -151,6 +154,7 @@ export function DashboardHome({
                   </div>
                 </div>
               </GlareCard>
+              </button>
             );
           })}
         </div>
