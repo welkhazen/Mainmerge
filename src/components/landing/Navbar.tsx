@@ -2,8 +2,6 @@ import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { ThemeCustomizer } from "@/components/theme/ThemeCustomizer";
 import { track } from "@/lib/analytics";
-import { Switch } from "@/components/ui/switch";
-import { useTheme } from "@/providers/ThemeProvider";
 
 interface NavbarProps {
   isLoggedIn: boolean;
@@ -13,8 +11,6 @@ interface NavbarProps {
 
 export function Navbar({ isLoggedIn, username, onSignupClick }: NavbarProps) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const { mode, setMode } = useTheme();
-  const isLightMode = mode === "light";
 
   const handleSignupClick = () => {
     track("landing_cta_clicked", {
@@ -58,20 +54,7 @@ export function Navbar({ isLoggedIn, username, onSignupClick }: NavbarProps) {
             </div>
           ) : (
             <>
-              <div className="flex min-h-11 items-center gap-2 rounded-full border border-raw-border/45 bg-raw-surface/85 px-3 backdrop-blur-xl">
-                <span className={`text-[10px] uppercase tracking-[0.12em] ${isLightMode ? "text-raw-silver/45" : "text-raw-gold"}`}>
-                  Dark
-                </span>
-                <Switch
-                  checked={isLightMode}
-                  onCheckedChange={(checked) => setMode(checked ? "light" : "dark")}
-                  aria-label="Toggle light and dark mode"
-                />
-                <span className={`text-[10px] uppercase tracking-[0.12em] ${isLightMode ? "text-raw-gold" : "text-raw-silver/45"}`}>
-                  Light
-                </span>
-              </div>
-              <ThemeCustomizer placement="inline" triggerStyle="compact" className="shrink-0" />
+              <ThemeCustomizer placement="inline" className="shrink-0" />
               <button
                 onClick={handleSignupClick}
                 className="min-h-11 rounded-full bg-raw-gold px-4 py-2.5 text-sm font-semibold text-raw-black transition-all hover:bg-raw-gold/90 hover:shadow-lg hover:shadow-raw-gold/20 sm:px-5"
