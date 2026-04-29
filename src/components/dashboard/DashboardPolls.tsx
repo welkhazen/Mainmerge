@@ -466,7 +466,7 @@ export function DashboardPolls({
         </section>
       )}
 
-      <section className="relative mx-auto w-full max-w-[430px] px-1 pb-[max(1rem,env(safe-area-inset-bottom))] pt-[max(0.75rem,env(safe-area-inset-top))]">
+      <section className="relative mx-auto w-full max-w-[430px] px-1">
         <button
           onClick={() => setCurrentPollIndex((previous) => Math.max(0, previous - 1))}
           disabled={currentPollIndex === 0}
@@ -493,7 +493,7 @@ export function DashboardPolls({
           <ChevronRight className="h-4 w-4" />
         </button>
 
-        <div className="relative overflow-hidden rounded-[2rem] border border-[#6f6f6f]/45 bg-[radial-gradient(circle_at_50%_0%,rgba(241,196,45,0.10),rgba(18,18,18,0.92)_36%,rgba(8,8,8,0.97)_100%)] p-4 shadow-[inset_0_0_0_1px_rgba(217,217,217,0.08),0_30px_65px_rgba(0,0,0,0.58)] before:pointer-events-none before:absolute before:inset-[8px] before:rounded-[1.65rem] before:border before:border-[#D9D9D9]/15">
+        <div className="relative overflow-hidden rounded-[2rem] border border-[#6f6f6f]/45 bg-[radial-gradient(circle_at_50%_0%,rgba(241,196,45,0.10),rgba(18,18,18,0.92)_36%,rgba(8,8,8,0.97)_100%)] p-4 shadow-[inset_0_0_0_1px_rgba(217,217,217,0.08),0_30px_65px_rgba(0,0,0,0.58)]">
           <div
             className="pointer-events-none absolute inset-0 opacity-25"
             style={{
