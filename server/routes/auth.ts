@@ -8,7 +8,7 @@ import { getUserRepository } from "../lib/userRepository";
 import { getAnonymousVotes } from "../lib/store";
 import { hashPassword, verifyPassword } from "../lib/password";
 import { hashPhone, normalizePhone } from "../lib/phoneHash";
-import { sendOtp, verifyOtp } from "../lib/twilio";
+import { sendOtp, verifyOtp } from "../lib/otp";
 import { sendTransactionalEmail } from "../lib/email";
 import type { AuthSessionData } from "../types";
 
