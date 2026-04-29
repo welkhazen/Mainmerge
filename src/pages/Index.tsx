@@ -5,6 +5,7 @@ import { GlobeHero } from "@/components/landing/GlobeHero";
 import { HowItWorks } from "@/components/landing/HowItWorks";
 import { PollSection } from "@/components/landing/PollSection";
 import { AvatarIdentity } from "@/components/landing/AvatarIdentity";
+import { AvatarProgression } from "@/components/landing/AvatarProgression";
 import { WheelReward } from "@/components/landing/WheelReward";
 import { WhyAnonymity } from "@/components/landing/WhyAnonymity";
 import { AnonQuestionSection } from "@/components/landing/AnonQuestionSection";
@@ -24,6 +25,7 @@ const SignupModalLazy = lazy(() =>
 
 const Index = () => {
   const [showMatrixIntro, setShowMatrixIntro] = useState(true);
+  const [hoveredAvatarLevel, setHoveredAvatarLevel] = useState<number | null>(null);
   const {
     user,
     isLoggedIn,
@@ -200,9 +202,12 @@ const Index = () => {
           onVote={vote}
           onSignupClick={() => setShowSignup(true)}
         />
-<AvatarIdentity
+        <AvatarIdentity displayLevel={hoveredAvatarLevel ?? avatarLevel} />
+        <AvatarProgression
           avatarLevel={avatarLevel}
+          displayLevel={hoveredAvatarLevel ?? avatarLevel}
           onLevelChange={setAvatarLevel}
+          onPreviewLevel={setHoveredAvatarLevel}
         />
         <WheelReward
           onLevelChange={setAvatarLevel}
