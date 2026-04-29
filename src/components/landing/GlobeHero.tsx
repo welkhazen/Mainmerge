@@ -79,9 +79,6 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
               transition={{ duration: 1, delay: 0.3 }}
               className="select-none text-[2.1rem] font-black leading-[0.9] tracking-tight sm:text-[2.6rem] md:text-[3.825rem] lg:text-[5.1rem] xl:text-[6.8rem]"
             >
-              <span className="mb-3 block text-[1.6rem] font-light text-foreground/70 sm:text-[2rem] md:text-[3.19rem] lg:text-[3.83rem]">
-                Find
-              </span>
               <span className="block relative">
                 <span
                   className="font-black relative z-10 block"
@@ -91,7 +88,7 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
                   }}
                 >
                   <TypewriterStack
-                    words={["Your Place", "Your People", "Your Self", "Be raW"]}
+                    words={["Your Place", "Your People", "Your Self", "raW"]}
                     prefix="Your"
                     prefixClassName="text-foreground font-black"
                     startScale={0.6}
@@ -100,7 +97,9 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
                     firstWordClassName="text-metallic font-black"
                     cursorClassName="bg-primary"
                     highlightRawWord
-                    lineClassNamesByIndex={{ 3: "mt-2" }}
+                    rawWordBaseClassName="raw-chrome-metallic font-black"
+                    rawWClassName="raw-chrome-w-3d font-black"
+                    lineClassNamesByIndex={{ 3: "mt-14" }}
                   />
                 </span>
                 <motion.div

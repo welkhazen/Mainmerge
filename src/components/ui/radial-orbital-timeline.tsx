@@ -198,11 +198,7 @@ export default function RadialOrbitalTimeline({ timelineData }: RadialOrbitalTim
                   <Icon size={16} />
                 </div>
 
-                <div
-                  className={`absolute top-12 w-32 -translate-x-1/2 text-center text-xs font-semibold leading-tight tracking-wide transition-all duration-300 ${
-                    isExpanded ? "scale-125 text-white" : "text-white/70"
-                  }`}
-                >
+                <div className={`absolute top-12 whitespace-nowrap text-xs font-semibold tracking-wider transition-all duration-300 ${isExpanded ? "scale-125 text-white" : "text-white/70"}`}>
                   {item.title}
                 </div>
 
