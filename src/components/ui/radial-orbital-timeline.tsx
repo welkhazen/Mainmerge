@@ -127,16 +127,16 @@ export default function RadialOrbitalTimeline({ timelineData }: RadialOrbitalTim
   const getStatusStyles = (status: TimelineItem["status"]): string => {
     switch (status) {
       case "completed":
-        return "text-white bg-black border-white";
+        return "text-background bg-foreground border-foreground";
       case "in-progress":
-        return "text-black bg-white border-black";
+        return "text-foreground bg-background border-foreground";
       default:
-        return "text-white bg-black/40 border-white/50";
+        return "text-foreground bg-background/40 border-foreground/50";
     }
   };
 
   return (
-    <div className="h-screen w-full overflow-hidden bg-black" ref={containerRef} onClick={handleContainerClick}>
+    <div className="h-screen w-full overflow-hidden bg-background text-foreground" ref={containerRef} onClick={handleContainerClick}>
       <div className="relative mx-auto flex h-full w-full max-w-4xl items-center justify-center">
         <div
           className="absolute flex h-full w-full items-center justify-center"
@@ -144,12 +144,12 @@ export default function RadialOrbitalTimeline({ timelineData }: RadialOrbitalTim
           style={{ perspective: "1000px", transform: `translate(${centerOffset.x}px, ${centerOffset.y}px)` }}
         >
           <div className="absolute z-10 flex h-16 w-16 animate-pulse items-center justify-center rounded-full bg-gradient-to-br from-purple-500 via-blue-500 to-teal-500">
-            <div className="absolute h-20 w-20 animate-ping rounded-full border border-white/20 opacity-70" />
-            <div className="absolute h-24 w-24 animate-ping rounded-full border border-white/10 opacity-50" style={{ animationDelay: "0.5s" }} />
-            <div className="h-8 w-8 rounded-full bg-white/80 backdrop-blur-md" />
+            <div className="absolute h-20 w-20 animate-ping rounded-full border border-foreground/20 opacity-70" />
+            <div className="absolute h-24 w-24 animate-ping rounded-full border border-foreground/10 opacity-50" style={{ animationDelay: "0.5s" }} />
+            <div className="h-8 w-8 rounded-full bg-foreground/80 backdrop-blur-md" />
           </div>
 
-          <div className="absolute h-96 w-96 rounded-full border border-white/10" />
+          <div className="absolute h-96 w-96 rounded-full border border-foreground/15" />
 
           {timelineData.map((item, index) => {
             const position = calculateNodePosition(index, timelineData.length);
@@ -178,7 +178,7 @@ export default function RadialOrbitalTimeline({ timelineData }: RadialOrbitalTim
                 <div
                   className={`absolute -inset-1 rounded-full ${isPulsing ? "animate-pulse duration-1000" : ""}`}
                   style={{
-                    background: "radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 70%)",
+                    background: "radial-gradient(circle, hsl(var(--foreground) / 0.2) 0%, hsl(var(--foreground) / 0) 70%)",
                     width: `${item.energy * 0.5 + 40}px`,
                     height: `${item.energy * 0.5 + 40}px`,
                     left: `-${(item.energy * 0.5 + 40 - 40) / 2}px`,
@@ -189,46 +189,46 @@ export default function RadialOrbitalTimeline({ timelineData }: RadialOrbitalTim
                 <div
                   className={`h-10 w-10 rounded-full border-2 transition-all duration-300 ${
                     isExpanded
-                      ? "scale-150 border-white bg-white text-black shadow-lg shadow-white/30"
+                      ? "scale-150 border-foreground bg-foreground text-background shadow-lg shadow-foreground/30"
                       : isRelated
-                        ? "animate-pulse border-white bg-white/50 text-black"
-                        : "border-white/40 bg-black text-white"
+                        ? "animate-pulse border-foreground bg-foreground/50 text-background"
+                        : "border-foreground/40 bg-background text-foreground"
                   } flex items-center justify-center`}
                 >
                   <Icon size={16} />
                 </div>
 
-                <div className={`absolute top-12 whitespace-nowrap text-xs font-semibold tracking-wider transition-all duration-300 ${isExpanded ? "scale-125 text-white" : "text-white/70"}`}>
+                <div className={`absolute top-12 whitespace-nowrap text-xs font-semibold tracking-wider transition-all duration-300 ${isExpanded ? "scale-125 text-foreground" : "text-foreground/70"}`}>
                   {item.title}
                 </div>
 
                 {isExpanded ? (
-                  <Card className="absolute left-1/2 top-20 w-64 -translate-x-1/2 overflow-visible border-white/30 bg-black/90 shadow-xl shadow-white/10 backdrop-blur-lg">
-                    <div className="absolute -top-3 left-1/2 h-3 w-px -translate-x-1/2 bg-white/50" />
+                  <Card className="absolute left-1/2 top-20 w-64 -translate-x-1/2 overflow-visible border-foreground/30 bg-background/90 shadow-xl shadow-foreground/10 backdrop-blur-lg">
+                    <div className="absolute -top-3 left-1/2 h-3 w-px -translate-x-1/2 bg-foreground/50" />
                     <CardHeader className="pb-2">
                       <div className="flex items-center justify-between">
                         <Badge className={`px-2 text-xs ${getStatusStyles(item.status)}`}>
                           {item.status === "completed" ? "COMPLETE" : item.status === "in-progress" ? "IN PROGRESS" : "PENDING"}
                         </Badge>
-                        <span className="font-mono text-xs text-white/50">{item.date}</span>
+                        <span className="font-mono text-xs text-foreground/50">{item.date}</span>
                       </div>
                       <CardTitle className="mt-2 text-sm">{item.title}</CardTitle>
                     </CardHeader>
-                    <CardContent className="text-xs text-white/80">
+                    <CardContent className="text-xs text-foreground/80">
                       <p>{item.content}</p>
-                      <div className="mt-4 border-t border-white/10 pt-3">
+                      <div className="mt-4 border-t border-foreground/10 pt-3">
                         <div className="mb-1 flex items-center justify-between text-xs">
                           <span className="flex items-center"><Zap size={10} className="mr-1" />Energy Level</span>
                           <span className="font-mono">{item.energy}%</span>
                         </div>
-                        <div className="h-1 w-full overflow-hidden rounded-full bg-white/10">
+                        <div className="h-1 w-full overflow-hidden rounded-full bg-foreground/10">
                           <div className="h-full bg-gradient-to-r from-blue-500 to-purple-500" style={{ width: `${item.energy}%` }} />
                         </div>
                       </div>
 
                       {item.relatedIds.length > 0 ? (
-                        <div className="mt-4 border-t border-white/10 pt-3">
-                          <div className="mb-2 flex items-center"><Link size={10} className="mr-1 text-white/70" /><h4 className="text-xs font-medium uppercase tracking-wider text-white/70">Connected Nodes</h4></div>
+                        <div className="mt-4 border-t border-foreground/10 pt-3">
+                          <div className="mb-2 flex items-center"><Link size={10} className="mr-1 text-foreground/70" /><h4 className="text-xs font-medium uppercase tracking-wider text-foreground/70">Connected Nodes</h4></div>
                           <div className="flex flex-wrap gap-1">
                             {item.relatedIds.map((relatedId) => {
                               const relatedItem = timelineData.find((i) => i.id === relatedId);
@@ -237,14 +237,14 @@ export default function RadialOrbitalTimeline({ timelineData }: RadialOrbitalTim
                                   key={relatedId}
                                   variant="outline"
                                   size="sm"
-                                  className="h-6 rounded-none border-white/20 bg-transparent px-2 py-0 text-xs text-white/80 transition-all hover:bg-white/10 hover:text-white"
+                                  className="h-6 rounded-none border-foreground/20 bg-transparent px-2 py-0 text-xs text-foreground/80 transition-all hover:bg-foreground/10 hover:text-foreground"
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     toggleItem(relatedId);
                                   }}
                                 >
                                   {relatedItem?.title}
-                                  <ArrowRight size={8} className="ml-1 text-white/60" />
+                                  <ArrowRight size={8} className="ml-1 text-foreground/60" />
                                 </Button>
                               );
                             })}
