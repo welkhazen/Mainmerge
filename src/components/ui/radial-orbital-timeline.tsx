@@ -225,7 +225,6 @@ export default function RadialOrbitalTimeline({ timelineData }: RadialOrbitalTim
                           <div className="h-full bg-gradient-to-r from-blue-500 to-purple-500" style={{ width: `${item.energy}%` }} />
                         </div>
                       </div>
-
                       {item.relatedIds.length > 0 ? (
                         <div className="mt-4 border-t border-foreground/10 pt-3">
                           <div className="mb-2 flex items-center"><Link size={10} className="mr-1 text-foreground/70" /><h4 className="text-xs font-medium uppercase tracking-wider text-foreground/70">Connected Nodes</h4></div>
