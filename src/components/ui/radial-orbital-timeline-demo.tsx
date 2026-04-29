@@ -6,11 +6,10 @@ import RadialOrbitalTimeline from "@/components/ui/radial-orbital-timeline";
 const timelineData = [
   {
     id: 1,
-    title: "Fucking boredom is real.",
-    date: "Boredom",
-    content:
-      "You open your phone because you want something to happen — but nothing does. raW gives you live anonymous rooms where you can talk, answer, react, and meet people now.",
-    category: "Boredom",
+    title: "Planning",
+    date: "Jan 2024",
+    content: "Project planning and requirements gathering phase.",
+    category: "Planning",
     icon: Calendar,
     relatedIds: [2],
     status: "completed" as const,
@@ -18,11 +17,10 @@ const timelineData = [
   },
   {
     id: 2,
-    title: "People everywhere. Still lonely.",
-    date: "Loneliness",
-    content:
-      "Followers, contacts, group chats — and still no real connection. raW helps you find people who actually match your thoughts, energy, and interests.",
-    category: "Loneliness",
+    title: "Design",
+    date: "Feb 2024",
+    content: "UI/UX design and system architecture.",
+    category: "Design",
     icon: FileText,
     relatedIds: [1, 3],
     status: "completed" as const,
@@ -30,11 +28,10 @@ const timelineData = [
   },
   {
     id: 3,
-    title: "Say it without the mask.",
-    date: "Judgment",
-    content:
-      "Some things are easier to say when your name is not attached. raW lets you be honest without turning your real identity into the price of speaking.",
-    category: "Judgment",
+    title: "Development",
+    date: "Mar 2024",
+    content: "Core features implementation and testing.",
+    category: "Development",
     icon: Code,
     relatedIds: [2, 4],
     status: "in-progress" as const,
@@ -42,11 +39,10 @@ const timelineData = [
   },
   {
     id: 4,
-    title: "Tired of performing? Same.",
-    date: "Fake Social",
-    content:
-      "Most apps push people to look perfect, interesting, or successful. raW is built for what people really think, feel, and want to say.",
-    category: "Fake Social",
+    title: "Testing",
+    date: "Apr 2024",
+    content: "User testing and bug fixes.",
+    category: "Testing",
     icon: User,
     relatedIds: [3, 5],
     status: "pending" as const,
@@ -54,11 +50,10 @@ const timelineData = [
   },
   {
     id: 5,
-    title: "Not sure where you fit?",
-    date: "Lost",
-    content:
-      "Sometimes you don’t know what you need or where you belong. raW uses questions, conversations, and communities to help you understand yourself better.",
-    category: "Lost",
+    title: "Release",
+    date: "May 2024",
+    content: "Final deployment and release.",
+    category: "Release",
     icon: Clock,
     relatedIds: [4],
     status: "pending" as const,
