@@ -220,7 +220,7 @@ export function DashboardPolls({
         "Reveal hidden patterns, blind spots, and traits that surface in difficult moments.",
       requiredPolls: 20,
       unlockPrice: 8,
-      unlocked: pollsAnswered >= 20 && paidUnlocks.shadowSelf,
+      unlocked: pollsAnswered >= 20 || paidUnlocks.shadowSelf,
     },
     {
       id: "attachment-style",
