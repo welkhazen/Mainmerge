@@ -20,6 +20,35 @@ import {
   WandSparkles,
 } from "lucide-react";
 
+interface PollProgressProps {
+  currentIndex: number;
+  total: number;
+  onSelect: (index: number) => void;
+}
+
+function PollProgress({ currentIndex, total, onSelect }: PollProgressProps) {
+  return (
+    <div className="mb-5 text-center">
+      <p className="text-[13px] tracking-[0.35em] text-[#D9D9D9]">{currentIndex + 1} / {total}</p>
+      <div className="mt-3 flex items-center justify-center gap-2">
+        {Array.from({ length: total }).map((_, index) => (
+          <button
+            key={index}
+            type="button"
+            onClick={() => onSelect(index)}
+            className={`h-1.5 rounded-full transition-all ${
+              index === currentIndex
+                ? "w-7 bg-[#F1C42D] shadow-[0_0_10px_rgba(241,196,45,0.45)]"
+                : "w-4 bg-[#3A3A3A]"
+            }`}
+            aria-label={`Go to poll ${index + 1}`}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 interface PollHistoryComment {
   id: string;
   author: string;
@@ -437,7 +466,7 @@ export function DashboardPolls({
         </section>
       )}
 
-      <section className="relative mx-auto max-w-xl">
+      <section className="relative mx-auto w-full max-w-[430px] px-1">
         <button
           onClick={() => setCurrentPollIndex((previous) => Math.max(0, previous - 1))}
           disabled={currentPollIndex === 0}
@@ -464,22 +493,29 @@ export function DashboardPolls({
           <ChevronRight className="h-4 w-4" />
         </button>
 
-        <div className="rounded-2xl border border-raw-border/40 bg-[radial-gradient(circle_at_20%_0%,rgba(255,255,255,0.12),rgba(0,0,0,0.05)_35%,rgba(0,0,0,0.6)_100%)] p-3 shadow-[0_20px_45px_rgba(0,0,0,0.4)] sm:rounded-[2rem] sm:p-6">
-          <div className="mb-5 flex items-center justify-center gap-1.5">
-            {polls.map((poll, index) => (
-              <button
-                key={poll.id}
-                onClick={() => setCurrentPollIndex(index)}
-                className={`h-1.5 rounded-full transition-all ${
-                  index === currentPollIndex ? "w-6 bg-raw-gold" : "w-2 bg-raw-border/60"
-                }`}
-                aria-label={`Go to poll ${index + 1}`}
-              />
-            ))}
+        <div className="relative overflow-hidden rounded-[2rem] border border-[#6f6f6f]/45 bg-[radial-gradient(circle_at_50%_0%,rgba(241,196,45,0.10),rgba(18,18,18,0.92)_36%,rgba(8,8,8,0.97)_100%)] p-4 shadow-[inset_0_0_0_1px_rgba(217,217,217,0.08),0_30px_65px_rgba(0,0,0,0.58)]">
+          <div
+            className="pointer-events-none absolute inset-0 opacity-25"
+            style={{
+              backgroundImage: "radial-gradient(circle at 1px 1px, rgba(217,217,217,0.35) 1px, transparent 0)",
+              backgroundSize: "14px 14px",
+            }}
+          />
+          <div className="relative">
+            <div className="mb-4 rounded-2xl border border-[#8b8b8b]/35 bg-[#111111]/80 px-4 py-3 shadow-[inset_0_0_0_1px_rgba(241,196,45,0.12)]">
+              <div className="flex items-center justify-between gap-2">
+                <h3 className="text-[clamp(1.05rem,3.8vw,1.35rem)] uppercase tracking-[0.18em] text-[#EBEBEB]">2. Answer 5 launch polls</h3>
+                <span className="rounded-full border border-[#F1C42D]/60 bg-[#F1C42D]/10 px-3 py-1 text-[11px] uppercase tracking-[0.12em] text-[#F1C42D]">
+                  {dailyAnsweredCount}/{dailyPollLimit} completed
+                </span>
+              </div>
+            </div>
+
+            <PollProgress currentIndex={currentPollIndex} total={polls.length} onSelect={setCurrentPollIndex} />
           </div>
 
           <div
-            className="relative rounded-2xl border border-raw-border/45 bg-raw-black/55 p-4 sm:rounded-[1.7rem] sm:p-6"
+            className="relative rounded-[1.75rem] border border-[#D9D9D9]/35 bg-[linear-gradient(160deg,#171717,#0d0d0d)] p-5"
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
@@ -537,11 +573,12 @@ export function DashboardPolls({
               <span className={`transition ${swipeOffsetX > 20 ? "text-emerald-300" : "text-raw-silver/35"}`}>{rightOption?.text}</span>
             </div>
 
-            <h2 className="text-center font-display text-2xl leading-tight text-raw-text sm:text-[2rem]">
+            <p className="mb-3 text-center text-[11px] uppercase tracking-[0.26em] text-[#F1C42D]/85">POLL QUESTION</p>
+            <h2 className="text-center font-display text-[clamp(1.9rem,8vw,3rem)] leading-[1.15] text-[#EBEBEB]">
               {currentPoll.question}
             </h2>
 
-            <div className="mt-6 space-y-3">
+            <div className="mt-8 space-y-4">
               <div
                 className={`flex h-[42px] items-center justify-between rounded-xl border border-raw-border/35 bg-raw-black/30 px-3 py-2 text-[11px] uppercase tracking-[0.12em] text-raw-silver/55 transition-opacity ${
                   hasVotedCurrent ? "pointer-events-none opacity-0" : "opacity-100"
@@ -564,10 +601,10 @@ export function DashboardPolls({
                     if (leftOption) handleVote(currentPoll.id, leftOption.id);
                   }}
                   disabled={hasVotedCurrent}
-                  className={`flex min-h-[72px] flex-col items-start justify-center rounded-2xl border px-3 py-3 text-left font-medium transition disabled:cursor-not-allowed sm:px-4 ${
+                  className={`flex min-h-[84px] flex-col items-start justify-center rounded-2xl border px-4 py-3 text-left text-2xl font-medium transition disabled:cursor-not-allowed ${
                     selectedLeft
                       ? "border-raw-gold/65 bg-raw-gold/50 text-black shadow-[0_0_18px_rgba(255,204,77,0.35)]"
-                      : "border-raw-gold/30 bg-raw-gold/18 text-raw-text hover:bg-raw-gold/28"
+                      : "border-[#F1C42D]/55 bg-[linear-gradient(145deg,rgba(241,196,45,0.24),rgba(20,20,20,0.95))] text-[#F1C42D] hover:brightness-110"
                   } ${hasVotedCurrent ? "opacity-100" : "disabled:opacity-55"}`}
                 >
                   {hasVotedCurrent && (
@@ -583,10 +620,10 @@ export function DashboardPolls({
                     if (rightOption) handleVote(currentPoll.id, rightOption.id);
                   }}
                   disabled={hasVotedCurrent}
-                  className={`flex min-h-[72px] flex-col items-end justify-center rounded-2xl border px-3 py-3 text-right font-medium transition disabled:cursor-not-allowed sm:px-4 ${
+                  className={`flex min-h-[84px] flex-col items-end justify-center rounded-2xl border px-4 py-3 text-right text-2xl font-medium transition disabled:cursor-not-allowed ${
                     selectedRight
                       ? "border-raw-gold/65 bg-raw-gold/50 text-black shadow-[0_0_18px_rgba(255,204,77,0.35)]"
-                      : "border-raw-gold/30 bg-raw-gold/18 text-raw-text hover:bg-raw-gold/28"
+                      : "border-[#D9D9D9]/45 bg-[linear-gradient(145deg,rgba(27,27,27,0.98),rgba(10,10,10,0.9))] text-[#D9D9D9] hover:border-[#F1C42D]/55"
                   } ${hasVotedCurrent ? "opacity-100" : "disabled:opacity-55"}`}
                 >
                   {hasVotedCurrent && (
@@ -602,7 +639,7 @@ export function DashboardPolls({
             {hasVotedCurrent ? (
               <div className="mt-5">
                 <div className="mb-2 flex items-center justify-between">
-                  <p className={`text-[11px] uppercase tracking-[0.12em] ${isLightMode ? "text-slate-600" : "text-raw-silver/55"}`}>Comments</p>
+                  <p className={`text-[11px] uppercase tracking-[0.12em] ${isLightMode ? "text-slate-600" : "text-raw-silver/55"}`}>COMMENTS</p>
                 </div>
                 <form
                   onSubmit={(event) => {
@@ -619,7 +656,7 @@ export function DashboardPolls({
                     value={commentDraft}
                     onChange={(event) => setCommentDraft(event.target.value)}
                     onKeyDown={handleCommentKeyDown}
-                    placeholder="Add a comment..."
+                    placeholder="Add a comment…"
                     className={`flex-1 bg-transparent text-sm focus:outline-none ${
                       isLightMode
                         ? "text-slate-800 placeholder:text-slate-400"
@@ -643,7 +680,7 @@ export function DashboardPolls({
                 <div className="mt-4 space-y-2.5">
                   {currentComments.length === 0 ? (
                     <p className={`text-center text-xs ${isLightMode ? "text-slate-500" : "text-raw-silver/45"}`}>
-                      No comments yet for this poll. Be the first to comment.
+                      No comments yet. Be the first.
                     </p>
                   ) : (
                     (showAllComments ? currentComments : currentComments.slice(0, 3)).map((comment) => (
