@@ -5,7 +5,8 @@ import { ThemeCustomizer } from "@/components/theme/ThemeCustomizer";
 import { track } from "@/lib/analytics";
 import { Switch } from "@/components/ui/switch";
 import { useTheme } from "@/providers/ThemeProvider";
-import rawLogo from "@/assets/favicon.png";
+
+const RAW_LOGO_SRC = "/raw-logo-96.png";
 
 interface NavbarProps {
   isLoggedIn: boolean;
@@ -39,9 +40,13 @@ export function Navbar({ isLoggedIn, username, onSignupClick }: NavbarProps) {
           className="flex items-center gap-2 font-display text-xl tracking-[0.3em] text-raw-text transition-opacity hover:opacity-90 sm:gap-3"
         >
           <img
-            src={rawLogo}
+            src={RAW_LOGO_SRC}
             alt=""
             aria-hidden="true"
+            width={36}
+            height={36}
+            decoding="async"
+            fetchPriority="high"
             className="h-8 w-8 shrink-0 sm:h-9 sm:w-9"
           />
           <span>
