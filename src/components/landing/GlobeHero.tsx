@@ -97,7 +97,7 @@ export function GlobeHero({ onSignupClick }: GlobeHeroProps) {
                     firstWordClassName="text-metallic font-black"
                     cursorClassName="bg-primary"
                     highlightRawWord
-                    rawWordBaseClassName="raw-chrome-metallic font-black"
+                    rawWordBaseClassName="raw-chrome-w-3d font-black"
                     rawWClassName="raw-chrome-w-3d font-black"
                     lineClassNamesByIndex={{ 3: "mt-14" }}
                   />
