@@ -16,7 +16,7 @@ export function LandingFooter() {
           <a href="/" className="inline-block font-display text-3xl tracking-[0.25em] text-raw-text/90 sm:text-4xl">
             ra<span className="text-raw-gold">W</span>
           </a>
-          <p className="mt-2 text-xs uppercase tracking-[0.22em] text-raw-silver/35">Speak without a mask.</p>
+          <p className="mt-2 text-xs uppercase tracking-[0.22em] text-raw-silver/35">Speak Your Truth.</p>
         </div>
 
         {/* Links — 3 cols on mobile, inline on desktop */}
@@ -91,7 +91,7 @@ export function LandingFooter() {
         {/* Bottom bar */}
         <div className="border-t border-raw-border/20 pt-6 text-center">
           <p className="text-[11px] text-raw-silver/35">© 2026 raW · All rights reserved</p>
-          <p className="mt-1 text-[10px] text-raw-silver/25">No algorithms. No judgment. Just you.</p>
+          <p className="mt-1 text-[10px] text-raw-silver/25">Where Discovery Becomes Transformation.</p>
         </div>
       </div>
     </footer>
