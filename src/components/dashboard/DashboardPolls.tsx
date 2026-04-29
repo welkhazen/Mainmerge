@@ -5,12 +5,19 @@ import {
   ArrowLeft,
   ArrowRight,
   BarChart3,
+  BookOpen,
+  Brain,
   ChevronLeft,
   ChevronRight,
+  CircleGauge,
+  Fingerprint,
+  Lock,
+  Map,
   MessageCircle,
   SendHorizontal,
   Sparkles,
   Users,
+  WandSparkles,
 } from "lucide-react";
 
 interface PollHistoryComment {
@@ -31,7 +38,6 @@ interface PollHistoryReply {
 interface DashboardPollsProps {
   polls: Poll[];
   votedPolls: Set<string>;
-  avatarLevel: number;
   userId: string;
   username: string;
   dailyAnsweredCount: number;
@@ -43,7 +49,6 @@ interface DashboardPollsProps {
 export function DashboardPolls({
   polls,
   votedPolls,
-  avatarLevel,
   userId,
   username,
   dailyAnsweredCount,
@@ -144,61 +149,67 @@ export function DashboardPolls({
   const paidUnlocks = {
     bigFiveProfile: false,
     shadowSelf: false,
-    decisionFingerprint: false,
-    identityArc: false,
+    attachmentStyle: false,
+    cognitiveBiasMap: false,
   };
 
   const insightsProgress = [
     {
       id: "myers-briggs",
       name: "Myers-Briggs",
+      icon: Brain,
       description: "Discover your personality type across 4 key dimensions of how you see the world.",
-      unlockRequirements: ["Reach level 1", "OR answer 5 polls"],
-      unlocked: avatarLevel >= 1 || pollsAnswered >= 5,
-      lockedAction: "View Report",
+      requiredPolls: 5,
+      unlockPrice: 0,
+      unlocked: pollsAnswered >= 5,
     },
     {
       id: "big-five-profile",
       name: "Big Five Profile",
+      icon: Fingerprint,
       description:
         "Measure your openness, conscientiousness, extraversion, agreeableness, and emotional range.",
-      unlockRequirements: ["Reach level 2", "Answer 10 polls", "Pay $4 to unlock"],
-      unlocked: avatarLevel >= 2 && pollsAnswered >= 10 && paidUnlocks.bigFiveProfile,
-      lockedAction: "Complete to-do list",
+      requiredPolls: 10,
+      unlockPrice: 4,
+      unlocked: pollsAnswered >= 10 && paidUnlocks.bigFiveProfile,
     },
     {
       id: "emotional-intelligence",
       name: "Emotional Intelligence",
+      icon: CircleGauge,
       description:
         "Understand how you process emotions, empathy, and interpersonal cues under pressure.",
-      unlockRequirements: ["Reach level 3", "Answer 15 polls"],
-      unlocked: avatarLevel >= 3 && pollsAnswered >= 15,
-      lockedAction: "Complete to-do list",
+      requiredPolls: 15,
+      unlockPrice: 0,
+      unlocked: pollsAnswered >= 15,
     },
     {
       id: "shadow-self",
       name: "Shadow Self",
+      icon: WandSparkles,
       description:
         "Reveal hidden patterns, blind spots, and traits that surface in difficult moments.",
-      unlockRequirements: ["Path A", "Reach level 1", "Pay $8", "Path B", "Answer 50 polls"],
-      unlocked: (avatarLevel >= 1 && paidUnlocks.shadowSelf) || pollsAnswered >= 50,
-      lockedAction: "Unlock $8",
+      requiredPolls: 20,
+      unlockPrice: 8,
+      unlocked: pollsAnswered >= 20 && paidUnlocks.shadowSelf,
     },
     {
-      id: "decision-fingerprint",
-      name: "Decision Fingerprint",
-      description: "Map your decision style: instinctive, strategic, reflective, or adaptive.",
-      unlockRequirements: ["Reach level 4", "Answer 22 polls", "Pay $6 to unlock"],
-      unlocked: avatarLevel >= 4 && pollsAnswered >= 22 && paidUnlocks.decisionFingerprint,
-      lockedAction: "Complete to-do list",
+      id: "attachment-style",
+      name: "Attachment Style",
+      icon: BookOpen,
+      description: "Understand your patterns in relationships and emotional bonding with others.",
+      requiredPolls: 14,
+      unlockPrice: 2,
+      unlocked: pollsAnswered >= 14 && paidUnlocks.attachmentStyle,
     },
     {
-      id: "identity-arc",
-      name: "Identity Arc",
-      description: "Track how your personality signal changes over time as your answers evolve.",
-      unlockRequirements: ["Reach level 5", "Answer 30 polls", "Pay $9 to unlock"],
-      unlocked: avatarLevel >= 5 && pollsAnswered >= 30 && paidUnlocks.identityArc,
-      lockedAction: "Complete to-do list",
+      id: "cognitive-bias-map",
+      name: "Cognitive Bias Map",
+      icon: Map,
+      description: "Identify the mental shortcuts and biases that shape your decisions and thinking.",
+      requiredPolls: 18,
+      unlockPrice: 6,
+      unlocked: pollsAnswered >= 18 && paidUnlocks.cognitiveBiasMap,
     },
   ];
 
@@ -706,50 +717,79 @@ export function DashboardPolls({
       </section>
 
       <section className="space-y-3">
-        <div className="rounded-2xl border border-raw-border/35 bg-raw-surface/20 p-4 sm:p-5">
-          <h2 className="font-display text-xl text-raw-text">Personality Insights</h2>
-          <p className="mt-1 text-sm text-raw-silver/55">
-            Your answers unlock deeper identity reports. Keep participating to reveal your full profile.
-          </p>
-
-          <div className="mt-4 grid grid-cols-2 gap-3">
-            <div className="rounded-xl border border-raw-border/30 bg-raw-black/30 p-3">
-              <p className="text-[10px] uppercase tracking-[0.14em] text-raw-silver/40">Poll Coverage</p>
-              <p className="mt-1 text-sm font-semibold text-raw-text">{pollsAnswered} polls answered</p>
-            </div>
-            <div className="rounded-xl border border-raw-border/30 bg-raw-black/30 p-3">
-              <p className="text-[10px] uppercase tracking-[0.14em] text-raw-silver/40">Unlocked Reports</p>
-              <p className="mt-1 text-sm font-semibold text-raw-text">{unlockedReports}/6</p>
+        <div className="flex items-end justify-between gap-3">
+          <div className="min-w-0">
+            <h2 className="font-display text-lg text-raw-text sm:text-xl">Personality Insights</h2>
+            <div className={`mt-1 h-1.5 w-28 overflow-hidden rounded-full ${isLightMode ? "bg-slate-300/70" : "bg-raw-border/40"}`}>
+              <span
+                className="block h-full rounded-full bg-raw-gold"
+                style={{ width: `${Math.min(100, Math.max(8, (unlockedReports / insightsProgress.length) * 100))}%` }}
+              />
             </div>
           </div>
+          <p className={`shrink-0 text-[11px] ${isLightMode ? "text-slate-600" : "text-raw-silver/55"}`}>
+            {pollsAnswered} polls answered
+          </p>
         </div>
 
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {insightsProgress.map((item) => (
             <article
               key={item.id}
-              className="relative overflow-hidden rounded-2xl border border-raw-border/35 bg-raw-surface/25 p-4"
+              className={`relative overflow-hidden rounded-2xl border p-4 ${
+                isLightMode
+                  ? "border-slate-300/80 bg-white/85"
+                  : "border-raw-gold/30 bg-raw-black/35 backdrop-blur-sm"
+              }`}
             >
-              <p className="font-display text-base text-raw-text">{item.name}</p>
+              <div className="flex items-start justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <item.icon className={`mt-0.5 h-4 w-4 ${isLightMode ? "text-amber-700" : "text-raw-gold/85"}`} />
+                  <p className="font-display text-base text-raw-text">{item.name}</p>
+                </div>
+                <span
+                  className={`rounded-full border px-2.5 py-0.5 text-[10px] ${
+                    isLightMode
+                      ? "border-amber-600/45 bg-amber-50 text-amber-700"
+                      : "border-raw-gold/35 bg-raw-gold/10 text-raw-gold/85"
+                  }`}
+                >
+                  {item.unlocked ? "Unlocked" : "Locked"}
+                </span>
+              </div>
 
-              <div className={!item.unlocked ? "pointer-events-none select-none blur-sm" : undefined}>
-                <p className="mt-2 text-xs leading-relaxed text-raw-silver/55">{item.description}</p>
+              <div className={!item.unlocked ? "pointer-events-none select-none blur-[2px]" : undefined}>
+                <p className={`mt-2 text-xs leading-relaxed ${isLightMode ? "text-slate-600" : "text-raw-silver/55"}`}>
+                  {item.description}
+                </p>
                 <button
                   disabled={!item.unlocked}
                   className={`mt-4 w-full rounded-xl border px-3 py-2 text-xs transition ${
                     item.unlocked
                       ? "border-emerald-400/35 bg-emerald-500/12 text-emerald-100 hover:bg-emerald-500/20"
-                      : "cursor-not-allowed border-raw-border/40 bg-raw-black/35 text-raw-silver/45"
+                      : isLightMode
+                        ? "cursor-not-allowed border-slate-300 bg-slate-100 text-slate-500"
+                        : "cursor-not-allowed border-raw-border/40 bg-raw-black/35 text-raw-silver/45"
                   }`}
                 >
-                  {item.unlocked ? "View Report" : item.lockedAction}
+                  {item.unlocked ? "Open report" : "Preview locked"}
                 </button>
               </div>
 
               {!item.unlocked && (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="rounded-full border border-raw-border/45 bg-raw-black/70 px-4 py-1.5 text-[11px] uppercase tracking-[0.18em] text-raw-silver/60 backdrop-blur-sm">
-                    Locked
+                <div className="absolute inset-x-0 bottom-0 flex items-center justify-between border-t border-dashed border-raw-border/40 px-3 py-2 text-[10px]">
+                  <span className={isLightMode ? "text-slate-600" : "text-raw-silver/55"}>
+                    {item.requiredPolls} polls required
+                  </span>
+                  <span
+                    className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 ${
+                      isLightMode
+                        ? "border-amber-600/40 bg-amber-100 text-amber-700"
+                        : "border-raw-gold/40 bg-raw-gold/10 text-raw-gold/85"
+                    }`}
+                  >
+                    <Lock className="h-2.5 w-2.5" />
+                    {item.unlockPrice > 0 ? `Unlock $${item.unlockPrice}` : "Unlock free"}
                   </span>
                 </div>
               )}
@@ -757,7 +797,9 @@ export function DashboardPolls({
           ))}
         </div>
 
-        <p className="text-center text-xs text-raw-silver/45">More insight models coming soon</p>
+        <p className={`text-center text-xs ${isLightMode ? "text-slate-500" : "text-raw-silver/45"}`}>
+          Answer more polls to unlock deeper reports.
+        </p>
       </section>
     </div>
   );

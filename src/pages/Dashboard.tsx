@@ -12,6 +12,7 @@ import { DashboardChallenges } from "@/components/dashboard/DashboardChallenges"
 import { DashboardDailySpin } from "@/components/dashboard/DashboardDailySpin";
 import { DashboardProfile } from "@/components/dashboard/DashboardProfile";
 import { DashboardWallet } from "@/components/dashboard/DashboardWallet";
+import { DashboardSectionShell } from "@/components/dashboard/DashboardSectionShell";
 import type { User, Poll } from "@/store/useRawStore";
 
 interface DashboardProps {
@@ -95,74 +96,93 @@ export default function Dashboard({
   const renderContent = () => {
     if (isHome || activeTab === "home") {
       return (
-        <DashboardHome
-          username={user.username}
-          avatarLevel={avatarLevel}
-          polls={polls}
-          votedPolls={votedPolls}
-          onNavigate={handleTabChange}
-          onOpenCommunity={handleOpenCommunity}
-        />
-      );
-    }
-
-    switch (activeTab) {
-      case "polls":
-        return (
-          <DashboardPolls
-            polls={polls}
-            votedPolls={votedPolls}
-            avatarLevel={avatarLevel}
-            userId={user.id}
-            username={user.username}
-            dailyAnsweredCount={dailyAnsweredCount}
-            dailyPollLimit={dailyPollLimit}
-            isDailyPollLimitReached={isDailyPollLimitReached}
-            onVote={vote}
-          />
-        );
-      case "communities":
-        return (
-          <DashboardCommunities
-            user={user}
-            activeCommunityId={activeCommunityId}
-            onOpenCommunity={handleOpenCommunity}
-            onBackToCommunities={handleBackToCommunities}
-          />
-        );
-      case "challenges":
-        return (
-          <DashboardChallenges
-            userId={user.id}
-            isAdmin={user.role === "admin"}
-            avatarLevel={avatarLevel}
-            pollsAnswered={votedPolls.size}
-            dailyAnsweredCount={dailyAnsweredCount}
-            dailyPollLimit={dailyPollLimit}
-          />
-        );
-      case "daily-spin":
-        return <DashboardDailySpin userId={user.id} isAdmin={user.role === "admin"} />;
-      case "wallet":
-        return <DashboardWallet />;
-      case "profile":
-        return (
-          <DashboardProfile
-            username={user.username}
-            avatarLevel={avatarLevel}
-            onLevelChange={setAvatarLevel}
-            pollsAnswered={votedPolls.size}
-          />
-        );
-      default:
-        return (
+        <DashboardSectionShell>
           <DashboardHome
             username={user.username}
             avatarLevel={avatarLevel}
             polls={polls}
             votedPolls={votedPolls}
             onNavigate={handleTabChange}
+            onOpenCommunity={handleOpenCommunity}
           />
+        </DashboardSectionShell>
+      );
+    }
+
+    switch (activeTab) {
+      case "polls":
+        return (
+          <DashboardSectionShell>
+            <DashboardPolls
+              polls={polls}
+              votedPolls={votedPolls}
+              userId={user.id}
+              username={user.username}
+              dailyAnsweredCount={dailyAnsweredCount}
+              dailyPollLimit={dailyPollLimit}
+              isDailyPollLimitReached={isDailyPollLimitReached}
+              onVote={vote}
+            />
+          </DashboardSectionShell>
+        );
+      case "communities":
+        return (
+          <DashboardSectionShell className="p-2 sm:p-3">
+            <DashboardCommunities
+              user={user}
+              activeCommunityId={activeCommunityId}
+              onOpenCommunity={handleOpenCommunity}
+              onBackToCommunities={handleBackToCommunities}
+            />
+          </DashboardSectionShell>
+        );
+      case "challenges":
+        return (
+          <DashboardSectionShell>
+            <DashboardChallenges
+              userId={user.id}
+              isAdmin={user.role === "admin"}
+              avatarLevel={avatarLevel}
+              pollsAnswered={votedPolls.size}
+              dailyAnsweredCount={dailyAnsweredCount}
+              dailyPollLimit={dailyPollLimit}
+            />
+          </DashboardSectionShell>
+        );
+      case "daily-spin":
+        return (
+          <DashboardSectionShell>
+            <DashboardDailySpin userId={user.id} isAdmin={user.role === "admin"} />
+          </DashboardSectionShell>
+        );
+      case "wallet":
+        return (
+          <DashboardSectionShell>
+            <DashboardWallet />
+          </DashboardSectionShell>
+        );
+      case "profile":
+        return (
+          <DashboardSectionShell>
+            <DashboardProfile
+              username={user.username}
+              avatarLevel={avatarLevel}
+              onLevelChange={setAvatarLevel}
+              pollsAnswered={votedPolls.size}
+            />
+          </DashboardSectionShell>
+        );
+      default:
+        return (
+          <DashboardSectionShell>
+            <DashboardHome
+              username={user.username}
+              avatarLevel={avatarLevel}
+              polls={polls}
+              votedPolls={votedPolls}
+              onNavigate={handleTabChange}
+            />
+          </DashboardSectionShell>
         );
     }
   };
