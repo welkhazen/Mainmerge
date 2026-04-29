@@ -4,38 +4,19 @@ import { ApiError, apiRequest } from "@/lib/api/client";
 import { track } from "@/lib/analytics";
 import type { Poll } from "@/store/types";
 import { getTodayKey } from "@/store/useRawStore.storage";
+import { POLL_QUESTION_SEEDS } from "@/features/polls/pollQuestions";
 
 const DAILY_POLL_LIMIT = 7;
 
-const INITIAL_POLLS: Poll[] = [
-  {
-    id: "poll-1",
-    question: "Do you believe your thoughts shape your reality?",
-    options: [
-      { id: "p1-yes", text: "Yes", votes: 482 },
-      { id: "p1-no", text: "No", votes: 187 },
-    ],
-    locked: false,
-  },
-  {
-    id: "poll-2",
-    question: "Do you think social media does more harm than good?",
-    options: [
-      { id: "p2-yes", text: "Yes", votes: 391 },
-      { id: "p2-no", text: "No", votes: 274 },
-    ],
-    locked: false,
-  },
-  {
-    id: "poll-3",
-    question: "Would you sacrifice comfort for personal growth?",
-    options: [
-      { id: "p3-yes", text: "Yes", votes: 523 },
-      { id: "p3-no", text: "No", votes: 146 },
-    ],
-    locked: false,
-  },
-];
+const INITIAL_POLLS: Poll[] = POLL_QUESTION_SEEDS.map((poll, index) => ({
+  id: poll.id,
+  question: poll.question,
+  options: [
+    { id: `p${index + 1}-yes`, text: "Yes", votes: poll.yesVotes },
+    { id: `p${index + 1}-no`, text: "No", votes: poll.noVotes },
+  ],
+  locked: false,
+}));
 
 export function usePolls(isLoggedIn: boolean) {
   const queryClient = useQueryClient();
