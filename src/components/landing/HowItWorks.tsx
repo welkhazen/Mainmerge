@@ -4,7 +4,7 @@ import { useTrackSectionView } from "@/lib/analytics/useTrackSectionView";
 const howItWorksSteps = [
   "01 Sign up anonymously and enter your raW app",
   "02 Build your identity - choose your avatar and change it if earned",
-  "03 Answer anonymously",
+  "03 Answer deep questions anonymously and see vote results instantly",
   "04 Enter your personalized ecosystem",
   "05 Find your People. Find your Place. Find your Purpose.",
 ];
