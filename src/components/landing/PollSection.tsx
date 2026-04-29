@@ -125,11 +125,23 @@ function PollPhoneContent({
   }, [commentsOpen]);
 
   return (
-    <div className="relative h-[480px] bg-black px-5 py-4 pointer-events-auto overflow-hidden select-none" style={{ userSelect: 'none' }}>
-      <div className="flex h-full flex-col select-none" style={{ userSelect: 'none' }}>
-        <div className="text-center mb-1 select-none" style={{ userSelect: 'none' }}>
-          <p className="font-display text-[9px] tracking-[0.2em] uppercase text-white/55">Anonymous Poll</p>
-          <div className="mt-1 flex items-center justify-center gap-3" style={{ userSelect: 'none' }}>
+    <div className="relative h-[480px] overflow-hidden bg-[#080808] px-4 pb-[max(0.8rem,env(safe-area-inset-bottom))] pt-[max(0.6rem,env(safe-area-inset-top))] pointer-events-auto select-none" style={{ userSelect: "none" }}>
+      <div className="absolute inset-0 opacity-25" style={{ backgroundImage: "radial-gradient(circle at 1px 1px, rgba(217,217,217,0.3) 1px, transparent 0)", backgroundSize: "14px 14px" }} />
+      <div className="relative flex h-full flex-col select-none" style={{ userSelect: "none" }}>
+        <div className="mb-3 rounded-2xl border border-[#7f7f7f]/45 bg-[#121212] px-3 py-2 shadow-[inset_0_0_0_1px_rgba(241,196,45,0.12)]">
+          <div className="flex items-center justify-between gap-2">
+            <p className="font-display text-[10px] tracking-[0.16em] uppercase text-[#EBEBEB]">2. Answer 5 launch polls</p>
+            <span className="rounded-full border border-[#F1C42D]/55 bg-[#F1C42D]/12 px-2 py-0.5 text-[8px] uppercase tracking-[0.12em] text-[#F1C42D]">{Math.min(pollIndex + Number(hasVoted), totalPolls)}/{totalPolls} completed</span>
+          </div>
+          <div className="mt-2 text-center">
+            <p className="text-[10px] tracking-[0.35em] text-[#D9D9D9]">{pollIndex + 1} / {totalPolls}</p>
+          </div>
+          <div className="mt-2 flex items-center justify-center gap-1.5">
+            {Array.from({ length: totalPolls }, (_, i) => (
+              <div key={i} className={`h-1 rounded-full transition-all ${i === pollIndex ? "w-5 bg-[#F1C42D] shadow-[0_0_10px_rgba(241,196,45,0.5)]" : "w-2 bg-[#3a3a3a]"}`} />
+            ))}
+          </div>
+          <div className="mt-2 flex items-center justify-center gap-3">
             <span className="text-[9px] text-white/25 flex items-center gap-1 select-none" style={{ userSelect: 'none' }}>
               <ThumbsUp className="h-2.5 w-2.5" /> {totalVotes}
             </span>
@@ -147,19 +159,13 @@ function PollPhoneContent({
           </div>
         </div>
 
-        <div className="flex items-center justify-center gap-1.5 mt-2 mb-3 select-none" style={{ userSelect: 'none' }}>
-          {Array.from({ length: totalPolls }, (_, i) => (
-            <div key={i} className={`h-1 rounded-full transition-all pointer-events-none ${i === pollIndex ? "w-4 bg-white" : "w-1 bg-white/20"}`} />
-          ))}
-        </div>
-
         <div
-          className={`relative rounded-3xl border p-6 flex-1 flex flex-col justify-center select-none transition-colors duration-150 ${
+          className={`relative rounded-[1.75rem] border p-5 flex-1 flex flex-col justify-center select-none transition-colors duration-150 ${
             swipeHint === "yes"
-              ? "bg-emerald-900/30 border-emerald-400/30"
+              ? "bg-emerald-900/20 border-emerald-400/40"
               : swipeHint === "no"
-              ? "bg-rose-900/30 border-rose-400/30"
-              : "bg-[#1a1a1a] border-white/15"
+              ? "bg-rose-900/20 border-rose-400/40"
+              : "border-[#D9D9D9]/35 bg-[linear-gradient(160deg,#171717,#0d0d0d)]"
           }`}
           style={{ userSelect: "none", touchAction: hasVoted ? "auto" : "pan-y" }}
           onTouchStart={handleTouchStart}
@@ -176,23 +182,24 @@ function PollPhoneContent({
             </div>
           )}
 
-          <p className={`font-display text-[17px] tracking-wide text-white text-center leading-relaxed font-medium select-none ${pollIndex === 0 && !hasVoted ? "mt-8" : ""}`} style={{ userSelect: "none" }}>
+          <p className="mb-2 text-center text-[9px] uppercase tracking-[0.24em] text-[#F1C42D]/80">POLL QUESTION</p>
+          <p className={`font-display text-[clamp(1.45rem,6.6vw,2rem)] tracking-wide text-[#EBEBEB] text-center leading-[1.2] font-medium select-none ${pollIndex === 0 && !hasVoted ? "mt-4" : ""}`} style={{ userSelect: "none" }}>
             {poll.question}
           </p>
 
           {!hasVoted && (
-            <div className="mt-5 flex gap-3">
+            <div className="mt-6 flex gap-3">
               <button
                 type="button"
                 onClick={() => noOption && onVote(noOption.id)}
-                className="flex-1 rounded-2xl border border-rose-500/30 bg-rose-500/10 py-3 text-sm font-semibold text-rose-300 transition-all active:scale-95 hover:bg-rose-500/20"
+                className="flex-1 rounded-2xl border border-[#D9D9D9]/45 bg-[linear-gradient(145deg,rgba(27,27,27,0.98),rgba(10,10,10,0.9))] py-3 text-base font-semibold text-[#D9D9D9] transition-all active:scale-95 hover:border-[#F1C42D]/55"
               >
                 No
               </button>
               <button
                 type="button"
                 onClick={() => yesOption && onVote(yesOption.id)}
-                className="flex-1 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 py-3 text-sm font-semibold text-emerald-300 transition-all active:scale-95 hover:bg-emerald-500/20"
+                className="flex-1 rounded-2xl border border-[#F1C42D]/55 bg-[linear-gradient(145deg,rgba(241,196,45,0.24),rgba(20,20,20,0.95))] py-3 text-base font-semibold text-[#F1C42D] transition-all active:scale-95 hover:brightness-110"
               >
                 Yes
               </button>
