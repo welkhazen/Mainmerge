@@ -35,7 +35,6 @@ class AnimationController {
     this.timeline = gsap.timeline({ repeat: -1 })
 
     this.setupRandomGenerator()
-    this.createStars()
     this.setupTimeline()
   }
 
@@ -271,6 +270,8 @@ export function SpiralAnimation() {
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+
     const dpr = window.devicePixelRatio || 1
     const size = Math.max(dimensions.width, dimensions.height)
     canvas.width = size * dpr
@@ -279,7 +280,18 @@ export function SpiralAnimation() {
     canvas.style.height = `${dimensions.height}px`
     ctx.scale(dpr, dpr)
 
+    if (mediaQuery.matches) {
+      animationRef.current?.destroy()
+      animationRef.current = null
+      return () => {
+        animationRef.current?.destroy()
+        animationRef.current = null
+      }
+    }
+
+    animationRef.current?.destroy()
     animationRef.current = new AnimationController(ctx, size)
+
     return () => {
       animationRef.current?.destroy()
       animationRef.current = null
