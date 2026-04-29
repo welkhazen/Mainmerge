@@ -5,6 +5,7 @@ import { WheelOfFortune, type WheelPrize } from "@/components/wheel/WheelOfFortu
 import { Lock, Sparkles } from "lucide-react";
 import { track } from "@/lib/analytics";
 import { useTrackSectionView } from "@/lib/analytics/useTrackSectionView";
+import { LandingSectionShell } from "@/components/landing/LandingSectionShell";
 
 interface WheelRewardProps {
   onLevelChange: (level: number) => void;
@@ -42,29 +43,14 @@ export function WheelReward({ onLevelChange, onSignupClick }: WheelRewardProps) 
   );
 
   return (
-    <section
-      ref={sectionRef as React.RefObject<HTMLElement>}
+    <LandingSectionShell
       id="wheel"
-      className="landing-section relative px-4 py-12 sm:px-6 sm:py-20 md:py-24"
+      sectionRef={sectionRef as React.Ref<HTMLElement>}
+      eyebrow="Early Access Reward"
+      title="Spin the wheel to land your rank."
+      description="One spin, one rank — yours to claim as an early access gift from raW."
     >
-      <div className="mx-auto w-full max-w-3xl">
-        <div className="mb-8 text-center sm:mb-10">
-          <div className="mb-3 flex items-center justify-center gap-2 sm:mb-4">
-            <div className="h-px w-6 bg-raw-gold/30 sm:w-8" />
-            <p className="font-display text-[10px] uppercase tracking-[0.28em] text-raw-gold/60 sm:tracking-[0.3em]">
-              Early Access Reward
-            </p>
-            <div className="h-px w-6 bg-raw-gold/30 sm:w-8" />
-          </div>
-          <h2 className="font-display text-xl tracking-wide text-raw-text sm:text-2xl md:text-3xl">
-            Spin the wheel to land your rank.
-          </h2>
-          <p className="mx-auto mt-3 max-w-lg text-sm text-raw-silver/50">
-            One spin, one rank — yours to claim as an early access gift from raW.
-          </p>
-        </div>
-
-        <div className="flex flex-col items-center gap-6 sm:gap-10">
+      <div className="flex flex-col items-center gap-6 sm:gap-10">
           <WheelOfFortune prizes={RANK_PRIZES} onSpinEnd={handleSpinEnd} disabled={hasSpun} />
 
           {landedLevel && (
@@ -102,7 +88,6 @@ export function WheelReward({ onLevelChange, onSignupClick }: WheelRewardProps) 
             </div>
           )}
         </div>
-      </div>
-    </section>
+    </LandingSectionShell>
   );
 }
