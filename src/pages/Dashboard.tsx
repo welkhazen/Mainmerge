@@ -112,18 +112,16 @@ export default function Dashboard({
     switch (activeTab) {
       case "polls":
         return (
-          <DashboardSectionShell>
-            <DashboardPolls
-              polls={polls}
-              votedPolls={votedPolls}
-              userId={user.id}
-              username={user.username}
-              dailyAnsweredCount={dailyAnsweredCount}
-              dailyPollLimit={dailyPollLimit}
-              isDailyPollLimitReached={isDailyPollLimitReached}
-              onVote={vote}
-            />
-          </DashboardSectionShell>
+          <DashboardPolls
+            polls={polls}
+            votedPolls={votedPolls}
+            userId={user.id}
+            username={user.username}
+            dailyAnsweredCount={dailyAnsweredCount}
+            dailyPollLimit={dailyPollLimit}
+            isDailyPollLimitReached={isDailyPollLimitReached}
+            onVote={vote}
+          />
         );
       case "communities":
         return (

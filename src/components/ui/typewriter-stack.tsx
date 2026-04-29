@@ -20,6 +20,7 @@ interface TypewriterStackProps {
   endScale?: number;
   highlightRawWord?: boolean;
   rawWordBaseClassName?: string;
+  rawWClassName?: string;
   lineClassNamesByIndex?: Partial<Record<number, string>>;
 }
 
@@ -47,6 +48,7 @@ export function TypewriterStack({
   endScale = 1,
   highlightRawWord = false,
   rawWordBaseClassName = "text-foreground",
+  rawWClassName,
   lineClassNamesByIndex,
 }: TypewriterStackProps) {
   const [wordIndex, setWordIndex] = useState(0);
@@ -115,7 +117,7 @@ export function TypewriterStack({
       <>
         {before ? <span className={textClassName}>{before}</span> : null}
         {ra ? <span className={rawWordBaseClassName}>{ra}</span> : null}
-        {w ? <span className={textClassName}>{w}</span> : null}
+        {w ? <span className={rawWClassName ?? textClassName}>{w}</span> : null}
         {after ? <span className={textClassName}>{after}</span> : null}
       </>
     );
