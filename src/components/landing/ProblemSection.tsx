@@ -6,12 +6,14 @@ export function ProblemSection() {
   return (
     <section ref={sectionRef} className="landing-section relative px-4 py-12 sm:px-6 sm:py-20 md:py-28">
       <div className="mx-auto max-w-3xl text-center">
-        <p className="text-xs uppercase tracking-[0.22em] text-raw-gold/75 sm:text-[13px]">The Problem</p>
+        <h2 className="font-display text-2xl tracking-wide text-raw-text sm:text-3xl md:text-[2.75rem]">
+          The Problem <span className="text-raw-gold">raW</span> Solves
+        </h2>
 
-        <h2 className="mt-4 font-display text-2xl tracking-wide text-raw-text sm:text-3xl md:text-4xl">
+        <p className="mt-6 font-display text-lg tracking-wide text-raw-silver/70 sm:text-xl md:text-2xl">
           Online spaces reward conformity,{" "}
           <span className="text-raw-gold">not authenticity</span>.
-        </h2>
+        </p>
 
         <p className="landing-type-body mt-5 text-raw-silver/65 sm:mt-6 sm:text-base">
           Your real opinions, questions, and perspectives stay hidden. Algorithms amplify outrage. Communities demand allegiance. You self-censor because your reputation is on the line.
