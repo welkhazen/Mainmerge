@@ -35,6 +35,10 @@ vi.mock("@/components/landing/AvatarIdentity", () => ({
   AvatarIdentity: () => <div data-testid="landing-avatar" />,
 }));
 
+vi.mock("@/components/landing/AvatarProgression", () => ({
+  AvatarProgression: () => <div data-testid="landing-avatar-progression" />,
+}));
+
 vi.mock("@/components/landing/WhyAnonymity", () => ({
   WhyAnonymity: () => <div data-testid="landing-why" />,
 }));

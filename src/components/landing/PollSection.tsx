@@ -4,6 +4,7 @@ import { PhoneMockup } from "@/components/ui/phone-mockup";
 import { ChevronLeft, ChevronRight, Send, ThumbsUp, MessageCircle, X } from "lucide-react";
 import { track } from "@/lib/analytics";
 import { useTrackSectionView } from "@/lib/analytics/useTrackSectionView";
+import { LandingSectionShell } from "@/components/landing/LandingSectionShell";
 
 interface PollSectionProps {
   polls: Poll[];
@@ -345,20 +346,18 @@ export function PollSection({ polls, votedPolls, isLoggedIn, freeVotesUsed, onVo
   };
 
   return (
-    <section
-      ref={sectionRef as React.RefObject<HTMLElement>}
+    <LandingSectionShell
       id="polls"
-      className="landing-section relative py-14 px-4 sm:py-20 sm:px-6 md:py-28"
+      sectionRef={sectionRef as React.Ref<HTMLElement>}
+      title="Start with a question."
+      description={
+        <>
+          Answer anonymously and see live results instantly.
+          {!isLoggedIn && " Answer 3 questions free — then sign up to keep going."}
+        </>
+      }
     >
       <div className="w-full">
-        <div className="mb-8 text-center sm:mb-14">
-          <h2 className="font-display text-2xl tracking-wide text-raw-text sm:text-3xl md:text-4xl">Start with a question.</h2>
-          <p className="mt-3 text-sm text-raw-silver/50 max-w-xl mx-auto sm:mt-4 sm:text-base">
-            Answer anonymously and see live results instantly.
-            {!isLoggedIn && " Answer 3 questions free — then sign up to keep going."}
-          </p>
-        </div>
-
         <div className="flex items-center justify-center">
           <div className="relative w-full max-w-sm sm:w-auto sm:max-w-none">
             {showSignupGate ? (
@@ -402,6 +401,6 @@ export function PollSection({ polls, votedPolls, isLoggedIn, freeVotesUsed, onVo
         </div>
 
       </div>
-    </section>
+    </LandingSectionShell>
   );
 }

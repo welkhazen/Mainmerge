@@ -1,9 +1,12 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { ThemeCustomizer } from "@/components/theme/ThemeCustomizer";
 import { track } from "@/lib/analytics";
 import { Switch } from "@/components/ui/switch";
 import { useTheme } from "@/providers/ThemeProvider";
+
+const RAW_LOGO_SRC = "/raw-logo-96.png";
 
 interface NavbarProps {
   isLoggedIn: boolean;
@@ -31,9 +34,25 @@ export function Navbar({ isLoggedIn, username, onSignupClick }: NavbarProps) {
   return (
     <nav className="landing-navbar fixed top-0 left-0 right-0 z-50 overflow-hidden border-b border-raw-border/50 bg-raw-black/80 backdrop-blur-xl">
       <div className="flex h-16 w-full items-center justify-between px-4 sm:px-6 lg:px-10">
-        <a href="#" className="font-display text-xl tracking-[0.3em] text-raw-text">
-          ra<span className="text-raw-gold">W</span>
-        </a>
+        <Link
+          to="/"
+          aria-label="raW — go to home"
+          className="flex items-center gap-2 font-display text-xl tracking-[0.3em] text-raw-text transition-opacity hover:opacity-90 sm:gap-3"
+        >
+          <img
+            src={RAW_LOGO_SRC}
+            alt=""
+            aria-hidden="true"
+            width={36}
+            height={36}
+            decoding="async"
+            fetchPriority="high"
+            className="h-8 w-8 shrink-0 sm:h-9 sm:w-9"
+          />
+          <span>
+            ra<span className="text-raw-gold">W</span>
+          </span>
+        </Link>
 
         {/* Desktop nav links */}
         <div className="hidden items-center gap-8 md:flex">
