@@ -20,7 +20,7 @@ const howItWorksOutputs = {
   ],
   4: [
     "And, for now, as we build your real application...",
-    "enjoy your 24/7 online world. always living and always accepting.",
+    "enjoy your 24/7 online world. always living, always growing, always accepting.",
     "join the communities and speak freely.",
     "Express yourself, say what you think, be heard,",
     "and feel like you belong.",
