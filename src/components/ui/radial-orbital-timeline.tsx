@@ -1,71 +1,50 @@
-"use client";
+'use client'
 
-import { Calendar, Clock, Code, FileText, User } from "lucide-react";
-import RadialOrbitalTimeline from "@/components/ui/radial-orbital-timeline";
+import type { LucideIcon } from 'lucide-react'
 
-const timelineData = [
-  {
-    id: 1,
-    title: "Fucking boredom is real.",
-    date: "Boredom",
-    content:
-      "You open your phone because you want something to happen — but nothing does. raW gives you live anonymous rooms where you can talk, answer, react, and meet people now.",
-    category: "Boredom",
-    icon: Calendar,
-    relatedIds: [2],
-    status: "completed" as const,
-    energy: 100,
-  },
-  {
-    id: 2,
-    title: "People everywhere. Still lonely.",
-    date: "Loneliness",
-    content:
-      "Followers, contacts, group chats — and still no real connection. raW helps you find people who actually match your thoughts, energy, and interests.",
-    category: "Loneliness",
-    icon: FileText,
-    relatedIds: [1, 3],
-    status: "completed" as const,
-    energy: 90,
-  },
-  {
-    id: 3,
-    title: "Say it without the mask.",
-    date: "Judgment",
-    content:
-      "Some things are easier to say when your name is not attached. raW lets you be honest without turning your real identity into the price of speaking.",
-    category: "Judgment",
-    icon: Code,
-    relatedIds: [2, 4],
-    status: "in-progress" as const,
-    energy: 60,
-  },
-  {
-    id: 4,
-    title: "Tired of performing? Same.",
-    date: "Fake Social",
-    content:
-      "Most apps push people to look perfect, interesting, or successful. raW is built for what people really think, feel, and want to say.",
-    category: "Fake Social",
-    icon: User,
-    relatedIds: [3, 5],
-    status: "pending" as const,
-    energy: 30,
-  },
-  {
-    id: 5,
-    title: "Not sure where you fit?",
-    date: "Lost",
-    content:
-      "Sometimes you don’t know what you need or where you belong. raW uses questions, conversations, and communities to help you understand yourself better.",
-    category: "Lost",
-    icon: Clock,
-    relatedIds: [4],
-    status: "pending" as const,
-    energy: 10,
-  },
-];
+type TimelineItem = {
+  id: number
+  title: string
+  date: string
+  content: string
+  category: string
+  icon: LucideIcon
+}
 
-export function RadialOrbitalTimelineDemo() {
-  return <RadialOrbitalTimeline timelineData={timelineData} />;
+type RadialOrbitalTimelineProps = {
+  timelineData: TimelineItem[]
+}
+
+export default function RadialOrbitalTimeline({ timelineData }: RadialOrbitalTimelineProps) {
+  const radius = 190
+
+  return (
+    <div className="relative flex min-h-[620px] items-center justify-center overflow-hidden px-6 py-16">
+      <div className="pointer-events-none absolute h-[390px] w-[390px] rounded-full border border-white/15" />
+
+      <div className="relative z-10 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-cyan-500 shadow-[0_0_50px_rgba(59,130,246,0.45)]">
+        <div className="h-6 w-6 rounded-full bg-white/75" />
+      </div>
+
+      {timelineData.map((item, index) => {
+        const angle = (-90 + (360 / timelineData.length) * index) * (Math.PI / 180)
+        const x = Math.cos(angle) * radius
+        const y = Math.sin(angle) * radius
+        const Icon = item.icon
+
+        return (
+          <div
+            key={item.id}
+            className="absolute z-20 w-[210px] -translate-x-1/2 -translate-y-1/2"
+            style={{ left: `calc(50% + ${x}px)`, top: `calc(50% + ${y}px)` }}
+          >
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-black/45 px-3 py-1.5 backdrop-blur-sm">
+              <Icon className="h-3.5 w-3.5 text-white/70" />
+              <span className="text-xs font-semibold text-white/65">{item.title}</span>
+            </div>
+          </div>
+        )
+      })}
+    </div>
+  )
 }
