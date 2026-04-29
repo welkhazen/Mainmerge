@@ -1,20 +1,33 @@
-import { DottedSurface } from "@/components/ui/dotted-surface";
-import { cn } from "@/lib/utils";
+'use client'
 
-export default function DemoOne() {
+import { SpiralAnimation } from '@/components/ui/spiral-animation'
+import { useEffect, useState } from 'react'
+
+const SpiralDemo = () => {
+  const [startVisible, setStartVisible] = useState(false)
+
+  useEffect(() => {
+    const timer = setTimeout(() => setStartVisible(true), 2000)
+    return () => clearTimeout(timer)
+  }, [])
+
   return (
-    <DottedSurface className="size-full">
-      <div className="absolute inset-0 flex items-center justify-center">
-        <div
-          aria-hidden="true"
-          className={cn(
-            "pointer-events-none absolute -top-10 left-1/2 size-full -translate-x-1/2 rounded-full",
-            "bg-[radial-gradient(ellipse_at_center,--theme(--color-foreground/.1),transparent_50%)]",
-            "blur-[30px]",
-          )}
-        />
-        <h1 className="font-mono text-4xl font-semibold">Dotted Surface</h1>
+    <div className="relative inset-0 h-full w-full overflow-hidden bg-black">
+      <div className="absolute inset-0">
+        <SpiralAnimation />
       </div>
-    </DottedSurface>
-  );
+
+      <div
+        className={`absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2 transition-all duration-1500 ease-out ${
+          startVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+        }`}
+      >
+        <span className="text-center text-xl font-extralight uppercase tracking-[0.2em] text-white sm:text-2xl">
+          The Problems raW Solves
+        </span>
+      </div>
+    </div>
+  )
 }
+
+export { SpiralDemo }
