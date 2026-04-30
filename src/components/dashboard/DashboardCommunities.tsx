@@ -850,9 +850,8 @@ const COMMUNITY_LOGOS: Record<string, string> = {
                           {!message.deletedAt && (
                             <div className="mt-2 flex justify-end">
                               <button
-                                onClick={() => { if (alreadyLiked) return; likeCommunityMessage(selectedCommunity.id, message.id, user.id); reloadChatData(); }}
-                                disabled={alreadyLiked}
-                                className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] transition-colors ${alreadyLiked ? "border-raw-gold/45 bg-raw-gold/10 text-raw-gold cursor-default" : "border-raw-border/20 text-raw-silver/50 hover:border-raw-gold/30 hover:text-raw-gold/70"}`}
+                                onClick={() => { likeCommunityMessage(selectedCommunity.id, message.id, user.id); reloadChatData(); }}
+                                className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] transition-colors ${alreadyLiked ? "border-raw-gold/45 bg-raw-gold/10 text-raw-gold hover:border-raw-gold/25 hover:bg-raw-gold/5" : "border-raw-border/20 text-raw-silver/50 hover:border-raw-gold/30 hover:text-raw-gold/70"}`}
                               >
                                 <Heart className={`h-3 w-3 ${alreadyLiked ? "fill-current" : ""}`} />
                                 {likeCount > 0 && <span>{likeCount}</span>}
