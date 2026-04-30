@@ -17,10 +17,8 @@ import {
   getPersistedUserById,
   readChatReports,
   readCommunityJoinRequests,
-  readCommunityRequests,
   writeChatReports,
   writeCommunityJoinRequests,
-  writeCommunityRequests,
 } from "@/lib/adminData";
 import {
   canManageCommunity,
@@ -28,19 +26,20 @@ import {
   countOnlineMembers,
   formatChatDayLabel,
   formatChatTimestamp,
-  joinCommunityChat,
-  likeCommunityMessage,
-  markCommunityRead,
-  readCommunityChats,
-  sendCommunityMessage,
-  setCommunityNotifications,
-  touchCommunityMemberActivity,
   updateCommunityPresentation,
 } from "@/lib/communityChat";
 import {
+  fetchCommunities,
+  joinCommunity as joinCommunitySupabase,
+  touchMemberActivity,
+  markCommunityRead as markCommunityReadSupabase,
+  setCommunityNotifications as setCommunityNotificationsSupabase,
+} from "@/backend/supabase/controllers/communityController";
+import { sendMessage as sendMessageSupabase, likeMessage } from "@/backend/supabase/controllers/chatController";
+import { submitCommunityRequest, fetchCommunityRequests } from "@/backend/supabase/controllers/communityRequestController";
+import {
   COMMUNITY_COVER_IMAGES,
   COMMUNITY_COVER_VIDEOS,
-  FEATURED_COMMUNITY_ID_SET,
 } from "@/lib/communityConstants";
 
 export function DashboardCommunities(props) {
@@ -169,12 +168,16 @@ const COMMUNITY_LOGOS: Record<string, string> = {
   const messagesContainerRef = useRef<HTMLDivElement | null>(null);
   const messageInputRef = useRef<HTMLInputElement | null>(null);
 
-    const reloadChatData = useCallback(() => {
-      setCommunities(readCommunityChats());
-      setCommunityRequests(readCommunityRequests());
+    const reloadChatData = useCallback(async () => {
+      const [communitiesData, requestsData] = await Promise.all([
+        fetchCommunities(),
+        fetchCommunityRequests(user.id),
+      ]);
+      setCommunities(communitiesData);
+      setCommunityRequests(requestsData);
       setChatReports(readChatReports());
       setCommunityJoinRequests(readCommunityJoinRequests());
-    }, []);
+    }, [user.id]);
 
     const selectedCommunity = useMemo(
       () => activeCommunityId ? communities.find((community) => community.id === activeCommunityId) ?? null : null,
@@ -229,7 +232,7 @@ const COMMUNITY_LOGOS: Record<string, string> = {
     }, [filteredMessages]);
 
     const directoryCommunities = useMemo(() => {
-      return communities.filter((community) => FEATURED_COMMUNITY_ID_SET.has(community.id));
+      return communities;
     }, [communities]);
 
     useEffect(() => {
@@ -264,9 +267,10 @@ const COMMUNITY_LOGOS: Record<string, string> = {
         return;
       }
 
-      touchCommunityMemberActivity(selectedCommunity.id, { userId: user.id, username: user.username });
       lastTouchedCommunityRef.current = touchKey;
-      reloadChatData();
+      touchMemberActivity(selectedCommunity.id, user.id, user.username)
+        .then(() => reloadChatData())
+        .catch(() => {});
     }, [isJoined, reloadChatData, selectedCommunity, user.id, user.username]);
 
     useEffect(() => {
@@ -274,8 +278,9 @@ const COMMUNITY_LOGOS: Record<string, string> = {
         return;
       }
 
-      markCommunityRead(selectedCommunity.id, user.id);
-      reloadChatData();
+      markCommunityReadSupabase(selectedCommunity.id, user.id)
+        .then(() => reloadChatData())
+        .catch(() => {});
     }, [isJoined, reloadChatData, selectedCommunity, unreadCount, user.id]);
 
     useLayoutEffect(() => {
@@ -286,22 +291,25 @@ const COMMUNITY_LOGOS: Record<string, string> = {
       messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
     }, [activeMessages, activeCommunityId, searchQuery]);
 
-    const handleJoinCommunity = (communityId: string, shouldOpenPage = false) => {
+    const handleJoinCommunity = async (communityId: string, shouldOpenPage = false) => {
       const targetCommunity = communities.find((community) => community.id === communityId);
       if (!targetCommunity) {
         return;
       }
 
-      joinCommunityChat(communityId, { userId: user.id, username: user.username });
-      lastTouchedCommunityRef.current = `${communityId}:${user.id}`;
-      reloadChatData();
-      toast({
-        title: `Joined ${targetCommunity.title}`,
-        description: "You can now chat in this group and receive notifications.",
-      });
-
-      if (shouldOpenPage) {
-        onOpenCommunity(communityId);
+      try {
+        await joinCommunitySupabase(communityId, user.id, user.username);
+        lastTouchedCommunityRef.current = `${communityId}:${user.id}`;
+        await reloadChatData();
+        toast({
+          title: `Joined ${targetCommunity.title}`,
+          description: "You can now chat in this group and receive notifications.",
+        });
+        if (shouldOpenPage) {
+          onOpenCommunity(communityId);
+        }
+      } catch {
+        toast({ title: "Failed to join", description: "Please try again." });
       }
     };
 
@@ -333,7 +341,7 @@ const COMMUNITY_LOGOS: Record<string, string> = {
       });
     };
 
-    const handleSendMessage = () => {
+    const handleSendMessage = async () => {
       if (!selectedCommunity) {
         return;
       }
@@ -351,19 +359,23 @@ const COMMUNITY_LOGOS: Record<string, string> = {
         return;
       }
 
-      if (!isJoined) {
-        joinCommunityChat(selectedCommunity.id, { userId: user.id, username: user.username });
-        lastTouchedCommunityRef.current = `${selectedCommunity.id}:${user.id}`;
-      }
+      try {
+        if (!isJoined) {
+          await joinCommunitySupabase(selectedCommunity.id, user.id, user.username);
+          lastTouchedCommunityRef.current = `${selectedCommunity.id}:${user.id}`;
+        }
 
-      sendCommunityMessage(selectedCommunity.id, {
-        senderId: user.id,
-        senderName: user.username,
-        text: trimmedMessage,
-      });
-      reloadChatData();
-      setMessageDraft("");
-      setMentionQuery(null);
+        await sendMessageSupabase(selectedCommunity.id, {
+          senderId: user.id,
+          senderName: user.username,
+          text: trimmedMessage,
+        });
+        await reloadChatData();
+        setMessageDraft("");
+        setMentionQuery(null);
+      } catch {
+        toast({ title: "Failed to send message", description: "Please try again." });
+      }
     };
 
     const handleCommunitySettingsSave = () => {
@@ -460,7 +472,7 @@ const COMMUNITY_LOGOS: Record<string, string> = {
       }));
     };
 
-    const handleSubmitCommunityRequest = () => {
+    const handleSubmitCommunityRequest = async () => {
       if (activePendingRequest) {
         toast({
           title: "Request already pending",
@@ -486,31 +498,27 @@ const COMMUNITY_LOGOS: Record<string, string> = {
         return;
       }
 
-      const nextRequest: CommunityRequestRecord = {
-        id: `community-request-${Date.now()}`,
-        requesterId: user.id,
-        requesterName: user.username,
-        communityName: trimmedDraft.communityName,
-        focusArea: trimmedDraft.focusArea,
-        audience: trimmedDraft.audience,
-        whyNow: trimmedDraft.whyNow,
-        samplePrompt: trimmedDraft.samplePrompt,
-        submittedAt: new Date().toISOString(),
-        status: "pending",
-      };
-
-      setCommunityRequests((previous) => {
-        const nextRequests = [nextRequest, ...previous];
-        writeCommunityRequests(nextRequests);
-        return nextRequests;
-      });
-      setRequestDraft(INITIAL_REQUEST_DRAFT);
-      setRequestSubmitAttempted(false);
-      setRequestFormOpen(false);
-      toast({
-        title: "Request sent to admin",
-        description: `${nextRequest.communityName} is now pending review. We will keep you posted in this dashboard.`,
-      });
+      try {
+        const newRequest = await submitCommunityRequest({
+          requesterId: user.id,
+          requesterName: user.username,
+          communityName: trimmedDraft.communityName,
+          focusArea: trimmedDraft.focusArea,
+          audience: trimmedDraft.audience,
+          whyNow: trimmedDraft.whyNow,
+          samplePrompt: trimmedDraft.samplePrompt,
+        });
+        await reloadChatData();
+        setRequestDraft(INITIAL_REQUEST_DRAFT);
+        setRequestSubmitAttempted(false);
+        setRequestFormOpen(false);
+        toast({
+          title: "Request sent to admin",
+          description: `${newRequest.communityName} is now pending review. We will keep you posted in this dashboard.`,
+        });
+      } catch {
+        toast({ title: "Failed to submit request", description: "Please try again." });
+      }
     };
 
     const renderDirectoryView = () => (
@@ -747,8 +755,9 @@ const COMMUNITY_LOGOS: Record<string, string> = {
               <button
                 onClick={() => {
                   if (!currentMember) return;
-                  setCommunityNotifications(selectedCommunity.id, user.id, !currentMember.notificationsEnabled);
-                  reloadChatData();
+                  setCommunityNotificationsSupabase(selectedCommunity.id, user.id, !currentMember.notificationsEnabled)
+                    .then(() => reloadChatData())
+                    .catch(() => {});
                 }}
                 disabled={!currentMember}
                 className="flex items-center gap-2 rounded-full border border-raw-gold/20 bg-raw-gold/[0.05] px-3 py-1.5 text-[11px] text-raw-gold/70 transition-colors hover:bg-raw-gold/[0.09] disabled:opacity-60"
@@ -850,7 +859,7 @@ const COMMUNITY_LOGOS: Record<string, string> = {
                           {!message.deletedAt && (
                             <div className="mt-2 flex justify-end">
                               <button
-                                onClick={() => { likeCommunityMessage(selectedCommunity.id, message.id, user.id); reloadChatData(); }}
+                                onClick={() => { likeMessage(message.id, user.id).then(() => reloadChatData()).catch(() => {}); }}
                                 className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] transition-colors ${alreadyLiked ? "border-raw-gold/45 bg-raw-gold/10 text-raw-gold hover:border-raw-gold/25 hover:bg-raw-gold/5" : "border-raw-border/20 text-raw-silver/50 hover:border-raw-gold/30 hover:text-raw-gold/70"}`}
                               >
                                 <Heart className={`h-3 w-3 ${alreadyLiked ? "fill-current" : ""}`} />

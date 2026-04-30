@@ -8,13 +8,16 @@ INSERT INTO users (id, username, password_hash, role, status, warnings, avatar_l
 VALUES (
 	gen_random_uuid(),
 	'admin',
-	crypt('Admin123!', gen_salt('bf')),
+	extensions.crypt('Admin123!', extensions.gen_salt('bf')),
 	'admin',
 	'active',
 	0,
 	1
 )
-ON CONFLICT (username) DO NOTHING;
+ON CONFLICT (username) DO UPDATE
+SET password_hash = extensions.crypt('Admin123!', extensions.gen_salt('bf')),
+    role = 'admin',
+    status = 'active';
 
 -- Replace 'yourusername' with the username you signed up with, then run:
 -- npx supabase db query --linked --file supabase/seed.sql

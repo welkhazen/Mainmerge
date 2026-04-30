@@ -29,6 +29,7 @@ export function useAuth() {
   const queryClient = useQueryClient();
   const [showSignup, setShowSignup] = useState(false);
   const [user, setUser] = useState<User | null>(null);
+  const [sessionLoaded, setSessionLoaded] = useState(false);
 
   // Restore session on mount
   useEffect(() => {
@@ -40,8 +41,9 @@ export function useAuth() {
           identify(u.id, { username: u.username });
         }
       })
-      .catch(() => {
-        // No active session
+      .catch(() => {})
+      .finally(() => {
+        setSessionLoaded(true);
       });
   }, []);
 
@@ -93,6 +95,7 @@ export function useAuth() {
       user,
       isLoggedIn: Boolean(user),
       isAdmin: user?.role === "admin",
+      sessionLoaded,
       showSignup,
       setShowSignup,
       requestSignupOtp,
@@ -100,6 +103,6 @@ export function useAuth() {
       login,
       logout,
     }),
-    [login, logout, requestSignupOtp, showSignup, user, verifySignupOtp],
+    [login, logout, requestSignupOtp, sessionLoaded, showSignup, user, verifySignupOtp],
   );
 }

@@ -18,6 +18,7 @@ export function useRawStore() {
     user: auth.user,
     isLoggedIn: auth.isLoggedIn,
     isAdmin: auth.isAdmin,
+    sessionLoaded: auth.sessionLoaded,
     polls: polls.polls,
     votedPolls: polls.votedPolls,
     freeVotesUsed: polls.freeVotesUsed,
