@@ -2,6 +2,8 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { ArrowLeft, Ban, BellRing, CheckCircle2, Flag, Lock, Plus, Shield, Trash2, Users, XCircle, Database } from "lucide-react";
 import { fetchPollsFromSupabase, insertPollToSupabase, deletePollFromSupabase, testSupabaseConnection } from "@/lib/supabasePolls";
+import { fetchCommunityRequests, updateCommunityRequestStatus } from "@/backend/supabase/controllers/communityRequestController";
+import { createCommunityFromRequest } from "@/backend/supabase/controllers/communityController";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 import { useRawStore } from "@/store/useRawStore";
@@ -38,7 +40,7 @@ function SummaryCard({ label, value, hint }: { label: string; value: string | nu
 }
 
 export default function Admin() {
-  const { user, isLoggedIn, isAdmin, logout } = useRawStore();
+  const { user, isLoggedIn, isAdmin, sessionLoaded, logout } = useRawStore();
   const [users, setUsers] = useState<PersistedUserRecord[]>([]);
   const [communityRequests, setCommunityRequests] = useState<CommunityRequestRecord[]>([]);
   const [chatReports, setChatReports] = useState<ChatReportRecord[]>([]);
@@ -49,11 +51,16 @@ export default function Admin() {
   const [supabaseStatus, setSupabaseStatus] = useState<"idle" | "ok" | "error">("idle");
   const [supabaseMessage, setSupabaseMessage] = useState("");
 
-  const refreshAdminData = useCallback(() => {
+  const refreshAdminData = useCallback(async () => {
     setUsers(readPersistedUsers());
-    setCommunityRequests(readCommunityRequests());
     setChatReports(readChatReports());
     setCommunityJoinRequests(readCommunityJoinRequests());
+    try {
+      const requests = await fetchCommunityRequests();
+      setCommunityRequests(requests);
+    } catch {
+      setCommunityRequests(readCommunityRequests());
+    }
   }, []);
 
   const loadPolls = useCallback(async () => {
@@ -93,6 +100,10 @@ export default function Admin() {
   );
   const bannedUsers = useMemo(() => users.filter((entry) => entry.moderationStatus === "banned"), [users]);
 
+  if (!sessionLoaded) {
+    return null;
+  }
+
   if (!isLoggedIn || !user) {
     return <Navigate to="/" replace />;
   }
@@ -122,37 +133,29 @@ export default function Admin() {
     );
   }
 
-  const handleRequestStatus = (requestId: string, status: "approved" | "rejected") => {
-    let approvedRequest: CommunityRequestRecord | null = null;
-    const nextRequests = communityRequests.map((request) => {
-      if (request.id !== requestId) {
-        return request;
+  const handleRequestStatus = async (requestId: string, status: "approved" | "rejected") => {
+    const target = communityRequests.find((r) => r.id === requestId);
+    if (!target) return;
+
+    try {
+      await updateCommunityRequestStatus(requestId, status, user.username);
+      if (status === "approved") {
+        const approvedRequest = { ...target, status, reviewedAt: new Date().toISOString(), reviewedBy: user.username };
+        await createCommunityFromRequest(approvedRequest);
+        track("admin_action_performed", { action: "approve_community", resource_id: requestId });
+      } else {
+        track("admin_action_performed", { action: "reject_community", resource_id: requestId });
       }
-
-      approvedRequest = {
-        ...request,
-        status,
-        reviewedAt: new Date().toISOString(),
-        reviewedBy: user.username,
-      };
-
-      return approvedRequest;
-    });
-
-    setCommunityRequests(nextRequests);
-    writeCommunityRequests(nextRequests);
-    if (status === "approved" && approvedRequest) {
-      createCommunityFromApprovedRequest(approvedRequest);
-      track("admin_action_performed", { action: "approve_community", resource_id: requestId });
-    } else if (status === "rejected") {
-      track("admin_action_performed", { action: "reject_community", resource_id: requestId });
+      await refreshAdminData();
+      toast({
+        title: status === "approved" ? "Community approved" : "Community rejected",
+        description: status === "approved"
+          ? "The request has been approved and is now live in Communities."
+          : "The request has been rejected.",
+      });
+    } catch {
+      toast({ title: "Action failed", description: "Please try again." });
     }
-    toast({
-      title: status === "approved" ? "Community approved" : "Community rejected",
-      description: status === "approved"
-        ? "The request has been approved and is now live in Communities as a group chat."
-        : `The request has been ${status} and removed from the pending queue.`,
-    });
   };
 
   const handleJoinRequestStatus = (requestId: string, status: "approved" | "rejected") => {
