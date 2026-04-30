@@ -4,8 +4,48 @@ export class ApiError extends Error {
   }
 }
 
-// Mock responses for development mode
-function getMockResponse(input: string): unknown {
+async function getPollsMockResponse(): Promise<unknown> {
+  try {
+    const { supabase } = await import('@/backend/supabase/client');
+    const { data, error } = await supabase
+      .from('polls')
+      .select(`
+        id,
+        question,
+        status,
+        poll_options (
+          id,
+          label,
+          position
+        )
+      `)
+      .order('created_at', { ascending: false });
+    if (!error && data && data.length > 0) {
+      const polls = data.map((row) => {
+        const opts = [...((row.poll_options as { id: string; label: string; position: number }[]) ?? [])]
+          .sort((a, b) => a.position - b.position);
+        return {
+          id: row.id,
+          question: row.question,
+          options: opts.map((o) => ({ id: o.id, text: o.label, votes: 0 })),
+          locked: row.status === 'locked',
+        };
+      });
+      return { polls, votedPolls: [] };
+    }
+  } catch {
+    // fall through to localStorage
+  }
+  try {
+    const raw = localStorage.getItem("raw.admin.polls.v1");
+    const polls = raw ? (JSON.parse(raw) as unknown[]) : [];
+    return { polls, votedPolls: [] };
+  } catch {
+    return { polls: [], votedPolls: [] };
+  }
+}
+
+async function getMockResponse(input: string): Promise<unknown> {
   if (input.includes("/api/users/me")) {
     return {
       user: {
@@ -21,13 +61,7 @@ function getMockResponse(input: string): unknown {
     };
   }
   if (input.includes("/api/polls") || input.includes("/api/v2/polls")) {
-    try {
-      const raw = localStorage.getItem("raw.admin.polls.v1");
-      const polls = raw ? (JSON.parse(raw) as unknown[]) : [];
-      return { polls, votedPolls: [] };
-    } catch {
-      return { polls: [], votedPolls: [] };
-    }
+    return getPollsMockResponse();
   }
   if (input.includes("/api/assistant")) {
     return { message: "" };
@@ -40,11 +74,7 @@ function getMockResponse(input: string): unknown {
 
 export async function apiRequest<T>(input: string, init?: RequestInit): Promise<T> {
   if (typeof window !== "undefined") {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(getMockResponse(input) as T);
-      }, 100);
-    });
+    return getMockResponse(input) as Promise<T>;
   }
 
   const response = await fetch(input, {
