@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
-import { ArrowLeft, Ban, BellRing, CheckCircle2, Flag, Lock, Plus, Shield, Trash2, Users, XCircle } from "lucide-react";
+import { ArrowLeft, Ban, BellRing, CheckCircle2, Flag, Lock, Plus, Shield, Trash2, Users, XCircle, Database } from "lucide-react";
+import { fetchPollsFromSupabase, insertPollToSupabase, deletePollFromSupabase, testSupabaseConnection } from "@/lib/supabasePolls";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 import { useRawStore } from "@/store/useRawStore";
@@ -45,23 +46,41 @@ export default function Admin() {
   const [adminPolls, setAdminPolls] = useState<AdminPollRecord[]>([]);
   const [pollQuestion, setPollQuestion] = useState("");
   const [pollOptions, setPollOptions] = useState(["", ""]);
+  const [supabaseStatus, setSupabaseStatus] = useState<"idle" | "ok" | "error">("idle");
+  const [supabaseMessage, setSupabaseMessage] = useState("");
 
   const refreshAdminData = useCallback(() => {
     setUsers(readPersistedUsers());
     setCommunityRequests(readCommunityRequests());
     setChatReports(readChatReports());
-    setAdminPolls(readAdminPolls());
     setCommunityJoinRequests(readCommunityJoinRequests());
+  }, []);
+
+  const loadPolls = useCallback(async () => {
+    const result = await testSupabaseConnection();
+    setSupabaseStatus(result.ok ? "ok" : "error");
+    setSupabaseMessage(result.message);
+    if (result.ok) {
+      try {
+        const polls = await fetchPollsFromSupabase();
+        setAdminPolls(polls);
+      } catch {
+        setAdminPolls(readAdminPolls());
+      }
+    } else {
+      setAdminPolls(readAdminPolls());
+    }
   }, []);
 
   useEffect(() => {
     refreshAdminData();
+    loadPolls();
     window.addEventListener("focus", refreshAdminData);
 
     return () => {
       window.removeEventListener("focus", refreshAdminData);
     };
-  }, [refreshAdminData]);
+  }, [refreshAdminData, loadPolls]);
 
   const openReports = useMemo(() => chatReports.filter((report) => report.status === "open"), [chatReports]);
   const pendingRequests = useMemo(
@@ -203,22 +222,44 @@ export default function Admin() {
     });
   };
 
-  const handleCreatePoll = () => {
+  const handleCreatePoll = async () => {
     const filledOptions = pollOptions.filter((o) => o.trim().length > 0);
     if (!pollQuestion.trim() || filledOptions.length < 2) {
       toast({ title: "Fill in the question and at least 2 options." });
       return;
     }
-    createAdminPoll(pollQuestion, filledOptions);
-    setAdminPolls(readAdminPolls());
+    const poll = createAdminPoll(pollQuestion, filledOptions);
     setPollQuestion("");
     setPollOptions(["", ""]);
-    toast({ title: "Poll created", description: "It will appear in the daily poll feed." });
+    if (supabaseStatus === "ok") {
+      try {
+        await insertPollToSupabase(poll);
+        const polls = await fetchPollsFromSupabase();
+        setAdminPolls(polls);
+        toast({ title: "Poll created", description: "Saved to Supabase." });
+      } catch {
+        setAdminPolls(readAdminPolls());
+        toast({ title: "Poll created", description: "Saved locally (Supabase sync failed)." });
+      }
+    } else {
+      setAdminPolls(readAdminPolls());
+      toast({ title: "Poll created", description: "Saved locally." });
+    }
   };
 
-  const handleDeletePoll = (pollId: string) => {
+  const handleDeletePoll = async (pollId: string) => {
     deleteAdminPoll(pollId);
-    setAdminPolls(readAdminPolls());
+    if (supabaseStatus === "ok") {
+      try {
+        await deletePollFromSupabase(pollId);
+        const polls = await fetchPollsFromSupabase();
+        setAdminPolls(polls);
+      } catch {
+        setAdminPolls(readAdminPolls());
+      }
+    } else {
+      setAdminPolls(readAdminPolls());
+    }
     toast({ title: "Poll deleted" });
   };
 
@@ -416,8 +457,20 @@ export default function Admin() {
         <section className="rounded-2xl border border-raw-border/30 bg-raw-surface/20 p-4 sm:rounded-3xl sm:p-6">
           <div className="flex items-center gap-3">
             <Plus className="h-5 w-5 text-raw-gold/70" />
-            <div>
-              <h2 className="font-display text-xl tracking-wide">Create poll</h2>
+            <div className="flex-1">
+              <div className="flex flex-wrap items-center gap-3">
+                <h2 className="font-display text-xl tracking-wide">Create poll</h2>
+                <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[10px] ${
+                  supabaseStatus === "ok"
+                    ? "border-emerald-400/35 bg-emerald-500/10 text-emerald-300"
+                    : supabaseStatus === "error"
+                      ? "border-red-400/35 bg-red-500/10 text-red-300"
+                      : "border-raw-border/30 text-raw-silver/40"
+                }`}>
+                  <Database className="h-3 w-3" />
+                  {supabaseStatus === "ok" ? "Supabase connected" : supabaseStatus === "error" ? `Supabase: ${supabaseMessage}` : "Connecting…"}
+                </span>
+              </div>
               <p className="mt-1 text-sm text-raw-silver/45">Add a new poll with its answer options. It will show up in the daily feed.</p>
             </div>
           </div>

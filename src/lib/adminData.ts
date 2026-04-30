@@ -256,11 +256,11 @@ export function writeAdminPolls(polls: AdminPollRecord[]): void {
 }
 
 export function createAdminPoll(question: string, optionTexts: string[]): AdminPollRecord {
-  const id = `admin-poll-${Date.now()}`;
+  const id = crypto.randomUUID();
   const poll: AdminPollRecord = {
     id,
     question: question.trim(),
-    options: optionTexts.map((text, i) => ({ id: `${id}-opt-${i}`, text: text.trim(), votes: 0 })),
+    options: optionTexts.map((text) => ({ id: crypto.randomUUID(), text: text.trim(), votes: 0 })),
     locked: false,
     createdAt: new Date().toISOString(),
   };
