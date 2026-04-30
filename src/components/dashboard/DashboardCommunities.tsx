@@ -647,10 +647,20 @@ const COMMUNITY_LOGOS: Record<string, string> = {
                       const joinReq = communityJoinRequests.find(
                         (r) => r.communityId === community.id && r.requesterId === user.id,
                       );
-                      if (joinReq) {
+                      if (joinReq?.status === "approved") {
+                        return (
+                          <Button
+                            onClick={() => handleJoinCommunity(community.id, true)}
+                            className="w-full rounded-xl bg-raw-gold px-2 py-2 text-xs text-raw-ink hover:bg-raw-gold/90"
+                          >
+                            Open Chat
+                          </Button>
+                        );
+                      }
+                      if (joinReq?.status === "pending" || joinReq?.status === "rejected") {
                         return (
                           <div className="rounded-xl border border-amber-400/20 bg-amber-400/[0.06] px-2 py-2 text-[10px] text-amber-200/80 text-center">
-                            {joinReq.status === "pending" ? "Pending" : joinReq.status === "rejected" ? "Rejected" : "Approved"}
+                            {joinReq.status === "pending" ? "Pending" : "Rejected"}
                           </div>
                         );
                       }
@@ -725,11 +735,24 @@ const COMMUNITY_LOGOS: Record<string, string> = {
                 const joinReq = communityJoinRequests.find(
                   (r) => r.communityId === selectedCommunity.id && r.requesterId === user.id,
                 );
-                return joinReq ? (
-                  <div className="rounded-full border border-amber-400/20 bg-amber-400/[0.06] px-3 py-1 text-[11px] text-amber-200/80">
-                    {joinReq.status === "pending" ? "Access request pending" : joinReq.status === "rejected" ? "Rejected by admin" : "Approved"}
-                  </div>
-                ) : (
+                if (joinReq?.status === "approved") {
+                  return (
+                    <button
+                      onClick={() => handleJoinCommunity(selectedCommunity.id)}
+                      className="flex items-center gap-2 rounded-full bg-raw-gold px-3 py-1.5 text-[11px] font-semibold text-raw-ink transition-colors hover:bg-raw-gold/90"
+                    >
+                      Join Group
+                    </button>
+                  );
+                }
+                if (joinReq?.status === "pending" || joinReq?.status === "rejected") {
+                  return (
+                    <div className="rounded-full border border-amber-400/20 bg-amber-400/[0.06] px-3 py-1 text-[11px] text-amber-200/80">
+                      {joinReq.status === "pending" ? "Access request pending" : "Rejected by admin"}
+                    </div>
+                  );
+                }
+                return (
                   <button
                     onClick={() => handleRequestJoinCommunity(selectedCommunity)}
                     className="flex items-center gap-2 rounded-full border border-raw-gold/30 bg-transparent px-3 py-1.5 text-[11px] text-raw-gold transition-colors hover:bg-raw-gold/10"
