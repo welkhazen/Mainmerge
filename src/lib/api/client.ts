@@ -39,8 +39,7 @@ function getMockResponse(input: string): unknown {
 }
 
 export async function apiRequest<T>(input: string, init?: RequestInit): Promise<T> {
-  // Development mode: use mock responses
-  if (typeof window !== "undefined" && window.location.hostname === "localhost") {
+  if (typeof window !== "undefined") {
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve(getMockResponse(input) as T);
