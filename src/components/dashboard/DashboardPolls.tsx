@@ -769,23 +769,23 @@ export function DashboardPolls({
           </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <div className="grid grid-cols-2 gap-2.5">
           {insightsProgress.map((item) => (
             <article
               key={item.id}
-              className={`relative overflow-hidden rounded-2xl border p-4 ${
+              className={`flex flex-col overflow-hidden rounded-xl border p-3 ${
                 isLightMode
                   ? "border-slate-300/80 bg-white/85"
                   : "border-raw-gold/30 bg-raw-black/35 backdrop-blur-sm"
               }`}
             >
-              <div className="flex items-start justify-between gap-2">
-                <div className="flex items-center gap-2">
-                  <item.icon className={`mt-0.5 h-4 w-4 ${isLightMode ? "text-amber-700" : "text-raw-gold/85"}`} />
-                  <p className="font-display text-base text-raw-text">{item.name}</p>
+              <div className="flex items-start justify-between gap-1.5">
+                <div className="flex min-w-0 items-center gap-1.5">
+                  <item.icon className={`mt-0.5 h-3.5 w-3.5 shrink-0 ${isLightMode ? "text-amber-700" : "text-raw-gold/85"}`} />
+                  <p className="font-display text-sm leading-snug text-raw-text">{item.name}</p>
                 </div>
                 <span
-                  className={`rounded-full border px-2.5 py-0.5 text-[10px] ${
+                  className={`shrink-0 rounded-full border px-2 py-0.5 text-[9px] ${
                     isLightMode
                       ? "border-amber-600/45 bg-amber-50 text-amber-700"
                       : "border-raw-gold/35 bg-raw-gold/10 text-raw-gold/85"
@@ -795,13 +795,13 @@ export function DashboardPolls({
                 </span>
               </div>
 
-              <div className={!item.unlocked ? "pointer-events-none select-none blur-[2px]" : undefined}>
-                <p className={`mt-2 text-xs leading-relaxed ${isLightMode ? "text-slate-600" : "text-raw-silver/55"}`}>
+              <div className={`flex-1 ${!item.unlocked ? "pointer-events-none select-none blur-[2px]" : ""}`}>
+                <p className={`mt-1.5 text-[11px] leading-relaxed ${isLightMode ? "text-slate-600" : "text-raw-silver/55"}`}>
                   {item.description}
                 </p>
                 <button
                   disabled={!item.unlocked}
-                  className={`mt-4 w-full rounded-xl border px-3 py-2 text-xs transition ${
+                  className={`mt-3 w-full rounded-lg border px-2 py-1.5 text-[11px] transition ${
                     item.unlocked
                       ? "border-emerald-400/35 bg-emerald-500/12 text-emerald-100 hover:bg-emerald-500/20"
                       : isLightMode
@@ -814,19 +814,19 @@ export function DashboardPolls({
               </div>
 
               {!item.unlocked && (
-                <div className="absolute inset-x-0 bottom-0 flex items-center justify-between border-t border-dashed border-raw-border/40 px-3 py-2 text-[10px]">
+                <div className="-mx-3 -mb-3 mt-2.5 flex items-center justify-between border-t border-dashed border-raw-border/40 px-2.5 py-1.5 text-[9px]">
                   <span className={isLightMode ? "text-slate-600" : "text-raw-silver/55"}>
-                    {item.requiredPolls} polls required
+                    {item.requiredPolls} polls req.
                   </span>
                   <span
-                    className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 ${
+                    className={`inline-flex items-center gap-1 rounded-full border px-1.5 py-0.5 ${
                       isLightMode
                         ? "border-amber-600/40 bg-amber-100 text-amber-700"
                         : "border-raw-gold/40 bg-raw-gold/10 text-raw-gold/85"
                     }`}
                   >
-                    <Lock className="h-2.5 w-2.5" />
-                    {item.unlockPrice > 0 ? `Unlock $${item.unlockPrice}` : "Unlock free"}
+                    <Lock className="h-2 w-2" />
+                    {item.unlockPrice > 0 ? `$${item.unlockPrice}` : "Free"}
                   </span>
                 </div>
               )}
