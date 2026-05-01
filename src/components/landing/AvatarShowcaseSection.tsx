@@ -71,7 +71,10 @@ export function AvatarShowcaseSection({
             </div>
           </div>
 
-          <div className="mt-6 hidden grid-cols-5 gap-5 sm:grid">
+          <div
+            className="mt-6 hidden gap-5 sm:grid"
+            style={{ gridTemplateColumns: `repeat(${Math.ceil(LEVEL_THEMES.length / 2)}, minmax(0, 1fr))` }}
+          >
             {LEVEL_THEMES.map((_, i) => {
               const level = i + 1;
               const isActive = level === displayLevel;
