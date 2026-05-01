@@ -38,9 +38,15 @@ import {
 import { sendMessage as sendMessageSupabase, likeMessage } from "@/backend/supabase/controllers/chatController";
 import { submitCommunityRequest, fetchCommunityRequests } from "@/backend/supabase/controllers/communityRequestController";
 import {
+  fetchWaitlistSummary,
+  joinCommunityWaitlist,
+} from "@/backend/supabase/controllers/waitlistController";
+import {
   COMMUNITY_COVER_IMAGES,
   COMMUNITY_COVER_VIDEOS,
 } from "@/lib/communityConstants";
+
+const WAITLIST_UNLOCK_THRESHOLD = 200;
 
 export function DashboardCommunities(props) {
       // Main search query state (fix ReferenceError)
@@ -160,6 +166,9 @@ const COMMUNITY_LOGOS: Record<string, string> = {
   const [communityRequests, setCommunityRequests] = useState<CommunityRequestRecord[]>([]);
   const [chatReports, setChatReports] = useState<ChatReportRecord[]>([]);
   const [communityJoinRequests, setCommunityJoinRequests] = useState<CommunityJoinRequestRecord[]>([]);
+  const [waitlistCounts, setWaitlistCounts] = useState<Record<string, number>>({});
+  const [waitlistJoinedIds, setWaitlistJoinedIds] = useState<Set<string>>(new Set());
+  const [waitlistJoiningId, setWaitlistJoiningId] = useState<string | null>(null);
   const [messageDraft, setMessageDraft] = useState("");
   const [mentionQuery, setMentionQuery] = useState<string | null>(null);
   const [mentionIndex, setMentionIndex] = useState(0);
@@ -169,14 +178,17 @@ const COMMUNITY_LOGOS: Record<string, string> = {
   const messageInputRef = useRef<HTMLInputElement | null>(null);
 
     const reloadChatData = useCallback(async () => {
-      const [communitiesData, requestsData] = await Promise.all([
+      const [communitiesData, requestsData, waitlistData] = await Promise.all([
         fetchCommunities(),
         fetchCommunityRequests(user.id),
+        fetchWaitlistSummary(user.id).catch(() => ({ counts: {}, joinedCommunityIds: new Set<string>() })),
       ]);
       setCommunities(communitiesData);
       setCommunityRequests(requestsData);
       setChatReports(readChatReports());
       setCommunityJoinRequests(readCommunityJoinRequests());
+      setWaitlistCounts(waitlistData.counts);
+      setWaitlistJoinedIds(waitlistData.joinedCommunityIds);
     }, [user.id]);
 
     const selectedCommunity = useMemo(
@@ -339,6 +351,38 @@ const COMMUNITY_LOGOS: Record<string, string> = {
         title: "Access request sent",
         description: `Admin will review your request to join ${community.title}.`,
       });
+    };
+
+    const handleJoinWaitlist = async (community: PersistedCommunityRecord) => {
+      if (waitlistJoinedIds.has(community.id) || waitlistJoiningId === community.id) {
+        return;
+      }
+      setWaitlistJoiningId(community.id);
+      const previousCount = waitlistCounts[community.id] ?? 0;
+      setWaitlistCounts((prev) => ({ ...prev, [community.id]: previousCount + 1 }));
+      setWaitlistJoinedIds((prev) => {
+        const next = new Set(prev);
+        next.add(community.id);
+        return next;
+      });
+      try {
+        const newCount = await joinCommunityWaitlist(community.id, user.id, user.username);
+        setWaitlistCounts((prev) => ({ ...prev, [community.id]: newCount }));
+        toast({
+          title: "You're on the waitlist",
+          description: `${newCount}/${WAITLIST_UNLOCK_THRESHOLD} signed up to unlock ${community.title}.`,
+        });
+      } catch {
+        setWaitlistCounts((prev) => ({ ...prev, [community.id]: previousCount }));
+        setWaitlistJoinedIds((prev) => {
+          const next = new Set(prev);
+          next.delete(community.id);
+          return next;
+        });
+        toast({ title: "Failed to join waitlist", description: "Please try again." });
+      } finally {
+        setWaitlistJoiningId((current) => (current === community.id ? null : current));
+      }
     };
 
     const handleSendMessage = async () => {
@@ -657,20 +701,24 @@ const COMMUNITY_LOGOS: Record<string, string> = {
                           </Button>
                         );
                       }
-                      if (joinReq?.status === "pending" || joinReq?.status === "rejected") {
-                        return (
-                          <div className="rounded-xl border border-amber-400/20 bg-amber-400/[0.06] px-2 py-2 text-[10px] text-amber-200/80 text-center">
-                            {joinReq.status === "pending" ? "Pending" : "Rejected"}
-                          </div>
-                        );
-                      }
+                      const onWaitlist = waitlistJoinedIds.has(community.id);
+                      const waitlistCount = waitlistCounts[community.id] ?? 0;
+                      const isJoining = waitlistJoiningId === community.id;
                       return (
-                        <Button
-                          onClick={() => handleRequestJoinCommunity(community)}
-                          className="w-full rounded-xl border border-raw-gold/30 bg-transparent px-2 py-2 text-xs text-raw-gold hover:bg-raw-gold/10"
-                        >
-                          <Lock className="h-3 w-3" /> Join
-                        </Button>
+                        <div className="space-y-1.5">
+                          <Button
+                            onClick={() => handleJoinWaitlist(community)}
+                            disabled={onWaitlist || isJoining}
+                            className="w-full rounded-xl border border-raw-gold/30 bg-transparent px-2 py-2 text-xs text-raw-gold hover:bg-raw-gold/10 disabled:opacity-70"
+                          >
+                            <Lock className="h-3 w-3" /> {onWaitlist ? "On Waitlist" : "Join Waitlist"}
+                          </Button>
+                          <p className="text-center text-[10px] text-raw-silver/45">
+                            <span className="text-raw-gold/80">{waitlistCount}</span>
+                            <span className="text-raw-silver/35">/{WAITLIST_UNLOCK_THRESHOLD}</span>
+                            <span className="ml-1">to unlock</span>
+                          </p>
+                        </div>
                       );
                     })() : (
                       <Button

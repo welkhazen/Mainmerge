@@ -97,7 +97,7 @@ const rarityBadge = {
   legendary: "bg-raw-gold/10 text-raw-gold border-raw-gold/30",
 };
 
-export function DashboardMarketplace({ avatarLevel }: { avatarLevel: number }) {
+export function DashboardMarketplace({ avatarLevel, xp = 0 }: { avatarLevel: number; xp?: number }) {
   return (
     <div className="space-y-6 sm:space-y-8">
       {/* Header */}
@@ -112,7 +112,7 @@ export function DashboardMarketplace({ avatarLevel }: { avatarLevel: number }) {
       <div className="flex items-center justify-between gap-3 rounded-2xl border border-raw-gold/15 bg-gradient-to-r from-raw-gold/[0.04] to-transparent p-4 sm:p-5">
         <div className="min-w-0">
           <p className="text-xs text-raw-silver/40">Your Balance</p>
-          <p className="mt-0.5 text-xl font-bold text-raw-gold sm:text-2xl">1,850 <span className="text-sm font-normal text-raw-gold/60">XP</span></p>
+          <p className="mt-0.5 text-xl font-bold text-raw-gold sm:text-2xl">{xp.toLocaleString()} <span className="text-sm font-normal text-raw-gold/60">XP</span></p>
         </div>
         <div className="text-right">
           <p className="text-xs text-raw-silver/40">Current Level</p>
