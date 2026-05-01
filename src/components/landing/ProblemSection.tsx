@@ -7,19 +7,9 @@ export function ProblemSection() {
   return (
     <section ref={sectionRef} className="landing-section relative px-4 py-14 sm:px-6 sm:py-20 md:py-28">
       <div className="mx-auto max-w-6xl">
-        <h2
-          className="text-center font-display text-3xl tracking-[0.04em] sm:text-4xl md:text-5xl"
-          style={{
-            background: "linear-gradient(135deg, #F6D454 0%, #F1C42D 40%, #B8941E 65%, #F1C42D 100%)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            backgroundClip: "text",
-            filter: "drop-shadow(0 0 10px rgba(241,196,45,0.35)) drop-shadow(0 0 22px rgba(241,196,45,0.18))",
-          }}
-        >
-          THE PROBLEM
+        <h2 className="text-center font-display text-2xl tracking-wide text-raw-text sm:text-3xl md:text-4xl">
+          The Problem
         </h2>
-        <div className="mx-auto mt-3 h-px w-40 bg-gradient-to-r from-transparent via-[#F1C42D]/90 to-transparent sm:w-56" aria-hidden />
         <h3 className="mt-3 text-center font-display text-lg tracking-wide text-raw-text/80 sm:text-xl md:text-2xl">
           Why existing social apps still leave people disconnected
         </h3>
