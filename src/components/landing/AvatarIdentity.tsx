@@ -1,5 +1,5 @@
-import { AvatarFigure } from "@/components/ui/avatar-figure";
 import { getAvatarTheme } from "@/lib/avatar-theme";
+import { Logo3D } from "@/components/ui/logo-3d";
 import { useTrackSectionView } from "@/lib/analytics/useTrackSectionView";
 import { LandingSectionShell } from "@/components/landing/LandingSectionShell";
 
@@ -48,7 +48,18 @@ export function AvatarIdentity({ displayLevel }: AvatarIdentityProps) {
               border: `1px solid ${theme.ring}`,
             }}
           />
-          <AvatarFigure level={displayLevel} size="xl" selected />
+          {/* Circular avatar background with spinning logo inside */}
+          <div
+            className="relative flex items-center justify-center rounded-full transition-all duration-700"
+            style={{
+              width: 180,
+              height: 180,
+              background: `radial-gradient(circle at 50% 40%, ${theme.bg} 0%, #050505 70%)`,
+              boxShadow: `0 0 0 2px ${theme.ring}, 0 0 18px ${glowColor}`,
+            }}
+          >
+            <Logo3D size={140} colorScheme="white" />
+          </div>
         </div>
 
         <div className="text-center">
