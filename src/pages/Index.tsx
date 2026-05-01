@@ -4,8 +4,7 @@ import { ProblemSection } from "@/components/landing/ProblemSection";
 import { GlobeHero } from "@/components/landing/GlobeHero";
 import { HowItWorks } from "@/components/landing/HowItWorks";
 import { PollSection } from "@/components/landing/PollSection";
-import { AvatarIdentity } from "@/components/landing/AvatarIdentity";
-import { AvatarProgression } from "@/components/landing/AvatarProgression";
+import { AvatarShowcaseSection } from "@/components/landing/AvatarShowcaseSection";
 import { WheelReward } from "@/components/landing/WheelReward";
 import { WhyAnonymity } from "@/components/landing/WhyAnonymity";
 import { AnonQuestionSection } from "@/components/landing/AnonQuestionSection";
@@ -167,8 +166,7 @@ const Index = () => {
           onVote={vote}
           onSignupClick={() => setShowSignup(true)}
         />
-        <AvatarIdentity displayLevel={hoveredAvatarLevel ?? avatarLevel} />
-        <AvatarProgression
+        <AvatarShowcaseSection
           avatarLevel={avatarLevel}
           displayLevel={hoveredAvatarLevel ?? avatarLevel}
           onLevelChange={setAvatarLevel}
