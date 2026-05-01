@@ -54,7 +54,7 @@ const Index = () => {
     login,
     logout,
   } = useRawStore();
-  const { hostname, isMyRawApp, isTheRawMe } = useHostMode();
+  const { hostname, isTheRawMe } = useHostMode();
 
   useEffect(() => {
     if (!isLoggedIn || !user || !isTheRawMe || typeof window === "undefined") {
@@ -140,41 +140,6 @@ const Index = () => {
         vote={vote}
         onLogout={logout}
       />
-    );
-  }
-
-  if (isMyRawApp) {
-    return (
-      <div className="min-h-screen bg-raw-black px-4 py-8 sm:px-6 sm:py-10">
-        <div className="mx-auto flex min-h-[80vh] max-w-4xl flex-col items-center justify-center rounded-3xl border border-raw-border/40 bg-gradient-to-b from-raw-surface/40 to-raw-black/90 p-5 text-center sm:p-8">
-          <p className="text-xs uppercase tracking-[0.28em] text-raw-gold/65">myraw.app</p>
-          <h1 className="mt-3 font-display text-3xl tracking-wide text-raw-text sm:text-4xl">Sign in to your raW dashboard</h1>
-          <p className="mt-4 max-w-xl text-sm text-raw-silver/50">
-            This domain is app-only. Sign in or create your account to continue.
-          </p>
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-            <button
-              onClick={() => setShowSignup(true)}
-              className="rounded-xl bg-raw-gold px-6 py-3 text-sm font-semibold text-raw-ink"
-            >
-              Sign In / Sign Up
-            </button>
-          </div>
-          <p className="mt-6 text-xs text-raw-silver/35">Want the full public landing experience? Visit theraw.me.</p>
-        </div>
-
-        <Suspense fallback={null}>
-          {showSignup ? (
-            <SignupModalLazy
-              open={showSignup}
-              onClose={() => setShowSignup(false)}
-              onRequestSignupOtp={requestSignupOtp}
-              onVerifySignupOtp={verifySignupOtp}
-              onLogin={login}
-            />
-          ) : null}
-        </Suspense>
-      </div>
     );
   }
 
