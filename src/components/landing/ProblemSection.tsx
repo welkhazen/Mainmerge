@@ -1,4 +1,4 @@
-import { SpiralDemo } from "@/components/ui/demo";
+import { RadialOrbitalTimelineDemo } from "@/components/ui/radial-orbital-timeline-demo";
 import { useTrackSectionView } from "@/lib/analytics/useTrackSectionView";
 
 export function ProblemSection() {
@@ -6,7 +6,7 @@ export function ProblemSection() {
 
   return (
     <section ref={sectionRef} className="landing-section relative">
-      <SpiralDemo />
+      <RadialOrbitalTimelineDemo />
     </section>
   );
 }
