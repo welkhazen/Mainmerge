@@ -102,6 +102,8 @@ export default function Dashboard({
             avatarLevel={avatarLevel}
             polls={polls}
             votedPolls={votedPolls}
+            dailyAnsweredCount={dailyAnsweredCount}
+            dailyPollLimit={dailyPollLimit}
             onNavigate={handleTabChange}
             onOpenCommunity={handleOpenCommunity}
           />
@@ -178,6 +180,8 @@ export default function Dashboard({
               avatarLevel={avatarLevel}
               polls={polls}
               votedPolls={votedPolls}
+              dailyAnsweredCount={dailyAnsweredCount}
+              dailyPollLimit={dailyPollLimit}
               onNavigate={handleTabChange}
             />
           </DashboardSectionShell>

@@ -21,6 +21,8 @@ export const LEVEL_THEMES: AvatarTheme[] = [
   { bg: "#1f1705", figure: "#facc15", ring: "#b8900b", glow: "#facc1590",  name: "Golden Legend"    },
 ];
 
+export const MAX_LEVEL = LEVEL_THEMES.length;
+
 export function getAvatarTheme(level: number): AvatarTheme {
   return LEVEL_THEMES[level - 1] || LEVEL_THEMES[0];
 }

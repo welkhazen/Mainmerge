@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { AvatarFigure, getAvatarTheme } from "@/components/ui/avatar-figure";
-import { LEVEL_THEMES } from "@/lib/avatar-theme";
+import { LEVEL_THEMES, MAX_LEVEL } from "@/lib/avatar-theme";
 import {
   Trophy,
   Target,
@@ -16,15 +16,16 @@ interface DashboardProfileProps {
   avatarLevel: number;
   onLevelChange: (level: number) => void;
   pollsAnswered: number;
+  xp?: number;
 }
 
 const stats = [
-  { icon: Target, label: "Polls Answered", value: "12", key: "polls" },
-  { icon: MessageCircle, label: "Messages Sent", value: "47", key: "messages" },
-  { icon: Flame, label: "Day Streak", value: "7", key: "streak" },
-  { icon: TrendingUp, label: "XP Earned", value: "1,850", key: "xp" },
-  { icon: Calendar, label: "Member Since", value: "Mar 2026", key: "member" },
-  { icon: Award, label: "Badges", value: "3", key: "badges" },
+  { icon: Target, label: "Polls Answered", value: "—", key: "polls" },
+  { icon: MessageCircle, label: "Messages Sent", value: "—", key: "messages" },
+  { icon: Flame, label: "Day Streak", value: "—", key: "streak" },
+  { icon: TrendingUp, label: "XP Earned", value: "—", key: "xp" },
+  { icon: Calendar, label: "Member Since", value: "—", key: "member" },
+  { icon: Award, label: "Badges", value: "—", key: "badges" },
 ];
 
 const badges = [
@@ -40,13 +41,13 @@ export function DashboardProfile({
   avatarLevel,
   onLevelChange,
   pollsAnswered,
+  xp = 0,
 }: DashboardProfileProps) {
   const [hoveredLevel, setHoveredLevel] = useState<number | null>(null);
   const displayLevel = hoveredLevel ?? avatarLevel;
   const theme = getAvatarTheme(displayLevel);
   const xpForNext = displayLevel * 500;
-  const currentXp = 1850;
-  const xpPct = Math.min(Math.round((currentXp / xpForNext) * 100), 100);
+  const xpPct = Math.min(Math.round((xp / xpForNext) * 100), 100);
 
   return (
     <div className="space-y-5">
@@ -66,8 +67,8 @@ export function DashboardProfile({
         {/* XP Progress */}
         <div className="mt-4 w-full">
           <div className="mb-1.5 flex items-center justify-between">
-            <span className="text-[10px] text-raw-silver/30">XP to Level {Math.min(displayLevel + 1, 10)}</span>
-            <span className="text-[10px] text-raw-gold/60">{currentXp.toLocaleString()} / {xpForNext.toLocaleString()}</span>
+            <span className="text-[10px] text-raw-silver/30">XP to Level {Math.min(displayLevel + 1, MAX_LEVEL)}</span>
+            <span className="text-[10px] text-raw-gold/60">{xp.toLocaleString()} / {xpForNext.toLocaleString()}</span>
           </div>
           <div className="h-1.5 overflow-hidden rounded-full bg-raw-border/30">
             <div
@@ -78,7 +79,10 @@ export function DashboardProfile({
         </div>
 
         {/* Level selector */}
-        <div className="mt-4 grid w-full grid-cols-5 justify-items-center gap-1">
+        <div
+          className="mt-4 grid w-full justify-items-center gap-1"
+          style={{ gridTemplateColumns: `repeat(${Math.ceil(MAX_LEVEL / 2)}, minmax(0, 1fr))` }}
+        >
           {Array.from({ length: LEVEL_THEMES.length }, (_, i) => i + 1).map((lvl) => (
             <button
               key={lvl}
@@ -109,7 +113,7 @@ export function DashboardProfile({
             >
               <Icon className="mx-auto mb-1.5 h-3.5 w-3.5 text-raw-gold/40" />
               <p className="text-base font-bold text-raw-text sm:text-lg">
-                {stat.key === "polls" ? pollsAnswered : stat.value}
+                {stat.key === "polls" ? pollsAnswered : stat.key === "xp" ? xp.toLocaleString() : stat.value}
               </p>
               <p className="mt-0.5 text-[8px] uppercase leading-tight tracking-wider text-raw-silver/30 sm:text-[9px]">
                 {stat.label}
