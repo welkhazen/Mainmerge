@@ -12,6 +12,7 @@ interface AvatarShowcaseSectionProps {
   onPreviewLevel: (level: number | null) => void;
 }
 
+export function AvatarShowcaseSection({ avatarLevel, displayLevel, onLevelChange, onPreviewLevel }: AvatarShowcaseSectionProps) {
 export function AvatarShowcaseSection({
   avatarLevel,
   displayLevel,

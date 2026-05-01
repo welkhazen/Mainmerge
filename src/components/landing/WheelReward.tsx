@@ -48,6 +48,15 @@ export function WheelReward({ onLevelChange, onSignupClick }: WheelRewardProps) 
   const sectionRef = useTrackSectionView("wheel");
   const [landedReward, setLandedReward] = useState<SpinAvatarReward | null>(null);
   const [hasSpun, setHasSpun] = useState(false);
+  const [rewardsImageMissing, setRewardsImageMissing] = useState(false);
+
+  const prizeWeights = useMemo(
+    () =>
+      Object.fromEntries(
+        SPIN_AVATAR_REWARDS.map((reward) => [reward.id, 1 / reward.denominator])
+      ),
+    []
+  );
 
   const prizeWeights = useMemo(
     () =>
