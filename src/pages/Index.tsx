@@ -8,6 +8,7 @@ import { AvatarShowcaseSection } from "@/components/landing/AvatarShowcaseSectio
 import { WheelReward } from "@/components/landing/WheelReward";
 import { WhyAnonymity } from "@/components/landing/WhyAnonymity";
 import { AnonQuestionSection } from "@/components/landing/AnonQuestionSection";
+import { EarnedWarUpgradesSection } from "@/components/landing/EarnedWarUpgradesSection";
 import { LandingFooter } from "@/components/landing/LandingFooter";
 import { OnboardingJourney } from "@/components/onboarding/OnboardingJourney";
 import MatrixBackgroundIntro from "@/components/ui/matrix-background-intro";
@@ -176,6 +177,7 @@ const Index = () => {
           onLevelChange={setAvatarLevel}
           onSignupClick={() => setShowSignup(true)}
         />
+        <EarnedWarUpgradesSection />
         <AnonQuestionSection />
         <WhyAnonymity />
       </div>

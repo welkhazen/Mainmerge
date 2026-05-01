@@ -20,8 +20,6 @@ type SpinAvatarReward = {
   denominator: number;
 };
 
-const SPIN_REWARDS_IMAGE_SRC = "/avatars/spin-rewards.png";
-
 const SPIN_AVATAR_REWARDS: SpinAvatarReward[] = [
   { id: "inferno-lord", level: 10, codename: "Inferno Lord", odds: "1/500", denominator: 500 },
   { id: "solar-flare", level: 9, codename: "Solar Flare", odds: "1/250", denominator: 250 },
@@ -60,6 +58,14 @@ export function WheelReward({ onLevelChange, onSignupClick }: WheelRewardProps) 
     []
   );
 
+  const prizeWeights = useMemo(
+    () =>
+      Object.fromEntries(
+        SPIN_AVATAR_REWARDS.map((reward) => [reward.id, 1 / reward.denominator])
+      ),
+    []
+  );
+
   const handleSpinEnd = useCallback(
     (prize: WheelPrize) => {
       const reward = SPIN_AVATAR_REWARDS.find((entry) => entry.id === prize.id);
@@ -85,18 +91,6 @@ export function WheelReward({ onLevelChange, onSignupClick }: WheelRewardProps) 
 
         <div className="w-full max-w-5xl rounded-2xl border border-raw-border/40 bg-raw-surface/20 p-4 sm:p-6">
           <p className="text-center font-display text-xs uppercase tracking-[0.2em] text-raw-gold/70">Spin Rewards & Rarity</p>
-          {!rewardsImageMissing ? (
-            <img
-              src={SPIN_REWARDS_IMAGE_SRC}
-              alt="Spin reward avatars with rarity odds"
-              className="mt-4 w-full rounded-xl border border-raw-border/35 bg-black/25 object-contain"
-              onError={() => setRewardsImageMissing(true)}
-            />
-          ) : (
-            <div className="mt-4 rounded-xl border border-red-500/35 bg-red-500/10 p-3 text-center text-xs text-red-200">
-              Reward artwork missing: add <code className="font-mono text-red-100">public/avatars/spin-rewards.png</code> to display the exact image.
-            </div>
-          )}
           <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
             {SPIN_AVATAR_REWARDS.map((reward) => {
               const isActive = landedReward?.id === reward.id;
