@@ -22,6 +22,8 @@ interface DashboardHomeProps {
   avatarLevel: number;
   polls: Poll[];
   votedPolls: Set<string>;
+  dailyAnsweredCount: number;
+  dailyPollLimit: number;
   onNavigate: (tab: DashboardTab) => void;
   onOpenCommunity: (communityId: string) => void;
 }
@@ -69,10 +71,12 @@ export function DashboardHome({
   avatarLevel,
   polls,
   votedPolls,
+  dailyAnsweredCount,
+  dailyPollLimit,
   onNavigate,
   onOpenCommunity,
 }: DashboardHomeProps) {
-  const dailyItemsLeft = 3;
+  const dailyItemsLeft = Math.max(0, dailyPollLimit - dailyAnsweredCount);
   const allCommunities = useMemo(() => readCommunityChats(), []);
   const previewCommunities = useMemo(
     () => FEATURED_COMMUNITY_IDS.map((id) => allCommunities.find((c) => c.id === id)).filter(Boolean) as typeof allCommunities,

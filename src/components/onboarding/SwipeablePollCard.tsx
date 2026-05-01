@@ -249,6 +249,30 @@ export function SwipeablePollCard({
                 <span className={isAnswered ? "mt-1 text-[11px] leading-snug opacity-70" : "text-sm leading-snug"}>{rightOption}</span>
               </button>
             </div>
+
+            {/* Navigation buttons (after voting) */}
+            {isAnswered && (
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => onNavigate?.("left")}
+                  disabled={pollIndex === 0}
+                  className="flex items-center justify-center gap-1.5 rounded-xl border border-raw-border/40 bg-raw-black/40 py-2.5 text-[11px] font-medium text-raw-silver/65 transition hover:border-raw-border/70 hover:text-raw-text disabled:cursor-not-allowed disabled:opacity-30"
+                  aria-label="Previous poll"
+                >
+                  <ArrowLeft className="h-3.5 w-3.5" /> Previous
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onNavigate?.("right")}
+                  disabled={pollIndex >= totalPolls - 1}
+                  className="flex items-center justify-center gap-1.5 rounded-xl border border-raw-border/40 bg-raw-black/40 py-2.5 text-[11px] font-medium text-raw-silver/65 transition hover:border-raw-border/70 hover:text-raw-text disabled:cursor-not-allowed disabled:opacity-30"
+                  aria-label="Next poll"
+                >
+                  Next <ArrowRight className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Comments (after voting) */}
