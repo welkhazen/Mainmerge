@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { AvatarFigure } from "@/components/ui/avatar-figure";
-import { getAvatarTheme } from "@/lib/avatar-theme";
-import { LEVEL_THEMES, MAX_LEVEL } from "@/lib/avatar-theme";
+import { getAvatarTheme } from "@/lib/avataridentity";
+import { LEVEL_THEMES, MAX_LEVEL } from "@/lib/avataridentity";
 import {
   Trophy,
   Target,
