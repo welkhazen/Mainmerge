@@ -1,17 +1,53 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Poll } from "@/store/useRawStore";
-import { useTheme } from "@/providers/ThemeProvider";
+import { useTheme } from "@/providers/useTheme";
 import {
   ArrowLeft,
   ArrowRight,
   BarChart3,
+  BookOpen,
+  Brain,
   ChevronLeft,
   ChevronRight,
+  CircleGauge,
+  Fingerprint,
+  Lock,
+  Map,
   MessageCircle,
   SendHorizontal,
   Sparkles,
   Users,
+  WandSparkles,
 } from "lucide-react";
+
+interface PollProgressProps {
+  currentIndex: number;
+  total: number;
+  onSelect: (index: number) => void;
+}
+
+function PollProgress({ currentIndex, total, onSelect }: PollProgressProps) {
+  return (
+    <div className="mb-5 text-center">
+      <p className="text-[13px] tracking-[0.35em] text-[#D9D9D9]">{currentIndex + 1} / {total}</p>
+      <div className="mt-3 flex items-center justify-center gap-2">
+        {Array.from({ length: total }).map((_, index) => (
+          <button
+            key={index}
+            type="button"
+            onClick={() => onSelect(index)}
+            className={`h-1.5 rounded-full transition-all ${
+              index === currentIndex
+                ? "w-7 bg-[#F1C42D] shadow-[0_0_10px_rgba(241,196,45,0.45)]"
+                : "w-4 bg-[#3A3A3A]"
+            }`}
+            aria-label={`Go to poll ${index + 1}`}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
 
 interface PollHistoryComment {
   id: string;
@@ -31,7 +67,6 @@ interface PollHistoryReply {
 interface DashboardPollsProps {
   polls: Poll[];
   votedPolls: Set<string>;
-  avatarLevel: number;
   userId: string;
   username: string;
   dailyAnsweredCount: number;
@@ -43,7 +78,6 @@ interface DashboardPollsProps {
 export function DashboardPolls({
   polls,
   votedPolls,
-  avatarLevel,
   userId,
   username,
   dailyAnsweredCount,
@@ -55,15 +89,18 @@ export function DashboardPolls({
   const isLightMode = mode === "light";
   const answersStorageKey = `raw.poll-history.answers.${userId}`;
   const commentsStorageKey = `raw.poll-history.comments.${userId}`;
-  const swipeGuideStorageKey = `raw.polls.swipe-guide-seen.${userId}`;
+  const swipeGuideStorageKey = "raw.polls.swipe-guide-seen";
   const [answerHistory, setAnswerHistory] = useState<Record<string, string>>({});
   const [historyComments, setHistoryComments] = useState<Record<string, PollHistoryComment[]>>({});
   const [commentDraft, setCommentDraft] = useState("");
   const [replyDrafts, setReplyDrafts] = useState<Record<string, string>>({});
   const [currentPollIndex, setCurrentPollIndex] = useState(0);
   const pointerStartXRef = useRef<number | null>(null);
+  const pointerStartTimeRef = useRef<number>(0);
   const swipeGuideButtonRef = useRef<HTMLButtonElement | null>(null);
   const [swipeOffsetX, setSwipeOffsetX] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const [showAllComments, setShowAllComments] = useState(false);
   const [hasSeenSwipeGuide, setHasSeenSwipeGuide] = useState(false);
 
   useEffect(() => {
@@ -107,6 +144,7 @@ export function DashboardPolls({
     if (currentPollIndex >= polls.length && polls.length > 0) {
       setCurrentPollIndex(polls.length - 1);
     }
+    setShowAllComments(false);
   }, [currentPollIndex, polls.length]);
 
   const currentPoll = polls[currentPollIndex]
@@ -118,8 +156,8 @@ export function DashboardPolls({
   const selectedOptionId = currentPoll ? answerHistory[currentPoll.id] : undefined;
   const hasVotedCurrent = Boolean(currentPoll && answerHistory[currentPoll.id]);
   const currentComments = currentPoll ? historyComments[currentPoll.id] ?? [] : [];
-  const yesOption = currentPoll?.options.find((option) => option.text.trim().toLowerCase() === "yes");
-  const noOption = currentPoll?.options.find((option) => option.text.trim().toLowerCase() === "no");
+  const leftOption = currentPoll?.options[0];
+  const rightOption = currentPoll?.options[1] ?? currentPoll?.options[0];
   const showSwipeGuide =
     currentPollIndex === 0 && !hasVotedCurrent && !hasSeenSwipeGuide;
 
@@ -140,61 +178,67 @@ export function DashboardPolls({
   const paidUnlocks = {
     bigFiveProfile: false,
     shadowSelf: false,
-    decisionFingerprint: false,
-    identityArc: false,
+    attachmentStyle: false,
+    cognitiveBiasMap: false,
   };
 
   const insightsProgress = [
     {
       id: "myers-briggs",
       name: "Myers-Briggs",
+      icon: Brain,
       description: "Discover your personality type across 4 key dimensions of how you see the world.",
-      unlockRequirements: ["Reach level 1", "OR answer 5 polls"],
-      unlocked: avatarLevel >= 1 || pollsAnswered >= 5,
-      lockedAction: "View Report",
+      requiredPolls: 5,
+      unlockPrice: 0,
+      unlocked: pollsAnswered >= 5,
     },
     {
       id: "big-five-profile",
       name: "Big Five Profile",
+      icon: Fingerprint,
       description:
         "Measure your openness, conscientiousness, extraversion, agreeableness, and emotional range.",
-      unlockRequirements: ["Reach level 2", "Answer 10 polls", "Pay $4 to unlock"],
-      unlocked: avatarLevel >= 2 && pollsAnswered >= 10 && paidUnlocks.bigFiveProfile,
-      lockedAction: "Complete to-do list",
+      requiredPolls: 10,
+      unlockPrice: 4,
+      unlocked: pollsAnswered >= 10 && paidUnlocks.bigFiveProfile,
     },
     {
       id: "emotional-intelligence",
       name: "Emotional Intelligence",
+      icon: CircleGauge,
       description:
         "Understand how you process emotions, empathy, and interpersonal cues under pressure.",
-      unlockRequirements: ["Reach level 3", "Answer 15 polls"],
-      unlocked: avatarLevel >= 3 && pollsAnswered >= 15,
-      lockedAction: "Complete to-do list",
+      requiredPolls: 15,
+      unlockPrice: 0,
+      unlocked: pollsAnswered >= 15,
     },
     {
       id: "shadow-self",
       name: "Shadow Self",
+      icon: WandSparkles,
       description:
         "Reveal hidden patterns, blind spots, and traits that surface in difficult moments.",
-      unlockRequirements: ["Path A", "Reach level 1", "Pay $8", "Path B", "Answer 50 polls"],
-      unlocked: (avatarLevel >= 1 && paidUnlocks.shadowSelf) || pollsAnswered >= 50,
-      lockedAction: "Unlock $8",
+      requiredPolls: 20,
+      unlockPrice: 8,
+      unlocked: pollsAnswered >= 20 || paidUnlocks.shadowSelf,
     },
     {
-      id: "decision-fingerprint",
-      name: "Decision Fingerprint",
-      description: "Map your decision style: instinctive, strategic, reflective, or adaptive.",
-      unlockRequirements: ["Reach level 4", "Answer 22 polls", "Pay $6 to unlock"],
-      unlocked: avatarLevel >= 4 && pollsAnswered >= 22 && paidUnlocks.decisionFingerprint,
-      lockedAction: "Complete to-do list",
+      id: "attachment-style",
+      name: "Attachment Style",
+      icon: BookOpen,
+      description: "Understand your patterns in relationships and emotional bonding with others.",
+      requiredPolls: 14,
+      unlockPrice: 2,
+      unlocked: pollsAnswered >= 14 && paidUnlocks.attachmentStyle,
     },
     {
-      id: "identity-arc",
-      name: "Identity Arc",
-      description: "Track how your personality signal changes over time as your answers evolve.",
-      unlockRequirements: ["Reach level 5", "Answer 30 polls", "Pay $9 to unlock"],
-      unlocked: avatarLevel >= 5 && pollsAnswered >= 30 && paidUnlocks.identityArc,
-      lockedAction: "Complete to-do list",
+      id: "cognitive-bias-map",
+      name: "Cognitive Bias Map",
+      icon: Map,
+      description: "Identify the mental shortcuts and biases that shape your decisions and thinking.",
+      requiredPolls: 18,
+      unlockPrice: 6,
+      unlocked: pollsAnswered >= 18 && paidUnlocks.cognitiveBiasMap,
     },
   ];
 
@@ -219,14 +263,14 @@ export function DashboardPolls({
     }
 
     if (direction === "right") {
-      const selected = yesOption ?? currentPoll.options[0];
+      const selected = currentPoll.options[1] ?? currentPoll.options[0];
       if (selected) {
         handleVote(currentPoll.id, selected.id);
       }
       return;
     }
 
-    const selected = noOption ?? currentPoll.options[1] ?? currentPoll.options[0];
+    const selected = currentPoll.options[0];
     if (selected) {
       handleVote(currentPoll.id, selected.id);
     }
@@ -241,43 +285,40 @@ export function DashboardPolls({
   };
 
   const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (showSwipeGuide) {
-      return;
-    }
-
-    if (isInteractiveTarget(event.target)) {
-      return;
-    }
+    if (showSwipeGuide) return;
+    if (isInteractiveTarget(event.target)) return;
 
     pointerStartXRef.current = event.clientX;
+    pointerStartTimeRef.current = Date.now();
+    setIsDragging(true);
     event.currentTarget.setPointerCapture(event.pointerId);
   };
 
   const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (pointerStartXRef.current === null || hasVotedCurrent) {
-      return;
-    }
+    if (pointerStartXRef.current === null || hasVotedCurrent) return;
 
     const deltaX = event.clientX - pointerStartXRef.current;
-    const limitedDelta = Math.max(-140, Math.min(140, deltaX));
+    const limitedDelta = Math.max(-160, Math.min(160, deltaX));
     setSwipeOffsetX(limitedDelta);
   };
 
   const handlePointerUp = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (pointerStartXRef.current === null) {
-      return;
-    }
+    if (pointerStartXRef.current === null) return;
 
     const deltaX = event.clientX - pointerStartXRef.current;
+    const elapsed = Date.now() - pointerStartTimeRef.current;
+    const velocity = Math.abs(deltaX) / Math.max(elapsed, 1);
+
     pointerStartXRef.current = null;
+    setIsDragging(false);
     setSwipeOffsetX(0);
 
-    const swipeThreshold = 60;
-    if (Math.abs(deltaX) < swipeThreshold) {
-      return;
+    // trigger on distance OR fast flick
+    const swipeThreshold = 55;
+    const velocityThreshold = 0.4;
+    if (Math.abs(deltaX) >= swipeThreshold || (velocity >= velocityThreshold && Math.abs(deltaX) > 20)) {
+      voteFromSwipeDirection(deltaX > 0 ? "right" : "left");
     }
-
-    voteFromSwipeDirection(deltaX > 0 ? "right" : "left");
   };
 
   const handleCommentAdd = () => {
@@ -370,33 +411,33 @@ export function DashboardPolls({
   }
 
   const pollTotalVotes = currentPoll.options.reduce((sum, option) => sum + option.votes, 0);
-  const noPercent = noOption && pollTotalVotes > 0 ? Math.round((noOption.votes / pollTotalVotes) * 100) : 50;
-  const yesPercent = yesOption && pollTotalVotes > 0 ? Math.round((yesOption.votes / pollTotalVotes) * 100) : 50;
-  const selectedYes = yesOption ? selectedOptionId === yesOption.id : false;
-  const selectedNo = noOption ? selectedOptionId === noOption.id : false;
+  const leftPercent = leftOption && pollTotalVotes > 0 ? Math.round((leftOption.votes / pollTotalVotes) * 100) : 50;
+  const rightPercent = rightOption && pollTotalVotes > 0 ? Math.round((rightOption.votes / pollTotalVotes) * 100) : 50;
+  const selectedLeft = leftOption ? selectedOptionId === leftOption.id : false;
+  const selectedRight = rightOption ? selectedOptionId === rightOption.id : false;
   const showMorePollsPaywall = dailyPollLimit > 0 && dailyAnsweredCount >= dailyPollLimit;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       <header>
-        <h1 className="font-display text-2xl tracking-wide text-raw-text">Polls</h1>
-        <p className="mt-2 text-sm text-raw-silver/45">
+        <h1 className="font-display text-xl tracking-wide text-raw-text sm:text-2xl">Polls</h1>
+        <p className="mt-2 text-xs text-raw-silver/45 sm:text-sm">
           Anonymous voting, live percentages, and reflections from the community.
         </p>
       </header>
 
-      <section className="grid gap-3 sm:grid-cols-3">
-        <div className="rounded-xl border border-raw-border/35 bg-raw-surface/25 p-4 text-center">
+      <section className="grid grid-cols-3 gap-2 sm:gap-3">
+        <div className="rounded-xl border border-raw-border/35 bg-raw-surface/25 p-3 text-center sm:p-4">
           <BarChart3 className="mx-auto mb-2 h-4 w-4 text-raw-gold/45" />
           <p className="text-lg font-semibold text-raw-text">{polls.length}</p>
           <p className="text-[10px] uppercase tracking-[0.16em] text-raw-silver/35">Live Polls</p>
         </div>
-        <div className="rounded-xl border border-raw-border/35 bg-raw-surface/25 p-4 text-center">
+        <div className="rounded-xl border border-raw-border/35 bg-raw-surface/25 p-3 text-center sm:p-4">
           <Users className="mx-auto mb-2 h-4 w-4 text-raw-gold/45" />
           <p className="text-lg font-semibold text-raw-text">{totalResponses.toLocaleString()}</p>
           <p className="text-[10px] uppercase tracking-[0.16em] text-raw-silver/35">Total Votes</p>
         </div>
-        <div className="rounded-xl border border-raw-border/35 bg-raw-surface/25 p-4 text-center">
+        <div className="rounded-xl border border-raw-border/35 bg-raw-surface/25 p-3 text-center sm:p-4">
           <MessageCircle className="mx-auto mb-2 h-4 w-4 text-raw-gold/45" />
           <p className="text-lg font-semibold text-raw-text">{dailyAnsweredCount}/{dailyPollLimit}</p>
           <p className="text-[10px] uppercase tracking-[0.16em] text-raw-silver/35">Daily Progress</p>
@@ -404,20 +445,20 @@ export function DashboardPolls({
       </section>
 
       {showMorePollsPaywall && (
-        <section className="rounded-2xl border border-raw-gold/35 bg-gradient-to-r from-raw-gold/12 via-raw-black/60 to-raw-black/60 p-5">
+        <section className="rounded-2xl border border-raw-gold/35 bg-gradient-to-r from-raw-gold/12 via-raw-black/60 to-raw-black/60 p-4 sm:p-5">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
+            <div className="min-w-0">
               <p className="text-[11px] uppercase tracking-[0.16em] text-raw-gold/80">Daily Limit Reached</p>
-              <h3 className="mt-1 font-display text-xl text-raw-text">You completed {dailyAnsweredCount}/{dailyPollLimit} polls today.</h3>
-              <p className="mt-1 text-sm text-raw-silver/50">
+              <h3 className="mt-1 font-display text-lg text-raw-text sm:text-xl">You completed {dailyAnsweredCount}/{dailyPollLimit} polls today.</h3>
+              <p className="mt-1 text-xs text-raw-silver/50 sm:text-sm">
                 Want to solve more right now? Upgrade to unlock extra polls instantly.
               </p>
             </div>
-            <div className="flex items-center gap-2">
-              <button className="rounded-xl border border-raw-border/45 bg-raw-black/35 px-4 py-2 text-xs text-raw-silver/75 hover:border-raw-gold/35 hover:text-raw-gold">
+            <div className="flex items-stretch gap-2 sm:items-center">
+              <button className="flex-1 rounded-xl border border-raw-border/45 bg-raw-black/35 px-4 py-2.5 text-xs text-raw-silver/75 hover:border-raw-gold/35 hover:text-raw-gold sm:flex-none">
                 Maybe Later
               </button>
-              <button className="rounded-xl border border-raw-gold/65 bg-raw-gold/90 px-4 py-2 text-xs font-semibold text-raw-ink hover:bg-raw-gold">
+              <button className="flex-1 rounded-xl border border-raw-gold/65 bg-raw-gold/90 px-4 py-2.5 text-xs font-semibold text-raw-ink hover:bg-raw-gold sm:flex-none">
                 Solve More - Pay
               </button>
             </div>
@@ -425,11 +466,11 @@ export function DashboardPolls({
         </section>
       )}
 
-      <section className="relative mx-auto max-w-xl">
+      <section className="relative mx-auto w-full max-w-[430px] px-1">
         <button
           onClick={() => setCurrentPollIndex((previous) => Math.max(0, previous - 1))}
           disabled={currentPollIndex === 0}
-          className={`absolute left-0 top-1/2 z-10 hidden -translate-x-1/2 -translate-y-1/2 rounded-full border p-3 transition disabled:cursor-not-allowed disabled:opacity-35 md:inline-flex ${
+          className={`absolute left-2 top-1/2 z-10 inline-flex -translate-y-1/2 rounded-full border p-2.5 transition disabled:cursor-not-allowed disabled:opacity-35 md:left-0 md:-translate-x-1/2 md:p-3 ${
             isLightMode
               ? "border-slate-300 bg-white/95 text-slate-700 shadow-[0_10px_25px_rgba(15,23,42,0.2)] hover:border-amber-400 hover:text-amber-700"
               : "border-raw-border/55 bg-raw-black/85 text-raw-silver/85 shadow-[0_10px_24px_rgba(0,0,0,0.4)] hover:border-raw-gold/45 hover:text-raw-gold"
@@ -442,7 +483,7 @@ export function DashboardPolls({
         <button
           onClick={() => setCurrentPollIndex((previous) => Math.min(polls.length - 1, previous + 1))}
           disabled={currentPollIndex === polls.length - 1}
-          className={`absolute right-0 top-1/2 z-10 hidden translate-x-1/2 -translate-y-1/2 rounded-full border p-3 transition disabled:cursor-not-allowed disabled:opacity-35 md:inline-flex ${
+          className={`absolute right-2 top-1/2 z-10 inline-flex -translate-y-1/2 rounded-full border p-2.5 transition disabled:cursor-not-allowed disabled:opacity-35 md:right-0 md:translate-x-1/2 md:p-3 ${
             isLightMode
               ? "border-slate-300 bg-white/95 text-slate-700 shadow-[0_10px_25px_rgba(15,23,42,0.2)] hover:border-amber-400 hover:text-amber-700"
               : "border-raw-border/55 bg-raw-black/85 text-raw-silver/85 shadow-[0_10px_24px_rgba(0,0,0,0.4)] hover:border-raw-gold/45 hover:text-raw-gold"
@@ -452,34 +493,40 @@ export function DashboardPolls({
           <ChevronRight className="h-4 w-4" />
         </button>
 
-        <div className="rounded-[2rem] border border-raw-border/40 bg-[radial-gradient(circle_at_20%_0%,rgba(255,255,255,0.12),rgba(0,0,0,0.05)_35%,rgba(0,0,0,0.6)_100%)] p-5 shadow-[0_20px_45px_rgba(0,0,0,0.4)] sm:p-6">
-          <div className="mb-4 flex items-center justify-between text-xs text-raw-silver/45">
-            <span>
-              {currentPollIndex + 1}/{polls.length} today
-            </span>
-            <span>{new Date().toLocaleDateString()}</span>
-          </div>
+        <div className="relative overflow-hidden rounded-[2rem] border border-[#6f6f6f]/45 bg-[radial-gradient(circle_at_50%_0%,rgba(241,196,45,0.10),rgba(18,18,18,0.92)_36%,rgba(8,8,8,0.97)_100%)] p-4 shadow-[inset_0_0_0_1px_rgba(217,217,217,0.08),0_30px_65px_rgba(0,0,0,0.58)]">
+          <div
+            className="pointer-events-none absolute inset-0 opacity-25"
+            style={{
+              backgroundImage: "radial-gradient(circle at 1px 1px, rgba(217,217,217,0.35) 1px, transparent 0)",
+              backgroundSize: "14px 14px",
+            }}
+          />
+          <div className="relative">
+            <div className="mb-4 rounded-2xl border border-[#8b8b8b]/35 bg-[#111111]/80 px-4 py-3 shadow-[inset_0_0_0_1px_rgba(241,196,45,0.12)]">
+              <div className="flex items-center justify-between gap-2">
+                <h3 className="text-[clamp(1.05rem,3.8vw,1.35rem)] uppercase tracking-[0.18em] text-[#EBEBEB]">2. Answer 5 launch polls</h3>
+                <span className="rounded-full border border-[#F1C42D]/60 bg-[#F1C42D]/10 px-3 py-1 text-[11px] uppercase tracking-[0.12em] text-[#F1C42D]">
+                  {dailyAnsweredCount}/{dailyPollLimit} completed
+                </span>
+              </div>
+            </div>
 
-          <div className="mb-5 flex items-center justify-center gap-1.5">
-            {polls.map((poll, index) => (
-              <button
-                key={poll.id}
-                onClick={() => setCurrentPollIndex(index)}
-                className={`h-1.5 rounded-full transition-all ${
-                  index === currentPollIndex ? "w-6 bg-raw-gold" : "w-2 bg-raw-border/60"
-                }`}
-                aria-label={`Go to poll ${index + 1}`}
-              />
-            ))}
+            <PollProgress currentIndex={currentPollIndex} total={polls.length} onSelect={setCurrentPollIndex} />
           </div>
 
           <div
-            className="relative rounded-[1.7rem] border border-raw-border/45 bg-raw-black/55 p-5 sm:p-6"
+            className="relative rounded-[1.75rem] border border-[#D9D9D9]/35 bg-[linear-gradient(160deg,#171717,#0d0d0d)] p-5"
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
             onPointerCancel={handlePointerUp}
-            style={{ transform: `translateX(${swipeOffsetX}px) rotate(${swipeOffsetX * 0.04}deg)` }}
+            style={{
+              transform: `translateX(${swipeOffsetX}px) rotate(${swipeOffsetX * 0.035}deg)`,
+              transition: isDragging ? "none" : "transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+              willChange: "transform",
+              touchAction: "pan-y",
+              userSelect: "none",
+            }}
           >
             {showSwipeGuide && (
               <>
@@ -510,7 +557,7 @@ export function DashboardPolls({
                     </button>
                   </div>
                   <p className={`mt-2 text-sm ${isLightMode ? "text-slate-800" : "text-raw-silver/85"}`}>
-                    Swipe to vote. Right means <span className={isLightMode ? "text-emerald-600 font-semibold" : "text-emerald-300 font-semibold"}>Yes</span>, left means <span className={isLightMode ? "text-rose-600 font-semibold" : "text-rose-300 font-semibold"}>No</span>.
+                    Swipe to vote. Right means <span className={isLightMode ? "text-emerald-600 font-semibold" : "text-emerald-300 font-semibold"}>{rightOption?.text ?? "Right"}</span>, left means <span className={isLightMode ? "text-rose-600 font-semibold" : "text-rose-300 font-semibold"}>{leftOption?.text ?? "Left"}</span>.
                   </p>
                 </div>
               </>
@@ -522,15 +569,16 @@ export function DashboardPolls({
               }`}
               aria-hidden={hasVotedCurrent}
             >
-              <span className={`transition ${swipeOffsetX < -20 ? "text-rose-300" : "text-raw-silver/35"}`}>No</span>
-              <span className={`transition ${swipeOffsetX > 20 ? "text-emerald-300" : "text-raw-silver/35"}`}>Yes</span>
+              <span className={`transition ${swipeOffsetX < -20 ? "text-rose-300" : "text-raw-silver/35"}`}>{leftOption?.text}</span>
+              <span className={`transition ${swipeOffsetX > 20 ? "text-emerald-300" : "text-raw-silver/35"}`}>{rightOption?.text}</span>
             </div>
 
-            <h2 className="text-center font-display text-2xl leading-tight text-raw-text sm:text-[2rem]">
+            <p className="mb-3 text-center text-[11px] uppercase tracking-[0.26em] text-[#F1C42D]/85">POLL QUESTION</p>
+            <h2 className="text-center font-display text-[clamp(1.9rem,8vw,3rem)] leading-[1.15] text-[#EBEBEB]">
               {currentPoll.question}
             </h2>
 
-            <div className="mt-6 space-y-3">
+            <div className="mt-8 space-y-4">
               <div
                 className={`flex h-[42px] items-center justify-between rounded-xl border border-raw-border/35 bg-raw-black/30 px-3 py-2 text-[11px] uppercase tracking-[0.12em] text-raw-silver/55 transition-opacity ${
                   hasVotedCurrent ? "pointer-events-none opacity-0" : "opacity-100"
@@ -539,10 +587,10 @@ export function DashboardPolls({
               >
                 <span className="flex items-center gap-1.5 text-rose-200/85">
                   <ArrowLeft className="h-3.5 w-3.5" />
-                  Swipe left = No
+                  Swipe left = {leftOption?.text}
                 </span>
                 <span className="flex items-center gap-1.5 text-emerald-200/85">
-                  Swipe right = Yes
+                  Swipe right = {rightOption?.text}
                   <ArrowRight className="h-3.5 w-3.5" />
                 </span>
               </div>
@@ -550,46 +598,40 @@ export function DashboardPolls({
               <div className="grid grid-cols-2 gap-3">
                 <button
                   onClick={() => {
-                    const selected = noOption ?? currentPoll.options[0];
-                    if (selected) {
-                      handleVote(currentPoll.id, selected.id);
-                    }
+                    if (leftOption) handleVote(currentPoll.id, leftOption.id);
                   }}
                   disabled={hasVotedCurrent}
-                  className={`relative rounded-2xl border px-4 py-3 text-left text-base font-medium transition disabled:cursor-not-allowed ${
-                    selectedNo
+                  className={`flex min-h-[84px] flex-col items-start justify-center rounded-2xl border px-4 py-3 text-left text-2xl font-medium transition disabled:cursor-not-allowed ${
+                    selectedLeft
                       ? "border-raw-gold/65 bg-raw-gold/50 text-black shadow-[0_0_18px_rgba(255,204,77,0.35)]"
-                      : "border-raw-gold/30 bg-raw-gold/18 text-raw-text hover:bg-raw-gold/28"
+                      : "border-[#F1C42D]/55 bg-[linear-gradient(145deg,rgba(241,196,45,0.24),rgba(20,20,20,0.95))] text-[#F1C42D] hover:brightness-110"
                   } ${hasVotedCurrent ? "opacity-100" : "disabled:opacity-55"}`}
                 >
-                  <span>No</span>
-                  {hasVotedCurrent ? (
-                    <span className={`absolute right-4 top-1/2 -translate-y-1/2 text-sm font-semibold ${selectedNo ? "text-black" : "text-raw-text"}`}>
-                      {noPercent}%
+                  {hasVotedCurrent && (
+                    <span className={`text-xl font-bold leading-none ${selectedLeft ? "text-black" : "text-raw-text"}`}>
+                      {leftPercent}%
                     </span>
-                  ) : null}
+                  )}
+                  <span className={hasVotedCurrent ? "mt-1 text-[11px] leading-snug opacity-70" : "text-sm leading-snug"}>{leftOption?.text}</span>
                 </button>
 
                 <button
                   onClick={() => {
-                    const selected = yesOption ?? currentPoll.options[1] ?? currentPoll.options[0];
-                    if (selected) {
-                      handleVote(currentPoll.id, selected.id);
-                    }
+                    if (rightOption) handleVote(currentPoll.id, rightOption.id);
                   }}
                   disabled={hasVotedCurrent}
-                  className={`relative rounded-2xl border px-4 py-3 text-right text-base font-medium transition disabled:cursor-not-allowed ${
-                    selectedYes
+                  className={`flex min-h-[84px] flex-col items-end justify-center rounded-2xl border px-4 py-3 text-right text-2xl font-medium transition disabled:cursor-not-allowed ${
+                    selectedRight
                       ? "border-raw-gold/65 bg-raw-gold/50 text-black shadow-[0_0_18px_rgba(255,204,77,0.35)]"
-                      : "border-raw-gold/30 bg-raw-gold/18 text-raw-text hover:bg-raw-gold/28"
+                      : "border-[#D9D9D9]/45 bg-[linear-gradient(145deg,rgba(27,27,27,0.98),rgba(10,10,10,0.9))] text-[#D9D9D9] hover:border-[#F1C42D]/55"
                   } ${hasVotedCurrent ? "opacity-100" : "disabled:opacity-55"}`}
                 >
-                  <span>Yes</span>
-                  {hasVotedCurrent ? (
-                    <span className={`absolute left-4 top-1/2 -translate-y-1/2 text-sm font-semibold ${selectedYes ? "text-black" : "text-raw-text"}`}>
-                      {yesPercent}%
+                  {hasVotedCurrent && (
+                    <span className={`text-xl font-bold leading-none ${selectedRight ? "text-black" : "text-raw-text"}`}>
+                      {rightPercent}%
                     </span>
-                  ) : null}
+                  )}
+                  <span className={hasVotedCurrent ? "mt-1 text-[11px] leading-snug opacity-70" : "text-sm leading-snug"}>{rightOption?.text}</span>
                 </button>
               </div>
             </div>
@@ -597,7 +639,7 @@ export function DashboardPolls({
             {hasVotedCurrent ? (
               <div className="mt-5">
                 <div className="mb-2 flex items-center justify-between">
-                  <p className={`text-[11px] uppercase tracking-[0.12em] ${isLightMode ? "text-slate-600" : "text-raw-silver/55"}`}>Comments</p>
+                  <p className={`text-[11px] uppercase tracking-[0.12em] ${isLightMode ? "text-slate-600" : "text-raw-silver/55"}`}>COMMENTS</p>
                 </div>
                 <form
                   onSubmit={(event) => {
@@ -614,7 +656,7 @@ export function DashboardPolls({
                     value={commentDraft}
                     onChange={(event) => setCommentDraft(event.target.value)}
                     onKeyDown={handleCommentKeyDown}
-                    placeholder="Add a comment..."
+                    placeholder="Add a comment…"
                     className={`flex-1 bg-transparent text-sm focus:outline-none ${
                       isLightMode
                         ? "text-slate-800 placeholder:text-slate-400"
@@ -638,10 +680,10 @@ export function DashboardPolls({
                 <div className="mt-4 space-y-2.5">
                   {currentComments.length === 0 ? (
                     <p className={`text-center text-xs ${isLightMode ? "text-slate-500" : "text-raw-silver/45"}`}>
-                      No comments yet for this poll. Be the first to comment.
+                      No comments yet. Be the first.
                     </p>
                   ) : (
-                    currentComments.slice(0, 3).map((comment) => (
+                    (showAllComments ? currentComments : currentComments.slice(0, 3)).map((comment) => (
                       <article key={comment.id} className="rounded-2xl border border-raw-border/35 bg-raw-black/50 px-3.5 py-2.5">
                         <div className="flex items-center justify-between text-[11px] text-raw-silver/50">
                           <span>@{comment.author}</span>
@@ -691,99 +733,110 @@ export function DashboardPolls({
                       </article>
                     ))
                   )}
+                  {currentComments.length > 3 && (
+                    <button
+                      onClick={() => setShowAllComments((prev) => !prev)}
+                      className={`w-full rounded-xl border py-2 text-xs font-medium transition ${
+                        isLightMode
+                          ? "border-slate-200 text-slate-500 hover:bg-slate-100"
+                          : "border-raw-border/35 text-raw-silver/55 hover:bg-raw-surface/20"
+                      }`}
+                    >
+                      {showAllComments ? "Show less" : `Show ${currentComments.length - 3} more comment${currentComments.length - 3 === 1 ? "" : "s"}`}
+                    </button>
+                  )}
                 </div>
               </div>
             ) : null}
           </div>
 
-          <div className="mt-4 flex gap-3 md:hidden">
-            <button
-              onClick={() => setCurrentPollIndex((previous) => Math.max(0, previous - 1))}
-              disabled={currentPollIndex === 0}
-              className="flex-1 rounded-xl border border-raw-border/35 bg-raw-black/25 px-3 py-2 text-xs text-raw-silver/70 disabled:opacity-35"
-            >
-              Previous
-            </button>
-            <button
-              onClick={() => setCurrentPollIndex((previous) => Math.min(polls.length - 1, previous + 1))}
-              disabled={currentPollIndex === polls.length - 1}
-              className="flex-1 rounded-xl border border-raw-border/35 bg-raw-black/25 px-3 py-2 text-xs text-raw-silver/70 disabled:opacity-35"
-            >
-              Next
-            </button>
-          </div>
         </div>
       </section>
 
       <section className="space-y-3">
-        <div className="rounded-2xl border border-raw-border/35 bg-raw-surface/20 p-4 sm:p-5">
-          <h2 className="font-display text-xl text-raw-text">Personality Insights</h2>
-          <p className="mt-1 text-sm text-raw-silver/55">
-            Your answers unlock deeper identity reports. Keep participating to reveal your full profile.
-          </p>
-
-          <div className="mt-4 grid gap-3 sm:grid-cols-2">
-            <div className="rounded-xl border border-raw-border/30 bg-raw-black/30 p-3.5">
-              <p className="text-[10px] uppercase tracking-[0.14em] text-raw-silver/40">Poll Coverage</p>
-              <p className="mt-1 text-base font-semibold text-raw-text">{pollsAnswered} polls answered</p>
-            </div>
-            <div className="rounded-xl border border-raw-border/30 bg-raw-black/30 p-3.5">
-              <p className="text-[10px] uppercase tracking-[0.14em] text-raw-silver/40">Unlocked Reports</p>
-              <p className="mt-1 text-base font-semibold text-raw-text">{unlockedReports}/6</p>
+        <div className="flex items-end justify-between gap-3">
+          <div className="min-w-0">
+            <h2 className="font-display text-lg text-raw-text sm:text-xl">Personality Insights</h2>
+            <div className={`mt-1 h-1.5 w-28 overflow-hidden rounded-full ${isLightMode ? "bg-slate-300/70" : "bg-raw-border/40"}`}>
+              <span
+                className="block h-full rounded-full bg-raw-gold"
+                style={{ width: `${Math.min(100, Math.max(8, (unlockedReports / insightsProgress.length) * 100))}%` }}
+              />
             </div>
           </div>
+          <p className={`shrink-0 text-[11px] ${isLightMode ? "text-slate-600" : "text-raw-silver/55"}`}>
+            {pollsAnswered} polls answered
+          </p>
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-2 gap-2.5">
           {insightsProgress.map((item) => (
             <article
               key={item.id}
-              className="rounded-2xl border border-raw-border/35 bg-raw-surface/25 p-4"
+              className={`flex flex-col overflow-hidden rounded-xl border p-3 ${
+                isLightMode
+                  ? "border-slate-300/80 bg-white/85"
+                  : "border-raw-gold/30 bg-raw-black/35 backdrop-blur-sm"
+              }`}
             >
-              <div className="flex items-center justify-between">
-                <p className="font-display text-base text-raw-text">{item.name}</p>
+              <div className="flex items-start justify-between gap-1.5">
+                <div className="flex min-w-0 items-center gap-1.5">
+                  <item.icon className={`mt-0.5 h-3.5 w-3.5 shrink-0 ${isLightMode ? "text-amber-700" : "text-raw-gold/85"}`} />
+                  <p className="font-display text-sm leading-snug text-raw-text">{item.name}</p>
+                </div>
                 <span
-                  className={`rounded-full border px-2.5 py-1 text-[10px] uppercase tracking-[0.1em] ${
-                    item.unlocked
-                      ? "border-emerald-400/35 bg-emerald-500/10 text-emerald-200"
-                      : "border-raw-border/45 bg-raw-black/40 text-raw-silver/50"
+                  className={`shrink-0 rounded-full border px-2 py-0.5 text-[9px] ${
+                    isLightMode
+                      ? "border-amber-600/45 bg-amber-50 text-amber-700"
+                      : "border-raw-gold/35 bg-raw-gold/10 text-raw-gold/85"
                   }`}
                 >
                   {item.unlocked ? "Unlocked" : "Locked"}
                 </span>
               </div>
 
-              <p className="mt-2 text-xs leading-relaxed text-raw-silver/55">{item.description}</p>
+              <div className={`flex-1 ${!item.unlocked ? "pointer-events-none select-none blur-[2px]" : ""}`}>
+                <p className={`mt-1.5 text-[11px] leading-relaxed ${isLightMode ? "text-slate-600" : "text-raw-silver/55"}`}>
+                  {item.description}
+                </p>
+                <button
+                  disabled={!item.unlocked}
+                  className={`mt-3 w-full rounded-lg border px-2 py-1.5 text-[11px] transition ${
+                    item.unlocked
+                      ? "border-emerald-400/35 bg-emerald-500/12 text-emerald-100 hover:bg-emerald-500/20"
+                      : isLightMode
+                        ? "cursor-not-allowed border-slate-300 bg-slate-100 text-slate-500"
+                        : "cursor-not-allowed border-raw-border/40 bg-raw-black/35 text-raw-silver/45"
+                  }`}
+                >
+                  {item.unlocked ? "Open report" : "Preview locked"}
+                </button>
+              </div>
 
               {!item.unlocked && (
-                <div className="mt-3 rounded-xl border border-raw-border/35 bg-raw-black/35 p-3">
-                  <p className="text-[10px] uppercase tracking-[0.12em] text-raw-silver/40">Unlock To-Do</p>
-                  <div className="mt-2 space-y-1.5 text-xs text-raw-silver/60">
-                    {item.unlockRequirements.map((requirement) => (
-                      <p key={`${item.id}-${requirement}`}>{requirement}</p>
-                    ))}
-                    {item.unlockRequirements.some((requirement) => /polls/i.test(requirement)) && (
-                      <p className="text-raw-silver/45">{pollsAnswered} polls answered</p>
-                    )}
-                  </div>
+                <div className="-mx-3 -mb-3 mt-2.5 flex items-center justify-between border-t border-dashed border-raw-border/40 px-2.5 py-1.5 text-[9px]">
+                  <span className={isLightMode ? "text-slate-600" : "text-raw-silver/55"}>
+                    {item.requiredPolls} polls req.
+                  </span>
+                  <span
+                    className={`inline-flex items-center gap-1 rounded-full border px-1.5 py-0.5 ${
+                      isLightMode
+                        ? "border-amber-600/40 bg-amber-100 text-amber-700"
+                        : "border-raw-gold/40 bg-raw-gold/10 text-raw-gold/85"
+                    }`}
+                  >
+                    <Lock className="h-2 w-2" />
+                    {item.unlockPrice > 0 ? `$${item.unlockPrice}` : "Free"}
+                  </span>
                 </div>
               )}
-
-              <button
-                disabled={!item.unlocked}
-                className={`mt-4 w-full rounded-xl border px-3 py-2 text-xs transition ${
-                  item.unlocked
-                    ? "border-emerald-400/35 bg-emerald-500/12 text-emerald-100 hover:bg-emerald-500/20"
-                    : "cursor-not-allowed border-raw-border/40 bg-raw-black/35 text-raw-silver/45"
-                }`}
-              >
-                {item.unlocked ? "View Report" : item.lockedAction}
-              </button>
             </article>
           ))}
         </div>
 
-        <p className="text-center text-xs text-raw-silver/45">More insight models coming soon</p>
+        <p className={`text-center text-xs ${isLightMode ? "text-slate-500" : "text-raw-silver/45"}`}>
+          Answer more polls to unlock deeper reports.
+        </p>
       </section>
     </div>
   );

@@ -52,60 +52,35 @@ const FloatingDockMobile = ({
   }[];
   className?: string;
 }) => {
-  const [open, setOpen] = useState(false);
   return (
-    <div className={cn("relative block md:hidden", className)}>
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            layoutId="nav"
-            className="absolute inset-x-0 bottom-full mb-2 flex flex-col gap-2"
-          >
-            {items.map((item, idx) => (
-              <motion.div
-                key={item.title}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{
-                  opacity: 1,
-                  y: 0,
-                }}
-                exit={{
-                  opacity: 0,
-                  y: 10,
-                  transition: {
-                    delay: idx * 0.05,
-                  },
-                }}
-                transition={{ delay: (items.length - 1 - idx) * 0.05 }}
-              >
-                <a
-                  href={item.href}
-                  key={item.title}
-                  onClick={(event) => {
-                    if (item.onClick) {
-                      event.preventDefault();
-                      item.onClick();
-                    }
-                    setOpen(false);
-                  }}
-                  className={cn(
-                    "flex h-10 w-10 items-center justify-center rounded-full border border-raw-border/40 bg-raw-surface text-raw-silver/70",
-                    item.active ? "border-raw-gold/45 bg-raw-gold/15 text-raw-gold" : null,
-                  )}
-                >
-                  <div className="h-4 w-4">{item.icon}</div>
-                </a>
-              </motion.div>
-            ))}
-          </motion.div>
-        )}
-      </AnimatePresence>
-      <button
-        onClick={() => setOpen(!open)}
-        className="flex h-10 w-10 items-center justify-center rounded-full bg-raw-surface"
-      >
-        <IconLayoutNavbarCollapse className="h-5 w-5 text-raw-silver/50" />
-      </button>
+    <div
+      className={cn(
+        "fixed bottom-0 left-0 right-0 z-50 flex lg:hidden flex-row items-center justify-around bg-raw-black/95 shadow-2xl border-t border-raw-border/25 pt-2",
+        className
+      )}
+      style={{ paddingBottom: "max(1rem, env(safe-area-inset-bottom))" }}
+    >
+      {items.map((item) => (
+        <motion.a
+          whileHover={{ scale: 1.18 }}
+          animate={{ scale: item.active ? 1.18 : 1 }}
+          transition={{ type: "spring", stiffness: 300, damping: 18 }}
+          href={item.href}
+          key={item.title}
+          onClick={(event) => {
+            if (item.onClick) {
+              event.preventDefault();
+              item.onClick();
+            }
+          }}
+          className={cn(
+            "flex h-12 w-12 items-center justify-center rounded-full border border-raw-border/40 bg-raw-surface text-raw-silver/70 mx-1 transition-shadow",
+            item.active ? "border-raw-gold/45 bg-raw-gold/15 text-raw-gold shadow-lg" : "shadow",
+          )}
+        >
+          <motion.div className="h-5 w-5" style={{}}>{item.icon}</motion.div>
+        </motion.a>
+      ))}
     </div>
   );
 };
@@ -214,20 +189,31 @@ function IconContainer({
         className={cn(
           "relative flex aspect-square items-center justify-center rounded-full border text-raw-silver/70 shadow-[0_8px_18px_rgba(6,10,24,0.2)] transition-colors",
           active
-            ? "border-raw-gold/45 bg-raw-gold/15 text-raw-gold"
+            ? "border-primary/45 bg-primary/15 text-primary shadow-[0_0_18px_rgb(var(--raw-accent)/0.45)]"
             : "border-raw-border/40 bg-raw-black/25 hover:border-raw-border/60 hover:text-raw-text",
         )}
       >
         <AnimatePresence>
           {hovered && (
-            <motion.div
-              initial={{ opacity: 0, y: 10, x: "-50%" }}
-              animate={{ opacity: 1, y: 0, x: "-50%" }}
-              exit={{ opacity: 0, y: 2, x: "-50%" }}
-              className="absolute -top-8 left-1/2 w-fit rounded-md border border-raw-border bg-raw-surface px-2 py-0.5 text-xs whitespace-pre text-raw-text"
-            >
-              {title}
-            </motion.div>
+            axis === "vertical" ? (
+              <motion.div
+                initial={{ opacity: 0, x: -6 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -4 }}
+                className="absolute left-full ml-3 w-fit rounded-md border border-raw-border bg-raw-surface px-2 py-0.5 text-xs whitespace-pre text-raw-text"
+              >
+                {title}
+              </motion.div>
+            ) : (
+              <motion.div
+                initial={{ opacity: 0, y: 10, x: "-50%" }}
+                animate={{ opacity: 1, y: 0, x: "-50%" }}
+                exit={{ opacity: 0, y: 2, x: "-50%" }}
+                className="absolute -top-8 left-1/2 w-fit rounded-md border border-raw-border bg-raw-surface px-2 py-0.5 text-xs whitespace-pre text-raw-text"
+              >
+                {title}
+              </motion.div>
+            )
           )}
         </AnimatePresence>
         <motion.div

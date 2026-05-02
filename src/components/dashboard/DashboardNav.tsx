@@ -1,34 +1,32 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { track } from "@/lib/analytics";
+import { readCommunityChats } from "@/lib/communityChat";
 import {
+  ArrowLeft,
   Bell,
   Check,
-  CircleDollarSign,
-  FileText,
   LogOut,
   Moon,
   Palette,
+  Receipt,
   Settings,
   Shield,
   Sun,
-  Trophy,
-  User,
 } from "lucide-react";
 import { AvatarFigure } from "@/components/ui/avatar-figure";
 import { cn } from "@/lib/utils";
-import { type AccentPresetId, type ThemeMode, useTheme } from "@/providers/ThemeProvider";
+import { useTheme } from "@/providers/useTheme";
+import { type AccentPresetId, type ThemeMode } from "@/providers/theme-context";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ChevronDown } from "lucide-react";
 
-export type DashboardTab = "home" | "polls" | "challenges" | "daily-spin" | "communities" | "profile";
+export type DashboardTab = "home" | "polls" | "challenges" | "daily-spin" | "communities" | "profile" | "wallet";
 
 interface DashboardNavProps {
   username: string;
@@ -36,12 +34,43 @@ interface DashboardNavProps {
   showAdminLink?: boolean;
   onProfileClick: () => void;
   onLogout: () => void;
+  communityTitle?: string;
+  onBack?: () => void;
 }
 
-export function DashboardNav({ username, avatarLevel, showAdminLink = false, onProfileClick, onLogout }: DashboardNavProps) {
+export function DashboardNav({ username, avatarLevel, showAdminLink = false, onProfileClick, onLogout, communityTitle, onBack }: DashboardNavProps) {
   const { mode, accent, accentPresets, setMode, setAccent } = useTheme();
   const [hoveredMode, setHoveredMode] = useState<ThemeMode | null>(null);
   const [hoveredAccent, setHoveredAccent] = useState<AccentPresetId | null>(null);
+  const [notifOpen, setNotifOpen] = useState(false);
+  const [appearanceOpen, setAppearanceOpen] = useState(false);
+  const notifRef = useRef<HTMLDivElement>(null);
+
+  const notifications = useMemo(() => {
+    const communities = readCommunityChats();
+    const tag = `@${username}`.toLowerCase();
+    const results: { type: "mention" | "like"; communityTitle: string; senderName: string; text: string; createdAt: string; likeCount?: number }[] = [];
+    for (const community of communities) {
+      for (const msg of community.messages) {
+        if (msg.text.toLowerCase().includes(tag) && msg.senderName !== username) {
+          results.push({ type: "mention", communityTitle: community.title, senderName: msg.senderName, text: msg.text, createdAt: msg.createdAt });
+        }
+        if ((msg.senderId === username || msg.senderName === username) && (msg.likedBy?.length ?? 0) > 0) {
+          results.push({ type: "like", communityTitle: community.title, senderName: msg.senderName, text: msg.text, createdAt: msg.createdAt, likeCount: msg.likedBy?.length });
+        }
+      }
+    }
+    return results.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  }, [username]);
+
+  useEffect(() => {
+    if (!notifOpen) return;
+    const handler = (e: MouseEvent) => {
+      if (notifRef.current && !notifRef.current.contains(e.target as Node)) setNotifOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [notifOpen]);
   const effectiveMode = hoveredMode ?? mode;
   const effectiveAccent = hoveredAccent ?? accent;
   const isEffectiveLight = effectiveMode === "light";
@@ -64,32 +93,71 @@ export function DashboardNav({ username, avatarLevel, showAdminLink = false, onP
     root.style.setProperty("--ring", selectedAccent.hsl);
     root.style.setProperty("--sidebar-primary", selectedAccent.hsl);
     root.style.setProperty("--sidebar-ring", selectedAccent.hsl);
-  }, [accent, accentPresets, hoveredAccent, hoveredMode, mode]);
+  }, [accentPresets, effectiveAccent, effectiveMode]);
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 border-b border-raw-border/50 bg-raw-black/90 backdrop-blur-xl">
-      <div className="flex h-14 items-center justify-between px-6">
-        {/* Logo */}
-        <a href="/" className="font-display text-lg tracking-[0.3em] text-raw-text shrink-0">
+      <div className="flex h-14 items-center justify-between px-4 sm:px-6">
+        {/* Logo — hidden on mobile when inside a community */}
+        <a href="/" className={`font-display text-base tracking-[0.3em] text-raw-text shrink-0 sm:text-lg ${communityTitle ? "hidden sm:block" : ""}`}>
           ra<span className="text-raw-gold">W</span>
         </a>
 
-        {/* Right: bell + avatar */}
-        <div className="flex items-center gap-3 shrink-0">
-          {showAdminLink && (
-            <a
-              href="/admin"
-              className="hidden rounded-full border border-raw-gold/25 bg-raw-gold/[0.06] px-3 py-1.5 text-xs font-medium text-raw-gold transition-colors hover:bg-raw-gold/[0.12] md:inline-flex"
+        {/* Community name — mobile only, shown instead of logo when in a community */}
+        {communityTitle && (
+          <div className="flex min-w-0 items-center gap-2 sm:hidden">
+            <button
+              onClick={onBack}
+              className="shrink-0 rounded-full border border-raw-border/30 p-1.5 text-raw-silver/55 transition-colors hover:border-raw-gold/20 hover:text-raw-gold"
             >
-              Admin
-            </a>
-          )}
-          <span className="hidden text-sm text-raw-silver/60 md:inline">@{username}</span>
-          <button className="relative text-raw-silver/40 hover:text-raw-silver/70 transition-colors">
-            <Bell className="h-[18px] w-[18px]" />
-            <div className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-raw-gold" />
-          </button>
-          <DropdownMenu>
+              <ArrowLeft className="h-4 w-4" />
+            </button>
+            <span className="truncate font-display text-sm tracking-wide text-raw-text">{communityTitle}</span>
+          </div>
+        )}
+
+        {/* Right: bell + avatar */}
+        <div className="flex shrink-0 items-center gap-1.5 sm:gap-3">
+          <div className="relative" ref={notifRef}>
+            <button
+              type="button"
+              onClick={() => setNotifOpen((p) => !p)}
+              className="relative flex h-10 w-10 items-center justify-center rounded-full text-raw-silver/60 transition-colors hover:bg-raw-surface/40 hover:text-raw-silver"
+              aria-label="Notifications"
+            >
+              <Bell className="h-5 w-5" />
+              {notifications.length > 0 && (
+                <div className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-raw-gold px-1 text-[9px] font-bold text-raw-ink">
+                  {notifications.length > 99 ? "99+" : notifications.length}
+                </div>
+              )}
+            </button>
+            {notifOpen && (
+              <div className="fixed inset-x-2 top-[57px] z-50 rounded-2xl border border-raw-border/40 bg-raw-black/95 shadow-2xl backdrop-blur-xl sm:absolute sm:inset-x-auto sm:right-0 sm:top-12 sm:w-80">
+                <div className="border-b border-raw-border/20 px-4 py-3 flex items-center justify-between">
+                  <p className="text-[11px] uppercase tracking-[0.18em] text-raw-silver/40">Notifications</p>
+                  {notifications.length > 0 && <span className="text-[10px] text-raw-silver/30">{notifications.length} total</span>}
+                </div>
+                <div className="max-h-[60vh] overflow-y-auto sm:max-h-80">
+                  {notifications.length === 0 ? (
+                    <p className="px-4 py-6 text-center text-sm text-raw-silver/35">No notifications yet</p>
+                  ) : notifications.map((n, i) => (
+                    <div key={i} className="border-b border-raw-border/15 px-4 py-3 last:border-0">
+                      <div className="flex items-center gap-2">
+                        <span className={`text-[9px] uppercase tracking-wider font-semibold rounded-full px-2 py-0.5 ${n.type === "like" ? "bg-raw-gold/15 text-raw-gold" : "bg-raw-silver/10 text-raw-silver/60"}`}>
+                          {n.type === "like" ? `♥ ${n.likeCount} like${(n.likeCount ?? 0) > 1 ? "s" : ""}` : "@ mention"}
+                        </span>
+                        <p className="text-[10px] text-raw-silver/40">{n.communityTitle}</p>
+                      </div>
+                      {n.type === "mention" && <p className="mt-1 text-xs text-raw-silver/60">from @{n.senderName}</p>}
+                      <p className="mt-1 text-sm leading-relaxed text-raw-text/80 line-clamp-2">{n.text}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+          <DropdownMenu onOpenChange={(open) => { if (!open) setAppearanceOpen(false); }}>
             <DropdownMenuTrigger asChild>
               <button
                 className={cn(
@@ -107,8 +175,9 @@ export function DashboardNav({ username, avatarLevel, showAdminLink = false, onP
             <DropdownMenuContent
               align="end"
               sideOffset={10}
+              collisionPadding={12}
               className={cn(
-                "w-[285px] rounded-2xl p-2 text-raw-text",
+                "w-[285px] max-w-[calc(100vw-1rem)] rounded-2xl p-2 text-raw-text",
                 isEffectiveLight
                   ? "border border-slate-300/80 bg-[linear-gradient(160deg,rgba(255,255,255,0.97),rgba(242,247,255,0.96))] shadow-[0_20px_50px_rgba(28,38,58,0.18)]"
                   : "border border-raw-border/40 bg-[linear-gradient(160deg,rgba(17,17,17,0.96),rgba(9,9,9,0.98))] shadow-[0_20px_50px_rgba(0,0,0,0.55)]",
@@ -126,25 +195,13 @@ export function DashboardNav({ username, avatarLevel, showAdminLink = false, onP
                 <AvatarFigure level={avatarLevel} size="sm" selected />
                 <div className="min-w-0">
                   <p className="truncate text-sm font-semibold text-raw-text">View Profile</p>
-                  <p className={cn("truncate text-xs", isEffectiveLight ? "text-slate-600" : "text-raw-silver/50")}>u/{username}</p>
+                  <p className={cn("truncate text-xs", isEffectiveLight ? "text-slate-600" : "text-raw-silver/50")}>@{username}</p>
                 </div>
               </button>
 
-              <DropdownMenuItem onClick={onProfileClick} className={cn("rounded-lg px-3 py-2.5 text-sm focus:text-raw-text", isEffectiveLight ? "text-slate-700 focus:bg-slate-100" : "text-raw-silver/80 focus:bg-raw-surface/80")}>
-                <User className="mr-3 h-4 w-4" />
-                Edit Avatar
-              </DropdownMenuItem>
               <DropdownMenuItem className={cn("rounded-lg px-3 py-2.5 text-sm focus:text-raw-text", isEffectiveLight ? "text-slate-700 focus:bg-slate-100" : "text-raw-silver/80 focus:bg-raw-surface/80")}>
-                <FileText className="mr-3 h-4 w-4" />
-                Drafts
-              </DropdownMenuItem>
-              <DropdownMenuItem className={cn("rounded-lg px-3 py-2.5 text-sm focus:text-raw-text", isEffectiveLight ? "text-slate-700 focus:bg-slate-100" : "text-raw-silver/80 focus:bg-raw-surface/80")}>
-                <Trophy className="mr-3 h-4 w-4" />
-                Achievements
-              </DropdownMenuItem>
-              <DropdownMenuItem className={cn("rounded-lg px-3 py-2.5 text-sm focus:text-raw-text", isEffectiveLight ? "text-slate-700 focus:bg-slate-100" : "text-raw-silver/80 focus:bg-raw-surface/80")}>
-                <CircleDollarSign className="mr-3 h-4 w-4" />
-                Earn
+                <Receipt className="mr-3 h-4 w-4" />
+                Billing
               </DropdownMenuItem>
 
               <DropdownMenuSeparator className={cn("my-2", isEffectiveLight ? "bg-slate-200" : "bg-raw-border/30")} />
@@ -158,100 +215,80 @@ export function DashboardNav({ username, avatarLevel, showAdminLink = false, onP
                 </DropdownMenuItem>
               ) : null}
 
-              <DropdownMenuSub>
-                <DropdownMenuSubTrigger className={cn("rounded-lg px-3 py-2.5 text-sm focus:text-raw-text data-[state=open]:text-raw-text", isEffectiveLight ? "text-slate-700 focus:bg-slate-100 data-[state=open]:bg-slate-100" : "text-raw-silver/80 focus:bg-raw-surface/80 data-[state=open]:bg-raw-surface/80")}>
-                  <Settings className="mr-3 h-4 w-4" />
-                  Display Mode
-                </DropdownMenuSubTrigger>
-                <DropdownMenuSubContent
-                  className={cn(
-                    "w-[300px] rounded-2xl p-3 text-raw-text",
-                    isEffectiveLight
-                      ? "border border-slate-300/80 bg-[linear-gradient(160deg,rgba(255,255,255,0.98),rgba(245,249,255,0.98))] shadow-[0_20px_50px_rgba(28,38,58,0.2)]"
-                      : "border border-raw-border/35 bg-[linear-gradient(160deg,rgba(16,16,16,0.98),rgba(8,8,8,0.98))] shadow-[0_20px_50px_rgba(0,0,0,0.55)]",
-                  )}
-                >
-                  <div className={cn("rounded-xl border p-3", isEffectiveLight ? "border-slate-200 bg-white/85" : "border-raw-border/30 bg-raw-surface/25")}>
-                    <div className={cn("mb-3 flex items-center gap-2 text-xs uppercase tracking-[0.16em]", isEffectiveLight ? "text-slate-500" : "text-raw-silver/45")}>
-                      <Palette className="h-3.5 w-3.5" />
-                      Theme Studio
-                    </div>
+              <button
+                type="button"
+                onClick={() => setAppearanceOpen((o) => !o)}
+                className={cn(
+                  "flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-sm transition-colors",
+                  isEffectiveLight ? "text-slate-700 hover:bg-slate-100" : "text-raw-silver/80 hover:bg-raw-surface/80",
+                )}
+              >
+                <span className="flex items-center gap-3">
+                  <Settings className="h-4 w-4" />
+                  Appearance
+                </span>
+                <ChevronDown className={cn("h-3.5 w-3.5 transition-transform", appearanceOpen && "rotate-180")} />
+              </button>
 
-                    <div className={cn("flex items-center gap-2 rounded-lg border p-1", isEffectiveLight ? "border-slate-200 bg-slate-50" : "border-raw-border/25 bg-raw-black/25")}>
-                      <button
-                        onMouseEnter={() => setHoveredMode("dark")}
-                        onMouseLeave={() => setHoveredMode(null)}
-                        onClick={() => {
-                          setMode("dark");
-                          setHoveredMode(null);
-                        }}
-                        className={cn(
-                          "flex-1 rounded-md px-2 py-1.5 text-xs font-medium transition-colors",
-                          !isEffectiveLight
-                            ? "bg-raw-gold/15 text-raw-gold"
-                            : "text-slate-500 hover:text-slate-900",
-                        )}
-                      >
-                        <span className="inline-flex items-center gap-1.5">
-                          <Moon className="h-3.5 w-3.5" />
-                          Dark
-                        </span>
-                      </button>
-                      <button
-                        onMouseEnter={() => setHoveredMode("light")}
-                        onMouseLeave={() => setHoveredMode(null)}
-                        onClick={() => {
-                          setMode("light");
-                          setHoveredMode(null);
-                        }}
-                        className={cn(
-                          "flex-1 rounded-md px-2 py-1.5 text-xs font-medium transition-colors",
-                          isEffectiveLight
-                            ? "bg-raw-gold/15 text-raw-gold"
-                            : "text-raw-silver/60 hover:text-raw-text",
-                        )}
-                      >
-                        <span className="inline-flex items-center gap-1.5">
-                          <Sun className="h-3.5 w-3.5" />
-                          Light
-                        </span>
-                      </button>
-                    </div>
+              {appearanceOpen && (
+                <div className={cn("mx-1 mb-1 rounded-xl border p-3", isEffectiveLight ? "border-slate-200 bg-white/85" : "border-raw-border/30 bg-raw-surface/25")}>
+                  <div className={cn("mb-3 flex items-center gap-2 text-xs uppercase tracking-[0.16em]", isEffectiveLight ? "text-slate-500" : "text-raw-silver/45")}>
+                    <Palette className="h-3.5 w-3.5" />
+                    Theme Studio
+                  </div>
 
-                    <div className="mt-4">
-                      <p className={cn("mb-2 text-[10px] uppercase tracking-[0.16em]", isEffectiveLight ? "text-slate-500" : "text-raw-silver/45")}>Accent</p>
-                      <div className="grid grid-cols-5 gap-2">
-                        {accentPresets.map((preset) => {
-                          const selected = preset.id === effectiveAccent;
+                  <div className={cn("flex items-center gap-2 rounded-lg border p-1", isEffectiveLight ? "border-slate-200 bg-slate-50" : "border-raw-border/25 bg-raw-black/25")}>
+                    <button
+                      onClick={() => { setMode("dark"); setHoveredMode(null); }}
+                      className={cn(
+                        "flex min-h-[36px] flex-1 items-center justify-center rounded-md px-2 py-2 text-xs font-medium transition-colors",
+                        !isEffectiveLight ? "bg-raw-gold/15 text-raw-gold" : "text-slate-500 hover:text-slate-900",
+                      )}
+                    >
+                      <span className="inline-flex items-center gap-1.5">
+                        <Moon className="h-3.5 w-3.5" />
+                        Dark
+                      </span>
+                    </button>
+                    <button
+                      onClick={() => { setMode("light"); setHoveredMode(null); }}
+                      className={cn(
+                        "flex min-h-[36px] flex-1 items-center justify-center rounded-md px-2 py-2 text-xs font-medium transition-colors",
+                        isEffectiveLight ? "bg-raw-gold/15 text-raw-gold" : "text-raw-silver/60 hover:text-raw-text",
+                      )}
+                    >
+                      <span className="inline-flex items-center gap-1.5">
+                        <Sun className="h-3.5 w-3.5" />
+                        Light
+                      </span>
+                    </button>
+                  </div>
 
-                          return (
-                            <button
-                              key={preset.id}
-                              onMouseEnter={() => setHoveredAccent(preset.id)}
-                              onMouseLeave={() => setHoveredAccent(null)}
-                              onClick={() => {
-                                setAccent(preset.id);
-                                setHoveredAccent(null);
-                              }}
-                              className={cn(
-                                "relative h-9 rounded-lg border transition-all",
-                                selected
-                                  ? "border-raw-text shadow-[0_0_0_1px_rgb(var(--raw-text)/0.3)]"
-                                  : "border-raw-border/35 hover:border-raw-silver/35",
-                              )}
-                              style={{ backgroundColor: `rgb(${preset.rgb})` }}
-                              aria-label={`Use ${preset.label} accent`}
-                              title={preset.label}
-                            >
-                              {selected ? <Check className="mx-auto h-3.5 w-3.5 text-raw-ink" /> : null}
-                            </button>
-                          );
-                        })}
-                      </div>
+                  <div className="mt-3">
+                    <p className={cn("mb-2 text-[10px] uppercase tracking-[0.16em]", isEffectiveLight ? "text-slate-500" : "text-raw-silver/45")}>Accent</p>
+                    <div className="grid grid-cols-5 gap-2">
+                      {accentPresets.map((preset) => {
+                        const selected = preset.id === effectiveAccent;
+                        return (
+                          <button
+                            key={preset.id}
+                            onClick={() => { setAccent(preset.id); setHoveredAccent(null); }}
+                            className={cn(
+                              "relative h-10 rounded-lg border transition-all",
+                              selected ? "border-raw-text shadow-[0_0_0_1px_rgb(var(--raw-text)/0.3)]" : "border-raw-border/35 hover:border-raw-silver/35",
+                            )}
+                            style={{ backgroundColor: `rgb(${preset.rgb})` }}
+                            aria-label={`Use ${preset.label} accent`}
+                            title={preset.label}
+                          >
+                            {selected ? <Check className="mx-auto h-3.5 w-3.5 text-raw-ink" /> : null}
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
-                </DropdownMenuSubContent>
-              </DropdownMenuSub>
+                </div>
+              )}
 
               <DropdownMenuSeparator className={cn("my-2", isEffectiveLight ? "bg-slate-200" : "bg-raw-border/30")} />
 

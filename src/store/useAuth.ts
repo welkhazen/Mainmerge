@@ -1,130 +1,108 @@
-import { useCallback, useMemo, useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { identify, reset, track } from "@/lib/analytics";
-import { ApiError, apiRequest } from "@/lib/api/client";
 import type { AuthResult, User } from "@/store/types";
+import {
+  signIn,
+  signUp,
+  signOut,
+  getSession,
+  type AuthUser,
+} from "@/backend/supabase/controllers/authController";
 
-type ApiUser = {
-  id: string;
-  username: string;
-  role?: "member" | "admin";
-};
+function toUser(a: AuthUser): User {
+  return {
+    id: a.id,
+    username: a.username,
+    role: a.role === "admin" ? "admin" : "member",
+    moderationStatus:
+      a.status === "banned" || a.status === "deleted"
+        ? "banned"
+        : a.status === "warned"
+          ? "warned"
+          : "active",
+    warnings: 0,
+  };
+}
 
 export function useAuth() {
   const queryClient = useQueryClient();
   const [showSignup, setShowSignup] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [sessionLoaded, setSessionLoaded] = useState(false);
 
-  const meQuery = useQuery({
-    queryKey: ["auth", "me"],
-    retry: false,
-    queryFn: async (): Promise<User | null> => {
-      try {
-        const response = await apiRequest<{ user: ApiUser }>("/api/users/me");
-        return {
-          id: response.user.id,
-          username: response.user.username,
-          role: response.user.role ?? "member",
-          moderationStatus: "active",
-          warnings: 0,
-        };
-      } catch (error) {
-        if (error instanceof ApiError && error.status === 401) {
-          return null;
+  // Restore session on mount
+  useEffect(() => {
+    getSession()
+      .then((authUser) => {
+        if (authUser) {
+          const u = toUser(authUser);
+          setUser(u);
+          identify(u.id, { username: u.username });
         }
-        throw error;
-      }
-    },
-  });
-
-  const login = useCallback(async (username: string, password: string): Promise<AuthResult> => {
-    try {
-      await apiRequest<{ ok: boolean }>("/api/auth/login", {
-        method: "POST",
-        body: JSON.stringify({ username, password }),
+      })
+      .catch(() => {})
+      .finally(() => {
+        setSessionLoaded(true);
       });
-      await queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
-      const nextUser = queryClient.getQueryData<User | null>(["auth", "me"]);
-      if (nextUser) {
-        identify(nextUser.id, { username: nextUser.username });
-      }
+  }, []);
+
+  const login = useCallback(
+    async (username: string, password: string): Promise<AuthResult> => {
+      const result = await signIn(username, password);
+      if (!result.ok || !result.user) return { ok: false, error: result.error };
+      const u = toUser(result.user);
+      setUser(u);
+      identify(u.id, { username: u.username });
       track("login_completed", { method: "username_password" });
       setShowSignup(false);
       return { ok: true };
-    } catch (error) {
-      const message = error instanceof ApiError ? error.message : "Login failed.";
-      return { ok: false, error: message };
-    }
-  }, [queryClient]);
+    },
+    [],
+  );
 
-  const requestSignupOtp = useCallback(async (username: string, password: string, phone: string): Promise<AuthResult> => {
-    try {
-      const referralCode =
-        typeof window !== "undefined"
-          ? new URLSearchParams(window.location.search).get("ref")?.trim().toUpperCase()
-          : undefined;
-      await apiRequest<{ ok: boolean }>("/api/auth/signup/request-otp", {
-        method: "POST",
-        body: JSON.stringify({ username, password, phone, referralCode }),
-      });
-      return { ok: true };
-    } catch (error) {
-      const message = error instanceof ApiError ? error.message : "Unable to start signup.";
-      return { ok: false, error: message };
-    }
-  }, []);
-
-  const verifySignupOtp = useCallback(async (code: string): Promise<AuthResult> => {
-    try {
-      await apiRequest<{ ok: boolean }>("/api/auth/signup/verify", {
-        method: "POST",
-        body: JSON.stringify({ code }),
-      });
-      await queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
-      const nextUser = queryClient.getQueryData<User | null>(["auth", "me"]);
-      if (nextUser) {
-        identify(nextUser.id, { username: nextUser.username });
+  const requestSignupOtp = useCallback(
+    async (username: string, password: string, _phone: string): Promise<AuthResult> => {
+      const result = await signUp(username, password);
+      if (!result.ok || !result.user) return { ok: false, error: result.error };
+      const u = toUser(result.user);
+      setUser(u);
+      if (typeof window !== "undefined") {
+        localStorage.removeItem(`raw.onboarding.completed.${username}`);
       }
+      identify(u.id, { username: u.username });
       track("signup_completed", { source: "modal" });
       setShowSignup(false);
       return { ok: true };
-    } catch (error) {
-      const message = error instanceof ApiError ? error.message : "Signup verification failed.";
-      return { ok: false, error: message };
-    }
-  }, [queryClient]);
+    },
+    [],
+  );
+
+  const verifySignupOtp = useCallback(async (_code: string): Promise<AuthResult> => {
+    return { ok: true };
+  }, []);
 
   const logout = useCallback(async () => {
-    try {
-      await apiRequest<{ ok: boolean }>("/api/auth/logout", { method: "POST" });
-    } catch {
-      // Ignore logout network errors and clear local session state anyway.
-    }
-
-    queryClient.setQueryData(["auth", "me"], null);
-    await queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
+    await signOut();
+    setUser(null);
+    queryClient.clear();
     reset();
+    window.location.href = "/";
   }, [queryClient]);
 
-  const user = meQuery.data ?? null;
-  const isLoggedIn = Boolean(user);
-
-  return useMemo(() => ({
-    user,
-    isLoggedIn,
-    isAdmin: user?.role === "admin",
-    showSignup,
-    setShowSignup,
-    requestSignupOtp,
-    verifySignupOtp,
-    login,
-    logout,
-  }), [
-    isLoggedIn,
-    login,
-    logout,
-    requestSignupOtp,
-    showSignup,
-    user,
-    verifySignupOtp,
-  ]);
+  return useMemo(
+    () => ({
+      user,
+      isLoggedIn: Boolean(user),
+      isAdmin: user?.role === "admin",
+      sessionLoaded,
+      showSignup,
+      setShowSignup,
+      requestSignupOtp,
+      verifySignupOtp,
+      login,
+      logout,
+    }),
+    [login, logout, requestSignupOtp, sessionLoaded, showSignup, user, verifySignupOtp],
+  );
 }

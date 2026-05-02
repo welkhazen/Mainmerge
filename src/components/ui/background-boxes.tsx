@@ -6,7 +6,7 @@ export const BoxesCore = ({ className, ...rest }: { className?: string }) => {
   const rows = new Array(30).fill(1);
   const cols = new Array(20).fill(1);
   const accent = getComputedStyle(document.documentElement).getPropertyValue("--raw-accent").trim() || "241 196 45";
-  let colors = [
+  const colors = [
     `rgb(${accent})`,
     `rgb(${accent} / 0.75)`,
     `rgb(${accent} / 0.55)`,
