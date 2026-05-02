@@ -1,3 +1,5 @@
+import levelBadgesImage from "@/assets/tokens.png";
+
 export function EarnedWarUpgradesSection() {
   return (
     <section className="landing-section relative px-4 py-14 sm:px-6 sm:py-20">
@@ -32,9 +34,9 @@ export function EarnedWarUpgradesSection() {
 
         <div className="mt-10">
           <img
-            src="/level-badges.png"
+            src={levelBadgesImage}
             alt="War Level Badges — LVL 1 through LVL 10"
-            className="mx-auto w-full max-w-2xl"
+            className="mx-auto w-full max-w-2xl rounded-2xl object-contain opacity-95 mix-blend-screen drop-shadow-[0_0_26px_rgba(241,196,45,0.2)]"
           />
         </div>
       </div>
