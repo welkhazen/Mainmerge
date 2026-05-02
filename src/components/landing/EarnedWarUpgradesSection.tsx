@@ -36,7 +36,7 @@ export function EarnedWarUpgradesSection() {
           <img
             src={levelBadgesImage}
             alt="War Level Badges — LVL 1 through LVL 10"
-            className="mx-auto w-full max-w-2xl rounded-2xl object-contain opacity-95 mix-blend-screen drop-shadow-[0_0_26px_rgba(241,196,45,0.2)]"
+            className="mx-auto w-full max-w-4xl rounded-2xl object-contain opacity-100 drop-shadow-[0_0_20px_rgba(241,196,45,0.14)]"
           />
         </div>
       </div>
