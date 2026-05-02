@@ -7,7 +7,7 @@ import { ThemeProvider } from "@/providers/ThemeProvider";
 import { AnalyticsProvider } from "@/components/analytics/AnalyticsProvider";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 
-import Index from "./pages/Index";
+const Index = lazy(() => import("./pages/Index"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Admin = lazy(() => import("./pages/Admin"));
 const FAQ = lazy(() => import("./pages/FAQ"));
