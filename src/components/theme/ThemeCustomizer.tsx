@@ -3,7 +3,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
-import { useTheme } from "@/providers/ThemeProvider";
+import { useTheme } from "@/providers/useTheme";
 
 interface ThemeCustomizerProps {
   placement?: "floating" | "inline";
