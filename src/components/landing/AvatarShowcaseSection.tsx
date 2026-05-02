@@ -2,7 +2,6 @@ import { LandingSectionShell } from "@/components/landing/LandingSectionShell";
 import { AvatarFigure } from "@/components/ui/avatar-figure";
 import { AvatarPhoneHomeScreen } from "@/components/ui/avatar-phone-home-screen";
 import { PhoneMockup } from "@/components/ui/phone-mockup";
-import { LEVEL_THEMES, getAvatarTheme } from "@/lib/avatar-theme";
 import { useTrackSectionView } from "@/lib/analytics/useTrackSectionView";
 
 interface AvatarShowcaseSectionProps {
@@ -28,7 +27,7 @@ export function AvatarShowcaseSection({ avatarIndex, previewIndex, onAvatarChang
         </PhoneMockup>
 
         <div className="w-full max-w-4xl rounded-2xl border border-raw-border/40 bg-raw-surface/25 p-4 sm:p-5">
-          <p className="text-center font-display text-xs uppercase tracking-[0.2em] text-raw-gold/70">Avatar progression</p>
+          <p className="text-center font-display text-xs uppercase tracking-[0.2em] text-raw-gold/70">Avatar Selection</p>
           <div className="mt-4 grid grid-cols-3 gap-x-3 gap-y-4 sm:grid-cols-5 sm:gap-x-4">
             {LEVEL_THEMES.map((theme, i) => {
               const level = i + 1;
