@@ -1,4 +1,4 @@
-import levelBadgesImage from "@/assets/tokens.png";
+const levelBadgesImage = "/level-up-badges.png";
 
 export function EarnedWarUpgradesSection() {
   return (
