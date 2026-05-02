@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { useTheme } from "@/providers/ThemeProvider";
+import { useTheme } from "@/providers/useTheme";
 import React, { useEffect, useRef } from "react";
 import * as THREE from "three";
 
@@ -19,7 +19,8 @@ export function DottedSurface({ className, children, ...props }: DottedSurfacePr
   } | null>(null);
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    const container = containerRef.current;
+    if (!container) return;
 
     const SEPARATION = 150;
     const AMOUNTX = 40;
@@ -39,7 +40,7 @@ export function DottedSurface({ className, children, ...props }: DottedSurfacePr
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setClearColor(scene.fog.color, 0);
 
-    containerRef.current.appendChild(renderer.domElement);
+    container.appendChild(renderer.domElement);
 
     const positions: number[] = [];
     const colors: number[] = [];
@@ -118,7 +119,6 @@ export function DottedSurface({ className, children, ...props }: DottedSurfacePr
     };
 
     return () => {
-      const container = containerRef.current;
       window.removeEventListener("resize", handleResize);
 
       if (sceneRef.current) {
