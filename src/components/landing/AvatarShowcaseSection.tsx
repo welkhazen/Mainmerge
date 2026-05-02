@@ -25,10 +25,10 @@ export function AvatarShowcaseSection({ avatarLevel, displayLevel, onLevelChange
       id="avatar"
       sectionRef={sectionRef as React.Ref<HTMLElement>}
       title="Your avatar is your identity"
-      description="Hover or tap a rank to preview how it appears on the phone."
+      description="Hover or tap an avatar below to preview how it appears on the phone."
     >
       <div className="mx-auto flex w-full max-w-4xl flex-col items-center gap-8">
-        <PhoneMockup className="w-full max-w-[360px]" showStatusBar={false}>
+        <PhoneMockup showStatusBar={false}>
           <AvatarPhoneHomeScreen displayLevel={displayLevel} />
         </PhoneMockup>
 
@@ -56,7 +56,6 @@ export function AvatarShowcaseSection({ avatarLevel, displayLevel, onLevelChange
                   <div className={`rounded-full transition-all duration-300 ${isActive ? "scale-110" : "group-hover:scale-105"}`}>
                     <AvatarFigure level={level} size="lg" selected={isSelected || isActive} />
                   </div>
-                  <span className={`font-display text-[9px] tracking-[0.16em] ${isActive ? "text-raw-text" : "text-raw-silver/55"}`}>LVL {level}</span>
                 </button>
               );
             })}
