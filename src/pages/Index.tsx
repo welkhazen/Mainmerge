@@ -170,20 +170,19 @@ const Index = () => {
         <AvatarShowcaseSection />
         <WheelReward />
         <WhyAnonymity />
-        <AnonQuestionSection onSignupClick={() => setShowSignup(true)} />
+        <AnonQuestionSection />
         <EarnedWarUpgradesSection />
         <LandingFooter />
       </div>
 
       <Suspense fallback={null}>
-        {showSignup && (
-          <SignupModalLazy
-            onClose={() => setShowSignup(false)}
-            onRequestOtp={requestSignupOtp}
-            onVerifyOtp={verifySignupOtp}
-            onLogin={login}
-          />
-        )}
+        <SignupModalLazy
+          open={showSignup}
+          onOpenChange={setShowSignup}
+          onRequestOtp={requestSignupOtp}
+          onVerifyOtp={verifySignupOtp}
+          onLogin={login}
+        />
       </Suspense>
     </div>
   );
