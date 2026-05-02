@@ -326,39 +326,7 @@ export function OnboardingJourney({
 
                       return (
                         <div>
-                          <p className="text-xs text-raw-silver/50 mb-4 font-medium uppercase tracking-[0.12em]">
-                            Question {currentPollIndex + 1} of {onboardingPolls.length}
-                          </p>
                           <div className="relative lg:px-12">
-                            <button
-                              onClick={() => setCurrentPollIndex(Math.max(0, currentPollIndex - 1))}
-                              disabled={currentPollIndex === 0}
-                              className="absolute left-0 top-1/2 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-raw-border/35 bg-raw-black/45 text-lg text-raw-silver/70 transition-all hover:border-raw-gold/35 hover:text-raw-gold/75 disabled:cursor-not-allowed disabled:opacity-35 lg:flex"
-                              aria-label="Previous poll"
-                            >
-                              ←
-                            </button>
-
-                            <button
-                              onClick={() => {
-                                if (currentPollIndex < onboardingPolls.length - 1) {
-                                  setCurrentPollIndex(Math.min(onboardingPolls.length - 1, currentPollIndex + 1));
-                                  return;
-                                }
-
-                                goToNextStep();
-                              }}
-                              disabled={currentPollIndex === onboardingPolls.length - 1 && !canContinueFromPolls}
-                              className={`absolute right-0 top-1/2 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border text-lg transition-all disabled:cursor-not-allowed disabled:opacity-35 lg:flex ${
-                                currentPollIndex < onboardingPolls.length - 1
-                                  ? "border-raw-border/35 bg-raw-black/45 text-raw-silver/70 hover:border-raw-gold/35 hover:text-raw-gold/75"
-                                  : "border-raw-gold/40 bg-raw-gold/15 text-raw-gold hover:bg-raw-gold/25"
-                              }`}
-                              aria-label={currentPollIndex < onboardingPolls.length - 1 ? "Next poll" : "Complete polls"}
-                            >
-                              →
-                            </button>
-
                             <div>
                               <SwipeablePollCard
                                 id={poll.id}
@@ -382,6 +350,9 @@ export function OnboardingJourney({
 
                                   setCurrentPollIndex((prev) => Math.min(onboardingPolls.length - 1, prev + 1));
                                 }}
+                                currentIndex={currentPollIndex}
+                                totalPolls={onboardingPolls.length}
+                                completedCount={answeredCount}
                                 onAddComment={(content) => {
                                   const newComment: Comment = {
                                     id: `${poll.id}-${Date.now()}`,
@@ -402,33 +373,6 @@ export function OnboardingJourney({
                             </div>
                           </div>
 
-                          {/* Navigation Buttons */}
-                          <div className="mt-6 flex gap-3">
-                            <button
-                              onClick={() => setCurrentPollIndex(Math.max(0, currentPollIndex - 1))}
-                              disabled={currentPollIndex === 0}
-                              className="flex-1 rounded-lg border border-raw-border/30 bg-raw-black/20 px-4 py-2.5 text-xs font-medium text-raw-silver/70 transition-all hover:border-raw-gold/35 hover:text-raw-gold/75 disabled:cursor-not-allowed disabled:opacity-40 lg:hidden"
-                            >
-                              ← Previous
-                            </button>
-
-                            {currentPollIndex < onboardingPolls.length - 1 ? (
-                              <button
-                                onClick={() => setCurrentPollIndex(Math.min(onboardingPolls.length - 1, currentPollIndex + 1))}
-                                className="flex-1 rounded-lg border border-raw-border/30 bg-raw-black/20 px-4 py-2.5 text-xs font-medium text-raw-silver/70 transition-all hover:border-raw-gold/35 hover:text-raw-gold/75 lg:hidden"
-                              >
-                                Next →
-                              </button>
-                            ) : (
-                              <button
-                                onClick={goToNextStep}
-                                disabled={!canContinueFromPolls}
-                                className="flex-1 rounded-lg bg-raw-gold px-4 py-2.5 text-xs font-semibold text-raw-ink transition-opacity disabled:cursor-not-allowed disabled:opacity-40 lg:hidden"
-                              >
-                                Complete →
-                              </button>
-                            )}
-                          </div>
                         </div>
                       );
                     })()}
