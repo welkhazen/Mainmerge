@@ -1,5 +1,7 @@
-import { useEffect, useState } from "react";
-import { LogOut, Shield } from "lucide-react";
+import { FloatingDock } from "@/components/ui/floating-dock";
+import { useEffect, useMemo, useState } from "react";
+import { readCommunityChats } from "@/lib/communityChat";
+import { Home as HomeIcon, MessageCircle, Target, User as UserIcon, Wallet, LogOut, Shield, Trophy, Sparkles } from "lucide-react";
 import { matchPath, useLocation, useNavigate } from "react-router-dom";
 import { DashboardNav, type DashboardTab } from "@/components/dashboard/DashboardNav";
 import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
@@ -9,6 +11,8 @@ import { DashboardCommunities } from "@/components/dashboard/DashboardCommunitie
 import { DashboardChallenges } from "@/components/dashboard/DashboardChallenges";
 import { DashboardDailySpin } from "@/components/dashboard/DashboardDailySpin";
 import { DashboardProfile } from "@/components/dashboard/DashboardProfile";
+import { DashboardWallet } from "@/components/dashboard/DashboardWallet";
+import { DashboardSectionShell } from "@/components/dashboard/DashboardSectionShell";
 import type { User, Poll } from "@/store/useRawStore";
 
 interface DashboardProps {
@@ -78,6 +82,11 @@ export default function Dashboard({
     navigate("/dashboard");
   };
 
+  const activeCommunityTitle = useMemo(() => {
+    if (!activeCommunityId) return undefined;
+    return readCommunityChats().find((c) => c.id === activeCommunityId)?.title;
+  }, [activeCommunityId]);
+
   const handleProfileClick = () => {
     setActiveTab("profile");
     setIsHome(false);
@@ -87,33 +96,27 @@ export default function Dashboard({
   const renderContent = () => {
     if (isHome || activeTab === "home") {
       return (
-        <DashboardHome
-          username={user.username}
-          avatarLevel={avatarLevel}
-          polls={polls}
-          votedPolls={votedPolls}
-          onNavigate={handleTabChange}
-        />
-      );
-    }
-
-    switch (activeTab) {
-      case "home":
-        return (
+        <DashboardSectionShell>
           <DashboardHome
             username={user.username}
             avatarLevel={avatarLevel}
             polls={polls}
             votedPolls={votedPolls}
+            dailyAnsweredCount={dailyAnsweredCount}
+            dailyPollLimit={dailyPollLimit}
             onNavigate={handleTabChange}
+            onOpenCommunity={handleOpenCommunity}
           />
-        );
+        </DashboardSectionShell>
+      );
+    }
+
+    switch (activeTab) {
       case "polls":
         return (
           <DashboardPolls
             polls={polls}
             votedPolls={votedPolls}
-            avatarLevel={avatarLevel}
             userId={user.id}
             username={user.username}
             dailyAnsweredCount={dailyAnsweredCount}
@@ -124,42 +127,64 @@ export default function Dashboard({
         );
       case "communities":
         return (
-          <DashboardCommunities
-            user={user}
-            activeCommunityId={activeCommunityId}
-            onOpenCommunity={handleOpenCommunity}
-            onBackToCommunities={handleBackToCommunities}
-          />
+          <DashboardSectionShell className="p-2 sm:p-3">
+            <DashboardCommunities
+              user={user}
+              activeCommunityId={activeCommunityId}
+              onOpenCommunity={handleOpenCommunity}
+              onBackToCommunities={handleBackToCommunities}
+            />
+          </DashboardSectionShell>
         );
       case "challenges":
         return (
-          <DashboardChallenges
-            avatarLevel={avatarLevel}
-            pollsAnswered={votedPolls.size}
-            dailyAnsweredCount={dailyAnsweredCount}
-            dailyPollLimit={dailyPollLimit}
-          />
+          <DashboardSectionShell>
+            <DashboardChallenges
+              userId={user.id}
+              isAdmin={user.role === "admin"}
+              avatarLevel={avatarLevel}
+              pollsAnswered={votedPolls.size}
+              dailyAnsweredCount={dailyAnsweredCount}
+              dailyPollLimit={dailyPollLimit}
+            />
+          </DashboardSectionShell>
         );
       case "daily-spin":
-        return <DashboardDailySpin userId={user.id} isAdmin={user.role === "admin"} />;
+        return (
+          <DashboardSectionShell>
+            <DashboardDailySpin userId={user.id} isAdmin={user.role === "admin"} />
+          </DashboardSectionShell>
+        );
+      case "wallet":
+        return (
+          <DashboardSectionShell>
+            <DashboardWallet />
+          </DashboardSectionShell>
+        );
       case "profile":
         return (
-          <DashboardProfile
-            username={user.username}
-            avatarLevel={avatarLevel}
-            onLevelChange={setAvatarLevel}
-            pollsAnswered={votedPolls.size}
-          />
+          <DashboardSectionShell>
+            <DashboardProfile
+              username={user.username}
+              avatarLevel={avatarLevel}
+              onLevelChange={setAvatarLevel}
+              pollsAnswered={votedPolls.size}
+            />
+          </DashboardSectionShell>
         );
       default:
         return (
-          <DashboardHome
-            username={user.username}
-            avatarLevel={avatarLevel}
-            polls={polls}
-            votedPolls={votedPolls}
-            onNavigate={handleTabChange}
-          />
+          <DashboardSectionShell>
+            <DashboardHome
+              username={user.username}
+              avatarLevel={avatarLevel}
+              polls={polls}
+              votedPolls={votedPolls}
+              dailyAnsweredCount={dailyAnsweredCount}
+              dailyPollLimit={dailyPollLimit}
+              onNavigate={handleTabChange}
+            />
+          </DashboardSectionShell>
         );
     }
   };
@@ -174,6 +199,8 @@ export default function Dashboard({
         showAdminLink={user.role === "admin"}
         onProfileClick={handleProfileClick}
         onLogout={onLogout}
+        communityTitle={activeCommunityTitle}
+        onBack={handleBackToCommunities}
       />
 
       <DashboardSidebar
@@ -188,21 +215,74 @@ export default function Dashboard({
         onLogout={onLogout}
       />
 
-      {/* Mobile bottom nav */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-raw-border/30 bg-raw-black/95 backdrop-blur-xl px-2 py-2 flex items-center justify-around lg:hidden">
-        <MobileNavBtn label="Home" active={isHome} onClick={handleHomeClick} />
-        <MobileNavBtn label="Polls" active={!isHome && activeTab === "polls"} onClick={() => handleTabChange("polls")} />
-        <MobileNavBtn label="Challenges" active={!isHome && activeTab === "challenges"} onClick={() => handleTabChange("challenges")} />
-        <MobileNavBtn label="Spin" active={!isHome && activeTab === "daily-spin"} onClick={() => handleTabChange("daily-spin")} />
-        <MobileNavBtn label="Groups" active={!isHome && activeTab === "communities"} onClick={() => handleTabChange("communities")} />
-        <MobileNavBtn label="Me" active={!isHome && activeTab === "profile"} onClick={() => handleTabChange("profile")} />
-        {user.role === "admin" && <MobileNavLink label="Admin" href="/admin" icon={<Shield className="h-3.5 w-3.5" />} />}
-        <MobileNavBtn label="Logout" active={false} onClick={onLogout} icon={<LogOut className="h-3.5 w-3.5" />} />
-      </div>
+      {/* Mobile bottom nav replaced with FloatingDock */}
+      {/*
+      <nav
+        className="fixed bottom-0 left-0 right-0 z-40 lg:hidden"
+        style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+      >
+        <div className="border-t border-raw-border/25 bg-raw-black/95 backdrop-blur-2xl px-2 pt-1 pb-2 flex items-center justify-around">
+          <MobileNavBtn label="Home"       icon={<HomeIcon className="h-5 w-5" />}       active={isHome}                                    onClick={handleHomeClick} />
+          <MobileNavBtn label="Polls"      icon={<Target className="h-5 w-5" />}          active={!isHome && activeTab === "polls"}           onClick={() => handleTabChange("polls")} />
+          <MobileNavBtn label="Challenges" icon={<Trophy className="h-5 w-5" />}          active={!isHome && activeTab === "challenges"}      onClick={() => handleTabChange("challenges")} />
+          <MobileNavBtn label="Spin"       icon={<Sparkles className="h-5 w-5" />}        active={!isHome && activeTab === "daily-spin"}      onClick={() => handleTabChange("daily-spin")} />
+          <MobileNavBtn label="Groups"     icon={<MessageCircle className="h-5 w-5" />}   active={!isHome && activeTab === "communities"}     onClick={() => handleTabChange("communities")} />
+          <MobileNavBtn label="Me"         icon={<UserIcon className="h-5 w-5" />}        active={!isHome && activeTab === "profile"}         onClick={() => handleTabChange("profile")} />
+        </div>
+      </nav>
+      */}
+
+      {/* FloatingDock for mobile navigation */}
+      <FloatingDock
+        items={[
+          {
+            title: "Home",
+            icon: <HomeIcon className="h-5 w-5" />,
+            href: "#",
+            onClick: handleHomeClick,
+            active: isHome,
+          },
+          {
+            title: "Communities",
+            icon: <MessageCircle className="h-5 w-5" />,
+            href: "#",
+            onClick: () => handleTabChange("communities"),
+            active: !isHome && activeTab === "communities",
+          },
+          {
+            title: "Polls",
+            icon: <Target className="h-5 w-5" />,
+            href: "#",
+            onClick: () => handleTabChange("polls"),
+            active: !isHome && activeTab === "polls",
+          },
+          {
+            title: "Challenges",
+            icon: <Trophy className="h-5 w-5" />,
+            href: "#",
+            onClick: () => handleTabChange("challenges"),
+            active: !isHome && activeTab === "challenges",
+          },
+          {
+            title: "Wallet",
+            icon: <Wallet className="h-5 w-5" />,
+            href: "#",
+            onClick: () => handleTabChange("wallet"),
+            active: !isHome && activeTab === "wallet",
+          },
+          ...(user.role === "admin" ? [{
+            title: "Admin",
+            icon: <Shield className="h-5 w-5" />,
+            href: "/admin",
+            onClick: () => navigate("/admin"),
+            active: false,
+          }] : []),
+        ]}
+      />
 
       {/* Main content */}
-      <main className="relative z-10 pt-14 pb-20 lg:pl-[200px] lg:pb-8">
-        <div className="dashboard-content-shell mx-auto max-w-4xl px-5 py-8">
+      <main className="relative z-10 pt-14 pb-28 lg:pl-[80px] lg:pb-8">
+        <div className="dashboard-content-shell mx-auto max-w-4xl px-4 py-5 sm:px-5 sm:py-8">
           {renderContent()}
         </div>
       </main>
@@ -220,9 +300,9 @@ function MobileNavLink({
   icon?: React.ReactNode;
 }) {
   return (
-    <a href={href} className="flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg text-raw-gold/80 transition-all hover:text-raw-gold">
+    <a href={href} className="flex min-h-[44px] min-w-[44px] flex-col items-center justify-center gap-0.5 px-2 py-1 rounded-lg text-raw-gold/80 transition-all hover:text-raw-gold">
       {icon}
-      <span className="text-[10px] font-medium">{label}</span>
+      <span className="text-[10px] font-medium leading-none">{label}</span>
     </a>
   );
 }
@@ -240,14 +320,18 @@ function MobileNavBtn({
 }) {
   return (
     <button
+      type="button"
       onClick={onClick}
-      className={`flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg transition-all ${
-        active ? "text-raw-gold" : "text-raw-silver/35"
-      }`}
+      className="flex flex-col items-center justify-center gap-1 px-3 py-1.5 min-w-[48px] transition-all"
+      aria-current={active ? "page" : undefined}
     >
-      {icon}
-      <span className={`text-[10px] font-medium ${active ? "text-raw-gold" : ""}`}>{label}</span>
-      {active && <div className="h-0.5 w-4 rounded-full bg-raw-gold" />}
+      <div className={`transition-all duration-200 ${active ? "text-raw-gold scale-110" : "text-raw-silver/40"}`}>
+        {icon}
+      </div>
+      <span className={`text-[9px] font-semibold tracking-wide leading-none transition-colors ${active ? "text-raw-gold" : "text-raw-silver/35"}`}>
+        {label}
+      </span>
+      {active && <div className="h-0.5 w-4 rounded-full bg-raw-gold mt-0.5" />}
     </button>
   );
 }

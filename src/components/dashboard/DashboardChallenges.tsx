@@ -9,8 +9,11 @@ import {
   Trophy,
   UserPlus,
 } from "lucide-react";
+import { DashboardDailySpin } from "@/components/dashboard/DashboardDailySpin";
 
 interface DashboardChallengesProps {
+  userId: string;
+  isAdmin?: boolean;
   avatarLevel: number;
   pollsAnswered: number;
   dailyAnsweredCount: number;
@@ -85,6 +88,8 @@ const challengeDefinitions = [
 ];
 
 export function DashboardChallenges({
+  userId,
+  isAdmin = false,
   avatarLevel,
   pollsAnswered,
   dailyAnsweredCount,
@@ -107,14 +112,16 @@ export function DashboardChallenges({
 
   return (
     <div className="space-y-5">
+      <DashboardDailySpin userId={userId} isAdmin={isAdmin} />
+
       <header className="space-y-2">
-        <h1 className="font-display text-2xl tracking-wide text-raw-text">Challenges</h1>
-        <p className="text-sm text-raw-silver/45">
+        <h1 className="font-display text-xl tracking-wide text-raw-text sm:text-2xl">Challenges</h1>
+        <p className="text-xs text-raw-silver/45 sm:text-sm">
           Complete high-impact missions to unlock rewards and level up your identity faster.
         </p>
       </header>
 
-      <section className="relative overflow-hidden rounded-2xl border border-raw-border/40 bg-raw-black/45 p-5">
+      <section className="relative overflow-hidden rounded-2xl border border-raw-border/40 bg-raw-black/45 p-4 sm:p-5">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_-30%,rgba(241,196,45,0.25),transparent_55%)]" />
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
@@ -130,7 +137,7 @@ export function DashboardChallenges({
         </div>
       </section>
 
-      <div className="space-y-3">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-1">
         {challengeDefinitions.map((challenge) => {
           const current = progressMap[challenge.id] ?? 0;
           const done = current >= challenge.target;
@@ -140,56 +147,47 @@ export function DashboardChallenges({
           return (
             <article
               key={challenge.id}
-              className="group relative overflow-hidden rounded-2xl border border-raw-border/45 bg-raw-black/45 p-4 sm:p-5"
+              className="group relative overflow-hidden rounded-2xl border border-raw-border/45 bg-raw-black/45 p-3 sm:p-5"
             >
               <div className={`pointer-events-none absolute inset-0 bg-gradient-to-r ${challenge.accent} opacity-60 transition-opacity duration-300 group-hover:opacity-90`} />
               <div className="pointer-events-none absolute inset-0 opacity-35 [background-image:radial-gradient(rgba(255,255,255,0.15)_0.6px,transparent_0.6px)] [background-size:8px_8px]" />
 
-              <div className="flex items-start justify-between gap-3">
-                <div className="relative flex items-start gap-3">
-                  <div className="rounded-xl border border-raw-border/45 bg-raw-black/55 p-2.5">
-                    <Icon className="h-4 w-4 text-raw-gold/80" />
+              <div className="relative flex items-start justify-between gap-2">
+                <div className="flex items-start gap-2">
+                  <div className="shrink-0 rounded-xl border border-raw-border/45 bg-raw-black/55 p-2">
+                    <Icon className="h-3.5 w-3.5 text-raw-gold/80" />
                   </div>
-                  <div>
-                    <h2 className="font-display text-sm text-raw-text sm:text-base">{challenge.title}</h2>
-                    <p className="mt-1 text-xs text-raw-silver/65 sm:text-sm">{challenge.description}</p>
+                  <div className="min-w-0">
+                    <h2 className="font-display text-xs leading-tight text-raw-text sm:text-sm">{challenge.title}</h2>
+                    <p className="mt-0.5 text-[10px] leading-snug text-raw-silver/65 sm:text-xs line-clamp-2">{challenge.description}</p>
                   </div>
                 </div>
-
-                <div className="relative inline-flex items-center gap-1 rounded-full border border-raw-border/45 bg-raw-black/55 px-3 py-1 text-sm text-raw-text">
-                  <Flame className="h-3.5 w-3.5 text-raw-gold/80" />
+                <div className="relative shrink-0 inline-flex items-center gap-0.5 rounded-full border border-raw-border/45 bg-raw-black/55 px-2 py-0.5 text-xs text-raw-text">
+                  <Flame className="h-3 w-3 text-raw-gold/80" />
                   +{challenge.reward}
                 </div>
               </div>
 
-              <div className="relative mt-4 h-2 overflow-hidden rounded-full bg-raw-border/35">
+              <div className="relative mt-3 h-1.5 overflow-hidden rounded-full bg-raw-border/35">
                 <div
                   className={`h-full rounded-full transition-all duration-500 ${done ? "bg-gradient-to-r from-emerald-400/90 to-emerald-300" : "bg-gradient-to-r from-raw-gold/70 to-raw-gold"}`}
                   style={{ width: `${Math.max(6, pct)}%` }}
                 />
               </div>
 
-              <div className="mt-2 flex items-center justify-between gap-3 text-[11px] text-raw-silver/60 sm:text-xs">
-                <p>
-                {Math.min(current, challenge.target)}/{challenge.target} complete
-                </p>
-                {challenge.deadline ? <p className="text-orange-300/85">{challenge.deadline}</p> : null}
-              </div>
-
-              <div className="relative mt-4 flex items-center justify-between gap-3">
-                <div className="inline-flex items-center gap-2 rounded-full border border-raw-border/40 bg-raw-black/45 px-3 py-1 text-[11px] text-raw-silver/70">
-                  {done ? <CheckCircle2 className="h-3.5 w-3.5 text-emerald-300" /> : <Lock className="h-3.5 w-3.5 text-raw-silver/55" />}
-                  {done ? "Completed" : "In Progress"}
+              <div className="relative mt-2 flex items-center justify-between gap-2">
+                <div className="inline-flex items-center gap-1 rounded-full border border-raw-border/40 bg-raw-black/45 px-2 py-0.5 text-[10px] text-raw-silver/70">
+                  {done ? <CheckCircle2 className="h-3 w-3 text-emerald-300" /> : <Lock className="h-3 w-3 text-raw-silver/55" />}
+                  {done ? "Done" : "In Progress"}
                 </div>
-
                 {done ? (
-                  <button className="rounded-full border border-emerald-300/35 bg-emerald-400/20 px-4 py-1.5 text-xs font-medium text-emerald-100 transition hover:bg-emerald-400/30">
-                    Claim Reward
+                  <button className="rounded-full border border-emerald-300/35 bg-emerald-400/20 px-2.5 py-0.5 text-[10px] font-medium text-emerald-100 transition hover:bg-emerald-400/30">
+                    Claim
                   </button>
                 ) : (
-                  <div className="inline-flex items-center gap-1 text-[11px] text-raw-silver/55">
-                    <Trophy className="h-3.5 w-3.5 text-raw-gold/65" />
-                    Reward pending
+                  <div className="inline-flex items-center gap-1 text-[10px] text-raw-silver/55">
+                    <Trophy className="h-3 w-3 text-raw-gold/65" />
+                    Pending
                   </div>
                 )}
               </div>

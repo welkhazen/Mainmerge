@@ -3,17 +3,19 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
-import { useTheme } from "@/providers/ThemeProvider";
+import { useTheme } from "@/providers/useTheme";
 
 interface ThemeCustomizerProps {
   placement?: "floating" | "inline";
+  triggerStyle?: "icon" | "compact";
   className?: string;
 }
 
-export function ThemeCustomizer({ placement = "floating", className }: ThemeCustomizerProps) {
+export function ThemeCustomizer({ placement = "floating", triggerStyle = "icon", className }: ThemeCustomizerProps) {
   const { mode, accent, accentPresets, setMode, setAccent } = useTheme();
   const isLightMode = mode === "light";
   const isFloating = placement === "floating";
+  const selectedAccent = accentPresets.find((preset) => preset.id === accent);
 
   return (
     <div
@@ -24,17 +26,34 @@ export function ThemeCustomizer({ placement = "floating", className }: ThemeCust
     >
       <Popover>
         <PopoverTrigger asChild>
-          <Button
-            size="icon"
-            className={cn(
-              "rounded-2xl border border-raw-border/40 bg-raw-surface/90 text-raw-gold backdrop-blur-xl hover:bg-raw-surface",
-              isFloating
-                ? "pointer-events-auto h-12 w-12 shadow-[0_18px_45px_rgb(var(--raw-black)/0.22)]"
-                : "h-10 w-10 shadow-[0_10px_24px_rgb(var(--raw-black)/0.2)]",
-            )}
-          >
-            <MonitorCog className="h-5 w-5" />
-          </Button>
+          {triggerStyle === "compact" ? (
+            <button
+              type="button"
+              className={cn(
+                "inline-flex min-h-11 items-center gap-2 rounded-full border border-raw-border/45 bg-raw-surface/90 px-3 text-xs font-semibold uppercase tracking-[0.14em] text-raw-silver/80 backdrop-blur-xl transition-colors hover:bg-raw-surface",
+                isFloating && "pointer-events-auto shadow-[0_18px_45px_rgb(var(--raw-black)/0.22)]",
+              )}
+            >
+              <span>Theme</span>
+              <span
+                className="h-3.5 w-3.5 rounded-full border border-white/40"
+                style={{ backgroundColor: selectedAccent ? `rgb(${selectedAccent.rgb})` : "rgb(var(--raw-accent))" }}
+                aria-hidden="true"
+              />
+            </button>
+          ) : (
+            <Button
+              size="icon"
+              className={cn(
+                "rounded-2xl border border-raw-border/40 bg-raw-surface/90 text-raw-gold backdrop-blur-xl hover:bg-raw-surface",
+                isFloating
+                  ? "pointer-events-auto h-12 w-12 shadow-[0_18px_45px_rgb(var(--raw-black)/0.22)]"
+                  : "h-10 w-10 shadow-[0_10px_24px_rgb(var(--raw-black)/0.2)]",
+              )}
+            >
+              <MonitorCog className="h-5 w-5" />
+            </Button>
+          )}
         </PopoverTrigger>
         <PopoverContent align="end" sideOffset={12} className="w-[320px] rounded-3xl border border-raw-border/40 bg-raw-surface/95 p-0 text-raw-text shadow-2xl backdrop-blur-xl">
           <div className="border-b border-raw-border/25 px-5 py-4">

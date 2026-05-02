@@ -1,12 +1,9 @@
-import { FormEvent, Suspense, lazy, useState } from "react";
+import { FormEvent, Suspense, useState } from "react";
 import { MinimalFooter } from "@/components/ui/minimal-footer";
 import { track } from "@/lib/analytics";
 import { useTrackSectionView } from "@/lib/analytics/useTrackSectionView";
 import { apiFetch } from "@/lib/http";
-
-const ContainerTextFlipLazy = lazy(() =>
-  import("@/components/ui/container-text-flip").then((module) => ({ default: module.ContainerTextFlip }))
-);
+import { ContainerTextFlipLazy } from "@/components/ui/container-text-flip.lazy";
 
 interface FinalCTAProps {
   onSignupClick: () => void;
@@ -110,9 +107,9 @@ export function FinalCTA({ onSignupClick }: FinalCTAProps) {
   };
 
   return (
-    <section ref={sectionRef as React.RefObject<HTMLElement>} className="relative px-4 py-24 sm:px-6 sm:py-28 md:py-32">
+    <section ref={sectionRef as React.RefObject<HTMLElement>} className="relative overflow-hidden px-4 py-14 sm:px-6 sm:py-24 md:py-32">
       {/* Subtle glow */}
-      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[500px] h-[300px] rounded-full bg-raw-gold/[0.04] blur-[100px]" />
+      <div className="pointer-events-none absolute bottom-0 left-1/2 h-[200px] w-[300px] -translate-x-1/2 rounded-full bg-raw-gold/[0.04] blur-[80px] sm:h-[250px] sm:w-[400px] md:h-[300px] md:w-[500px] md:blur-[100px]" />
 
       <div className="relative mx-auto max-w-2xl text-center">
         <h2 className="font-display text-2xl tracking-wide text-raw-text sm:text-3xl md:text-4xl">
@@ -194,14 +191,14 @@ export function FinalCTA({ onSignupClick }: FinalCTAProps) {
         <div className="mt-6 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
           <button
             onClick={handleAnonAccountClick}
-            className="rounded-full border border-raw-border px-8 py-3.5 text-sm font-medium text-raw-silver/80 transition-all hover:border-raw-silver/30 hover:text-raw-text"
+            className="rounded-full border border-raw-border px-6 py-3.5 text-sm font-medium text-raw-silver/80 transition-all hover:border-raw-silver/30 hover:text-raw-text sm:px-8"
           >
-            Or create an anonymous account
+            Sign Up Free
           </button>
           <a
             href="#communities"
             onClick={handleExploreCommunitiesClick}
-            className="rounded-full border border-raw-border px-8 py-3.5 text-center text-sm font-medium text-raw-silver/80 transition-all hover:border-raw-silver/30 hover:text-raw-text"
+            className="rounded-full border border-raw-border px-6 py-3.5 text-center text-sm font-medium text-raw-silver/80 transition-all hover:border-raw-silver/30 hover:text-raw-text sm:px-8"
           >
             Explore communities
           </a>

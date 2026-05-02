@@ -1,5 +1,9 @@
 # Welcome to your Lovable project
 
+<!-- Small change made for testing purposes -->
+
+Test push: this line was added to test git push functionality.
+
 ## Project info
 
 **URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID

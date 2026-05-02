@@ -1,13 +1,14 @@
 import { Suspense, lazy, useEffect, useState } from "react";
 import { Navbar } from "@/components/landing/Navbar";
 import { ProblemSection } from "@/components/landing/ProblemSection";
-import { Hero } from "@/components/landing/Hero";
+import { GlobeHero } from "@/components/landing/GlobeHero";
 import { HowItWorks } from "@/components/landing/HowItWorks";
 import { PollSection } from "@/components/landing/PollSection";
-import { Communities } from "@/components/landing/Communities";
-import { AvatarIdentity } from "@/components/landing/AvatarIdentity";
+import { AvatarShowcaseSection } from "@/components/landing/AvatarShowcaseSection";
 import { WheelReward } from "@/components/landing/WheelReward";
 import { WhyAnonymity } from "@/components/landing/WhyAnonymity";
+import { AnonQuestionSection } from "@/components/landing/AnonQuestionSection";
+import { EarnedWarUpgradesSection } from "@/components/landing/EarnedWarUpgradesSection";
 import { LandingFooter } from "@/components/landing/LandingFooter";
 import { OnboardingJourney } from "@/components/onboarding/OnboardingJourney";
 import MatrixBackgroundIntro from "@/components/ui/matrix-background-intro";
@@ -16,6 +17,7 @@ import MatrixBackground from "@/components/ui/matrix-background";
 import { useHostMode } from "@/hooks/use-host-mode";
 import Dashboard from "@/pages/Dashboard";
 import { useRawStore } from "@/store/useRawStore";
+import { joinCommunityChat } from "@/lib/communityChat";
 
 const SignupModalLazy = lazy(() =>
   import("@/components/landing/SignupModal").then((module) => ({ default: module.SignupModal }))
@@ -23,6 +25,7 @@ const SignupModalLazy = lazy(() =>
 
 const Index = () => {
   const [showMatrixIntro, setShowMatrixIntro] = useState(true);
+
   const {
     user,
     isLoggedIn,
@@ -51,7 +54,7 @@ const Index = () => {
     login,
     logout,
   } = useRawStore();
-  const { hostname, isMyRawApp, isTheRawMe } = useHostMode();
+  const { hostname, isTheRawMe } = useHostMode();
 
   useEffect(() => {
     if (!isLoggedIn || !user || !isTheRawMe || typeof window === "undefined") {
@@ -113,7 +116,12 @@ const Index = () => {
               return [...previous, communityId];
             });
           }}
-          onCompleteOnboarding={completeOnboarding}
+          onCompleteOnboarding={() => {
+            onboardingSelectedCommunityIds.forEach((communityId) => {
+              joinCommunityChat(communityId, { userId: user.id, username: user.username });
+            });
+            completeOnboarding();
+          }}
           onLogout={logout}
         />
       );
@@ -135,44 +143,9 @@ const Index = () => {
     );
   }
 
-  if (isMyRawApp) {
-    return (
-      <div className="min-h-screen bg-raw-black px-6 py-10">
-        <div className="mx-auto flex min-h-[80vh] max-w-4xl flex-col items-center justify-center rounded-3xl border border-raw-border/40 bg-gradient-to-b from-raw-surface/40 to-raw-black/90 p-8 text-center">
-          <p className="text-xs uppercase tracking-[0.28em] text-raw-gold/65">myraw.app</p>
-          <h1 className="mt-3 font-display text-3xl tracking-wide text-raw-text sm:text-4xl">Sign in to your raW dashboard</h1>
-          <p className="mt-4 max-w-xl text-sm text-raw-silver/50">
-            This domain is app-only. Sign in or create your account to continue.
-          </p>
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-            <button
-              onClick={() => setShowSignup(true)}
-              className="rounded-xl bg-raw-gold px-6 py-3 text-sm font-semibold text-raw-ink"
-            >
-              Sign In / Sign Up
-            </button>
-          </div>
-          <p className="mt-6 text-xs text-raw-silver/35">Want the full public landing experience? Visit theraw.me.</p>
-        </div>
-
-        <Suspense fallback={null}>
-          {showSignup ? (
-            <SignupModalLazy
-              open={showSignup}
-              onClose={() => setShowSignup(false)}
-              onRequestSignupOtp={requestSignupOtp}
-              onVerifySignupOtp={verifySignupOtp}
-              onLogin={login}
-            />
-          ) : null}
-        </Suspense>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-raw-black">
-      <div className="relative">
+    <div className="landing-page-shell min-h-screen overflow-x-hidden bg-raw-black">
+      <div className="relative overflow-x-hidden">
         <PerforatedBackground />
         <MatrixBackground />
         {showMatrixIntro ? <MatrixBackgroundIntro onComplete={() => setShowMatrixIntro(false)} /> : null}
@@ -183,7 +156,7 @@ const Index = () => {
           onSignupClick={() => setShowSignup(true)}
         />
 
-        <Hero onSignupClick={() => setShowSignup(true)} />
+        <GlobeHero onSignupClick={() => setShowSignup(true)} />
         <ProblemSection />
         <HowItWorks />
         <PollSection
@@ -194,29 +167,22 @@ const Index = () => {
           onVote={vote}
           onSignupClick={() => setShowSignup(true)}
         />
-        <Communities onSignupClick={() => setShowSignup(true)} />
-        <AvatarIdentity
-          avatarLevel={avatarLevel}
-          onLevelChange={setAvatarLevel}
-        />
-        <WheelReward
-          onLevelChange={setAvatarLevel}
-          onSignupClick={() => setShowSignup(true)}
-        />
+        <AvatarShowcaseSection />
+        <WheelReward />
         <WhyAnonymity />
+        <AnonQuestionSection />
+        <EarnedWarUpgradesSection />
+        <LandingFooter />
       </div>
-      <LandingFooter />
 
       <Suspense fallback={null}>
-        {showSignup ? (
-          <SignupModalLazy
-            open={showSignup}
-            onClose={() => setShowSignup(false)}
-            onRequestSignupOtp={requestSignupOtp}
-            onVerifySignupOtp={verifySignupOtp}
-            onLogin={login}
-          />
-        ) : null}
+        <SignupModalLazy
+          open={showSignup}
+          onOpenChange={setShowSignup}
+          onRequestOtp={requestSignupOtp}
+          onVerifyOtp={verifySignupOtp}
+          onLogin={login}
+        />
       </Suspense>
     </div>
   );

@@ -1,4 +1,6 @@
 import { toUserId, type CommunityRequestRecord } from "@/lib/adminData";
+import LNTLogo from "@/assets/LNT.png";
+import SYTLogo from "@/assets/logospeak.png";
 import type {
   JoinCommunityInput,
   PersistedCommunityRecord,
@@ -20,12 +22,34 @@ function mergeWithDefaults(storedCommunities: PersistedCommunityRecord[]): Persi
   return [...storedCommunities, ...defaultCommunities.filter((community) => !knownIds.has(community.id))];
 }
 
-const RETIRED_COMMUNITY_IDS = new Set(["sg"]);
+const RETIRED_COMMUNITY_IDS = new Set(["sg", "sic", "mw"]);
+
+const BUILT_IN_LOGOS: Record<string, string> = {
+  lnt: LNTLogo,
+  syt: SYTLogo,
+};
+
+const BUILT_IN_TITLES: Record<string, string> = {
+  iijm: "Is It Just Me?",
+};
+
+const ALWAYS_LOCKED_IDS = new Set(["li"]);
+
+function applyBuiltInOverrides(communities: PersistedCommunityRecord[]): PersistedCommunityRecord[] {
+  return communities.map((community) => {
+    const logoUrl = BUILT_IN_LOGOS[community.id] && !community.logoUrl ? BUILT_IN_LOGOS[community.id] : community.logoUrl;
+    const locked = ALWAYS_LOCKED_IDS.has(community.id) ? true : community.locked;
+    const title = BUILT_IN_TITLES[community.id] ?? community.title;
+    return { ...community, logoUrl, locked, title };
+  });
+}
 
 export function readCommunityChats(): PersistedCommunityRecord[] {
   const storedCommunities = readStoredCommunities();
-  const communities = (storedCommunities.length > 0 ? mergeWithDefaults(storedCommunities) : buildDefaultCommunities())
-    .filter((community) => !RETIRED_COMMUNITY_IDS.has(community.id));
+  const communities = applyBuiltInOverrides(
+    (storedCommunities.length > 0 ? mergeWithDefaults(storedCommunities) : buildDefaultCommunities())
+      .filter((community) => !RETIRED_COMMUNITY_IDS.has(community.id))
+  );
 
   writeCommunityChats(communities);
 
@@ -296,6 +320,29 @@ export function deleteCommunityMessage(communityId: string, messageId: string, r
 
   writeCommunityChats(nextCommunities);
   return nextCommunities.find((community) => community.id === communityId) ?? null;
+}
+
+export function likeCommunityMessage(communityId: string, messageId: string, userId: string): void {
+  const communities = readCommunityChats();
+  const nextCommunities = communities.map((community) => {
+    if (community.id !== communityId) return community;
+    return {
+      ...community,
+      messages: community.messages.map((message) => {
+        if (message.id !== messageId || message.deletedAt) return message;
+        const likedBy = message.likedBy ?? [];
+        const nextLikedBy = likedBy.includes(userId)
+          ? likedBy.filter((id) => id !== userId)
+          : [...likedBy, userId];
+        return { ...message, likedBy: nextLikedBy };
+      }),
+    };
+  });
+  writeCommunityChats(nextCommunities);
+}
+
+export function approveCommunityJoinRequest(communityId: string, userId: string, username: string): PersistedCommunityRecord | null {
+  return joinCommunityChat(communityId, { userId, username });
 }
 
 export type { PersistedCommunityRecord, CommunityChatMessageRecord, CommunityChatMemberRecord, CommunityStatus } from "./communityChat.types";

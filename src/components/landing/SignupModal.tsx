@@ -204,18 +204,20 @@ export function SignupModal({ open, onClose, onRequestSignupOtp, onVerifySignupO
       : "SMS or WhatsApp";
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto">
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
 
-      <div className="relative z-10 w-full max-w-sm rounded-2xl border border-raw-border/50 bg-raw-surface p-8 shadow-2xl mx-4">
+      <div className="relative z-10 flex max-h-[92dvh] w-full flex-col overflow-hidden rounded-2xl border border-raw-border/50 bg-raw-surface shadow-2xl mx-4 max-w-sm">
         <button
           onClick={onClose}
-          className="absolute right-4 top-4 text-raw-silver/30 transition-colors hover:text-raw-silver/60"
+          className="absolute right-3 top-3 z-10 flex h-10 w-10 items-center justify-center rounded-full text-raw-silver/60 transition-colors hover:bg-raw-black/30 hover:text-raw-silver sm:right-4 sm:top-4"
+          aria-label="Close"
         >
           <X className="h-5 w-5" />
         </button>
 
-        <div className="text-center mb-8">
+        <div className="overflow-y-auto px-5 pb-6 pt-8 sm:px-8 sm:pb-8 sm:pt-8">
+        <div className="text-center mb-6 sm:mb-8">
           <p className="font-display text-lg tracking-wide text-raw-text">Enter raW</p>
           <p className="mt-2 text-sm text-raw-silver/50">
             Anonymous. No email. No real name.
@@ -468,6 +470,7 @@ export function SignupModal({ open, onClose, onRequestSignupOtp, onVerifySignupO
         <p className="mt-5 text-center text-[11px] text-raw-silver/30">
           {isSignup ? "No email, no phone required." : "Sign in with your username and password."}
         </p>
+        </div>
       </div>
     </div>
   );

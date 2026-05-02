@@ -1,61 +1,108 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
-import { ArrowLeft, Ban, BellRing, CheckCircle2, Flag, Shield, Users, XCircle } from "lucide-react";
+import { ArrowLeft, Ban, BellRing, CheckCircle2, Flag, Lock, Plus, Shield, Trash2, Users, XCircle, Database } from "lucide-react";
+import { fetchPollsFromSupabase, insertPollToSupabase, deletePollFromSupabase, testSupabaseConnection } from "@/lib/supabasePolls";
+import { fetchCommunityRequests, updateCommunityRequestStatus } from "@/backend/supabase/controllers/communityRequestController";
+import { createCommunityFromRequest } from "@/backend/supabase/controllers/communityController";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 import { useRawStore } from "@/store/useRawStore";
 import { track } from "@/lib/analytics";
 import {
+  createAdminPoll,
+  deleteAdminPoll,
   formatAdminTimestamp,
+  readAdminPolls,
   readChatReports,
+  readCommunityJoinRequests,
   readCommunityRequests,
   readPersistedUsers,
   updateUserModerationStatus,
   writeChatReports,
+  writeCommunityJoinRequests,
   writeCommunityRequests,
+  type AdminPollRecord,
   type ChatReportRecord,
+  type CommunityJoinRequestRecord,
   type CommunityRequestRecord,
   type PersistedUserRecord,
 } from "@/lib/adminData";
-import { createCommunityFromApprovedRequest } from "@/lib/communityChat";
+import { approveCommunityJoinRequest, createCommunityFromApprovedRequest } from "@/lib/communityChat";
 
 function SummaryCard({ label, value, hint }: { label: string; value: string | number; hint: string }) {
   return (
-    <div className="rounded-2xl border border-raw-border/30 bg-raw-surface/25 p-5">
-      <p className="text-[11px] uppercase tracking-[0.18em] text-raw-silver/35">{label}</p>
-      <p className="mt-3 font-display text-3xl text-raw-text">{value}</p>
-      <p className="mt-2 text-sm text-raw-silver/45">{hint}</p>
+    <div className="rounded-2xl border border-raw-border/30 bg-raw-surface/25 p-4 sm:p-5">
+      <p className="text-[10px] uppercase tracking-[0.15em] text-raw-silver/35 sm:text-[11px] sm:tracking-[0.18em]">{label}</p>
+      <p className="mt-2 font-display text-2xl text-raw-text sm:mt-3 sm:text-3xl">{value}</p>
+      <p className="mt-1 text-xs text-raw-silver/45 leading-relaxed sm:mt-2 sm:text-sm">{hint}</p>
     </div>
   );
 }
 
 export default function Admin() {
-  const { user, isLoggedIn, isAdmin, logout } = useRawStore();
+  const { user, isLoggedIn, isAdmin, sessionLoaded, logout } = useRawStore();
   const [users, setUsers] = useState<PersistedUserRecord[]>([]);
   const [communityRequests, setCommunityRequests] = useState<CommunityRequestRecord[]>([]);
   const [chatReports, setChatReports] = useState<ChatReportRecord[]>([]);
+  const [communityJoinRequests, setCommunityJoinRequests] = useState<CommunityJoinRequestRecord[]>([]);
+  const [adminPolls, setAdminPolls] = useState<AdminPollRecord[]>([]);
+  const [pollQuestion, setPollQuestion] = useState("");
+  const [pollOptions, setPollOptions] = useState(["", ""]);
+  const [supabaseStatus, setSupabaseStatus] = useState<"idle" | "ok" | "error">("idle");
+  const [supabaseMessage, setSupabaseMessage] = useState("");
 
-  const refreshAdminData = useCallback(() => {
+  const refreshAdminData = useCallback(async () => {
     setUsers(readPersistedUsers());
-    setCommunityRequests(readCommunityRequests());
     setChatReports(readChatReports());
+    setCommunityJoinRequests(readCommunityJoinRequests());
+    try {
+      const requests = await fetchCommunityRequests();
+      setCommunityRequests(requests);
+    } catch {
+      setCommunityRequests(readCommunityRequests());
+    }
+  }, []);
+
+  const loadPolls = useCallback(async () => {
+    const result = await testSupabaseConnection();
+    setSupabaseStatus(result.ok ? "ok" : "error");
+    setSupabaseMessage(result.message);
+    if (result.ok) {
+      try {
+        const polls = await fetchPollsFromSupabase();
+        setAdminPolls(polls);
+      } catch {
+        setAdminPolls(readAdminPolls());
+      }
+    } else {
+      setAdminPolls(readAdminPolls());
+    }
   }, []);
 
   useEffect(() => {
     refreshAdminData();
+    loadPolls();
     window.addEventListener("focus", refreshAdminData);
 
     return () => {
       window.removeEventListener("focus", refreshAdminData);
     };
-  }, [refreshAdminData]);
+  }, [refreshAdminData, loadPolls]);
 
   const openReports = useMemo(() => chatReports.filter((report) => report.status === "open"), [chatReports]);
   const pendingRequests = useMemo(
     () => communityRequests.filter((request) => request.status === "pending"),
     [communityRequests]
   );
+  const pendingJoinRequests = useMemo(
+    () => communityJoinRequests.filter((r) => r.status === "pending"),
+    [communityJoinRequests]
+  );
   const bannedUsers = useMemo(() => users.filter((entry) => entry.moderationStatus === "banned"), [users]);
+
+  if (!sessionLoaded) {
+    return null;
+  }
 
   if (!isLoggedIn || !user) {
     return <Navigate to="/" replace />;
@@ -63,8 +110,8 @@ export default function Admin() {
 
   if (!isAdmin) {
     return (
-      <div className="min-h-screen bg-raw-black px-6 py-10 text-raw-text">
-        <div className="mx-auto max-w-3xl rounded-3xl border border-raw-border/30 bg-raw-surface/20 p-8 text-center">
+      <div className="min-h-screen bg-raw-black px-4 py-8 text-raw-text sm:px-6 sm:py-10">
+        <div className="mx-auto max-w-3xl rounded-3xl border border-raw-border/30 bg-raw-surface/20 p-5 text-center sm:p-8">
           <p className="text-xs uppercase tracking-[0.28em] text-raw-gold/65">Restricted</p>
           <h1 className="mt-4 font-display text-3xl tracking-wide">Admin access only</h1>
           <p className="mt-4 text-sm text-raw-silver/45">
@@ -86,36 +133,55 @@ export default function Admin() {
     );
   }
 
-  const handleRequestStatus = (requestId: string, status: "approved" | "rejected") => {
-    let approvedRequest: CommunityRequestRecord | null = null;
-    const nextRequests = communityRequests.map((request) => {
-      if (request.id !== requestId) {
-        return request;
+  const handleRequestStatus = async (requestId: string, status: "approved" | "rejected") => {
+    const target = communityRequests.find((r) => r.id === requestId);
+    if (!target) return;
+
+    try {
+      await updateCommunityRequestStatus(requestId, status, user.username);
+      if (status === "approved") {
+        const approvedRequest = { ...target, status, reviewedAt: new Date().toISOString(), reviewedBy: user.username };
+        await createCommunityFromRequest(approvedRequest);
+        track("admin_action_performed", { action: "approve_community", resource_id: requestId });
+      } else {
+        track("admin_action_performed", { action: "reject_community", resource_id: requestId });
       }
-
-      approvedRequest = {
-        ...request,
-        status,
-        reviewedAt: new Date().toISOString(),
-        reviewedBy: user.username,
-      };
-
-      return approvedRequest;
-    });
-
-    setCommunityRequests(nextRequests);
-    writeCommunityRequests(nextRequests);
-    if (status === "approved" && approvedRequest) {
-      createCommunityFromApprovedRequest(approvedRequest);
-      track("admin_action_performed", { action: "approve_community", resource_id: requestId });
-    } else if (status === "rejected") {
-      track("admin_action_performed", { action: "reject_community", resource_id: requestId });
+      await refreshAdminData();
+      toast({
+        title: status === "approved" ? "Community approved" : "Community rejected",
+        description: status === "approved"
+          ? "The request has been approved and is now live in Communities."
+          : "The request has been rejected.",
+      });
+    } catch {
+      toast({ title: "Action failed", description: "Please try again." });
     }
+  };
+
+  const handleJoinRequestStatus = (requestId: string, status: "approved" | "rejected") => {
+    const target = communityJoinRequests.find((r) => r.id === requestId);
+    if (!target) return;
+
+    const nextRequests = communityJoinRequests.map((r) =>
+      r.id === requestId
+        ? { ...r, status, reviewedAt: new Date().toISOString(), reviewedBy: user.username }
+        : r,
+    );
+    setCommunityJoinRequests(nextRequests);
+    writeCommunityJoinRequests(nextRequests);
+
+    if (status === "approved") {
+      approveCommunityJoinRequest(target.communityId, target.requesterId, target.requesterName);
+      track("admin_action_performed", { action: "approve_join_request", resource_id: requestId });
+    } else {
+      track("admin_action_performed", { action: "reject_join_request", resource_id: requestId });
+    }
+
     toast({
-      title: status === "approved" ? "Community approved" : "Community rejected",
+      title: status === "approved" ? "Access granted" : "Request rejected",
       description: status === "approved"
-        ? "The request has been approved and is now live in Communities as a group chat."
-        : `The request has been ${status} and removed from the pending queue.`,
+        ? `@${target.requesterName} has been added to ${target.communityTitle}.`
+        : `@${target.requesterName}'s request to join ${target.communityTitle} was rejected.`,
     });
   };
 
@@ -159,37 +225,79 @@ export default function Admin() {
     });
   };
 
+  const handleCreatePoll = async () => {
+    const filledOptions = pollOptions.filter((o) => o.trim().length > 0);
+    if (!pollQuestion.trim() || filledOptions.length < 2) {
+      toast({ title: "Fill in the question and at least 2 options." });
+      return;
+    }
+    const poll = createAdminPoll(pollQuestion, filledOptions);
+    setPollQuestion("");
+    setPollOptions(["", ""]);
+    if (supabaseStatus === "ok") {
+      try {
+        await insertPollToSupabase(poll);
+        const polls = await fetchPollsFromSupabase();
+        setAdminPolls(polls);
+        toast({ title: "Poll created", description: "Saved to Supabase." });
+      } catch {
+        setAdminPolls(readAdminPolls());
+        toast({ title: "Poll created", description: "Saved locally (Supabase sync failed)." });
+      }
+    } else {
+      setAdminPolls(readAdminPolls());
+      toast({ title: "Poll created", description: "Saved locally." });
+    }
+  };
+
+  const handleDeletePoll = async (pollId: string) => {
+    deleteAdminPoll(pollId);
+    if (supabaseStatus === "ok") {
+      try {
+        await deletePollFromSupabase(pollId);
+        const polls = await fetchPollsFromSupabase();
+        setAdminPolls(polls);
+      } catch {
+        setAdminPolls(readAdminPolls());
+      }
+    } else {
+      setAdminPolls(readAdminPolls());
+    }
+    toast({ title: "Poll deleted" });
+  };
+
   return (
     <div className="min-h-screen bg-raw-black text-raw-text">
       <div className="border-b border-raw-border/30 bg-raw-black/90 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+        <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <div>
             <p className="text-xs uppercase tracking-[0.28em] text-raw-gold/65">Hidden admin page</p>
-            <h1 className="mt-2 font-display text-3xl tracking-wide">Moderation dashboard</h1>
+            <h1 className="mt-2 font-display text-2xl tracking-wide sm:text-3xl">Moderation dashboard</h1>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <Link
               to="/dashboard"
-              className="inline-flex items-center gap-2 rounded-xl border border-raw-border/30 px-4 py-2 text-sm text-raw-silver/70 transition-colors hover:text-raw-text"
+              className="inline-flex items-center gap-2 rounded-xl border border-raw-border/30 px-3 py-2 text-sm text-raw-silver/70 transition-colors hover:text-raw-text sm:px-4"
             >
               <ArrowLeft className="h-4 w-4" /> Dashboard
             </Link>
-            <button onClick={logout} className="rounded-xl bg-raw-gold px-4 py-2 text-sm font-semibold text-raw-ink">
+            <button onClick={logout} className="rounded-xl bg-raw-gold px-3 py-2 text-sm font-semibold text-raw-ink sm:px-4">
               Log out
             </button>
           </div>
         </div>
       </div>
 
-      <main className="mx-auto max-w-7xl space-y-8 px-6 py-8">
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <main className="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6 sm:py-8 sm:space-y-8">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
           <SummaryCard label="Users" value={users.length} hint="All locally registered accounts, including admin and reported aliases." />
           <SummaryCard label="Pending Requests" value={pendingRequests.length} hint="Community creation requests waiting for admin approval." />
+          <SummaryCard label="Join Requests" value={pendingJoinRequests.length} hint="Pending requests to join locked communities." />
           <SummaryCard label="Open Reports" value={openReports.length} hint="Chat reports still awaiting a moderation decision." />
           <SummaryCard label="Banned Users" value={bannedUsers.length} hint="Accounts currently blocked from chatting after review." />
         </div>
 
-        <section className="rounded-3xl border border-raw-border/30 bg-raw-surface/20 p-6">
+        <section className="rounded-2xl border border-raw-border/30 bg-raw-surface/20 p-4 sm:rounded-3xl sm:p-6">
           <div className="flex items-center gap-3">
             <Users className="h-5 w-5 text-raw-gold/70" />
             <div>
@@ -203,14 +311,14 @@ export default function Admin() {
               <div className="rounded-2xl border border-raw-border/20 bg-raw-black/35 p-4 text-sm text-raw-silver/45">No users yet.</div>
             ) : (
               users.map((entry) => (
-                <div key={entry.id} className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-raw-border/20 bg-raw-black/35 p-4">
-                  <div>
+                <div key={entry.id} className="flex flex-col gap-2 rounded-2xl border border-raw-border/20 bg-raw-black/35 p-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+                  <div className="min-w-0">
                     <p className="font-display text-base text-raw-text">@{entry.username}</p>
-                    <p className="mt-1 text-xs text-raw-silver/40">
+                    <p className="mt-1 text-xs text-raw-silver/40 leading-relaxed">
                       Role: {entry.role} · Warnings: {entry.warnings} · Last seen {formatAdminTimestamp(entry.lastSeenAt)}
                     </p>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 shrink-0">
                     <span className={`rounded-full border px-3 py-1 text-[11px] uppercase tracking-[0.15em] ${
                       entry.moderationStatus === "active"
                         ? "border-emerald-400/20 bg-emerald-400/[0.08] text-emerald-200"
@@ -227,7 +335,7 @@ export default function Admin() {
           </div>
         </section>
 
-        <section className="rounded-3xl border border-raw-border/30 bg-raw-surface/20 p-6">
+        <section className="rounded-2xl border border-raw-border/30 bg-raw-surface/20 p-4 sm:rounded-3xl sm:p-6">
           <div className="flex items-center gap-3">
             <Shield className="h-5 w-5 text-raw-gold/70" />
             <div>
@@ -281,7 +389,7 @@ export default function Admin() {
                   )}
 
                   {request.status === "pending" && (
-                    <div className="mt-4 flex flex-wrap gap-3">
+                    <div className="mt-4 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:gap-3">
                       <Button onClick={() => handleRequestStatus(request.id, "approved")} className="rounded-xl bg-emerald-400 px-4 text-raw-ink hover:bg-emerald-300">
                         <CheckCircle2 className="h-4 w-4" /> Approve
                       </Button>
@@ -296,7 +404,143 @@ export default function Admin() {
           </div>
         </section>
 
-        <section className="rounded-3xl border border-raw-border/30 bg-raw-surface/20 p-6">
+        <section className="rounded-2xl border border-raw-border/30 bg-raw-surface/20 p-4 sm:rounded-3xl sm:p-6">
+          <div className="flex items-center gap-3">
+            <Lock className="h-5 w-5 text-raw-gold/70" />
+            <div>
+              <h2 className="font-display text-xl tracking-wide">Join requests</h2>
+              <p className="mt-1 text-sm text-raw-silver/45">Approve or reject user requests to join locked communities.</p>
+            </div>
+          </div>
+
+          <div className="mt-5 space-y-3">
+            {communityJoinRequests.length === 0 ? (
+              <div className="rounded-2xl border border-raw-border/20 bg-raw-black/35 p-4 text-sm text-raw-silver/45">No join requests yet.</div>
+            ) : (
+              communityJoinRequests.map((request) => (
+                <div key={request.id} className="rounded-2xl border border-raw-border/20 bg-raw-black/35 p-5">
+                  <div className="flex flex-wrap items-start justify-between gap-4">
+                    <div>
+                      <p className="font-display text-lg text-raw-text">{request.communityTitle}</p>
+                      <p className="mt-1 text-sm text-raw-silver/45">
+                        Requested by @{request.requesterName} · {formatAdminTimestamp(request.submittedAt)}
+                      </p>
+                    </div>
+                    <span className={`rounded-full border px-3 py-1 text-[11px] uppercase tracking-[0.15em] ${
+                      request.status === "pending"
+                        ? "border-amber-400/20 bg-amber-400/[0.08] text-amber-200"
+                        : request.status === "approved"
+                          ? "border-emerald-400/20 bg-emerald-400/[0.08] text-emerald-200"
+                          : "border-red-400/20 bg-red-500/10 text-red-200"
+                    }`}>
+                      {request.status}
+                    </span>
+                  </div>
+                  {request.status === "pending" && (
+                    <div className="mt-4 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:gap-3">
+                      <Button onClick={() => handleJoinRequestStatus(request.id, "approved")} className="rounded-xl bg-emerald-400 px-4 text-raw-ink hover:bg-emerald-300">
+                        <CheckCircle2 className="h-4 w-4" /> Approve
+                      </Button>
+                      <Button onClick={() => handleJoinRequestStatus(request.id, "rejected")} className="rounded-xl bg-red-400 px-4 text-raw-ink hover:bg-red-300">
+                        <XCircle className="h-4 w-4" /> Reject
+                      </Button>
+                    </div>
+                  )}
+                  {request.status !== "pending" && (
+                    <p className="mt-3 text-xs text-raw-silver/40">
+                      Reviewed by @{request.reviewedBy ?? "admin"}{request.reviewedAt ? ` · ${formatAdminTimestamp(request.reviewedAt)}` : ""}
+                    </p>
+                  )}
+                </div>
+              ))
+            )}
+          </div>
+        </section>
+
+        <section className="rounded-2xl border border-raw-border/30 bg-raw-surface/20 p-4 sm:rounded-3xl sm:p-6">
+          <div className="flex items-center gap-3">
+            <Plus className="h-5 w-5 text-raw-gold/70" />
+            <div className="flex-1">
+              <div className="flex flex-wrap items-center gap-3">
+                <h2 className="font-display text-xl tracking-wide">Create poll</h2>
+                <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[10px] ${
+                  supabaseStatus === "ok"
+                    ? "border-emerald-400/35 bg-emerald-500/10 text-emerald-300"
+                    : supabaseStatus === "error"
+                      ? "border-red-400/35 bg-red-500/10 text-red-300"
+                      : "border-raw-border/30 text-raw-silver/40"
+                }`}>
+                  <Database className="h-3 w-3" />
+                  {supabaseStatus === "ok" ? "Supabase connected" : supabaseStatus === "error" ? `Supabase: ${supabaseMessage}` : "Connecting…"}
+                </span>
+              </div>
+              <p className="mt-1 text-sm text-raw-silver/45">Add a new poll with its answer options. It will show up in the daily feed.</p>
+            </div>
+          </div>
+
+          <div className="mt-5 space-y-3">
+            <input
+              type="text"
+              placeholder="Poll question"
+              value={pollQuestion}
+              onChange={(e) => setPollQuestion(e.target.value)}
+              className="w-full rounded-xl border border-raw-border/30 bg-raw-black/50 px-4 py-3 text-sm text-raw-text placeholder-raw-silver/30 outline-none focus:border-raw-gold/40"
+            />
+            {pollOptions.map((option, i) => (
+              <div key={i} className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder={i === 0 ? "No" : i === 1 ? "Yes" : `Option ${i + 1}`}
+                  value={option}
+                  onChange={(e) => {
+                    const next = [...pollOptions];
+                    next[i] = e.target.value;
+                    setPollOptions(next);
+                  }}
+                  className="flex-1 rounded-xl border border-raw-border/30 bg-raw-black/50 px-4 py-3 text-sm text-raw-text placeholder-raw-silver/30 outline-none focus:border-raw-gold/40"
+                />
+                {pollOptions.length > 2 && (
+                  <button
+                    onClick={() => setPollOptions(pollOptions.filter((_, j) => j !== i))}
+                    className="rounded-xl border border-raw-border/30 px-3 text-raw-silver/40 hover:text-red-400"
+                  >
+                    <XCircle className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
+            ))}
+            <div className="flex gap-3">
+              <button
+                onClick={() => setPollOptions([...pollOptions, ""])}
+                className="text-xs text-raw-silver/40 hover:text-raw-silver/70"
+              >
+                + Add option
+              </button>
+            </div>
+            <Button onClick={handleCreatePoll} className="rounded-xl bg-raw-gold px-5 text-raw-ink hover:bg-raw-gold/90">
+              <Plus className="h-4 w-4" /> Create poll
+            </Button>
+          </div>
+
+          {adminPolls.length > 0 && (
+            <div className="mt-6 space-y-3">
+              <p className="text-[11px] uppercase tracking-[0.15em] text-raw-silver/35">Existing polls</p>
+              {adminPolls.map((poll) => (
+                <div key={poll.id} className="flex items-start justify-between gap-4 rounded-2xl border border-raw-border/20 bg-raw-black/35 p-4">
+                  <div>
+                    <p className="text-sm text-raw-text">{poll.question}</p>
+                    <p className="mt-1 text-xs text-raw-silver/40">{poll.options.map((o) => o.text).join(" · ")} · {formatAdminTimestamp(poll.createdAt)}</p>
+                  </div>
+                  <button onClick={() => handleDeletePoll(poll.id)} className="shrink-0 text-raw-silver/30 hover:text-red-400">
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+
+        <section className="rounded-2xl border border-raw-border/30 bg-raw-surface/20 p-4 sm:rounded-3xl sm:p-6">
           <div className="flex items-center gap-3">
             <Flag className="h-5 w-5 text-raw-gold/70" />
             <div>
