@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { LEVEL_THEMES, getAvatarTheme } from "@/lib/avatar-theme";
+import { LEVEL_THEMES, getAvatarTheme } from "@/lib/avataridentity";
 
 interface AvatarFigureProps {
   level: number;
