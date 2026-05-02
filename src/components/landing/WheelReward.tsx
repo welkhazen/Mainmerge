@@ -12,6 +12,8 @@ interface WheelRewardProps {
   onSignupClick: () => void;
 }
 
+const TRANSPARENT_REWARDS_IMAGE_SRC = "/avatars/spin-rewards-transparent.png";
+
 const RANK_PRIZES: WheelPrize[] = LEVEL_THEMES.map((theme, i) => {
   const level = i + 1;
   const isGold = level >= 7;
@@ -28,6 +30,7 @@ export function WheelReward({ onLevelChange, onSignupClick }: WheelRewardProps) 
   const sectionRef = useTrackSectionView("wheel");
   const [landedLevel, setLandedLevel] = useState<number | null>(null);
   const [hasSpun, setHasSpun] = useState(false);
+  const [rewardsImageMissing, setRewardsImageMissing] = useState(false);
 
   const handleSpinEnd = useCallback(
     (prize: WheelPrize) => {
@@ -52,6 +55,15 @@ export function WheelReward({ onLevelChange, onSignupClick }: WheelRewardProps) 
     >
       <div className="flex flex-col items-center gap-6 sm:gap-10">
           <WheelOfFortune prizes={RANK_PRIZES} onSpinEnd={handleSpinEnd} disabled={hasSpun} />
+
+          {!rewardsImageMissing ? (
+            <img
+              src={TRANSPARENT_REWARDS_IMAGE_SRC}
+              alt="Avatar reward rarity chart"
+              className="w-full max-w-5xl object-contain mix-blend-screen"
+              onError={() => setRewardsImageMissing(true)}
+            />
+          ) : null}
 
           {landedLevel && (
             <div className="w-full max-w-md rounded-2xl border border-raw-gold/30 bg-gradient-to-b from-raw-gold/[0.08] to-raw-gold/[0.02] p-4 text-center transition-all duration-500 sm:p-5">
