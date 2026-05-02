@@ -544,13 +544,77 @@ html.theme-light .landing-page-shell [class*="bg-raw-surface/"] {
   border-color: rgb(120 132 151 / 0.38) !important;
 }
 
-/* Landing section bands — dark in dark mode, transparent in light mode */
+/* Landing section split bands: auto-applies to every .landing-section (except header/footer components which do not use this class) */
 .landing-section {
-  background-color: rgb(0 0 0 / 0.55);
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background:
+    linear-gradient(
+      180deg,
+      rgb(var(--raw-black) / 0.58) 0%,
+      rgb(var(--raw-black) / 0.58) 48%,
+      rgb(var(--raw-surface) / 0.42) 48%,
+      rgb(var(--raw-surface) / 0.42) 100%
+    );
+}
+
+.landing-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.9;
+  background:
+    linear-gradient(180deg, transparent 0%, rgb(0 0 0 / 0.26) 100%),
+    linear-gradient(90deg, transparent 0%, rgb(var(--raw-accent) / 0.05) 50%, transparent 100%);
+}
+
+.landing-section > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Alternate the split direction so adjacent sections interlock visually */
+.landing-page-shell section.landing-section:nth-of-type(even) {
+  background:
+    linear-gradient(
+      180deg,
+      rgb(var(--raw-surface) / 0.44) 0%,
+      rgb(var(--raw-surface) / 0.44) 52%,
+      rgb(var(--raw-black) / 0.6) 52%,
+      rgb(var(--raw-black) / 0.6) 100%
+    );
 }
 
 html.theme-light .landing-section {
-  background-color: #ffffff !important;
+  background:
+    linear-gradient(
+      180deg,
+      rgb(255 255 255 / 0.96) 0%,
+      rgb(255 255 255 / 0.96) 48%,
+      rgb(241 245 251 / 0.9) 48%,
+      rgb(241 245 251 / 0.9) 100%
+    ) !important;
+}
+
+html.theme-light .landing-page-shell section.landing-section:nth-of-type(even) {
+  background:
+    linear-gradient(
+      180deg,
+      rgb(241 245 251 / 0.9) 0%,
+      rgb(241 245 251 / 0.9) 52%,
+      rgb(255 255 255 / 0.96) 52%,
+      rgb(255 255 255 / 0.96) 100%
+    ) !important;
+}
+
+html.theme-light .landing-section::before {
+  opacity: 0.5;
+  background:
+    linear-gradient(180deg, transparent 0%, rgb(44 65 93 / 0.05) 100%),
+    linear-gradient(90deg, transparent 0%, rgb(var(--raw-accent) / 0.04) 50%, transparent 100%);
 }
 
 /* Cards using bg-raw-black with opacity are near-invisible on white; give them a light surface */
