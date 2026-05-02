@@ -9,7 +9,7 @@ const FAQ_ITEMS = [
   {
     question: "Can I change my avatar later?",
     answer:
-      "Yes. You can change avatar choice, while badge progress determines your level separately.",
+      "You can change your avatar at any time from your profile settings.",
   },
   {
     question: "How do comments unlock on polls?",

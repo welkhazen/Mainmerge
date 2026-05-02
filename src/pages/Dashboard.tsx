@@ -167,7 +167,7 @@ export default function Dashboard({
             <DashboardProfile
               username={user.username}
               avatarLevel={avatarLevel}
-              onLevelChange={setAvatarLevel}
+              onAvatarChange={setAvatarLevel}
               pollsAnswered={votedPolls.size}
             />
           </DashboardSectionShell>

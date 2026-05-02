@@ -1,12 +1,12 @@
 import { AvatarFigure } from "@/components/ui/avatar-figure";
-import { getAvatarTheme } from "@/lib/avataridentity";
+import { getAvatar } from "@/lib/avataridentity";
 
 interface AvatarPhoneHomeScreenProps {
-  displayLevel: number;
+  avatarIndex: number;
 }
 
-export function AvatarPhoneHomeScreen({ displayLevel }: AvatarPhoneHomeScreenProps) {
-  const theme = getAvatarTheme(displayLevel);
+export function AvatarPhoneHomeScreen({ avatarIndex }: AvatarPhoneHomeScreenProps) {
+  const theme = getAvatar(avatarIndex);
 
   return (
     <div className="relative h-full overflow-hidden bg-gradient-to-b from-[#f2f2f2] via-[#e6e6e8] to-[#d7d7da] px-4 pt-3 pb-4">
@@ -35,16 +35,16 @@ export function AvatarPhoneHomeScreen({ displayLevel }: AvatarPhoneHomeScreenPro
 
         <div className="col-span-2 row-span-2 flex flex-col items-center gap-2">
           <div
-            key={displayLevel}
+            key={avatarIndex}
             className="relative flex h-full min-h-[120px] w-full animate-[iconPop_420ms_ease-out] items-center justify-center overflow-hidden rounded-[20px] shadow-lg"
             style={{
-              background: "linear-gradient(135deg, #101317 0%, #050505 70%)",
-              boxShadow: "0 6px 16px rgba(0,0,0,0.35)",
+              background: `linear-gradient(135deg, ${theme.bg} 0%, #050505 70%)`,
+              boxShadow: theme.glow !== "none" ? `0 0 22px ${theme.glow}` : "0 6px 16px rgba(0,0,0,0.35)",
             }}
           >
             <div className="absolute inset-0 bg-gradient-to-b from-white/[0.06] to-transparent" />
             <div className="relative scale-[1.45]">
-              <AvatarFigure level={displayLevel} size="md" selected />
+              <AvatarFigure avatarIndex={avatarIndex} size="md" selected />
             </div>
           </div>
           <span className="font-display text-[10px] tracking-[0.18em] text-[#222]">raW</span>
@@ -104,7 +104,6 @@ function DockIcon({ kind }: { kind: IconKind }) {
 
 function IconTile({ kind, small = false }: { kind: IconKind; small?: boolean }) {
   const sizeClass = small ? "h-[38px] w-[38px] rounded-[10px]" : "h-[44px] w-[44px] rounded-[11px]";
-
   const base = `flex items-center justify-center shadow-[0_1px_3px_rgba(0,0,0,0.25)] ${sizeClass}`;
 
   switch (kind) {
