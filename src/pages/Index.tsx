@@ -168,3 +168,25 @@ const Index = () => {
           onSignupClick={() => setShowSignup(true)}
         />
         <AvatarShowcaseSection />
+        <WheelReward />
+        <WhyAnonymity />
+        <AnonQuestionSection onSignupClick={() => setShowSignup(true)} />
+        <EarnedWarUpgradesSection />
+        <LandingFooter />
+      </div>
+
+      <Suspense fallback={null}>
+        {showSignup && (
+          <SignupModalLazy
+            onClose={() => setShowSignup(false)}
+            onRequestOtp={requestSignupOtp}
+            onVerifyOtp={verifySignupOtp}
+            onLogin={login}
+          />
+        )}
+      </Suspense>
+    </div>
+  );
+};
+
+export default Index;
