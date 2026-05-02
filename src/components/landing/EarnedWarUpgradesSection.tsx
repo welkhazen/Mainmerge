@@ -1,4 +1,4 @@
-const levelBadgesImage = "/level-up-badges.png";
+const levelBadgesImage = "/assets/war-level-badges.svg";
 
 export function EarnedWarUpgradesSection() {
   return (
@@ -35,8 +35,8 @@ export function EarnedWarUpgradesSection() {
         <div className="mt-10">
           <img
             src={levelBadgesImage}
-            alt="War Level Badges — LVL 1 through LVL 10"
-            className="mx-auto w-full max-w-4xl rounded-2xl object-contain opacity-100 drop-shadow-[0_0_20px_rgba(241,196,45,0.14)]"
+            alt="War level badge progression"
+            className="mx-auto w-full max-w-5xl object-contain mix-blend-screen opacity-95 drop-shadow-[0_0_30px_rgba(241,196,45,0.18)]"
           />
         </div>
       </div>
