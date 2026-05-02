@@ -1,9 +1,12 @@
 import { LandingSectionShell } from "@/components/landing/LandingSectionShell";
+
 import { AvatarPhoneHomeScreen } from "@/components/ui/avatar-phone-home-screen";
 import { PhoneMockup } from "@/components/ui/phone-mockup";
+
 import { useTrackSectionView } from "@/lib/analytics/useTrackSectionView";
 
 export function AvatarShowcaseSection() {
+
   const sectionRef = useTrackSectionView("avatar");
 
   return (
@@ -17,7 +20,8 @@ export function AvatarShowcaseSection() {
         <PhoneMockup showStatusBar={false}>
           <AvatarPhoneHomeScreen displayLevel={1} />
         </PhoneMockup>
+
       </div>
     </LandingSectionShell>
   );
-}
+  }
