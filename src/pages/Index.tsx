@@ -25,7 +25,6 @@ const SignupModalLazy = lazy(() =>
 
 const Index = () => {
   const [showMatrixIntro, setShowMatrixIntro] = useState(true);
-  const [hoveredAvatarIndex, setHoveredAvatarIndex] = useState<number | null>(null);
   const {
     user,
     isLoggedIn,

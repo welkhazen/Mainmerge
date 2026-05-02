@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { AVATARS, getAvatar } from "@/lib/avatar-theme";
+import { AVATARS } from "@/lib/avatar-theme";
 
 interface AvatarFigureProps {
   avatarIndex: number;

@@ -267,7 +267,7 @@ export function OnboardingJourney({
                       return (
                         <button
                           key={index}
-                          onClick={() => { track("onboarding_avatar_selected", { avatar_index: index, attempts: 1 }); onAvatarChange(index); }}
+                          onClick={() => { track("onboarding_avatar_selected", { avatar_level: index, attempts: 1 }); onAvatarChange(index); }}
                           className="group relative flex flex-col items-center gap-1 p-1 sm:gap-2 sm:p-2 focus:outline-none"
                           aria-label={`Select ${avatar.name}`}
                           aria-pressed={isActive}

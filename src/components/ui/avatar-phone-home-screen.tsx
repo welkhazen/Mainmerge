@@ -1,4 +1,5 @@
 import { AvatarFigure } from "@/components/ui/avatar-figure";
+import { getAvatar } from "@/lib/avatar-theme";
 
 interface AvatarPhoneHomeScreenProps {
   avatarIndex: number;
@@ -34,16 +35,16 @@ export function AvatarPhoneHomeScreen({ avatarIndex }: AvatarPhoneHomeScreenProp
 
         <div className="col-span-2 row-span-2 flex flex-col items-center gap-2">
           <div
-            key={displayLevel}
+            key={avatarIndex}
             className="relative flex h-full min-h-[120px] w-full animate-[iconPop_420ms_ease-out] items-center justify-center overflow-hidden rounded-[20px] shadow-lg"
             style={{
-              background: "linear-gradient(135deg, #101317 0%, #050505 70%)",
-              boxShadow: "0 6px 16px rgba(0,0,0,0.35)",
+              background: `linear-gradient(135deg, ${theme.bg} 0%, #050505 70%)`,
+              boxShadow: theme.glow !== "none" ? `0 0 22px ${theme.glow}` : "0 6px 16px rgba(0,0,0,0.35)",
             }}
           >
             <div className="absolute inset-0 bg-gradient-to-b from-white/[0.06] to-transparent" />
             <div className="relative scale-[1.45]">
-              <AvatarFigure level={displayLevel} size="md" selected />
+              <AvatarFigure avatarIndex={avatarIndex} size="md" selected />
             </div>
           </div>
           <span className="font-display text-[10px] tracking-[0.18em] text-[#222]">raW</span>
