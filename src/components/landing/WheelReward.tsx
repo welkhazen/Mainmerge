@@ -1,3 +1,102 @@
+import { Sparkles } from "lucide-react";
+import { LandingSectionShell } from "@/components/landing/LandingSectionShell";
+import { useTrackSectionView } from "@/lib/analytics/useTrackSectionView";
+
+
+
+
+
+
+
+
+
+
+
+
+
+interface WheelRewardProps {
+  onSignupClick: () => void;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+export function WheelReward({ onSignupClick }: WheelRewardProps) {
+  const sectionRef = useTrackSectionView("wheel");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   return (
     <LandingSectionShell
