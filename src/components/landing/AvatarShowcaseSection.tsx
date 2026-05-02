@@ -51,13 +51,13 @@ export function AvatarShowcaseSection({ avatarLevel, displayLevel, onLevelChange
                   onMouseLeave={() => onPreviewLevel(null)}
                   onFocus={() => onPreviewLevel(level)}
                   onBlur={() => onPreviewLevel(null)}
-                  className="group flex flex-col items-center gap-2"
+                  className="group flex min-w-[84px] flex-col items-center gap-2"
                 >
                   <div className={`rounded-full transition-all duration-300 ${isActive ? "scale-110" : "group-hover:scale-105"}`}>
                     <AvatarFigure level={level} size="md" selected={isSelected || isActive} />
                   </div>
-                  <span className={`text-center text-[10px] leading-tight ${isActive ? "text-raw-text" : "text-raw-silver/70"}`}>
-                    {getAvatarTheme(level).name}
+                  <span className="text-center text-[10px] leading-tight text-raw-silver/75 group-hover:text-raw-silver">
+                    {theme.name}
                   </span>
                 </button>
               );
@@ -68,4 +68,3 @@ export function AvatarShowcaseSection({ avatarLevel, displayLevel, onLevelChange
     </LandingSectionShell>
   );
 }
-

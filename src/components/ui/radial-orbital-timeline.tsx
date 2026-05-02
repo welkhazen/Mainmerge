@@ -198,7 +198,10 @@ export default function RadialOrbitalTimeline({ timelineData }: RadialOrbitalTim
                   <Icon size={16} />
                 </div>
 
-                <div className={`absolute top-12 whitespace-nowrap text-xs font-semibold tracking-wider transition-all duration-300 ${isExpanded ? "scale-125 text-foreground" : "text-foreground/70"}`}>
+                <div
+                  className={`absolute top-12 whitespace-nowrap font-display text-[0.65rem] tracking-[0.08em] uppercase transition-all duration-300 ${isExpanded ? "scale-125 text-[#F1C42D]" : "text-[#F1C42D]/80"}`}
+                  style={{ textShadow: "0 0 8px rgba(241,196,45,0.35), 0 0 18px rgba(241,196,45,0.15)" }}
+                >
                   {item.title}
                 </div>
 
@@ -212,7 +215,12 @@ export default function RadialOrbitalTimeline({ timelineData }: RadialOrbitalTim
                         </Badge>
                         <span className="font-mono text-xs text-foreground/50">{item.date}</span>
                       </div>
-                      <CardTitle className="mt-2 text-sm">{item.title}</CardTitle>
+                      <CardTitle
+                        className="mt-2 font-display text-sm uppercase tracking-[0.06em] text-[#F1C42D]"
+                        style={{ textShadow: "0 0 8px rgba(241,196,45,0.3), 0 0 16px rgba(241,196,45,0.15)" }}
+                      >
+                        {item.title}
+                      </CardTitle>
                     </CardHeader>
                     <CardContent className="text-xs text-foreground/80">
                       <p>{item.content}</p>
