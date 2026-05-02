@@ -34,7 +34,10 @@ export function AvatarShowcaseSection() {
                 <button
                   key={index}
                   type="button"
-                  onClick={() => setAvatarIndex(index)}
+                  onClick={() => {
+                    setAvatarIndex(index);
+                    setPreviewIndex(index);
+                  }}
                   onTouchStart={() => setPreviewIndex(index)}
                   onTouchEnd={() => setPreviewIndex(avatarIndex)}
                   onTouchCancel={() => setPreviewIndex(avatarIndex)}
