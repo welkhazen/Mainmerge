@@ -1,8 +1,3 @@
-diff --git a/src/components/landing/WheelReward.tsx b/src/components/landing/WheelReward.tsx
-index a6572a6d2990d5e97d399571f5511ef62b469738..7e3e93991b74a60889ec326e3b36ca61a658772a 100644
---- a/src/components/landing/WheelReward.tsx
-+++ b/src/components/landing/WheelReward.tsx
-@@ -1,80 +1,92 @@
  import { useCallback, useState } from "react";
  import { AvatarFigure } from "@/components/ui/avatar-figure";
  import { LEVEL_THEMES } from "@/lib/avatar-theme";
