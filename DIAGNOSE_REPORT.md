@@ -38,8 +38,8 @@ Main bundle and assets are large; build warns that chunks exceed threshold and s
 ### 4) Dynamic import not effective (architecture issue)
 A module intended for lazy load is also statically imported elsewhere, so it remains in main chunks.
 
-### 5) Tooling drift warning
-`vite:react-swc` recommends migration to `@vitejs/plugin-react-oxc` and notes deprecated option forwarding.
+### 5) Tooling drift warning (resolved)
+Migration to `@vitejs/plugin-react-oxc` is now active in `vite.config.ts`, and legacy `@vitejs/plugin-react-swc` dependency has been removed from devDependencies.
 
 ## Suggested next actions (better-flow alternatives)
 1. **Fix the real hooks warning first** (`dotted-surface.tsx`) because it may hide real lifecycle bugs.
@@ -47,7 +47,7 @@ A module intended for lazy load is also statically imported elsewhere, so it rem
 3. **Refactor export patterns** by moving constants/helpers from UI component files into adjacent `*.utils.ts` files.
 4. **Add route-level lazy boundaries** for heavy pages/components and recheck `npm run build` chunk output.
 5. **Decouple backend supabase client import strategy** so lazy path is truly lazy (or accept static and remove dynamic import to reduce confusion).
-6. **Plan migration from react-swc plugin to react-oxc** in a dedicated tooling PR to reduce build-warning noise.
+6. ✅ **Completed:** migrated from react-swc plugin to react-oxc in tooling, and removed stale dependency to reduce build-warning noise.
 
 ## Optional high-leverage path
 If you want, I can execute a focused follow-up that:
