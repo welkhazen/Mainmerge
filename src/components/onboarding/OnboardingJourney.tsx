@@ -3,7 +3,7 @@ import isItJustMeVideo from "@/assets/itisjustme.webm";
 import speakYourTruthVideo from "@/assets/speakyourheart.webm";
 import lntVideo from "@/assets/2026-04-18 10_10_00.webm";
 import { AvatarFigure } from "@/components/ui/avatar-figure";
-import { AVATARS } from "@/lib/avatar-theme";
+import { LEVEL_THEMES } from "@/lib/avataridentity";
 import { AvatarPhoneHomeScreen } from "@/components/ui/avatar-phone-home-screen";
 import { PhoneMockup } from "@/components/ui/phone-mockup";
 
@@ -344,9 +344,9 @@ export function OnboardingJourney({
                         ←
                       </button>
 
-                      <span className="text-[10px] font-medium uppercase tracking-[0.14em] text-raw-silver/35">
-                        {currentPollIndex + 1} / {onboardingPolls.length}
-                      </span>
+                      return (
+                        <div>
+                          <div className="relative lg:px-12">
 
                       <button
                         onClick={() => {
@@ -368,50 +368,94 @@ export function OnboardingJourney({
                       </button>
                     </div>
 
-                    <div className="mx-auto w-full max-w-md sm:max-w-xl lg:max-w-2xl lg:px-12">
-                      <SwipeablePollCard
-                        id={currentPoll.id}
-                        question={currentPoll.question}
-                        options={currentPoll.options}
-                        selectedOption={currentPollSelected}
-                        isAnswered={currentPollAnswered}
-                        totalResponses={Object.values(currentPollStats).reduce((a, b) => a + b, 0)}
-                        responseStats={currentPollStats}
-                        comments={pollComments[currentPoll.id] || []}
-                        pollIndex={currentPollIndex}
-                        totalPolls={onboardingPolls.length}
-                        onSwipe={(option) => {
-                          track("onboarding_poll_answered", { poll_id: currentPoll.id, option_id: option, step_index: currentPollIndex });
-                          setPollSelections((prev) => ({ ...prev, [currentPoll.id]: option }));
-                          onMarkPollAnswered(currentPoll.id);
-                        }}
-                        onNavigate={(direction) => {
-                          if (direction === "left") {
-                            setCurrentPollIndex((prev) => Math.max(0, prev - 1));
-                            return;
-                          }
-                          setCurrentPollIndex((prev) => Math.min(onboardingPolls.length - 1, prev + 1));
-                        }}
-                        onAddComment={(content) => {
-                          const newComment: Comment = {
-                            id: `${currentPoll.id}-${Date.now()}`,
-                            author: user.username,
-                            avatar: avatarIndex,
-                            content,
-                            timestamp: new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }),
-                            likes: 0,
-                            replies: [],
-                            isAnonymous: Math.random() > 0.7,
-                          };
-                          setPollComments((prev) => ({
-                            ...prev,
-                            [currentPoll.id]: [...(prev[currentPoll.id] || []), newComment],
-                          }));
-                        }}
-                      />
-                    </div>
+                            <span className="text-[10px] font-medium uppercase tracking-[0.14em] text-raw-silver/35">
+                              {currentPollIndex + 1} / {onboardingPolls.length}
+                            </span>
+
+                            <button
+                              onClick={() => {
+                                if (currentPollIndex < onboardingPolls.length - 1) {
+                                  setCurrentPollIndex(Math.min(onboardingPolls.length - 1, currentPollIndex + 1));
+                                  return;
+                                }
+
+                                goToNextStep();
+                              }}
+                              disabled={currentPollIndex === onboardingPolls.length - 1 && !canContinueFromPolls}
+                              className={`flex h-9 w-9 items-center justify-center rounded-full border text-lg transition-all disabled:cursor-not-allowed disabled:opacity-35 ${
+                                currentPollIndex < onboardingPolls.length - 1
+                                  ? "border-raw-border/35 bg-raw-black/45 text-raw-silver/70 hover:border-raw-gold/35 hover:text-raw-gold/75"
+                                  : "border-raw-gold/40 bg-raw-gold/15 text-raw-gold hover:bg-raw-gold/25"
+                              }`}
+                              aria-label={currentPollIndex < onboardingPolls.length - 1 ? "Next poll" : "Complete polls"}
+                            >
+                              →
+                            </button>
+                          </div>
+
+                          <div className="mx-auto w-full max-w-md sm:max-w-xl lg:max-w-2xl lg:px-12">
+                            <div>
+                              <SwipeablePollCard
+                                id={poll.id}
+                                question={poll.question}
+                                options={poll.options}
+                                selectedOption={selectedOption}
+                                isAnswered={isAnswered}
+                                totalResponses={Object.values(pollStatData).reduce((a, b) => a + b, 0)}
+                                responseStats={pollStatData}
+                                comments={pollComments[poll.id] || []}
+                                pollIndex={currentPollIndex}
+                                totalPolls={onboardingPolls.length}
+                                onSwipe={(option) => {
+                                  track("onboarding_poll_answered", { poll_id: poll.id, option_id: option, step_index: currentPollIndex });
+                                  setPollSelections((prev) => ({ ...prev, [poll.id]: option }));
+                                  onMarkPollAnswered(poll.id);
+                                }}
+                                onNavigate={(direction) => {
+                                  if (direction === "left") {
+                                    setCurrentPollIndex((prev) => Math.max(0, prev - 1));
+                                    return;
+                                  }
+
+                                  setCurrentPollIndex((prev) => Math.min(onboardingPolls.length - 1, prev + 1));
+                                }}
+                                currentIndex={currentPollIndex}
+                                totalPolls={onboardingPolls.length}
+                                completedCount={answeredCount}
+                                onAddComment={(content) => {
+                                  const newComment: Comment = {
+                                    id: `${poll.id}-${Date.now()}`,
+                                    author: user.username,
+                                    avatar: avatarLevel,
+                                    content,
+                                    timestamp: new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }),
+                                    likes: 0,
+                                    replies: [],
+                                    isAnonymous: Math.random() > 0.7,
+                                  };
+                                  setPollComments((prev) => ({
+                                    ...prev,
+                                    [poll.id]: [...(prev[poll.id] || []), newComment],
+                                  }));
+                                }}
+                              />
+                            </div>
+                          </div>
+
+                        </div>
+                      );
+                    })()}
                   </div>
                 )}
+              </div>
+              <div className="mt-6 flex justify-end">
+                <button
+                  onClick={goToNextStep}
+                  disabled={!canContinueFromPolls}
+                  className="rounded-xl border border-raw-gold/40 bg-raw-gold/15 px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.12em] text-raw-gold transition-all hover:bg-raw-gold/25 disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  Continue to communities →
+                </button>
               </div>
             </section>
           )}

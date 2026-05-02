@@ -1,5 +1,5 @@
 import { AvatarFigure } from "@/components/ui/avatar-figure";
-import { getAvatar } from "@/lib/avatar-theme";
+import { getAvatarTheme } from "@/lib/avataridentity";
 
 interface AvatarPhoneHomeScreenProps {
   avatarIndex: number;

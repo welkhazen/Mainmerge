@@ -25,6 +25,7 @@ const SignupModalLazy = lazy(() =>
 
 const Index = () => {
   const [showMatrixIntro, setShowMatrixIntro] = useState(true);
+
   const {
     user,
     isLoggedIn,
@@ -167,25 +168,21 @@ const Index = () => {
           onSignupClick={() => setShowSignup(true)}
         />
         <AvatarShowcaseSection />
-        <WheelReward
-          onSignupClick={() => setShowSignup(true)}
-        />
-        <EarnedWarUpgradesSection />
-        <AnonQuestionSection />
+        <WheelReward />
         <WhyAnonymity />
+        <AnonQuestionSection />
+        <EarnedWarUpgradesSection />
+        <LandingFooter />
       </div>
-      <LandingFooter />
 
       <Suspense fallback={null}>
-        {showSignup ? (
-          <SignupModalLazy
-            open={showSignup}
-            onClose={() => setShowSignup(false)}
-            onRequestSignupOtp={requestSignupOtp}
-            onVerifySignupOtp={verifySignupOtp}
-            onLogin={login}
-          />
-        ) : null}
+        <SignupModalLazy
+          open={showSignup}
+          onOpenChange={setShowSignup}
+          onRequestOtp={requestSignupOtp}
+          onVerifyOtp={verifySignupOtp}
+          onLogin={login}
+        />
       </Suspense>
     </div>
   );

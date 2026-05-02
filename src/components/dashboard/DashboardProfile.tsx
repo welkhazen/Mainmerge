@@ -1,15 +1,16 @@
 import { useState } from "react";
-import { AvatarFigure } from "@/components/ui/avatar-figure";
-import { AVATARS, getAvatar } from "@/lib/avatar-theme";
 import {
-  Trophy,
-  Target,
-  MessageCircle,
-  Flame,
-  TrendingUp,
-  Calendar,
   Award,
+  Calendar,
+  Flame,
+  MessageCircle,
+  Target,
+  TrendingUp,
+  Trophy,
 } from "lucide-react";
+
+import { AvatarFigure } from "@/components/ui/avatar-figure";
+import { LEVEL_THEMES, MAX_LEVEL, getAvatarTheme } from "@/lib/avataridentity";
 
 interface DashboardProfileProps {
   username: string;
@@ -53,21 +54,32 @@ export function DashboardProfile({
     <div className="space-y-5">
       {/* Header */}
       <div>
-        <h1 className="font-display text-xl tracking-wide text-raw-text sm:text-2xl">Profile</h1>
-        <p className="mt-1 text-xs text-raw-silver/40">Your anonymous identity. Your progress. Your growth.</p>
+        <h1 className="font-display text-xl tracking-wide text-raw-text sm:text-2xl">
+          Profile
+        </h1>
+        <p className="mt-1 text-xs text-raw-silver/40">
+          Your anonymous identity. Your progress. Your growth.
+        </p>
       </div>
 
       {/* Avatar card */}
       <div className="flex flex-col items-center rounded-2xl border border-raw-border/40 bg-raw-surface/40 px-4 py-5 text-center sm:px-6 sm:py-6">
-        <AvatarFigure avatarIndex={displayIndex} size="xl" selected />
-        <p className="mt-3 font-display text-lg tracking-wide text-raw-text">{username}</p>
-        <p className="text-xs text-raw-gold/60">{theme.name}</p>
+        <AvatarFigure level={displayLevel} size="xl" selected />
+        <p className="mt-3 font-display text-lg tracking-wide text-raw-text">
+          {username}
+        </p>
+        <p className="text-xs text-raw-gold/60">Level {displayLevel}</p>
+        <p className="text-[10px] text-raw-silver/30">{theme.name}</p>
 
         {/* XP Progress */}
         <div className="mt-4 w-full">
           <div className="mb-1.5 flex items-center justify-between">
-            <span className="text-[10px] text-raw-silver/30">XP Progress</span>
-            <span className="text-[10px] text-raw-gold/60">{xp.toLocaleString()} / {xpForNext.toLocaleString()}</span>
+            <span className="text-[10px] text-raw-silver/30">
+              XP to Level {Math.min(displayLevel + 1, MAX_LEVEL)}
+            </span>
+            <span className="text-[10px] text-raw-gold/60">
+              {xp.toLocaleString()} / {xpForNext.toLocaleString()}
+            </span>
           </div>
           <div className="h-1.5 overflow-hidden rounded-full bg-raw-border/30">
             <div
@@ -80,27 +92,32 @@ export function DashboardProfile({
         {/* Level selector */}
         <div
           className="mt-4 grid w-full justify-items-center gap-1"
-          style={{ gridTemplateColumns: `repeat(${Math.ceil(AVATARS.length / 2)}, minmax(0, 1fr))` }}
+          style={{
+            gridTemplateColumns: `repeat(${Math.ceil(MAX_LEVEL / 2)}, minmax(0, 1fr))`,
+          }}
         >
-          {AVATARS.map((avatar, i) => {
-            const index = i + 1;
-            return (
+          {Array.from({ length: LEVEL_THEMES.length }, (_, i) => i + 1).map(
+            (lvl) => (
               <button
-                key={index}
+                key={lvl}
                 type="button"
-                onClick={() => onAvatarChange(index)}
-                onMouseEnter={() => setHoveredIndex(index)}
-                onMouseLeave={() => setHoveredIndex(null)}
-                onFocus={() => setHoveredIndex(index)}
-                onBlur={() => setHoveredIndex(null)}
+                onClick={() => onLevelChange(lvl)}
+                onMouseEnter={() => setHoveredLevel(lvl)}
+                onMouseLeave={() => setHoveredLevel(null)}
+                onFocus={() => setHoveredLevel(lvl)}
+                onBlur={() => setHoveredLevel(null)}
                 className="flex h-10 w-10 items-center justify-center rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-raw-gold/40"
-                aria-label={`Select ${avatar.name}`}
-                aria-pressed={index === avatarLevel}
+                aria-label={`Preview level ${lvl}`}
+                aria-pressed={lvl === avatarLevel}
               >
-                <AvatarFigure avatarIndex={index} size="sm" selected={index === avatarLevel} />
+                <AvatarFigure
+                  level={lvl}
+                  size="sm"
+                  selected={lvl === avatarLevel}
+                />
               </button>
-            );
-          })}
+            )
+          )}
         </div>
       </div>
 
@@ -115,7 +132,11 @@ export function DashboardProfile({
             >
               <Icon className="mx-auto mb-1.5 h-3.5 w-3.5 text-raw-gold/40" />
               <p className="text-base font-bold text-raw-text sm:text-lg">
-                {stat.key === "polls" ? pollsAnswered : stat.key === "xp" ? xp.toLocaleString() : stat.value}
+                {stat.key === "polls"
+                  ? pollsAnswered
+                  : stat.key === "xp"
+                  ? xp.toLocaleString()
+                  : stat.value}
               </p>
               <p className="mt-0.5 text-[8px] uppercase leading-tight tracking-wider text-raw-silver/30 sm:text-[9px]">
                 {stat.label}
@@ -127,7 +148,9 @@ export function DashboardProfile({
 
       {/* Badges */}
       <div className="rounded-2xl border border-raw-border/30 bg-raw-surface/30 p-4 sm:p-5">
-        <h3 className="mb-3 font-display text-sm tracking-wide text-raw-text">Badges</h3>
+        <h3 className="mb-3 font-display text-sm tracking-wide text-raw-text">
+          Badges
+        </h3>
         <div className="space-y-2">
           {badges.map((badge) => (
             <div
@@ -138,19 +161,31 @@ export function DashboardProfile({
                   : "border-raw-border/15 bg-raw-black/20 opacity-40"
               }`}
             >
-              <div className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg ${
-                badge.earned ? "bg-raw-gold/10" : "bg-raw-surface/50"
-              }`}>
-                <Trophy className={`h-3.5 w-3.5 ${badge.earned ? "text-raw-gold/60" : "text-raw-silver/20"}`} />
+              <div
+                className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg ${
+                  badge.earned ? "bg-raw-gold/10" : "bg-raw-surface/50"
+                }`}
+              >
+                <Trophy
+                  className={`h-3.5 w-3.5 ${
+                    badge.earned ? "text-raw-gold/60" : "text-raw-silver/20"
+                  }`}
+                />
               </div>
               <div className="min-w-0 flex-1">
-                <p className={`text-xs font-medium ${badge.earned ? "text-raw-text" : "text-raw-silver/30"}`}>
+                <p
+                  className={`text-xs font-medium ${
+                    badge.earned ? "text-raw-text" : "text-raw-silver/30"
+                  }`}
+                >
                   {badge.name}
                 </p>
                 <p className="text-[10px] text-raw-silver/25">{badge.desc}</p>
               </div>
               {badge.earned && (
-                <span className="shrink-0 text-[9px] font-medium text-raw-gold/50">Earned</span>
+                <span className="shrink-0 text-[9px] font-medium text-raw-gold/50">
+                  Earned
+                </span>
               )}
             </div>
           ))}
