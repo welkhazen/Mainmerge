@@ -489,14 +489,12 @@ html.theme-light .landing-navbar {
 }
 
 html.theme-light .landing-navbar [href="#communities"],
-html.theme-light .landing-navbar [href="#polls"],
-html.theme-light .landing-navbar [href="#avatar"] {
+html.theme-light .landing-navbar [href="#polls"] {
   color: rgb(37 45 58 / 0.82);
 }
 
 html.theme-light .landing-navbar [href="#communities"]:hover,
-html.theme-light .landing-navbar [href="#polls"]:hover,
-html.theme-light .landing-navbar [href="#avatar"]:hover {
+html.theme-light .landing-navbar [href="#polls"]:hover {
   color: rgb(16 23 35 / 0.96);
 }
 
