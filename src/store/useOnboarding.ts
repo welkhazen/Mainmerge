@@ -7,10 +7,15 @@ export function useOnboarding(isLoggedIn: boolean, username?: string) {
   const [onboardingStep, setOnboardingStep] = useState<OnboardingStep>("avatar");
   const [onboardingAnsweredPollIds, setOnboardingAnsweredPollIds] = useState<Set<string>>(new Set());
   const [onboardingCompleted, setOnboardingCompleted] = useState(false);
+  const [onboardingLoaded, setOnboardingLoaded] = useState(false);
 
   useEffect(() => {
-    if (!storageKey) return;
+    if (!storageKey) {
+      setOnboardingLoaded(true);
+      return;
+    }
     setOnboardingCompleted(localStorage.getItem(storageKey) === "1");
+    setOnboardingLoaded(true);
   }, [storageKey]);
 
   const markOnboardingPollAnswered = useCallback((pollId: string) => {
@@ -30,7 +35,7 @@ export function useOnboarding(isLoggedIn: boolean, username?: string) {
     if (storageKey) localStorage.setItem(storageKey, "1");
   }, [storageKey]);
 
-  const isOnboardingResolved = !isLoggedIn || onboardingCompleted || onboardingStep.length > 0;
+  const isOnboardingResolved = !isLoggedIn || onboardingLoaded;
 
   return useMemo(() => ({
     onboardingStep,

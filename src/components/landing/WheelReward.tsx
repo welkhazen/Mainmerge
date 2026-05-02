@@ -90,5 +90,11 @@ const TRANSPARENT_REWARDS_IMAGE_SRC = "/avatars/spin-rewards-transparent.png";
                  className="mt-4 w-full rounded-full bg-raw-gold px-6 py-3 text-sm font-bold text-raw-black transition-all hover:bg-raw-gold/90 hover:shadow-lg hover:shadow-raw-gold/20"
                >
                  Claim My Avatar
-                 
+               </button>
+             </div>
+           )}
+         </div>
+       </LandingSectionShell>
+     );
+   }
 
