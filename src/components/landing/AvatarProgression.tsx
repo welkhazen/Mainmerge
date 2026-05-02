@@ -37,7 +37,7 @@ export function AvatarProgression({
       sectionRef={sectionRef as React.Ref<HTMLElement>}
       eyebrow="Avatar Progression"
       title="Every rank, one tap away."
-      description="Tap a rank to preview it on the phone above. Earn higher ranks by participating raW."
+      description="Tap a rank to preview it on the phone above."
     >
       <div
         className="grid gap-x-3 gap-y-5 sm:gap-x-4 sm:gap-y-6 md:gap-x-6"
@@ -62,16 +62,10 @@ export function AvatarProgression({
               aria-pressed={isSelected}
             >
               <div className="relative">
-                {isActive && (
-                  <div
-                    className="absolute -inset-1.5 rounded-full opacity-60 blur-md sm:hidden"
-                    style={{ background: t.ring }}
-                  />
-                )}
                 <div
                   className={`rounded-full transition-all duration-300 ${
                     isActive
-                      ? "scale-115 drop-shadow-lg"
+                      ? "scale-110"
                       : isLocked
                       ? ""
                       : "opacity-90 group-hover:opacity-100 group-hover:scale-105"

@@ -17,7 +17,6 @@ export function AvatarPhoneHomeScreen({ displayLevel }: AvatarPhoneHomeScreenPro
 
       <div className="mb-3 rounded-2xl border border-black/10 bg-white/50 p-3 text-center backdrop-blur-sm">
         <p className="font-display text-[11px] tracking-[0.12em] text-[#111]">{theme.name}</p>
-        <p className="mt-0.5 text-[9px] text-[#444]">Badge level is earned separately through badges.</p>
       </div>
 
       <div className="grid grid-cols-4 grid-rows-3 gap-x-3 gap-y-3">
@@ -39,20 +38,16 @@ export function AvatarPhoneHomeScreen({ displayLevel }: AvatarPhoneHomeScreenPro
             key={displayLevel}
             className="relative flex h-full min-h-[120px] w-full animate-[iconPop_420ms_ease-out] items-center justify-center overflow-hidden rounded-[20px] shadow-lg"
             style={{
-              background: `linear-gradient(135deg, ${theme.bg} 0%, #050505 70%)`,
-              boxShadow: theme.glow !== "none" ? `0 0 22px ${theme.glow}` : "0 6px 16px rgba(0,0,0,0.35)",
+              background: "linear-gradient(135deg, #101317 0%, #050505 70%)",
+              boxShadow: "0 6px 16px rgba(0,0,0,0.35)",
             }}
           >
-            <div
-              className="absolute inset-0 opacity-45"
-              style={{ background: `radial-gradient(circle at 50% 35%, ${theme.figure}33 0%, transparent 62%)` }}
-            />
             <div className="absolute inset-0 bg-gradient-to-b from-white/[0.06] to-transparent" />
-            <div className="relative scale-[1.8]">
+            <div className="relative scale-[1.45]">
               <AvatarFigure level={displayLevel} size="md" selected />
             </div>
           </div>
-          <span className="font-display text-[9px] tracking-[0.14em] text-[#222]">Selected avatar</span>
+          <span className="font-display text-[10px] tracking-[0.18em] text-[#222]">raW</span>
         </div>
 
         <AppIcon kind="podcasts" label="Podcasts" />
