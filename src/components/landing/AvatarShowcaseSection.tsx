@@ -66,3 +66,4 @@ export function AvatarShowcaseSection({ avatarLevel, displayLevel, onLevelChange
     </LandingSectionShell>
   );
 }
+
