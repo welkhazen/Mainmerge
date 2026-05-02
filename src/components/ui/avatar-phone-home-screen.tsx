@@ -1,4 +1,5 @@
-import { AvatarFigure, getAvatarTheme } from "@/components/ui/avatar-figure";
+import { AvatarFigure } from "@/components/ui/avatar-figure";
+import { getAvatarTheme } from "@/lib/avatar-theme";
 
 interface AvatarPhoneHomeScreenProps {
   displayLevel: number;
