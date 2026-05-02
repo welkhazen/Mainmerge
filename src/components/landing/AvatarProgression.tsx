@@ -39,7 +39,10 @@ export function AvatarProgression({
       title="Every rank, one tap away."
       description="Tap a rank to preview it on the phone above. Earn higher ranks by participating raW."
     >
-      <div className="grid grid-cols-5 gap-x-3 gap-y-5 sm:gap-x-4 sm:gap-y-6 md:gap-x-6">
+      <div
+        className="grid gap-x-3 gap-y-5 sm:gap-x-4 sm:gap-y-6 md:gap-x-6"
+        style={{ gridTemplateColumns: `repeat(${Math.ceil(LEVEL_THEMES.length / 2)}, minmax(0, 1fr))` }}
+      >
         {LEVEL_THEMES.map((t, i) => {
           const level = i + 1;
           const isActive = level === displayLevel;
