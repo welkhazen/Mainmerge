@@ -35,7 +35,7 @@ export function AvatarShowcaseSection({ avatarLevel, displayLevel, onLevelChange
         <div className="w-full max-w-4xl rounded-2xl border border-raw-border/40 bg-raw-surface/25 p-4 sm:p-5">
           <p className="text-center font-display text-xs uppercase tracking-[0.2em] text-raw-gold/70">Avatar progression</p>
           <div className="mt-4 grid grid-cols-3 gap-x-3 gap-y-4 sm:grid-cols-5 sm:gap-x-4">
-            {LEVEL_THEMES.map((_, i) => {
+            {LEVEL_THEMES.map((theme, i) => {
               const level = i + 1;
               const isActive = level === displayLevel;
               const isSelected = level === avatarLevel;
