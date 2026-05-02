@@ -1,11 +1,11 @@
-import { AvatarFigure, getAvatarTheme } from "@/components/ui/avatar-figure";
+import { AvatarFigure, getAvatar } from "@/components/ui/avatar-figure";
 
 interface AvatarPhoneHomeScreenProps {
-  displayLevel: number;
+  avatarIndex: number;
 }
 
-export function AvatarPhoneHomeScreen({ displayLevel }: AvatarPhoneHomeScreenProps) {
-  const theme = getAvatarTheme(displayLevel);
+export function AvatarPhoneHomeScreen({ avatarIndex }: AvatarPhoneHomeScreenProps) {
+  const theme = getAvatar(avatarIndex);
 
   return (
     <div className="relative h-full overflow-hidden bg-gradient-to-b from-[#e8e8e8] via-[#dcdcdc] to-[#c6c6c8] px-4 pt-3 pb-4">
@@ -40,7 +40,7 @@ export function AvatarPhoneHomeScreen({ displayLevel }: AvatarPhoneHomeScreenPro
 
         <div className="col-span-2 row-span-2 flex flex-col items-center gap-1">
           <div
-            key={displayLevel}
+            key={avatarIndex}
             className="relative flex h-full w-full animate-[iconPop_420ms_ease-out] items-center justify-center overflow-hidden rounded-[18px] shadow-lg"
             style={{
               background: `linear-gradient(135deg, ${theme.bg} 0%, #050505 70%)`,
@@ -53,7 +53,7 @@ export function AvatarPhoneHomeScreen({ displayLevel }: AvatarPhoneHomeScreenPro
             />
             <div className="absolute inset-0 bg-gradient-to-b from-white/[0.06] to-transparent" />
             <div className="relative scale-[1.4]">
-              <AvatarFigure level={displayLevel} size="md" />
+              <AvatarFigure avatarIndex={avatarIndex} size="md" />
             </div>
           </div>
           <span className="font-display text-[9px] tracking-[0.18em] text-[#222]">raW</span>
@@ -113,7 +113,6 @@ function DockIcon({ kind }: { kind: IconKind }) {
 
 function IconTile({ kind, small = false }: { kind: IconKind; small?: boolean }) {
   const sizeClass = small ? "h-[38px] w-[38px] rounded-[10px]" : "h-[44px] w-[44px] rounded-[11px]";
-
   const base = `flex items-center justify-center shadow-[0_1px_3px_rgba(0,0,0,0.25)] ${sizeClass}`;
 
   switch (kind) {

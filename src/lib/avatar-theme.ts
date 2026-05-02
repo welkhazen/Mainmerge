@@ -8,7 +8,7 @@ export interface AvatarTheme {
   imageSrc?: string;
 }
 
-export const LEVEL_THEMES: AvatarTheme[] = [
+export const AVATARS: AvatarTheme[] = [
   { bg: "#1a1a1a", figure: "#c8c8c8", ring: "#8a8a8a", glow: "none",       name: "Silver Initiate"  },
   { bg: "#0c1a24", figure: "#5ed6ff", ring: "#2ea6d6", glow: "#5ed6ff80",  name: "Cyan Scout"       },
   { bg: "#0a1124", figure: "#3f8bff", ring: "#2557c4", glow: "#3f8bff80",  name: "Azure Sentinel"   },
@@ -21,8 +21,7 @@ export const LEVEL_THEMES: AvatarTheme[] = [
   { bg: "#1f1705", figure: "#facc15", ring: "#b8900b", glow: "#facc1590",  name: "Golden Legend"    },
 ];
 
-export const MAX_LEVEL = LEVEL_THEMES.length;
-
-export function getAvatarTheme(level: number): AvatarTheme {
-  return LEVEL_THEMES[level - 1] || LEVEL_THEMES[0];
+/** Get avatar by 1-based index (matches stored avatarLevel values). */
+export function getAvatar(index: number): AvatarTheme {
+  return AVATARS[index - 1] || AVATARS[0];
 }

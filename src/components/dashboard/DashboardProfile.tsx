@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { AvatarFigure, getAvatarTheme } from "@/components/ui/avatar-figure";
-import { LEVEL_THEMES, MAX_LEVEL } from "@/lib/avatar-theme";
+import { AvatarFigure } from "@/components/ui/avatar-figure";
+import { AVATARS, getAvatar } from "@/lib/avatar-theme";
 import {
   Trophy,
   Target,
@@ -14,7 +14,7 @@ import {
 interface DashboardProfileProps {
   username: string;
   avatarLevel: number;
-  onLevelChange: (level: number) => void;
+  onAvatarChange: (level: number) => void;
   pollsAnswered: number;
   xp?: number;
 }
@@ -39,14 +39,14 @@ const badges = [
 export function DashboardProfile({
   username,
   avatarLevel,
-  onLevelChange,
+  onAvatarChange,
   pollsAnswered,
   xp = 0,
 }: DashboardProfileProps) {
-  const [hoveredLevel, setHoveredLevel] = useState<number | null>(null);
-  const displayLevel = hoveredLevel ?? avatarLevel;
-  const theme = getAvatarTheme(displayLevel);
-  const xpForNext = displayLevel * 500;
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const displayIndex = hoveredIndex ?? avatarLevel;
+  const theme = getAvatar(displayIndex);
+  const xpForNext = displayIndex * 500;
   const xpPct = Math.min(Math.round((xp / xpForNext) * 100), 100);
 
   return (
@@ -59,15 +59,14 @@ export function DashboardProfile({
 
       {/* Avatar card */}
       <div className="flex flex-col items-center rounded-2xl border border-raw-border/40 bg-raw-surface/40 px-4 py-5 text-center sm:px-6 sm:py-6">
-        <AvatarFigure level={displayLevel} size="xl" selected />
+        <AvatarFigure avatarIndex={displayIndex} size="xl" selected />
         <p className="mt-3 font-display text-lg tracking-wide text-raw-text">{username}</p>
-        <p className="text-xs text-raw-gold/60">Level {displayLevel}</p>
-        <p className="text-[10px] text-raw-silver/30">{theme.name}</p>
+        <p className="text-xs text-raw-gold/60">{theme.name}</p>
 
         {/* XP Progress */}
         <div className="mt-4 w-full">
           <div className="mb-1.5 flex items-center justify-between">
-            <span className="text-[10px] text-raw-silver/30">XP to Level {Math.min(displayLevel + 1, MAX_LEVEL)}</span>
+            <span className="text-[10px] text-raw-silver/30">XP Progress</span>
             <span className="text-[10px] text-raw-gold/60">{xp.toLocaleString()} / {xpForNext.toLocaleString()}</span>
           </div>
           <div className="h-1.5 overflow-hidden rounded-full bg-raw-border/30">
@@ -81,24 +80,27 @@ export function DashboardProfile({
         {/* Level selector */}
         <div
           className="mt-4 grid w-full justify-items-center gap-1"
-          style={{ gridTemplateColumns: `repeat(${Math.ceil(MAX_LEVEL / 2)}, minmax(0, 1fr))` }}
+          style={{ gridTemplateColumns: `repeat(${Math.ceil(AVATARS.length / 2)}, minmax(0, 1fr))` }}
         >
-          {Array.from({ length: LEVEL_THEMES.length }, (_, i) => i + 1).map((lvl) => (
-            <button
-              key={lvl}
-              type="button"
-              onClick={() => onLevelChange(lvl)}
-              onMouseEnter={() => setHoveredLevel(lvl)}
-              onMouseLeave={() => setHoveredLevel(null)}
-              onFocus={() => setHoveredLevel(lvl)}
-              onBlur={() => setHoveredLevel(null)}
-              className="flex h-10 w-10 items-center justify-center rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-raw-gold/40"
-              aria-label={`Preview level ${lvl}`}
-              aria-pressed={lvl === avatarLevel}
-            >
-              <AvatarFigure level={lvl} size="sm" selected={lvl === avatarLevel} />
-            </button>
-          ))}
+          {AVATARS.map((avatar, i) => {
+            const index = i + 1;
+            return (
+              <button
+                key={index}
+                type="button"
+                onClick={() => onAvatarChange(index)}
+                onMouseEnter={() => setHoveredIndex(index)}
+                onMouseLeave={() => setHoveredIndex(null)}
+                onFocus={() => setHoveredIndex(index)}
+                onBlur={() => setHoveredIndex(null)}
+                className="flex h-10 w-10 items-center justify-center rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-raw-gold/40"
+                aria-label={`Select ${avatar.name}`}
+                aria-pressed={index === avatarLevel}
+              >
+                <AvatarFigure avatarIndex={index} size="sm" selected={index === avatarLevel} />
+              </button>
+            );
+          })}
         </div>
       </div>
 

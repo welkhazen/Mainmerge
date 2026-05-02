@@ -1,15 +1,15 @@
-import { getAvatarTheme } from "@/lib/avatar-theme";
+import { getAvatar } from "@/lib/avatar-theme";
 import { Logo3D } from "@/components/ui/logo-3d";
 import { useTrackSectionView } from "@/lib/analytics/useTrackSectionView";
 import { LandingSectionShell } from "@/components/landing/LandingSectionShell";
 
 interface AvatarIdentityProps {
-  displayLevel: number;
+  avatarIndex: number;
 }
 
-export function AvatarIdentity({ displayLevel }: AvatarIdentityProps) {
+export function AvatarIdentity({ avatarIndex }: AvatarIdentityProps) {
   const sectionRef = useTrackSectionView("avatar");
-  const theme = getAvatarTheme(displayLevel);
+  const theme = getAvatar(avatarIndex);
   const glowColor = theme.glow !== "none" ? theme.glow : "rgba(241,196,45,0.25)";
 
   return (
@@ -17,38 +17,22 @@ export function AvatarIdentity({ displayLevel }: AvatarIdentityProps) {
       id="avatar"
       sectionRef={sectionRef as React.Ref<HTMLElement>}
       title="Your avatar is your identity."
-      description="Hover or tap any rank below to preview your avatar — every rank has its own look."
+      description="Hover or tap any avatar below to preview it on the phone."
     >
       <div id="avatar-phone-anchor" className="flex flex-col items-center gap-6">
         <div className="relative flex items-center justify-center">
-          {/* Outer ambient glow */}
           <div
             className="absolute rounded-full blur-3xl opacity-30 transition-all duration-700"
-            style={{
-              width: 260,
-              height: 260,
-              background: glowColor,
-            }}
+            style={{ width: 260, height: 260, background: glowColor }}
           />
-          {/* Pulse ring */}
           <div
             className="absolute rounded-full animate-ping opacity-10"
-            style={{
-              width: 220,
-              height: 220,
-              border: `2px solid ${theme.ring}`,
-            }}
+            style={{ width: 220, height: 220, border: `2px solid ${theme.ring}` }}
           />
-          {/* Static ring */}
           <div
             className="absolute rounded-full opacity-30 transition-all duration-700"
-            style={{
-              width: 210,
-              height: 210,
-              border: `1px solid ${theme.ring}`,
-            }}
+            style={{ width: 210, height: 210, border: `1px solid ${theme.ring}` }}
           />
-          {/* Circular avatar background with spinning logo inside */}
           <div
             className="relative flex items-center justify-center rounded-full transition-all duration-700"
             style={{
@@ -62,12 +46,9 @@ export function AvatarIdentity({ displayLevel }: AvatarIdentityProps) {
           </div>
         </div>
 
-        <div className="text-center">
-          <p className="font-display text-sm uppercase tracking-[0.2em] text-raw-text transition-all duration-500">
-            Level {displayLevel}
-          </p>
-          <p className="mt-0.5 text-xs text-raw-silver/40 transition-all duration-500">{theme.name}</p>
-        </div>
+        <p className="font-display text-sm uppercase tracking-[0.2em] text-raw-silver/50 transition-all duration-500">
+          {theme.name}
+        </p>
       </div>
     </LandingSectionShell>
   );

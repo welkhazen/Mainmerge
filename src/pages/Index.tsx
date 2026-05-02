@@ -25,7 +25,7 @@ const SignupModalLazy = lazy(() =>
 
 const Index = () => {
   const [showMatrixIntro, setShowMatrixIntro] = useState(true);
-  const [hoveredAvatarLevel, setHoveredAvatarLevel] = useState<number | null>(null);
+  const [hoveredAvatarIndex, setHoveredAvatarIndex] = useState<number | null>(null);
   const {
     user,
     isLoggedIn,
@@ -96,8 +96,8 @@ const Index = () => {
         <OnboardingJourney
           user={user}
           polls={polls}
-          avatarLevel={avatarLevel}
-          onAvatarLevelChange={setAvatarLevel}
+          avatarIndex={avatarLevel}
+          onAvatarChange={setAvatarLevel}
           onboardingStep={onboardingStep}
           onboardingAnsweredPollIds={onboardingAnsweredPollIds}
           onSetOnboardingStep={setOnboardingStep}
@@ -168,13 +168,13 @@ const Index = () => {
           onSignupClick={() => setShowSignup(true)}
         />
         <AvatarShowcaseSection
-          avatarLevel={avatarLevel}
-          displayLevel={hoveredAvatarLevel ?? avatarLevel}
-          onLevelChange={setAvatarLevel}
-          onPreviewLevel={setHoveredAvatarLevel}
+          avatarIndex={avatarLevel}
+          previewIndex={hoveredAvatarIndex ?? avatarLevel}
+          onAvatarChange={setAvatarLevel}
+          onPreviewAvatar={setHoveredAvatarIndex}
         />
         <WheelReward
-          onLevelChange={setAvatarLevel}
+          onAvatarChange={setAvatarLevel}
           onSignupClick={() => setShowSignup(true)}
         />
         <EarnedWarUpgradesSection />

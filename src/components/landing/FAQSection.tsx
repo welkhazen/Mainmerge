@@ -4,12 +4,12 @@ const FAQ_ITEMS = [
   {
     question: "Is raW really anonymous?",
     answer:
-      "Yes. Your identity is represented by your avatar level and username, while your personal details stay private.",
+      "Yes. Your identity is represented by your avatar and username, while your personal details stay private.",
   },
   {
-    question: "Can I change my avatar level later?",
+    question: "Can I change my avatar later?",
     answer:
-      "You can evolve your profile over time by unlocking more activity and engagement milestones.",
+      "You can change your avatar at any time from your profile settings.",
   },
   {
     question: "How do comments unlock on polls?",

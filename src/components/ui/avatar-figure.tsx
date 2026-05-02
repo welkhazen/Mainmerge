@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { LEVEL_THEMES, getAvatarTheme } from "@/lib/avatar-theme";
+import { AVATARS, getAvatar } from "@/lib/avatar-theme";
 
 interface AvatarFigureProps {
-  level: number;
+  avatarIndex: number;
   size?: "sm" | "md" | "lg" | "xl";
   selected?: boolean;
   className?: string;
@@ -15,8 +15,8 @@ const sizes = {
   xl: { outer: 180, inner: 148, face: 0.65 },
 };
 
-export function AvatarFigure({ level, size = "md", selected = false, className = "" }: AvatarFigureProps) {
-  const theme = LEVEL_THEMES[level - 1] || LEVEL_THEMES[0];
+export function AvatarFigure({ avatarIndex, size = "md", selected = false, className = "" }: AvatarFigureProps) {
+  const theme = AVATARS[avatarIndex - 1] || AVATARS[0];
   const [imageFailed, setImageFailed] = useState(false);
   const useImage = !!theme.imageSrc && !imageFailed;
   const s = sizes[size];
@@ -57,7 +57,6 @@ export function AvatarFigure({ level, size = "md", selected = false, className =
   const r = s.inner / 2;
   const faceScale = s.face;
 
-  // Goggle/face dimensions relative to center
   const eyeW = r * faceScale * 0.35;
   const eyeH = r * faceScale * 0.22;
   const eyeY = cy - r * 0.08;
@@ -66,24 +65,21 @@ export function AvatarFigure({ level, size = "md", selected = false, className =
   return (
     <div className={`relative inline-flex items-center justify-center ${className}`}>
       <svg width={s.outer} height={s.outer} viewBox={`0 0 ${s.outer} ${s.outer}`}>
-        {/* Glow ring for selected/high level */}
         {(selected || theme.glow !== "none") && (
           <circle
             cx={cx}
             cy={cy}
             r={r + 3}
             fill="none"
-            stroke={selected ? theme.ring : theme.ring}
+            stroke={theme.ring}
             strokeWidth={selected ? 2 : 1}
             opacity={selected ? 0.9 : 0.4}
             filter={theme.glow !== "none" ? "url(#avatarGlow)" : undefined}
           />
         )}
 
-        {/* Background circle */}
         <circle cx={cx} cy={cy} r={r} fill={theme.bg} />
 
-        {/* Inner gradient overlay */}
         <circle
           cx={cx}
           cy={cy}
@@ -92,7 +88,6 @@ export function AvatarFigure({ level, size = "md", selected = false, className =
           opacity={0.3}
         />
 
-        {/* Reflection/shine at bottom */}
         <ellipse
           cx={cx}
           cy={cy + r * 0.55}
@@ -102,7 +97,6 @@ export function AvatarFigure({ level, size = "md", selected = false, className =
           opacity={0.25}
         />
 
-        {/* Head silhouette */}
         <circle
           cx={cx}
           cy={cy - r * 0.05}
@@ -111,7 +105,6 @@ export function AvatarFigure({ level, size = "md", selected = false, className =
           opacity={0.85}
         />
 
-        {/* Body/shoulders */}
         <ellipse
           cx={cx}
           cy={cy + r * 0.45}
@@ -121,7 +114,6 @@ export function AvatarFigure({ level, size = "md", selected = false, className =
           opacity={0.7}
         />
 
-        {/* Goggle band */}
         <rect
           x={cx - eyeW - eyeGap / 2}
           y={eyeY - eyeH / 2}
@@ -132,7 +124,6 @@ export function AvatarFigure({ level, size = "md", selected = false, className =
           opacity={0.9}
         />
 
-        {/* Left goggle lens */}
         <ellipse
           cx={cx - eyeGap / 2 - eyeW / 2}
           cy={eyeY}
@@ -142,7 +133,6 @@ export function AvatarFigure({ level, size = "md", selected = false, className =
           opacity={0.6}
         />
 
-        {/* Right goggle lens */}
         <ellipse
           cx={cx + eyeGap / 2 + eyeW / 2}
           cy={eyeY}
@@ -152,7 +142,6 @@ export function AvatarFigure({ level, size = "md", selected = false, className =
           opacity={0.6}
         />
 
-        {/* Goggle shine */}
         <ellipse
           cx={cx - eyeGap / 2 - eyeW / 2 - 1}
           cy={eyeY - 1}
@@ -170,7 +159,6 @@ export function AvatarFigure({ level, size = "md", selected = false, className =
           opacity={0.15}
         />
 
-        {/* Defs */}
         <defs>
           <radialGradient id="innerGrad" cx="50%" cy="40%" r="50%">
             <stop offset="0%" stopColor={theme.figure} stopOpacity={0.15} />
@@ -191,4 +179,4 @@ export function AvatarFigure({ level, size = "md", selected = false, className =
   );
 }
 
-export { LEVEL_THEMES, getAvatarTheme };
+export { AVATARS, getAvatar };

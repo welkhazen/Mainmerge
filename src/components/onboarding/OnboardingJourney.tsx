@@ -3,9 +3,10 @@ import isItJustMeVideo from "@/assets/itisjustme.webm";
 import speakYourTruthVideo from "@/assets/speakyourheart.webm";
 import lntVideo from "@/assets/2026-04-18 10_10_00.webm";
 import { AvatarFigure } from "@/components/ui/avatar-figure";
-import { LEVEL_THEMES } from "@/lib/avatar-theme";
+import { AVATARS } from "@/lib/avatar-theme";
 import { AvatarPhoneHomeScreen } from "@/components/ui/avatar-phone-home-screen";
 import { PhoneMockup } from "@/components/ui/phone-mockup";
+
 import { SwipeablePollCard } from "./SwipeablePollCard";
 import type { OnboardingStep, Poll, User } from "@/store/useRawStore";
 import type { Comment } from "./PollComments";
@@ -20,8 +21,8 @@ type OnboardingPoll = {
 interface OnboardingJourneyProps {
   user: User;
   polls: Poll[];
-  avatarLevel: number;
-  onAvatarLevelChange: (level: number) => void;
+  avatarIndex: number;
+  onAvatarChange: (index: number) => void;
   onboardingStep: OnboardingStep;
   onboardingAnsweredPollIds: Set<string>;
   onSetOnboardingStep: (step: OnboardingStep) => void;
@@ -159,8 +160,8 @@ function StepPill({ label, active, complete }: { label: string; active: boolean;
 export function OnboardingJourney({
   user,
   polls,
-  avatarLevel,
-  onAvatarLevelChange,
+  avatarIndex,
+  onAvatarChange,
   onboardingStep,
   onboardingAnsweredPollIds,
   onSetOnboardingStep,
@@ -194,7 +195,7 @@ export function OnboardingJourney({
     stepStartTimeRef.current = Date.now();
   }, [onboardingStep]);
 
-  const canContinueFromAvatar = avatarLevel >= 1;
+  const canContinueFromAvatar = avatarIndex >= 1;
   const canContinueFromPolls = answeredCount >= onboardingPolls.length;
   const canContinueFromCommunities = selectedCommunityIds.length === 2;
 
@@ -259,51 +260,46 @@ export function OnboardingJourney({
               <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-8 md:items-center">
                 {/* Left: Avatar Selector Grid */}
                 <div className="flex flex-col items-center justify-center min-w-0">
-                  <div className="grid w-fit grid-cols-5 gap-2 sm:gap-8">
-                    {Array.from({ length: LEVEL_THEMES.length }, (_, i) => i + 1).map((lvl) => {
-                      const theme = LEVEL_THEMES[lvl - 1];
-                      const isActive = lvl === avatarLevel;
-                      const isLocked = false;
+                  <div className="grid w-fit grid-cols-5 gap-2 sm:gap-4">
+                    {AVATARS.map((avatar, i) => {
+                      const index = i + 1;
+                      const isActive = index === avatarIndex;
                       return (
                         <button
-                          key={lvl}
-                          onClick={() => { if (isLocked) return; track("onboarding_avatar_selected", { avatar_level: lvl, attempts: 1 }); onAvatarLevelChange(lvl); }}
+                          key={index}
+                          onClick={() => { track("onboarding_avatar_selected", { avatar_index: index, attempts: 1 }); onAvatarChange(index); }}
                           className="group relative flex flex-col items-center gap-1 p-1 sm:gap-2 sm:p-2 focus:outline-none"
-                          aria-label={`Select avatar level ${lvl}${isLocked ? " (locked)" : ""}`}
+                          aria-label={`Select ${avatar.name}`}
                           aria-pressed={isActive}
-                          disabled={isLocked}
                         >
-                          {/* glow behind active */}
                           {isActive && (
                             <div
                               className="absolute -inset-1 rounded-full opacity-50 blur-md pointer-events-none"
-                              style={{ background: theme.ring }}
+                              style={{ background: avatar.ring }}
                             />
                           )}
                           <div className={`relative rounded-full transition-all duration-300 ${
-                            isActive ? "scale-115" : isLocked ? "" : "opacity-80 group-hover:opacity-100 group-hover:scale-105"
+                            isActive ? "scale-115" : "opacity-80 group-hover:opacity-100 group-hover:scale-105"
                           }`}>
-                            <AvatarFigure level={lvl} size="sm" selected={isActive} className="sm:hidden" />
-                            <AvatarFigure level={lvl} size="md" selected={isActive} className="hidden sm:block" />
-                            {/* frosted lock overlay */}
-                            {isLocked && (
-                              <div className="absolute inset-0 flex items-center justify-center rounded-full overflow-hidden">
-                                <div className="absolute inset-0 rounded-full bg-black/40" />
-                                <div className="relative flex h-5 w-5 items-center justify-center rounded-full bg-black/60 ring-1 ring-white/15">
-                                  <span className="text-[10px] leading-none">🔒</span>
-                                </div>
-                              </div>
-                            )}
+                            <AvatarFigure avatarIndex={index} size="sm" selected={isActive} className="sm:hidden" />
+                            <AvatarFigure avatarIndex={index} size="md" selected={isActive} className="hidden sm:block" />
                           </div>
-                          <span className={`font-display text-[9px] font-bold tracking-[0.18em] transition-colors ${
-                            isActive ? "text-raw-text" : isLocked ? "text-raw-silver/25" : "text-raw-silver/45 group-hover:text-raw-silver/80"
+                          <span className={`font-display text-[8px] tracking-[0.1em] text-center leading-tight transition-colors ${
+                            isActive ? "text-raw-text" : "text-raw-silver/45 group-hover:text-raw-silver/80"
                           }`}>
-                            LVL {lvl}
+                            {avatar.name.split(" ")[0]}
                           </span>
                         </button>
                       );
                     })}
                   </div>
+                </div>
+
+                {/* Right: Phone preview */}
+                <div className="hidden md:flex flex-col items-center justify-center">
+                  <PhoneMockup className="w-full max-w-[260px]" showStatusBar={false}>
+                    <AvatarPhoneHomeScreen avatarIndex={avatarIndex} />
+                  </PhoneMockup>
                 </div>
               </div>
 
@@ -408,7 +404,7 @@ export function OnboardingJourney({
                                   const newComment: Comment = {
                                     id: `${poll.id}-${Date.now()}`,
                                     author: user.username,
-                                    avatar: avatarLevel,
+                                    avatar: avatarIndex,
                                     content,
                                     timestamp: new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }),
                                     likes: 0,

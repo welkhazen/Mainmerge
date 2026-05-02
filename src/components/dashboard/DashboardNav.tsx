@@ -167,7 +167,7 @@ export function DashboardNav({ username, avatarLevel, showAdminLink = false, onP
                 )}
                 aria-label="Open profile menu"
               >
-                <AvatarFigure level={avatarLevel} size="sm" selected />
+                <AvatarFigure avatarIndex={avatarLevel} size="sm" selected />
               </button>
             </DropdownMenuTrigger>
 
@@ -191,7 +191,7 @@ export function DashboardNav({ username, avatarLevel, showAdminLink = false, onP
                     : "border-raw-gold/20 bg-raw-gold/[0.08] hover:bg-raw-gold/[0.12]",
                 )}
               >
-                <AvatarFigure level={avatarLevel} size="sm" selected />
+                <AvatarFigure avatarIndex={avatarLevel} size="sm" selected />
                 <div className="min-w-0">
                   <p className="truncate text-sm font-semibold text-raw-text">View Profile</p>
                   <p className={cn("truncate text-xs", isEffectiveLight ? "text-slate-600" : "text-raw-silver/50")}>@{username}</p>
