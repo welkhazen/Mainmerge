@@ -2,7 +2,7 @@
   <defs>
     <filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
   </defs>
-  <rect width="2000" height="1200" fill="transparent"/>
+  <rect width="2000" height="1200"/>
   <g font-family="Arial" font-size="44" text-anchor="middle" filter="url(#glow)">
     <g fill="#b0b0b0"><circle cx="200" cy="260" r="95"/><text x="200" y="410">LVL 1</text></g>
     <g fill="#8e8e8e"><circle cx="560" cy="260" r="95"/><text x="560" y="410">LVL 2</text></g>
