@@ -342,6 +342,7 @@ export function OnboardingJourney({
 
                       return (
                         <div>
+                          <div className="relative lg:px-12">
 
                           <div className="mx-auto mb-3 flex w-full max-w-md items-center justify-between sm:max-w-xl lg:max-w-2xl">
                             <button
@@ -404,6 +405,9 @@ export function OnboardingJourney({
 
                                   setCurrentPollIndex((prev) => Math.min(onboardingPolls.length - 1, prev + 1));
                                 }}
+                                currentIndex={currentPollIndex}
+                                totalPolls={onboardingPolls.length}
+                                completedCount={answeredCount}
                                 onAddComment={(content) => {
                                   const newComment: Comment = {
                                     id: `${poll.id}-${Date.now()}`,

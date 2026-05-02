@@ -16,6 +16,9 @@ interface SwipeablePollCardProps {
   onSwipe: (option: string) => void;
   onNavigate?: (direction: "left" | "right") => void;
   onAddComment?: (content: string) => void;
+  currentIndex: number;
+  totalPolls: number;
+  completedCount: number;
 }
 
 export function SwipeablePollCard({
@@ -32,13 +35,13 @@ export function SwipeablePollCard({
   onSwipe,
   onNavigate,
   onAddComment,
+  currentIndex,
+  totalPolls,
+  completedCount,
 }: SwipeablePollCardProps) {
   const [swipeOffsetX, setSwipeOffsetX] = useState(0);
   const [commentText, setCommentText] = useState("");
-  const [replyingToId, setReplyingToId] = useState<string | null>(null);
-  const [replyText, setReplyText] = useState("");
   const [updatedComments, setUpdatedComments] = useState<Comment[]>(comments);
-  const [hasSeenSwipeGuide, setHasSeenSwipeGuide] = useState(false);
   const pointerStartXRef = useRef<number | null>(null);
   const guideStorageKey = "raw.onboarding.swipe-guide-seen";
 
