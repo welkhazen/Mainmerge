@@ -21,27 +21,27 @@ const testimonials = [
   {
     quote: "I've never felt this comfortable being honest online. No judgment, just real talk.",
     name: "anon_wolf",
-    title: "LVL 7 · Late Night Talks",
+    title: "Late Night Talks",
   },
   {
     quote: "The anonymity actually makes the community stronger. People show up as who they really are.",
     name: "midnight_sage",
-    title: "LVL 5 · Self-Improvement Circle",
+    title: "Self-Improvement Circle",
   },
   {
     quote: "Finally a place where I don't have to perform. I just exist and connect.",
     name: "quiet_storm",
-    title: "LVL 4 · Mental Wellness",
+    title: "Mental Wellness",
   },
   {
-    quote: "My avatar feels more like me than my real profile ever did. That says something.",
+    quote: "I feel more like myself here than on traditional profiles.",
     name: "echo_mind",
-    title: "LVL 8 · Late Night Talks",
+    title: "Late Night Talks",
   },
   {
     quote: "The polls are addictive. Seeing how others think without the social pressure is powerful.",
     name: "raw_thinker",
-    title: "LVL 6 · Self-Improvement Circle",
+    title: "Self-Improvement Circle",
   },
 ];
 
