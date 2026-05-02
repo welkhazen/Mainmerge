@@ -1,5 +1,5 @@
 import { defineConfig } from "vite";
-import reactOxc from "@vitejs/plugin-react-oxc";
+import react from "@vitejs/plugin-react";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
 import { execSync } from "node:child_process";
@@ -30,7 +30,7 @@ export default defineConfig(({ mode }) => ({
       },
     },
   },
-  plugins: [reactOxc(), mode === "development" && componentTagger()].filter(Boolean),
+  plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
