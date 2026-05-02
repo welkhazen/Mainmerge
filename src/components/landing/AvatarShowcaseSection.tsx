@@ -13,6 +13,12 @@ interface AvatarShowcaseSectionProps {
 }
 
 export function AvatarShowcaseSection({ avatarLevel, displayLevel, onLevelChange, onPreviewLevel }: AvatarShowcaseSectionProps) {
+export function AvatarShowcaseSection({
+  avatarLevel,
+  displayLevel,
+  onLevelChange,
+  onPreviewLevel,
+}: AvatarShowcaseSectionProps) {
   const sectionRef = useTrackSectionView("avatar");
 
   const handleLevelClick = (level: number) => {
@@ -27,14 +33,48 @@ export function AvatarShowcaseSection({ avatarLevel, displayLevel, onLevelChange
       title="Your avatar is your identity"
       description="Hover or tap a rank to preview how it appears on the phone."
     >
-      <div className="mx-auto flex w-full max-w-4xl flex-col items-center gap-8">
-        <PhoneMockup className="w-full max-w-[360px]" showStatusBar={false}>
+      <div className="mx-auto flex max-w-3xl flex-col items-center gap-10">
+        <PhoneMockup className="w-[320px] sm:w-[360px]" showStatusBar={false}>
           <AvatarPhoneHomeScreen displayLevel={displayLevel} />
         </PhoneMockup>
 
-        <div className="w-full max-w-4xl rounded-2xl border border-raw-border/40 bg-raw-surface/25 p-4 sm:p-5">
+        <div className="w-full rounded-2xl border border-raw-border/40 bg-raw-surface/35 p-4 sm:p-6">
           <p className="text-center font-display text-xs uppercase tracking-[0.2em] text-raw-gold/70">Avatar progression</p>
-          <div className="mt-4 flex items-start justify-start gap-3 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:justify-center sm:gap-4">
+          <h3 className="mt-3 text-center font-display text-xl tracking-wide text-raw-text sm:text-2xl">Every rank, one tap away.</h3>
+          <p className="mt-2 text-center text-xs text-raw-silver/50 sm:text-sm">Swipe on mobile or hover on desktop to update the phone preview.</p>
+
+          <div className="mt-6 sm:hidden">
+            <div className="flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              {LEVEL_THEMES.map((_, i) => {
+                const level = i + 1;
+                const isActive = level === displayLevel;
+                const isSelected = level === avatarLevel;
+                return (
+                  <button
+                    key={level}
+                    type="button"
+                    onClick={() => handleLevelClick(level)}
+                    onTouchStart={() => onPreviewLevel(level)}
+                    onMouseEnter={() => onPreviewLevel(level)}
+                    onMouseLeave={() => onPreviewLevel(null)}
+                    onFocus={() => onPreviewLevel(level)}
+                    onBlur={() => onPreviewLevel(null)}
+                    className="group flex min-w-[64px] snap-center flex-col items-center gap-2"
+                  >
+                    <div className={`rounded-full transition-all duration-300 ${isActive ? "scale-110" : "group-active:scale-105"}`}>
+                      <AvatarFigure level={level} size="md" selected={isSelected || isActive} />
+                    </div>
+                    <span className={`font-display text-[9px] tracking-[0.16em] ${isActive ? "text-raw-text" : "text-raw-silver/55"}`}>LVL {level}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div
+            className="mt-6 hidden gap-5 sm:grid"
+            style={{ gridTemplateColumns: `repeat(${Math.ceil(LEVEL_THEMES.length / 2)}, minmax(0, 1fr))` }}
+          >
             {LEVEL_THEMES.map((_, i) => {
               const level = i + 1;
               const isActive = level === displayLevel;
@@ -44,17 +84,16 @@ export function AvatarShowcaseSection({ avatarLevel, displayLevel, onLevelChange
                   key={level}
                   type="button"
                   onClick={() => handleLevelClick(level)}
-                  onTouchStart={() => onPreviewLevel(level)}
                   onMouseEnter={() => onPreviewLevel(level)}
                   onMouseLeave={() => onPreviewLevel(null)}
                   onFocus={() => onPreviewLevel(level)}
                   onBlur={() => onPreviewLevel(null)}
-                  className="group flex min-w-[70px] flex-col items-center gap-2"
+                  className="group flex flex-col items-center gap-2"
                 >
                   <div className={`rounded-full transition-all duration-300 ${isActive ? "scale-110" : "group-hover:scale-105"}`}>
                     <AvatarFigure level={level} size="lg" selected={isSelected || isActive} />
                   </div>
-                  <span className={`font-display text-[9px] tracking-[0.16em] ${isActive ? "text-raw-text" : "text-raw-silver/55"}`}>LVL {level}</span>
+                  <span className={`font-display text-[10px] tracking-[0.18em] ${isActive ? "text-raw-text" : "text-raw-silver/55"}`}>LVL {level}</span>
                 </button>
               );
             })}
