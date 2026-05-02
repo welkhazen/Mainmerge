@@ -1,29 +1,21 @@
 import { LandingSectionShell } from "@/components/landing/LandingSectionShell";
-import { AvatarFigure } from "@/components/ui/avatar-figure";
 import { AvatarPhoneHomeScreen } from "@/components/ui/avatar-phone-home-screen";
 import { PhoneMockup } from "@/components/ui/phone-mockup";
 import { useTrackSectionView } from "@/lib/analytics/useTrackSectionView";
 
-interface AvatarShowcaseSectionProps {
-  avatarIndex: number;
-  previewIndex: number;
-  onAvatarChange: (index: number) => void;
-  onPreviewAvatar: (index: number | null) => void;
-}
-
-export function AvatarShowcaseSection({ avatarIndex, previewIndex, onAvatarChange, onPreviewAvatar }: AvatarShowcaseSectionProps) {
+export function AvatarShowcaseSection() {
   const sectionRef = useTrackSectionView("avatar");
 
   return (
     <LandingSectionShell
       id="avatar"
       sectionRef={sectionRef as React.Ref<HTMLElement>}
-      title="Your avatar is your identity"
-      description="Hover or tap an avatar below to preview how it appears on the phone."
+      title="Your avatar"
+      description="A simple anonymous avatar that represents you across the app."
     >
       <div className="mx-auto flex w-full max-w-4xl flex-col items-center gap-8">
         <PhoneMockup showStatusBar={false}>
-          <AvatarPhoneHomeScreen displayLevel={displayLevel} />
+          <AvatarPhoneHomeScreen displayLevel={1} />
         </PhoneMockup>
 
         <div className="w-full max-w-4xl rounded-2xl border border-raw-border/40 bg-raw-surface/25 p-4 sm:p-5">

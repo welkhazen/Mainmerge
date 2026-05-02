@@ -167,14 +167,8 @@ const Index = () => {
           onVote={vote}
           onSignupClick={() => setShowSignup(true)}
         />
-        <AvatarShowcaseSection
-          avatarIndex={avatarLevel}
-          previewIndex={hoveredAvatarIndex ?? avatarLevel}
-          onAvatarChange={setAvatarLevel}
-          onPreviewAvatar={setHoveredAvatarIndex}
-        />
+        <AvatarShowcaseSection />
         <WheelReward
-          onAvatarChange={setAvatarLevel}
           onSignupClick={() => setShowSignup(true)}
         />
         <EarnedWarUpgradesSection />

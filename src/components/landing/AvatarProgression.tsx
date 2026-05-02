@@ -1,26 +1,12 @@
-import { AvatarFigure } from "@/components/ui/avatar-figure";
-import { AVATARS } from "@/lib/avatar-theme";
-import { useTrackSectionView } from "@/lib/analytics/useTrackSectionView";
 import { LandingSectionShell } from "@/components/landing/LandingSectionShell";
+import { useTrackSectionView } from "@/lib/analytics/useTrackSectionView";
 
-interface AvatarProgressionProps {
-  avatarIndex: number;
-  previewIndex: number;
-  onAvatarChange: (index: number) => void;
-  onPreviewAvatar: (index: number | null) => void;
-}
-
-export function AvatarProgression({
-  avatarIndex,
-  previewIndex,
-  onAvatarChange,
-  onPreviewAvatar,
-}: AvatarProgressionProps) {
+export function AvatarProgression() {
   const sectionRef = useTrackSectionView("avatar");
 
   return (
     <LandingSectionShell
-      id="avatar-progression"
+      id="avatar-overview"
       sectionRef={sectionRef as React.Ref<HTMLElement>}
       eyebrow="Avatar Progression"
       title="Choose your avatar."
@@ -79,6 +65,12 @@ export function AvatarProgression({
             </button>
           );
         })}
+      eyebrow="Avatar"
+      title="Avatar overview"
+      description="This area is reserved for future avatar updates."
+    >
+      <div className="rounded-2xl border border-raw-border/35 bg-raw-surface/20 p-5 text-center text-sm text-raw-silver/65">
+        Your avatar is fixed to a neutral visual style for now.
       </div>
     </LandingSectionShell>
   );

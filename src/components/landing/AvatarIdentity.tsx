@@ -1,16 +1,9 @@
-import { getAvatar } from "@/lib/avatar-theme";
 import { Logo3D } from "@/components/ui/logo-3d";
 import { useTrackSectionView } from "@/lib/analytics/useTrackSectionView";
 import { LandingSectionShell } from "@/components/landing/LandingSectionShell";
 
-interface AvatarIdentityProps {
-  avatarIndex: number;
-}
-
-export function AvatarIdentity({ avatarIndex }: AvatarIdentityProps) {
+export function AvatarIdentity() {
   const sectionRef = useTrackSectionView("avatar");
-  const theme = getAvatar(avatarIndex);
-  const glowColor = theme.glow !== "none" ? theme.glow : "rgba(241,196,45,0.25)";
 
   return (
     <LandingSectionShell
@@ -35,11 +28,12 @@ export function AvatarIdentity({ avatarIndex }: AvatarIdentityProps) {
           />
           <div
             className="relative flex items-center justify-center rounded-full transition-all duration-700"
+            className="relative flex items-center justify-center rounded-full"
             style={{
               width: 180,
               height: 180,
-              background: `radial-gradient(circle at 50% 40%, ${theme.bg} 0%, #050505 70%)`,
-              boxShadow: `0 0 0 2px ${theme.ring}, 0 0 18px ${glowColor}`,
+              background: "radial-gradient(circle at 50% 40%, #161616 0%, #050505 70%)",
+              boxShadow: "0 0 0 2px rgba(241,196,45,0.4)",
             }}
           >
             <Logo3D size={140} colorScheme="white" />
