@@ -191,4 +191,3 @@ export function AvatarFigure({ level, size = "md", selected = false, className =
   );
 }
 
-export { LEVEL_THEMES, getAvatarTheme };
