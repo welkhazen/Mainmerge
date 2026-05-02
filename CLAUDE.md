@@ -102,3 +102,17 @@ Available gstack skills:
 - `/unfreeze` - Unfreeze
 - `/gstack-upgrade` - Upgrade gstack
 - `/learn` - Learning
+
+## Agent skills
+
+### Issue tracker
+
+Issues are tracked as local markdown in `.scratch/`. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Triage uses canonical labels (`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`) plus category labels (`bug`, `enhancement`). See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Repo is configured as single-context. See `docs/agents/domain.md`.

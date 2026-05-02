@@ -118,6 +118,7 @@ export function DottedSurface({ className, children, ...props }: DottedSurfacePr
     };
 
     return () => {
+      const container = containerRef.current;
       window.removeEventListener("resize", handleResize);
 
       if (sceneRef.current) {
@@ -136,8 +137,8 @@ export function DottedSurface({ className, children, ...props }: DottedSurfacePr
 
         sceneRef.current.renderer.dispose();
 
-        if (containerRef.current && sceneRef.current.renderer.domElement) {
-          containerRef.current.removeChild(sceneRef.current.renderer.domElement);
+        if (container && sceneRef.current.renderer.domElement) {
+          container.removeChild(sceneRef.current.renderer.domElement);
         }
       }
     };
