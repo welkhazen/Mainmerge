@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { LEVEL_THEMES, getAvatarTheme } from "@/lib/avataridentity";
+import { LEVEL_THEMES } from "@/lib/avataridentity";
 
 interface AvatarFigureProps {
   avatarIndex: number;
@@ -16,7 +16,7 @@ const sizes = {
 };
 
 export function AvatarFigure({ avatarIndex, size = "md", selected = false, className = "" }: AvatarFigureProps) {
-  const theme = AVATARS[avatarIndex - 1] || AVATARS[0];
+  const theme = LEVEL_THEMES[avatarIndex - 1] || LEVEL_THEMES[0];
   const [imageFailed, setImageFailed] = useState(false);
   const useImage = !!theme.imageSrc && !imageFailed;
   const s = sizes[size];

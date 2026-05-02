@@ -21,6 +21,11 @@ export const LEVEL_THEMES: AvatarTheme[] = [
 ];
 
 /** Get avatar by 1-based index (matches stored avatarLevel values). */
+export const AVATARS = LEVEL_THEMES;
+export const MAX_LEVEL = LEVEL_THEMES.length;
+
 export function getAvatar(index: number): AvatarTheme {
-  return AVATARS[index - 1] || AVATARS[0];
+  return LEVEL_THEMES[index - 1] || LEVEL_THEMES[0];
 }
+
+export const getAvatarTheme = getAvatar;

@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 
 import { AvatarFigure } from "@/components/ui/avatar-figure";
-import { LEVEL_THEMES, MAX_LEVEL, getAvatarTheme } from "@/lib/avataridentity";
+import { LEVEL_THEMES, MAX_LEVEL, getAvatar } from "@/lib/avataridentity";
 
 interface DashboardProfileProps {
   username: string;
@@ -64,18 +64,18 @@ export function DashboardProfile({
 
       {/* Avatar card */}
       <div className="flex flex-col items-center rounded-2xl border border-raw-border/40 bg-raw-surface/40 px-4 py-5 text-center sm:px-6 sm:py-6">
-        <AvatarFigure level={displayLevel} size="xl" selected />
+        <AvatarFigure avatarIndex={displayIndex} size="xl" selected />
         <p className="mt-3 font-display text-lg tracking-wide text-raw-text">
           {username}
         </p>
-        <p className="text-xs text-raw-gold/60">Level {displayLevel}</p>
+        <p className="text-xs text-raw-gold/60">Level {displayIndex}</p>
         <p className="text-[10px] text-raw-silver/30">{theme.name}</p>
 
         {/* XP Progress */}
         <div className="mt-4 w-full">
           <div className="mb-1.5 flex items-center justify-between">
             <span className="text-[10px] text-raw-silver/30">
-              XP to Level {Math.min(displayLevel + 1, MAX_LEVEL)}
+              XP to Level {Math.min(displayIndex + 1, MAX_LEVEL)}
             </span>
             <span className="text-[10px] text-raw-gold/60">
               {xp.toLocaleString()} / {xpForNext.toLocaleString()}
@@ -101,17 +101,17 @@ export function DashboardProfile({
               <button
                 key={lvl}
                 type="button"
-                onClick={() => onLevelChange(lvl)}
-                onMouseEnter={() => setHoveredLevel(lvl)}
-                onMouseLeave={() => setHoveredLevel(null)}
-                onFocus={() => setHoveredLevel(lvl)}
-                onBlur={() => setHoveredLevel(null)}
+                onClick={() => onAvatarChange(lvl)}
+                onMouseEnter={() => setHoveredIndex(lvl)}
+                onMouseLeave={() => setHoveredIndex(null)}
+                onFocus={() => setHoveredIndex(lvl)}
+                onBlur={() => setHoveredIndex(null)}
                 className="flex h-10 w-10 items-center justify-center rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-raw-gold/40"
                 aria-label={`Preview level ${lvl}`}
                 aria-pressed={lvl === avatarLevel}
               >
                 <AvatarFigure
-                  level={lvl}
+                  avatarIndex={lvl}
                   size="sm"
                   selected={lvl === avatarLevel}
                 />

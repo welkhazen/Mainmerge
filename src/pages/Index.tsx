@@ -168,7 +168,7 @@ const Index = () => {
           onSignupClick={() => setShowSignup(true)}
         />
         <AvatarShowcaseSection />
-        <WheelReward />
+        <WheelReward onSignupClick={() => setShowSignup(true)} />
         <WhyAnonymity />
         <AnonQuestionSection />
         <EarnedWarUpgradesSection />

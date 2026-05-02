@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { LandingSectionShell } from "@/components/landing/LandingSectionShell";
-
+import { AvatarFigure } from "@/components/ui/avatar-figure";
 import { AvatarPhoneHomeScreen } from "@/components/ui/avatar-phone-home-screen";
 import { PhoneMockup } from "@/components/ui/phone-mockup";
-
+import { AVATARS } from "@/lib/avataridentity";
 import { useTrackSectionView } from "@/lib/analytics/useTrackSectionView";
 
 export function AvatarShowcaseSection() {

@@ -1,12 +1,55 @@
+import { useState } from "react";
 import { Sparkles } from "lucide-react";
 import { LandingSectionShell } from "@/components/landing/LandingSectionShell";
+import { AvatarFigure } from "@/components/ui/avatar-figure";
+import { WheelOfFortune, type WheelPrize } from "@/components/wheel/WheelOfFortune";
+import { AVATARS } from "@/lib/avataridentity";
+import { useTheme } from "@/providers/useTheme";
 import { useTrackSectionView } from "@/lib/analytics/useTrackSectionView";
+import { track } from "@/lib/analytics";
+
+const TRANSPARENT_REWARDS_IMAGE_SRC = "/images/avatar-rarity-chart.png";
+
+function buildPrizes(isLight: boolean): WheelPrize[] {
+  return AVATARS.map((avatar, i) => {
+    const index = i + 1;
+    const isGold = index >= 7;
+    return {
+      id: `avatar-${index}`,
+      label: avatar.name,
+      shortLabel: avatar.name.split(" ")[0].toUpperCase(),
+      color: isLight
+        ? index % 2 === 0 ? "#e8edf5" : "#dde4ef"
+        : index % 2 === 0 ? "#121212" : "#0e0e0e",
+      textColor: isGold ? "#F1C42D" : isLight ? "#1a1a2e" : "#D9D9D9",
+    };
+  });
+}
+
 interface WheelRewardProps {
   onSignupClick: () => void;
 }
 
 export function WheelReward({ onSignupClick }: WheelRewardProps) {
-  const sectionRef = useTrackSectionView("wheel");
+  const sectionRef = useTrackSectionView("final_cta");
+  const { mode } = useTheme();
+  const isLight = mode === "light";
+  const prizes = buildPrizes(isLight);
+  const [hasSpun, setHasSpun] = useState(false);
+  const [landedIndex, setLandedIndex] = useState<number | null>(null);
+  const [rewardsImageMissing, setRewardsImageMissing] = useState(false);
+
+  function handleSpinEnd(prize: WheelPrize) {
+    const index = AVATARS.findIndex((_, i) => `avatar-${i + 1}` === prize.id) + 1;
+    setLandedIndex(index > 0 ? index : 1);
+    setHasSpun(true);
+    track("landing_cta_clicked", {
+      cta_id: "wheel_spin",
+      cta_text: "Spin",
+      source_section: "wheel",
+    });
+  }
+
   return (
     <LandingSectionShell
       id="wheel"
