@@ -6,6 +6,7 @@ import { Sparkles } from "lucide-react";
 import { track } from "@/lib/analytics";
 import { useTrackSectionView } from "@/lib/analytics/useTrackSectionView";
 import { LandingSectionShell } from "@/components/landing/LandingSectionShell";
+import { useTheme } from "@/providers/ThemeProvider";
 
 interface WheelRewardProps {
   onAvatarChange: (index: number) => void;
@@ -14,23 +15,33 @@ interface WheelRewardProps {
 
 const TRANSPARENT_REWARDS_IMAGE_SRC = "/avatars/spin-rewards-transparent.png";
 
-const AVATAR_PRIZES: WheelPrize[] = AVATARS.map((avatar, i) => {
-  const index = i + 1;
-  const isGold = index >= 7;
-  return {
-    id: `avatar-${index}`,
-    label: avatar.name,
-    shortLabel: avatar.name.split(" ")[0].toUpperCase(),
-    color: index % 2 === 0 ? "#121212" : "#0e0e0e",
-    textColor: isGold ? "#F1C42D" : "#D9D9D9",
-  };
-});
+function buildPrizes(isLight: boolean): WheelPrize[] {
+  return AVATARS.map((avatar, i) => {
+    const index = i + 1;
+    const isGold = index >= 7;
+    return {
+      id: `avatar-${index}`,
+      label: avatar.name,
+      shortLabel: avatar.name.split(" ")[0].toUpperCase(),
+      color: isLight
+        ? index % 2 === 0 ? "#e8edf5" : "#dde4ef"
+        : index % 2 === 0 ? "#121212" : "#0e0e0e",
+      textColor: isGold
+        ? "#F1C42D"
+        : isLight ? "#1a1a2e" : "#D9D9D9",
+    };
+  });
+}
 
 export function WheelReward({ onAvatarChange, onSignupClick }: WheelRewardProps) {
   const sectionRef = useTrackSectionView("wheel");
+  const { mode } = useTheme();
+  const isLight = mode === "light";
   const [landedIndex, setLandedIndex] = useState<number | null>(null);
   const [hasSpun, setHasSpun] = useState(false);
   const [rewardsImageMissing, setRewardsImageMissing] = useState(false);
+
+  const prizes = buildPrizes(isLight);
 
   const handleSpinEnd = useCallback(
     (prize: WheelPrize) => {
@@ -54,19 +65,23 @@ export function WheelReward({ onAvatarChange, onSignupClick }: WheelRewardProps)
       description="One spin, one avatar — yours as an early access gift from raW."
     >
       <div className="flex flex-col items-center gap-6 sm:gap-10">
-        <WheelOfFortune prizes={AVATAR_PRIZES} onSpinEnd={handleSpinEnd} disabled={hasSpun} />
+        <WheelOfFortune prizes={prizes} onSpinEnd={handleSpinEnd} disabled={hasSpun} />
 
         {!rewardsImageMissing ? (
           <img
             src={TRANSPARENT_REWARDS_IMAGE_SRC}
             alt="Avatar rarity chart"
-            className="w-full max-w-5xl object-contain mix-blend-screen"
+            className={`w-full max-w-5xl object-contain ${isLight ? "opacity-80" : "mix-blend-screen"}`}
             onError={() => setRewardsImageMissing(true)}
           />
         ) : null}
 
         {landedIndex && (
-          <div className="w-full max-w-md rounded-2xl border border-raw-gold/30 bg-gradient-to-b from-raw-gold/[0.08] to-raw-gold/[0.02] p-4 text-center transition-all duration-500 sm:p-5">
+          <div className={`w-full max-w-md rounded-2xl border p-4 text-center transition-all duration-500 sm:p-5 ${
+            isLight
+              ? "border-raw-gold/40 bg-gradient-to-b from-raw-gold/[0.12] to-raw-gold/[0.04]"
+              : "border-raw-gold/30 bg-gradient-to-b from-raw-gold/[0.08] to-raw-gold/[0.02]"
+          }`}>
             <div className="mb-2 flex items-center justify-center gap-2">
               <AvatarFigure avatarIndex={landedIndex} size="sm" selected />
               <Sparkles className="h-4 w-4 text-raw-gold" />
