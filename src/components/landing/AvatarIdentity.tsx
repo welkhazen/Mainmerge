@@ -28,4 +28,4 @@ export function AvatarIdentity() {
       </div>
     </LandingSectionShell>
   );
-  }
+}
