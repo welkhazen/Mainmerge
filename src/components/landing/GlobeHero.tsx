@@ -12,7 +12,7 @@ import { Canvas } from "@react-three/fiber";
 import { PerspectiveCamera } from "@react-three/drei";
 
 import { Globe } from "@/components/ui/globe-hero";
-import { useTheme } from "@/providers/ThemeProvider";
+import { useTheme } from "@/providers/useTheme";
 
 interface GlobeHeroProps {
   onSignupClick: () => void;

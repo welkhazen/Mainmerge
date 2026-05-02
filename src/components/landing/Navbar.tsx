@@ -4,7 +4,7 @@ import { Menu, X } from "lucide-react";
 import { ThemeCustomizer } from "@/components/theme/ThemeCustomizer";
 import { track } from "@/lib/analytics";
 import { Switch } from "@/components/ui/switch";
-import { useTheme } from "@/providers/ThemeProvider";
+import { useTheme } from "@/providers/useTheme";
 
 const RAW_LOGO_SRC = "/raw-logo-96.png";
 

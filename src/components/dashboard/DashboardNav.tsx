@@ -15,7 +15,8 @@ import {
 } from "lucide-react";
 import { AvatarFigure } from "@/components/ui/avatar-figure";
 import { cn } from "@/lib/utils";
-import { type AccentPresetId, type ThemeMode, useTheme } from "@/providers/ThemeProvider";
+import { useTheme } from "@/providers/useTheme";
+import { type AccentPresetId, type ThemeMode } from "@/providers/theme-context";
 import {
   DropdownMenu,
   DropdownMenuContent,
