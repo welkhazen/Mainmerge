@@ -25,7 +25,6 @@ export function LandingFooter() {
             <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-raw-gold/60">Product</p>
             <ul className="space-y-2.5">
               <li><a href="/#polls" className="text-xs text-raw-silver/55 transition hover:text-raw-gold">Polls</a></li>
-              <li><a href="/#wheel" className="text-xs text-raw-silver/55 transition hover:text-raw-gold">Rewards</a></li>
               <li><a href="/faq" className="text-xs text-raw-silver/55 transition hover:text-raw-gold">FAQ</a></li>
             </ul>
           </div>

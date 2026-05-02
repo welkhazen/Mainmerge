@@ -174,7 +174,6 @@ const Index = () => {
           onPreviewLevel={setHoveredAvatarLevel}
         />
         <WheelReward
-          onLevelChange={setAvatarLevel}
           onSignupClick={() => setShowSignup(true)}
         />
         <EarnedWarUpgradesSection />
