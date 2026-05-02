@@ -96,7 +96,7 @@ export function usePolls(isLoggedIn: boolean) {
     setFreeVotesUsed((previous) => previous + 1);
   }, [dailyAnsweredPollIds, dailyPollDate, guestVotedPolls, isLoggedIn, sessionVotedPolls, voteMutation]);
 
-  const polls = isLoggedIn ? pollsQuery.data ?? [] : INITIAL_POLLS;
+  const polls = useMemo(() => (isLoggedIn ? pollsQuery.data ?? [] : INITIAL_POLLS), [isLoggedIn, pollsQuery.data]);
   const votedPolls = isLoggedIn ? sessionVotedPolls : guestVotedPolls;
 
   return useMemo(() => ({

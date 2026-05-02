@@ -200,7 +200,7 @@ const COMMUNITY_LOGOS: Record<string, string> = {
       [communityRequests, user.id]
     );
     const activePendingRequest = userRequests.find((request) => request.status === "pending") ?? null;
-    const currentUserRecord = useMemo(() => getPersistedUserById(user.id), [user.id, chatReports]);
+    const currentUserRecord = useMemo(() => getPersistedUserById(user.id), [user.id]);
     const isUserBanned = (currentUserRecord?.moderationStatus ?? user.moderationStatus) === "banned";
     const warningCount = currentUserRecord?.warnings ?? user.warnings;
     const currentMember = selectedCommunity?.members.find((member) => member.userId === user.id) ?? null;
@@ -210,7 +210,7 @@ const COMMUNITY_LOGOS: Record<string, string> = {
     const visibleMembers = selectedCommunity?.members.slice(0, 5) ?? [];
     const unreadCount = selectedCommunity && isJoined ? countUnreadMessages(selectedCommunity, user.id) : 0;
 
-    const activeMessages = selectedCommunity?.messages ?? [];
+    const activeMessages = useMemo(() => selectedCommunity?.messages ?? [], [selectedCommunity]);
     const filteredMessages = useMemo(() => {
       const query = searchQuery.trim().toLowerCase();
       if (!query) {
