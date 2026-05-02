@@ -36,7 +36,6 @@ function captureWithGuards(
   }
 
   if (isDevMode) {
-    // eslint-disable-next-line no-console
     console.log(`[analytics] ${name}`, properties);
   }
 

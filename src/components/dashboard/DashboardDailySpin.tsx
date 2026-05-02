@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Gift, Sparkles, Star, Zap, Clock } from "lucide-react";
 import { WheelOfFortune, type WheelPrize } from "@/components/wheel/WheelOfFortune";
-import { useTheme } from "@/providers/ThemeProvider";
+import { useTheme } from "@/providers/useTheme";
 import {
   Dialog,
   DialogContent,

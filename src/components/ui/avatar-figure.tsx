@@ -22,7 +22,6 @@ export function AvatarFigure({ avatarIndex, size = "md", selected = false, class
   const s = sizes[size];
 
   if (useImage) {
-    const glow = theme.glow !== "none" ? theme.glow : "rgba(241,196,45,0.25)";
     return (
       <div
         className={`relative inline-flex items-center justify-center ${className}`}
@@ -32,11 +31,7 @@ export function AvatarFigure({ avatarIndex, size = "md", selected = false, class
           className="relative h-full w-full overflow-hidden rounded-full"
           style={{
             background: `radial-gradient(circle at 50% 40%, ${theme.bg} 0%, #050505 70%)`,
-            boxShadow: selected
-              ? `0 0 0 2px ${theme.ring}, 0 0 18px ${glow}`
-              : theme.glow !== "none"
-                ? `0 0 14px ${glow}`
-                : "inset 0 0 10px rgba(0,0,0,0.4)",
+            boxShadow: selected ? `0 0 0 2px ${theme.ring}` : "inset 0 0 10px rgba(0,0,0,0.4)",
           }}
         >
           <img
@@ -65,6 +60,7 @@ export function AvatarFigure({ avatarIndex, size = "md", selected = false, class
   return (
     <div className={`relative inline-flex items-center justify-center ${className}`}>
       <svg width={s.outer} height={s.outer} viewBox={`0 0 ${s.outer} ${s.outer}`}>
+        {/* Ring for selected/high level */}
         {(selected || theme.glow !== "none") && (
           <circle
             cx={cx}
@@ -74,7 +70,6 @@ export function AvatarFigure({ avatarIndex, size = "md", selected = false, class
             stroke={theme.ring}
             strokeWidth={selected ? 2 : 1}
             opacity={selected ? 0.9 : 0.4}
-            filter={theme.glow !== "none" ? "url(#avatarGlow)" : undefined}
           />
         )}
 
@@ -164,19 +159,8 @@ export function AvatarFigure({ avatarIndex, size = "md", selected = false, class
             <stop offset="0%" stopColor={theme.figure} stopOpacity={0.15} />
             <stop offset="100%" stopColor="transparent" stopOpacity={0} />
           </radialGradient>
-          {theme.glow !== "none" && (
-            <filter id="avatarGlow" x="-50%" y="-50%" width="200%" height="200%">
-              <feGaussianBlur stdDeviation="3" result="blur" />
-              <feMerge>
-                <feMergeNode in="blur" />
-                <feMergeNode in="SourceGraphic" />
-              </feMerge>
-            </filter>
-          )}
         </defs>
       </svg>
     </div>
   );
 }
-
-export { AVATARS, getAvatar };

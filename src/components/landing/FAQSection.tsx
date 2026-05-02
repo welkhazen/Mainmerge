@@ -4,7 +4,7 @@ const FAQ_ITEMS = [
   {
     question: "Is raW really anonymous?",
     answer:
-      "Yes. Your identity is represented by your avatar and username, while your personal details stay private.",
+      "Yes. Your identity is represented by your chosen avatar name and username, while personal details stay private.",
   },
   {
     question: "Can I change my avatar later?",

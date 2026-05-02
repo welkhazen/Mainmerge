@@ -56,16 +56,12 @@ export function AvatarProgression({
               aria-pressed={isSelected}
             >
               <div className="relative">
-                {isActive && (
-                  <div
-                    className="absolute -inset-1.5 rounded-full opacity-60 blur-md sm:hidden"
-                    style={{ background: avatar.ring }}
-                  />
-                )}
                 <div
                   className={`rounded-full transition-all duration-300 ${
                     isActive
-                      ? "scale-115 drop-shadow-lg"
+                      ? "scale-110"
+                      : isLocked
+                      ? ""
                       : "opacity-90 group-hover:opacity-100 group-hover:scale-105"
                   }`}
                 >

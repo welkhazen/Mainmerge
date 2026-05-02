@@ -15,7 +15,8 @@ import {
 } from "lucide-react";
 import { AvatarFigure } from "@/components/ui/avatar-figure";
 import { cn } from "@/lib/utils";
-import { type AccentPresetId, type ThemeMode, useTheme } from "@/providers/ThemeProvider";
+import { useTheme } from "@/providers/useTheme";
+import { type AccentPresetId, type ThemeMode } from "@/providers/theme-context";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -60,7 +61,7 @@ export function DashboardNav({ username, avatarLevel, showAdminLink = false, onP
       }
     }
     return results.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
-  }, [username, notifOpen]);
+  }, [username]);
 
   useEffect(() => {
     if (!notifOpen) return;
@@ -92,7 +93,7 @@ export function DashboardNav({ username, avatarLevel, showAdminLink = false, onP
     root.style.setProperty("--ring", selectedAccent.hsl);
     root.style.setProperty("--sidebar-primary", selectedAccent.hsl);
     root.style.setProperty("--sidebar-ring", selectedAccent.hsl);
-  }, [accent, accentPresets, hoveredAccent, hoveredMode, mode]);
+  }, [accentPresets, effectiveAccent, effectiveMode]);
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 border-b border-raw-border/50 bg-raw-black/90 backdrop-blur-xl">
