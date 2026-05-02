@@ -434,6 +434,15 @@ export function OnboardingJourney({
                   </div>
                 )}
               </div>
+              <div className="mt-6 flex justify-end">
+                <button
+                  onClick={goToNextStep}
+                  disabled={!canContinueFromPolls}
+                  className="rounded-xl border border-raw-gold/40 bg-raw-gold/15 px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.12em] text-raw-gold transition-all hover:bg-raw-gold/25 disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  Continue to communities →
+                </button>
+              </div>
             </section>
           )}
 
