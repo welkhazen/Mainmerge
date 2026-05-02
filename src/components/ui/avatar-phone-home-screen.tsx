@@ -8,23 +8,18 @@ export function AvatarPhoneHomeScreen({ displayLevel }: AvatarPhoneHomeScreenPro
   const theme = getAvatarTheme(displayLevel);
 
   return (
-    <div className="relative h-full overflow-hidden bg-gradient-to-b from-[#e8e8e8] via-[#dcdcdc] to-[#c6c6c8] px-4 pt-3 pb-4">
-      <div className="mb-3 flex items-center justify-between px-1">
-        <span className="text-[10px] font-semibold text-[#1a1a1a]">10:35</span>
-        <div className="flex items-center gap-1">
-          <div className="flex items-end gap-[1px]">
-            <div className="h-[4px] w-[3px] rounded-[0.5px] bg-[#1a1a1a]" />
-            <div className="h-[6px] w-[3px] rounded-[0.5px] bg-[#1a1a1a]" />
-            <div className="h-[8px] w-[3px] rounded-[0.5px] bg-[#1a1a1a]" />
-            <div className="h-[10px] w-[3px] rounded-[0.5px] bg-[#1a1a1a]" />
-          </div>
-          <div className="ml-0.5 flex h-[8px] w-[18px] items-center rounded-[2px] border border-[#1a1a1a]/70 p-[1px]">
-            <div className="h-full w-3/4 rounded-[1px] bg-[#1a1a1a]/80" />
-          </div>
-        </div>
+    <div className="relative h-full overflow-hidden bg-gradient-to-b from-[#f2f2f2] via-[#e6e6e8] to-[#d7d7da] px-4 pt-3 pb-4">
+      <div className="mb-2 flex items-center justify-between px-1">
+        <span className="text-[10px] font-semibold text-[#1a1a1a]">Avatar Preview</span>
+        <span className="rounded-full bg-white/70 px-2 py-0.5 text-[9px] font-medium text-[#333]">Choice only</span>
       </div>
 
-      <div className="grid grid-cols-4 grid-rows-4 gap-x-3 gap-y-3">
+      <div className="mb-3 rounded-2xl border border-black/10 bg-white/50 p-3 text-center backdrop-blur-sm">
+        <p className="font-display text-[11px] tracking-[0.12em] text-[#111]">{theme.name}</p>
+        <p className="mt-0.5 text-[9px] text-[#444]">Badge level is earned separately through badges.</p>
+      </div>
+
+      <div className="grid grid-cols-4 grid-rows-3 gap-x-3 gap-y-3">
         <AppIcon kind="facetime" label="FaceTime" />
         <AppIcon kind="calendar" label="Calendar" />
         <AppIcon kind="photos" label="Photos" />
@@ -38,10 +33,10 @@ export function AvatarPhoneHomeScreen({ displayLevel }: AvatarPhoneHomeScreenPro
         <AppIcon kind="reminders" label="Reminders" />
         <AppIcon kind="stocks" label="Stocks" />
 
-        <div className="col-span-2 row-span-2 flex flex-col items-center gap-1">
+        <div className="col-span-2 row-span-2 flex flex-col items-center gap-2">
           <div
             key={displayLevel}
-            className="relative flex h-full w-full animate-[iconPop_420ms_ease-out] items-center justify-center overflow-hidden rounded-[18px] shadow-lg"
+            className="relative flex h-full min-h-[120px] w-full animate-[iconPop_420ms_ease-out] items-center justify-center overflow-hidden rounded-[20px] shadow-lg"
             style={{
               background: `linear-gradient(135deg, ${theme.bg} 0%, #050505 70%)`,
               boxShadow: theme.glow !== "none" ? `0 0 22px ${theme.glow}` : "0 6px 16px rgba(0,0,0,0.35)",
@@ -52,11 +47,11 @@ export function AvatarPhoneHomeScreen({ displayLevel }: AvatarPhoneHomeScreenPro
               style={{ background: `radial-gradient(circle at 50% 35%, ${theme.figure}33 0%, transparent 62%)` }}
             />
             <div className="absolute inset-0 bg-gradient-to-b from-white/[0.06] to-transparent" />
-            <div className="relative scale-[1.4]">
-              <AvatarFigure level={displayLevel} size="md" />
+            <div className="relative scale-[1.8]">
+              <AvatarFigure level={displayLevel} size="md" selected />
             </div>
           </div>
-          <span className="font-display text-[9px] tracking-[0.18em] text-[#222]">raW</span>
+          <span className="font-display text-[9px] tracking-[0.14em] text-[#222]">Selected avatar</span>
         </div>
 
         <AppIcon kind="podcasts" label="Podcasts" />
