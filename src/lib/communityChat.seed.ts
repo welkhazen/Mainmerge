@@ -1,5 +1,7 @@
 import { toUserId } from "@/lib/adminData";
 import type { CommunityChatMemberRecord, CommunityChatMessageRecord, PersistedCommunityRecord } from "./communityChat.types";
+import LNTLogo from "@/assets/LNT.png";
+import SYTLogo from "@/assets/logospeak.png";
 
 function createSeedMessage(
   communityId: string,
@@ -36,7 +38,8 @@ export function buildDefaultCommunities(): PersistedCommunityRecord[] {
     {
       id: "lnt",
       abbr: "LNT",
-      title: "Late Night Talks",
+      logoUrl: LNTLogo,
+      title: "Late Night Talk",
       description: "Honest conversation when the world gets quiet and people finally say what they actually mean.",
       topic: "What thought has been following you all week?",
       status: "Active",
@@ -53,31 +56,32 @@ export function buildDefaultCommunities(): PersistedCommunityRecord[] {
       ],
     },
     {
-      id: "sic",
-      abbr: "SIC",
-      title: "Self-Improvement Circle",
-      description: "Discipline, accountability, and momentum with people who are trying to become sharper every day.",
-      topic: "What are you building discipline around right now?",
+      id: "syt",
+      abbr: "SYT",
+      logoUrl: SYTLogo,
+      title: "Speak Your Truth",
+      description: "A space to say what you've been holding back. No filters, no judgment — just real voices sharing real experiences.",
+      topic: "What's something you've been afraid to say out loud?",
       status: "Active",
       createdAt: "2026-04-01T00:00:00.000Z",
       members: [
-        createSeedMember("iron_will", "2026-04-13T21:52:00.000Z", true),
-        createSeedMember("steady_form", "2026-04-13T22:36:00.000Z", true),
-        createSeedMember("updraft", "2026-04-13T23:55:00.000Z", false),
+        createSeedMember("open_voice", "2026-04-13T21:30:00.000Z", true),
+        createSeedMember("raw_signal", "2026-04-13T22:10:00.000Z", true),
+        createSeedMember("echo_freely", "2026-04-13T23:44:00.000Z", false),
       ],
       messages: [
-        createSeedMessage("sic", "s1", "iron_will", "Day 30 of cold showers. The real win is doing it when I don't want to.", "2026-04-13T23:36:00.000Z", true),
-        createSeedMessage("sic", "s2", "steady_form", "Micro consistency beats motivation every time.", "2026-04-13T23:43:00.000Z"),
-        createSeedMessage("sic", "s3", "updraft", "Who else is tracking sleep and training together instead of separately?", "2026-04-13T23:55:00.000Z"),
+        createSeedMessage("syt", "sy1", "open_voice", "I told my family I wasn't okay. First time in years. It felt terrifying and right.", "2026-04-13T23:20:00.000Z", true),
+        createSeedMessage("syt", "sy2", "raw_signal", "Honesty isn't aggression. It's just clarity people aren't used to.", "2026-04-13T23:38:00.000Z"),
+        createSeedMessage("syt", "sy3", "echo_freely", "Anyone else notice how much lighter you feel after you stop pretending?", "2026-04-13T23:44:00.000Z"),
       ],
     },
     {
-      id: "mw",
-      abbr: "MW",
-      title: "Mental Wellness",
-      description: "Grounded reflection, support, and conversation that feels safe, useful, and real.",
-      topic: "What has helped your head feel clearer this week?",
-      status: "Early Access",
+      id: "iijm",
+      abbr: "IIM",
+      title: "Is It Just Me?",
+      description: "Relatable moments, shared observations, and the quiet comfort of realizing you're not the only one.",
+      topic: "What's something you do or feel that you thought was only you?",
+      status: "Active",
       createdAt: "2026-04-01T00:00:00.000Z",
       members: [
         createSeedMember("soft_signal", "2026-04-13T22:10:00.000Z", true),
@@ -85,10 +89,22 @@ export function buildDefaultCommunities(): PersistedCommunityRecord[] {
         createSeedMember("still_water", "2026-04-13T23:54:00.000Z", false),
       ],
       messages: [
-        createSeedMessage("mw", "m1", "soft_signal", "Gratitude check: one thing you're thankful for today.", "2026-04-13T23:19:00.000Z", true),
-        createSeedMessage("mw", "m2", "quiet_flame", "Naming the feeling early has saved me from spiraling later.", "2026-04-13T23:49:00.000Z"),
-        createSeedMessage("mw", "m3", "still_water", "Walked without headphones today. My nervous system needed the silence.", "2026-04-13T23:54:00.000Z"),
+        createSeedMessage("iijm", "ij1", "soft_signal", "Is it just me or does replying to a 3-day-old message feel harder than starting a new conversation?", "2026-04-13T23:10:00.000Z", true),
+        createSeedMessage("iijm", "ij2", "quiet_flame", "Not just you. The longer you wait the bigger the apology feels.", "2026-04-13T23:31:00.000Z"),
+        createSeedMessage("iijm", "ij3", "still_water", "Is it just me or does background music make every task feel more meaningful?", "2026-04-13T23:54:00.000Z"),
       ],
+    },
+    {
+      id: "li",
+      abbr: "LI",
+      title: "Lebanon Initiatives",
+      description: "A space for Lebanese change-makers, community builders, and people driving impact inside Lebanon and across the diaspora.",
+      topic: "What initiative or project are you working on right now?",
+      status: "Early Access",
+      locked: true,
+      createdAt: "2026-04-01T00:00:00.000Z",
+      members: [],
+      messages: [],
     },
   ];
 }

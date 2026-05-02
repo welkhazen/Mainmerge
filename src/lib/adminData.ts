@@ -48,10 +48,23 @@ export interface ChatReportRecord {
   resolvedBy?: string;
 }
 
+export interface CommunityJoinRequestRecord {
+  id: string;
+  communityId: string;
+  communityTitle: string;
+  requesterId: string;
+  requesterName: string;
+  submittedAt: string;
+  status: "pending" | "approved" | "rejected";
+  reviewedAt?: string;
+  reviewedBy?: string;
+}
+
 const USER_STORAGE_KEY = "raw.users.v1";
 const AUTH_SESSION_STORAGE_KEY = "raw.auth-session.v1";
 export const COMMUNITY_REQUESTS_STORAGE_KEY = "raw.community-requests.v1";
 export const CHAT_REPORTS_STORAGE_KEY = "raw.chat-reports.v1";
+export const COMMUNITY_JOIN_REQUESTS_STORAGE_KEY = "raw.community-join-requests.v1";
 
 const ADMIN_USERNAMES = new Set(["admin", "rawadmin", "founder", "owner"]);
 
@@ -60,6 +73,7 @@ const memoryStore = {
   authSessionUserId: null as string | null,
   communityRequests: [] as CommunityRequestRecord[],
   chatReports: [] as ChatReportRecord[],
+  communityJoinRequests: [] as CommunityJoinRequestRecord[],
 };
 
 function readJsonArray<T>(storageKey: string): T[] {
@@ -73,6 +87,10 @@ function readJsonArray<T>(storageKey: string): T[] {
 
   if (storageKey === CHAT_REPORTS_STORAGE_KEY) {
     return [...memoryStore.chatReports] as T[];
+  }
+
+  if (storageKey === COMMUNITY_JOIN_REQUESTS_STORAGE_KEY) {
+    return [...memoryStore.communityJoinRequests] as T[];
   }
 
   return [];
@@ -91,6 +109,10 @@ function writeJsonArray<T>(storageKey: string, entries: T[]): void {
 
   if (storageKey === CHAT_REPORTS_STORAGE_KEY) {
     memoryStore.chatReports = entries as ChatReportRecord[];
+  }
+
+  if (storageKey === COMMUNITY_JOIN_REQUESTS_STORAGE_KEY) {
+    memoryStore.communityJoinRequests = entries as CommunityJoinRequestRecord[];
   }
 }
 
@@ -200,6 +222,54 @@ export function readChatReports(): ChatReportRecord[] {
 
 export function writeChatReports(reports: ChatReportRecord[]): void {
   writeJsonArray(CHAT_REPORTS_STORAGE_KEY, reports);
+}
+
+export function readCommunityJoinRequests(): CommunityJoinRequestRecord[] {
+  return readJsonArray<CommunityJoinRequestRecord>(COMMUNITY_JOIN_REQUESTS_STORAGE_KEY);
+}
+
+export function writeCommunityJoinRequests(requests: CommunityJoinRequestRecord[]): void {
+  writeJsonArray(COMMUNITY_JOIN_REQUESTS_STORAGE_KEY, requests);
+}
+
+const ADMIN_POLLS_STORAGE_KEY = "raw.admin.polls.v1";
+
+export interface AdminPollRecord {
+  id: string;
+  question: string;
+  options: { id: string; text: string; votes: number }[];
+  locked: boolean;
+  createdAt: string;
+}
+
+export function readAdminPolls(): AdminPollRecord[] {
+  try {
+    const raw = localStorage.getItem(ADMIN_POLLS_STORAGE_KEY);
+    return raw ? (JSON.parse(raw) as AdminPollRecord[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function writeAdminPolls(polls: AdminPollRecord[]): void {
+  localStorage.setItem(ADMIN_POLLS_STORAGE_KEY, JSON.stringify(polls));
+}
+
+export function createAdminPoll(question: string, optionTexts: string[]): AdminPollRecord {
+  const id = crypto.randomUUID();
+  const poll: AdminPollRecord = {
+    id,
+    question: question.trim(),
+    options: optionTexts.map((text) => ({ id: crypto.randomUUID(), text: text.trim(), votes: 0 })),
+    locked: false,
+    createdAt: new Date().toISOString(),
+  };
+  writeAdminPolls([poll, ...readAdminPolls()]);
+  return poll;
+}
+
+export function deleteAdminPoll(pollId: string): void {
+  writeAdminPolls(readAdminPolls().filter((p) => p.id !== pollId));
 }
 
 export function formatAdminTimestamp(value: string): string {

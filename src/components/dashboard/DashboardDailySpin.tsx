@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Gift, Sparkles, Star, Zap, Clock } from "lucide-react";
 import { WheelOfFortune, type WheelPrize } from "@/components/wheel/WheelOfFortune";
-import { useTheme } from "@/providers/ThemeProvider";
+import { useTheme } from "@/providers/useTheme";
 import {
   Dialog,
   DialogContent,
@@ -9,6 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { getTodayKey } from "@/store/useRawStore.storage";
 
 interface DashboardDailySpinProps {
   userId: string;
@@ -74,11 +75,6 @@ const prizeMessages: Record<string, { title: string; desc: string; icon: typeof 
   "try-2": { title: "Not This Time", desc: "The wheel will turn again tomorrow.", icon: Clock, poolLabel: "Try Again", rarity: "Miss", poolColor: "text-raw-silver/45" },
   "try-3": { title: "Not This Time", desc: "The wheel will turn again tomorrow.", icon: Clock, poolLabel: "Try Again", rarity: "Miss", poolColor: "text-raw-silver/45" },
 };
-
-function getTodayKey() {
-  const now = new Date();
-  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
-}
 
 export function DashboardDailySpin({ userId, isAdmin = false }: DashboardDailySpinProps) {
   const { mode, accent, accentPresets } = useTheme();
@@ -150,13 +146,13 @@ export function DashboardDailySpin({ userId, isAdmin = false }: DashboardDailySp
   const forcedPrizeId = isAdmin && adminSelectedRewardId !== "random" ? adminSelectedRewardId : null;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       <div className="text-center">
-        <p className="mb-3 font-display text-[10px] uppercase tracking-[0.3em] text-raw-gold/50">
+        <p className="mb-2 font-display text-[10px] uppercase tracking-[0.28em] text-raw-gold/50 sm:mb-3 sm:tracking-[0.3em]">
           Daily Reward
         </p>
-        <h1 className="font-display text-2xl tracking-wide text-raw-text sm:text-3xl">Wheel of Fortune</h1>
-        <p className="mx-auto mt-3 max-w-md text-sm text-raw-silver/40">
+        <h1 className="font-display text-xl tracking-wide text-raw-text sm:text-2xl md:text-3xl">Wheel of Fortune</h1>
+        <p className="mx-auto mt-2 max-w-md text-xs text-raw-silver/40 sm:mt-3 sm:text-sm">
           Spin once daily for a chance to earn XP, avatar themes, streak shields, and more.
         </p>
       </div>
@@ -181,7 +177,7 @@ export function DashboardDailySpin({ userId, isAdmin = false }: DashboardDailySp
       )}
 
       <div
-        className={`rounded-[2rem] border p-6 sm:p-8 ${
+        className={`rounded-2xl border p-4 sm:rounded-[2rem] sm:p-6 md:p-8 ${
           mode === "light"
             ? "border-raw-border/70 bg-[radial-gradient(circle_at_50%_10%,rgba(241,196,45,0.2),rgba(224,231,242,0.96)_58%)]"
             : "border-raw-border/35 bg-[radial-gradient(circle_at_50%_10%,rgba(241,196,45,0.08),rgba(0,0,0,0.8)_48%)]"
