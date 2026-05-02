@@ -4,7 +4,6 @@ import { LandingSectionShell } from "@/components/landing/LandingSectionShell";
 
 export function AvatarIdentity() {
   const sectionRef = useTrackSectionView("avatar");
-
   return (
     <LandingSectionShell
       id="avatar"
@@ -29,4 +28,4 @@ export function AvatarIdentity() {
       </div>
     </LandingSectionShell>
   );
-}
+  }
