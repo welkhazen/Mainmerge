@@ -17,7 +17,6 @@ interface SwipeablePollCardProps {
   onNavigate?: (direction: "left" | "right") => void;
   onAddComment?: (content: string) => void;
   currentIndex: number;
-  totalPolls: number;
   completedCount: number;
 }
 
