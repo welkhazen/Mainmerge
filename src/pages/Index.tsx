@@ -4,6 +4,7 @@ import { ProblemSection } from "@/components/landing/ProblemSection";
 import { GlobeHero } from "@/components/landing/GlobeHero";
 import { HowItWorks } from "@/components/landing/HowItWorks";
 import { PollSection } from "@/components/landing/PollSection";
+import { PollShowcase } from "@/components/landing/PollShowcase";
 import { AvatarShowcaseSection } from "@/components/landing/AvatarShowcaseSection";
 import { Communities } from "@/components/landing/Communities";
 import { PersonalityInsightsSection } from "@/components/landing/PersonalityInsightsSection";
@@ -174,6 +175,8 @@ const Index = () => {
         <Communities onSignupClick={() => setShowSignup(true)} />
         <PersonalityInsightsSection />
         <EarnedWarUpgradesSection />
+        <PollShowcase />
+        <AvatarShowcaseSection />
         <WheelReward onSignupClick={() => setShowSignup(true)} />
         <WhyAnonymity />
         <AnonQuestionSection />
