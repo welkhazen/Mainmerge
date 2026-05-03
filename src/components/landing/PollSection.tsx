@@ -184,7 +184,7 @@ function PollPhoneContent({
           )}
 
           <p className="mb-2 text-center text-[9px] uppercase tracking-[0.24em] text-[#F1C42D]/80">POLL QUESTION</p>
-          <p className={`font-display text-[clamp(1.45rem,6.6vw,2rem)] tracking-wide text-[#EBEBEB] text-center leading-[1.2] font-medium select-none ${pollIndex === 0 && !hasVoted ? "mt-4" : ""}`} style={{ userSelect: "none" }}>
+          <p className={`font-display text-2xl tracking-wide text-[#EBEBEB] text-center leading-snug font-medium select-none ${pollIndex === 0 && !hasVoted ? "mt-4" : ""}`} style={{ userSelect: "none" }}>
             {poll.question}
           </p>
 

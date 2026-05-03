@@ -1,4 +1,10 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(npm.cmd run *)",
+      "Bash(npm.cmd install *)"
+    ]
+  },
   "hooks": {
     "PreToolUse": [
       {

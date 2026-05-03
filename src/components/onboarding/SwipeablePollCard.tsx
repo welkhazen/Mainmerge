@@ -36,7 +36,6 @@ export function SwipeablePollCard({
   onNavigate,
   onAddComment,
   currentIndex,
-  totalPolls,
   completedCount,
 }: SwipeablePollCardProps) {
   const [swipeOffsetX, setSwipeOffsetX] = useState(0);
