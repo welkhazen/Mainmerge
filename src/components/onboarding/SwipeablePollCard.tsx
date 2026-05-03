@@ -17,7 +17,6 @@ interface SwipeablePollCardProps {
   onNavigate?: (direction: "left" | "right") => void;
   onAddComment?: (content: string) => void;
   currentIndex: number;
-  totalPolls: number;
   completedCount: number;
 }
 
@@ -36,7 +35,6 @@ export function SwipeablePollCard({
   onNavigate,
   onAddComment,
   currentIndex,
-  totalPolls,
   completedCount,
 }: SwipeablePollCardProps) {
   const [swipeOffsetX, setSwipeOffsetX] = useState(0);
