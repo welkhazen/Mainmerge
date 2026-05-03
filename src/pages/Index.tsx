@@ -4,6 +4,7 @@ import { ProblemSection } from "@/components/landing/ProblemSection";
 import { GlobeHero } from "@/components/landing/GlobeHero";
 import { HowItWorks } from "@/components/landing/HowItWorks";
 import { PollSection } from "@/components/landing/PollSection";
+import { PollShowcase } from "@/components/landing/PollShowcase";
 import { AvatarShowcaseSection } from "@/components/landing/AvatarShowcaseSection";
 import { WheelReward } from "@/components/landing/WheelReward";
 import { WhyAnonymity } from "@/components/landing/WhyAnonymity";
@@ -167,6 +168,7 @@ const Index = () => {
           onVote={vote}
           onSignupClick={() => setShowSignup(true)}
         />
+        <PollShowcase />
         <AvatarShowcaseSection />
         <WheelReward onSignupClick={() => setShowSignup(true)} />
         <WhyAnonymity />
