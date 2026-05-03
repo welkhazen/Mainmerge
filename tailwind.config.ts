@@ -1,0 +1,129 @@
+import type { Config } from "tailwindcss";
+import tailwindcssAnimate from "tailwindcss-animate";
+
+export default {
+  darkMode: ["class"],
+  content: ["./pages/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./app/**/*.{ts,tsx}", "./src/**/*.{ts,tsx}"],
+  prefix: "",
+  theme: {
+    container: {
+      center: true,
+      padding: "2rem",
+      screens: {
+        "2xl": "1400px",
+      },
+    },
+    extend: {
+      fontFamily: {
+        display: ["Michroma", "sans-serif"],
+        sans: ["Inter", "sans-serif"],
+      },
+      colors: {
+        raw: {
+          black: "rgb(var(--raw-black) / <alpha-value>)",
+          surface: "rgb(var(--raw-surface) / <alpha-value>)",
+          silver: "rgb(var(--raw-silver) / <alpha-value>)",
+          text: "rgb(var(--raw-text) / <alpha-value>)",
+          gold: "rgb(var(--raw-accent) / <alpha-value>)",
+          "gold-dim": "rgb(var(--raw-accent) / 0.15)",
+          border: "rgb(var(--raw-border) / <alpha-value>)",
+        },
+        border: "hsl(var(--border))",
+        input: "hsl(var(--input))",
+        ring: "hsl(var(--ring))",
+        background: "hsl(var(--background))",
+        foreground: "hsl(var(--foreground))",
+        primary: {
+          DEFAULT: "hsl(var(--primary))",
+          foreground: "hsl(var(--primary-foreground))",
+        },
+        secondary: {
+          DEFAULT: "hsl(var(--secondary))",
+          foreground: "hsl(var(--secondary-foreground))",
+        },
+        destructive: {
+          DEFAULT: "hsl(var(--destructive))",
+          foreground: "hsl(var(--destructive-foreground))",
+        },
+        muted: {
+          DEFAULT: "hsl(var(--muted))",
+          foreground: "hsl(var(--muted-foreground))",
+        },
+        accent: {
+          DEFAULT: "hsl(var(--accent))",
+          foreground: "hsl(var(--accent-foreground))",
+        },
+        popover: {
+          DEFAULT: "hsl(var(--popover))",
+          foreground: "hsl(var(--popover-foreground))",
+        },
+        card: {
+          DEFAULT: "hsl(var(--card))",
+          foreground: "hsl(var(--card-foreground))",
+        },
+        sidebar: {
+          DEFAULT: "hsl(var(--sidebar-background))",
+          foreground: "hsl(var(--sidebar-foreground))",
+          primary: "hsl(var(--sidebar-primary))",
+          "primary-foreground": "hsl(var(--sidebar-primary-foreground))",
+          accent: "hsl(var(--sidebar-accent))",
+          "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
+          border: "hsl(var(--sidebar-border))",
+          ring: "hsl(var(--sidebar-ring))",
+        },
+      },
+      borderRadius: {
+        lg: "var(--radius)",
+        md: "calc(var(--radius) - 2px)",
+        sm: "calc(var(--radius) - 4px)",
+      },
+      keyframes: {
+        "accordion-down": {
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
+        },
+        "accordion-up": {
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
+        },
+        iconPop: {
+          "0%": { transform: "scale(0.92)", opacity: "0.6" },
+          "60%": { transform: "scale(1.04)", opacity: "1" },
+          "100%": { transform: "scale(1)", opacity: "1" },
+        },
+        heartbeat: {
+          "0%": {
+            transform: "scale(1)",
+            textShadow: "0 0 6px rgb(var(--raw-accent) / 0.35), 0 0 14px rgb(var(--raw-accent) / 0.15)",
+          },
+          "14%": {
+            transform: "scale(1.09)",
+            textShadow: "0 0 14px rgb(var(--raw-accent) / 0.85), 0 0 28px rgb(var(--raw-accent) / 0.55), 0 0 42px rgb(var(--raw-accent) / 0.25)",
+          },
+          "28%": {
+            transform: "scale(1)",
+            textShadow: "0 0 6px rgb(var(--raw-accent) / 0.35), 0 0 14px rgb(var(--raw-accent) / 0.15)",
+          },
+          "42%": {
+            transform: "scale(1.06)",
+            textShadow: "0 0 12px rgb(var(--raw-accent) / 0.7), 0 0 22px rgb(var(--raw-accent) / 0.4)",
+          },
+          "70%": {
+            transform: "scale(1)",
+            textShadow: "0 0 6px rgb(var(--raw-accent) / 0.3), 0 0 14px rgb(var(--raw-accent) / 0.12)",
+          },
+          "100%": {
+            transform: "scale(1)",
+            textShadow: "0 0 6px rgb(var(--raw-accent) / 0.35), 0 0 14px rgb(var(--raw-accent) / 0.15)",
+          },
+        },
+      },
+      animation: {
+        "accordion-down": "accordion-down 0.2s ease-out",
+        "accordion-up": "accordion-up 0.2s ease-out",
+        heartbeat: "heartbeat 1.3s ease-in-out infinite",
+      },
+    },
+  },
+  plugins: [tailwindcssAnimate],
+} satisfies Config;

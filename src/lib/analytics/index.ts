@@ -1,0 +1,121 @@
+import { useCallback } from "react";
+import type { EventName, EventPropsFor } from "./events";
+import { getClient } from "./client";
+
+const isTestMode = import.meta.env.MODE === "test";
+const isDevMode = import.meta.env.DEV === true;
+
+/**
+ * Fire a typed event. Property shape is enforced at compile time by the
+ * discriminated union in `events.ts`. No-ops in test mode.
+ */
+export function track<E extends EventName>(
+  name: E,
+  properties: EventPropsFor<E>,
+): void {
+  captureWithGuards(name, properties as Record<string, unknown>);
+}
+
+/**
+ * Escape hatch for one-off diagnostics/prototyping events that are not yet in
+ * `events.ts`. Prefer `track()` for production analytics.
+ */
+export function trackCustom(
+  name: string,
+  properties: Record<string, unknown> = {},
+): void {
+  captureWithGuards(name, properties);
+}
+
+function captureWithGuards(
+  name: string,
+  properties: Record<string, unknown>,
+): void {
+  if (isTestMode) {
+    return;
+  }
+
+  if (isDevMode) {
+    console.log(`[analytics] ${name}`, properties);
+  }
+
+  const client = getClient();
+  if (!client) {
+    return;
+  }
+
+  client.capture(name, properties);
+}
+
+export function identify(
+  userId: string,
+  traits?: Record<string, unknown>,
+): void {
+  if (isTestMode) {
+    return;
+  }
+
+  const client = getClient();
+  if (!client) {
+    return;
+  }
+
+  try {
+    const anonId = client.get_distinct_id?.();
+    client.identify(userId, traits);
+    if (anonId && anonId !== userId && client.alias) {
+      client.alias(userId, anonId);
+    }
+  } catch {
+    // identify failures shouldn't break the app
+  }
+}
+
+export function reset(): void {
+  if (isTestMode) {
+    return;
+  }
+
+  const client = getClient();
+  client?.reset();
+}
+
+export function group(
+  groupType: string,
+  groupKey: string,
+  traits?: Record<string, unknown>,
+): void {
+  if (isTestMode) {
+    return;
+  }
+
+  const client = getClient();
+  client?.group(groupType, groupKey, traits);
+}
+
+export function registerSuperProps(props: Record<string, unknown>): void {
+  if (isTestMode) {
+    return;
+  }
+
+  const client = getClient();
+  client?.register(props);
+}
+
+/**
+ * React hook that returns a stable `track`. Kept for API compatibility;
+ * delegates to the module-level client.
+ */
+export function useTrack(): <E extends EventName>(
+  name: E,
+  properties: EventPropsFor<E>,
+) => void {
+  return useCallback(
+    <E extends EventName>(name: E, properties: EventPropsFor<E>) => {
+      captureWithGuards(name, properties as Record<string, unknown>);
+    },
+    [],
+  );
+}
+
+export type { AppEvent, EventName, EventPropsFor } from "./events";
